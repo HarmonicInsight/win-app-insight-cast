@@ -197,27 +197,141 @@ namespace InsightCast.Views
 
         private void PreviewImage_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (PreviewImage.Source == null) return;
+            var scene = _vm.CurrentScene;
+            if (scene == null || string.IsNullOrEmpty(scene.MediaPath)) return;
+
+            // Load high-resolution image
+            System.Windows.Media.Imaging.BitmapImage? bitmap = null;
+            try
+            {
+                bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(scene.MediaPath);
+                bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+            }
+            catch
+            {
+                if (PreviewImage.Source == null) return;
+                bitmap = null;
+            }
 
             var previewWindow = new Window
             {
                 Title = LocalizationService.GetString("Preview.WindowTitle"),
-                Width = 800,
-                Height = 600,
+                Width = 900,
+                Height = 700,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Owner = this,
                 Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x1a, 0x1a, 0x2e))
             };
 
+            // Container with image and overlays
+            var container = new Grid { Margin = new Thickness(20) };
+
             var image = new Image
             {
-                Source = PreviewImage.Source,
-                Stretch = System.Windows.Media.Stretch.Uniform,
-                Margin = new Thickness(20)
+                Source = bitmap ?? PreviewImage.Source,
+                Stretch = System.Windows.Media.Stretch.Uniform
+            };
+            container.Children.Add(image);
+
+            // Add overlays
+            var overlayCanvas = new Canvas
+            {
+                IsHitTestVisible = false
             };
 
-            previewWindow.Content = image;
+            // We need to wait for layout to get actual size
+            image.Loaded += (s, args) =>
+            {
+                var imgWidth = image.ActualWidth;
+                var imgHeight = image.ActualHeight;
+
+                foreach (var item in _vm.OverlayItems)
+                {
+                    var overlay = item.Overlay;
+                    var scale = imgHeight / 1920.0;
+
+                    var tb = new TextBlock
+                    {
+                        Text = overlay.Text,
+                        FontSize = overlay.FontSize * scale,
+                        FontWeight = overlay.FontBold ? FontWeights.Bold : FontWeights.Normal,
+                        Foreground = new System.Windows.Media.SolidColorBrush(
+                            System.Windows.Media.Color.FromRgb(
+                                (byte)overlay.TextColor[0],
+                                (byte)overlay.TextColor[1],
+                                (byte)overlay.TextColor[2])),
+                        TextAlignment = overlay.Alignment switch
+                        {
+                            Models.TextAlignment.Left => System.Windows.TextAlignment.Left,
+                            Models.TextAlignment.Right => System.Windows.TextAlignment.Right,
+                            _ => System.Windows.TextAlignment.Center
+                        }
+                    };
+
+                    // Add stroke/shadow effect
+                    tb.Effect = new System.Windows.Media.Effects.DropShadowEffect
+                    {
+                        Color = System.Windows.Media.Color.FromRgb(
+                            (byte)overlay.StrokeColor[0],
+                            (byte)overlay.StrokeColor[1],
+                            (byte)overlay.StrokeColor[2]),
+                        BlurRadius = overlay.StrokeWidth * 2,
+                        ShadowDepth = overlay.ShadowEnabled ? 2 : 0,
+                        Opacity = 0.9
+                    };
+
+                    // Measure text size
+                    tb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    var textWidth = tb.DesiredSize.Width;
+
+                    var x = (overlay.XPercent / 100.0) * imgWidth;
+                    var y = (overlay.YPercent / 100.0) * imgHeight;
+
+                    // Adjust position based on alignment
+                    if (overlay.Alignment == Models.TextAlignment.Center)
+                        x -= textWidth / 2;
+                    else if (overlay.Alignment == Models.TextAlignment.Right)
+                        x -= textWidth;
+
+                    Canvas.SetLeft(tb, x);
+                    Canvas.SetTop(tb, y);
+
+                    overlayCanvas.Children.Add(tb);
+                }
+
+                overlayCanvas.Width = imgWidth;
+                overlayCanvas.Height = imgHeight;
+            };
+
+            container.Children.Add(overlayCanvas);
+            previewWindow.Content = container;
             previewWindow.ShowDialog();
+        }
+
+        private System.Windows.Media.Brush GetOverlayBrush(string color)
+        {
+            return color?.ToLower() switch
+            {
+                "black" => System.Windows.Media.Brushes.Black,
+                "red" => System.Windows.Media.Brushes.Red,
+                "blue" => System.Windows.Media.Brushes.Blue,
+                "yellow" => System.Windows.Media.Brushes.Yellow,
+                "green" => System.Windows.Media.Brushes.Green,
+                _ => System.Windows.Media.Brushes.White
+            };
+        }
+
+        private System.Windows.TextAlignment GetTextAlignment(string alignment)
+        {
+            return alignment?.ToLower() switch
+            {
+                "left" => System.Windows.TextAlignment.Left,
+                "right" => System.Windows.TextAlignment.Right,
+                _ => System.Windows.TextAlignment.Center
+            };
         }
 
         #endregion
