@@ -29,6 +29,7 @@
     <sys:String x:Key="Window.Close">閉じる</sys:String>
     <sys:String x:Key="Window.Restore">元に戻す</sys:String>
 <!-- Mode Toggle -->    <sys:String x:Key="Mode.Simple">シンプル</sys:String>    <sys:String x:Key="Mode.Detail">詳細</sys:String>
+<!-- Preview -->    <sys:String x:Key="Preview.WindowTitle">プレビュー</sys:String>    <sys:String x:Key="Preview.ClickToEnlarge">クリックで拡大</sys:String>
 
     <!-- Language Switcher -->
     <sys:String x:Key="Lang.SwitchTo">English</sys:String>

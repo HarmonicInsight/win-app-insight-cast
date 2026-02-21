@@ -29,6 +29,7 @@
     <sys:String x:Key="Window.Close">Close</sys:String>
     <sys:String x:Key="Window.Restore">Restore</sys:String>
 <!-- Mode Toggle -->    <sys:String x:Key="Mode.Simple">Simple</sys:String>    <sys:String x:Key="Mode.Detail">Detail</sys:String>
+<!-- Preview -->    <sys:String x:Key="Preview.WindowTitle">Preview</sys:String>    <sys:String x:Key="Preview.ClickToEnlarge">Click to enlarge</sys:String>
 
     <!-- Language Switcher -->
     <sys:String x:Key="Lang.SwitchTo">日本語</sys:String>

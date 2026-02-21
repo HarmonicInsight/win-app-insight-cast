@@ -193,6 +193,35 @@ namespace InsightCast.Views
 
         #endregion
 
+        #region Preview Image Click Handler
+
+        private void PreviewImage_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (PreviewImage.Source == null) return;
+
+            var previewWindow = new Window
+            {
+                Title = LocalizationService.GetString("Preview.WindowTitle"),
+                Width = 800,
+                Height = 600,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = this,
+                Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x1a, 0x1a, 0x2e))
+            };
+
+            var image = new Image
+            {
+                Source = PreviewImage.Source,
+                Stretch = System.Windows.Media.Stretch.Uniform,
+                Margin = new Thickness(20)
+            };
+
+            previewWindow.Content = image;
+            previewWindow.ShowDialog();
+        }
+
+        #endregion
+
         #region ApplicationCommand Handlers (delegate to ViewModel)
 
         private void NewProject_Executed(object sender, ExecutedRoutedEventArgs e)
