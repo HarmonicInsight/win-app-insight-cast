@@ -247,11 +247,12 @@ namespace InsightCast.Views
             {
                 var imgWidth = image.ActualWidth;
                 var imgHeight = image.ActualHeight;
+                var scale = imgHeight / 1920.0;
 
+                // Render text overlays
                 foreach (var item in _vm.OverlayItems)
                 {
                     var overlay = item.Overlay;
-                    var scale = imgHeight / 1920.0;
 
                     var tb = new TextBlock
                     {
@@ -300,6 +301,73 @@ namespace InsightCast.Views
                     Canvas.SetTop(tb, y);
 
                     overlayCanvas.Children.Add(tb);
+                }
+
+                // Render subtitle (narration text) at bottom
+                var narrationText = scene.NarrationText;
+                if (!string.IsNullOrWhiteSpace(narrationText))
+                {
+                    var style = _vm.GetStyleForScene(scene);
+
+                    // Create background border for subtitle
+                    var subtitleBorder = new Border
+                    {
+                        Background = new System.Windows.Media.SolidColorBrush(
+                            System.Windows.Media.Color.FromArgb(
+                                (byte)(style.BackgroundOpacity * 255),
+                                (byte)style.BackgroundColor[0],
+                                (byte)style.BackgroundColor[1],
+                                (byte)style.BackgroundColor[2])),
+                        Padding = new Thickness(16 * scale, 8 * scale, 16 * scale, 8 * scale),
+                        CornerRadius = new CornerRadius(4 * scale)
+                    };
+
+                    var subtitleText = new TextBlock
+                    {
+                        Text = narrationText,
+                        FontFamily = new System.Windows.Media.FontFamily(style.FontFamily),
+                        FontSize = style.FontSize * scale,
+                        FontWeight = style.FontBold ? FontWeights.Bold : FontWeights.Normal,
+                        Foreground = new System.Windows.Media.SolidColorBrush(
+                            System.Windows.Media.Color.FromRgb(
+                                (byte)style.TextColor[0],
+                                (byte)style.TextColor[1],
+                                (byte)style.TextColor[2])),
+                        TextAlignment = System.Windows.TextAlignment.Center,
+                        TextWrapping = TextWrapping.Wrap,
+                        MaxWidth = imgWidth * 0.9
+                    };
+
+                    // Add stroke/shadow effect
+                    if (style.ShadowEnabled || style.StrokeWidth > 0)
+                    {
+                        subtitleText.Effect = new System.Windows.Media.Effects.DropShadowEffect
+                        {
+                            Color = System.Windows.Media.Color.FromRgb(
+                                (byte)style.StrokeColor[0],
+                                (byte)style.StrokeColor[1],
+                                (byte)style.StrokeColor[2]),
+                            BlurRadius = style.StrokeWidth * 2,
+                            ShadowDepth = style.ShadowEnabled ? style.ShadowOffset[0] : 0,
+                            Opacity = 0.9
+                        };
+                    }
+
+                    subtitleBorder.Child = subtitleText;
+
+                    // Measure subtitle size
+                    subtitleBorder.Measure(new Size(imgWidth, double.PositiveInfinity));
+                    var subtitleWidth = subtitleBorder.DesiredSize.Width;
+                    var subtitleHeight = subtitleBorder.DesiredSize.Height;
+
+                    // Position at bottom center (5% from bottom)
+                    var subX = (imgWidth - subtitleWidth) / 2;
+                    var subY = imgHeight * 0.95 - subtitleHeight;
+
+                    Canvas.SetLeft(subtitleBorder, subX);
+                    Canvas.SetTop(subtitleBorder, subY);
+
+                    overlayCanvas.Children.Add(subtitleBorder);
                 }
 
                 overlayCanvas.Width = imgWidth;
