@@ -312,6 +312,22 @@ namespace InsightCast.ViewModels
             set => SetProperty(ref _canPptx, value);
         }
 
+        // UI Mode toggle (Simple/Detail)
+        private bool _isSimpleMode = true;
+        public bool IsSimpleMode
+        {
+            get => _isSimpleMode;
+            set
+            {
+                if (SetProperty(ref _isSimpleMode, value))
+                {
+                    OnPropertyChanged(nameof(IsDetailMode));
+                }
+            }
+        }
+
+        public bool IsDetailMode => !_isSimpleMode;
+
         // Overlay properties
         public int SelectedOverlayIndex
         {
@@ -363,26 +379,6 @@ namespace InsightCast.ViewModels
             }
         }
 
-        public int SelectedAlignmentIndex
-        {
-            get => _selectedAlignmentIndex;
-            set
-            {
-                if (SetProperty(ref _selectedAlignmentIndex, value))
-                    OnOverlayAlignmentChanged();
-            }
-        }
-
-        public int SelectedOverlayColorIndex
-        {
-            get => _selectedOverlayColorIndex;
-            set
-            {
-                if (SetProperty(ref _selectedOverlayColorIndex, value))
-                    OnOverlayColorChanged();
-            }
-        }
-
         public double OverlayFontSizeSlider
         {
             get => _overlayFontSizeSlider;
@@ -409,6 +405,26 @@ namespace InsightCast.ViewModels
         }
 
         public string OverlayOpacityDisplay => $"{(int)_overlayOpacitySlider}%";
+
+        public int SelectedAlignmentIndex
+        {
+            get => _selectedAlignmentIndex;
+            set
+            {
+                if (SetProperty(ref _selectedAlignmentIndex, value))
+                    OnOverlayAlignmentChanged();
+            }
+        }
+
+        public int SelectedOverlayColorIndex
+        {
+            get => _selectedOverlayColorIndex;
+            set
+            {
+                if (SetProperty(ref _selectedOverlayColorIndex, value))
+                    OnOverlayColorChanged();
+            }
+        }
 
         public bool OverlayListVisible => OverlayItems.Count > 0;
         public bool OverlayEditorVisible => _selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count;
@@ -1306,22 +1322,7 @@ namespace InsightCast.ViewModels
             if (overlay == null) return;
 
             if (int.TryParse(_overlayFontSize, out var size))
-            {
                 overlay.FontSize = Math.Clamp(size, 8, 200);
-                _overlayFontSizeSlider = overlay.FontSize;
-                OnPropertyChanged(nameof(OverlayFontSizeSlider));
-                RefreshOverlayPreview();
-            }
-        }
-
-        private void OnOverlayOpacityChanged()
-        {
-            if (_isLoadingOverlay) return;
-            var overlay = GetSelectedOverlay();
-            if (overlay == null) return;
-
-            overlay.Opacity = Math.Clamp(_overlayOpacitySlider / 100.0, 0.0, 1.0);
-            RefreshOverlayPreview();
         }
 
         private void OnOverlayAlignmentChanged()
@@ -1336,7 +1337,6 @@ namespace InsightCast.ViewModels
                 2 => Models.TextAlignment.Right,
                 _ => Models.TextAlignment.Center
             };
-            RefreshOverlayPreview();
         }
 
         private void OnOverlayColorChanged()
@@ -1346,12 +1346,21 @@ namespace InsightCast.ViewModels
             if (overlay == null) return;
 
             if (_selectedOverlayColorIndex >= 0 && _selectedOverlayColorIndex < OverlayColorValues.Length)
-            {
                 overlay.TextColor = (int[])OverlayColorValues[_selectedOverlayColorIndex].Clone();
-                if (_selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count)
-                    OverlayItems[_selectedOverlayIndex].UpdateLabel(_selectedOverlayIndex);
-                RefreshOverlayPreview();
-            }
+
+            if (_selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count)
+                OverlayItems[_selectedOverlayIndex].UpdateLabel(_selectedOverlayIndex);
+            RefreshOverlayPreview();
+        }
+
+        private void OnOverlayOpacityChanged()
+        {
+            if (_isLoadingOverlay) return;
+            var overlay = GetSelectedOverlay();
+            if (overlay == null) return;
+
+            overlay.Opacity = _overlayOpacitySlider / 100.0;
+            RefreshOverlayPreview();
         }
 
         #endregion

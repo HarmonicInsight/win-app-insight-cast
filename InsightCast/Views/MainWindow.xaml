@@ -21,9 +21,9 @@
 
     <Window.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolConverter x:Key="InverseBool"/>
     </Window.Resources>
 
-    <!-- Command Bindings for standard commands -->
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New" Executed="NewProject_Executed"/>
         <CommandBinding Command="ApplicationCommands.Open" Executed="OpenProject_Executed"/>
@@ -38,74 +38,108 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>  <!-- Row 0: Header bar -->
-            <RowDefinition Height="Auto"/>  <!-- Row 1: Menu bar -->
-            <RowDefinition Height="*"/>     <!-- Row 2: Main content -->
-            <RowDefinition Height="Auto"/>  <!-- Row 3: Export panel -->
-            <RowDefinition Height="Auto"/>  <!-- Row 4: ProgressBar -->
-            <RowDefinition Height="Auto"/>  <!-- Row 5: Log area -->
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- ================================================================ -->
-        <!-- A) Header / Custom Title Bar                                     -->
+        <!-- A) Header / Custom Title Bar (Simplified)                        -->
         <!-- ================================================================ -->
         <Border Grid.Row="0" Background="{DynamicResource TitlebarBg}"
                 BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
             <DockPanel>
-                <!-- Right: Window control buttons (min/max/close) -->
+                <!-- Right: Window control buttons -->
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top">
                     <Button x:Name="MinimizeButton" Click="MinimizeButton_Click"
-                            Width="46" Height="32" BorderThickness="0"
-                            Background="Transparent"
+                            Width="46" Height="32" BorderThickness="0" Background="Transparent"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"
                             ToolTip="{DynamicResource Window.Minimize}">
-                        <Path Data="M0,0 H10"
-                              Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"
-                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <Path Data="M0,0 H10" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"/>
                     </Button>
                     <Button x:Name="MaximizeButton" Click="MaximizeButton_Click"
-                            Width="46" Height="32" BorderThickness="0"
-                            Background="Transparent"
+                            Width="46" Height="32" BorderThickness="0" Background="Transparent"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"
                             ToolTip="{DynamicResource Window.Maximize}">
-                        <Path x:Name="MaximizeIcon" Data="M0,0 H10 V10 H0 Z"
-                              Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"
-                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <Path x:Name="MaximizeIcon" Data="M0,0 H10 V10 H0 Z" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"/>
                     </Button>
                     <Button x:Name="CloseButton" Click="CloseButton_Click"
-                            Width="46" Height="32" BorderThickness="0"
-                            Background="Transparent"
+                            Width="46" Height="32" BorderThickness="0" Background="Transparent"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"
                             ToolTip="{DynamicResource Window.Close}">
-                        <Path Data="M0,0 L10,10 M0,10 L10,0"
-                              Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"
-                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <Path Data="M0,0 L10,10 M0,10 L10,0" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"/>
                     </Button>
                 </StackPanel>
 
-                <!-- Content area -->
                 <DockPanel Margin="10,6,0,6">
                     <!-- Left: App title -->
                     <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="InsightCast" FontSize="18" FontWeight="Bold"
                                    Foreground="{DynamicResource TitlebarFg}" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="VersionLabel" Text="v1.0.0" Foreground="{DynamicResource TitlebarSecondary}" FontSize="11"
-                                   VerticalAlignment="Bottom" Margin="8,0,0,4"/>
+                        <TextBlock x:Name="VersionLabel" Text="v1.0.0" Foreground="{DynamicResource TitlebarSecondary}"
+                                   FontSize="11" VerticalAlignment="Bottom" Margin="8,0,0,4"/>
                     </StackPanel>
 
-                    <!-- Right-inner: License + Status -->
+                    <!-- Right: Mode toggle + Lang + License + Status -->
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Padding="6,3" Margin="2"
-                                FontSize="11"
+                        <!-- Mode Toggle -->
+                        <Border Background="{DynamicResource BgSecondary}" CornerRadius="12"
+                                Padding="2" Margin="0,0,8,0" VerticalAlignment="Center"
+                                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton Content="{DynamicResource Mode.Simple}"
+                                             IsChecked="{Binding IsSimpleMode}"
+                                             GroupName="UIMode" Cursor="Hand">
+                                    <RadioButton.Template>
+                                        <ControlTemplate TargetType="RadioButton">
+                                            <Border x:Name="border" Background="Transparent" CornerRadius="10" Padding="10,4">
+                                                <TextBlock x:Name="text" Text="{TemplateBinding Content}"
+                                                           FontSize="11" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextSecondary}"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource BrandPrimary}"/>
+                                                    <Setter TargetName="text" Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </RadioButton.Template>
+                                </RadioButton>
+                                <RadioButton Content="{DynamicResource Mode.Detail}"
+                                             IsChecked="{Binding IsSimpleMode, Converter={StaticResource InverseBool}}"
+                                             GroupName="UIMode" Cursor="Hand">
+                                    <RadioButton.Template>
+                                        <ControlTemplate TargetType="RadioButton">
+                                            <Border x:Name="border" Background="Transparent" CornerRadius="10" Padding="10,4">
+                                                <TextBlock x:Name="text" Text="{TemplateBinding Content}"
+                                                           FontSize="11" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextSecondary}"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource BrandPrimary}"/>
+                                                    <Setter TargetName="text" Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </RadioButton.Template>
+                                </RadioButton>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Padding="6,3" Margin="2" FontSize="11"
                                 Background="{DynamicResource BgPrimary}" Foreground="{DynamicResource TextPrimary}"
                                 BorderBrush="{DynamicResource BorderDark}"
-                                x:Name="LangSwitchButton"
-                                Click="LangSwitchButton_Click"
+                                x:Name="LangSwitchButton" Click="LangSwitchButton_Click"
                                 shell:WindowChrome.IsHitTestVisibleInChrome="True">
                             <TextBlock Text="{DynamicResource Lang.SwitchTo}" VerticalAlignment="Center"/>
                         </Button>
-                        <Button Padding="6,3" Margin="2"
-                                FontSize="11"
+                        <Button Padding="6,3" Margin="2" FontSize="11"
                                 Background="{DynamicResource BgPrimary}" Foreground="{DynamicResource TextPrimary}"
                                 BorderBrush="{DynamicResource BorderDark}"
                                 Command="{Binding ShowLicenseManagerCommand}"
@@ -125,82 +159,19 @@
                         </Border>
                     </StackPanel>
 
-                    <!-- Center/Right: Action buttons -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
-                                VerticalAlignment="Center" Margin="8,0">
-                        <Button Padding="10,4" Margin="2"
-                                Background="{DynamicResource BgPrimary}" Foreground="{DynamicResource TextPrimary}"
-                                BorderBrush="{DynamicResource BorderDark}"
-                                Command="{Binding NewProjectCommand}"
-                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M2,0 H8 L11,3 V13 H2 Z M8,0 V3 H11"
-                                      Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"
-                                      VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                <TextBlock Text="{DynamicResource Header.New}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Padding="10,4" Margin="2"
-                                Background="{DynamicResource BgPrimary}" Foreground="{DynamicResource TextPrimary}"
-                                BorderBrush="{DynamicResource BorderDark}"
-                                Command="{Binding OpenProjectCommand}"
-                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M0,3 H3 L5,1 H8 V3 H12 L10,10 H0 Z"
-                                      Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"
-                                      VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                <TextBlock Text="{DynamicResource Header.OpenFile}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Padding="10,4" Margin="2"
-                                Background="{DynamicResource BgPrimary}" Foreground="{DynamicResource TextPrimary}"
-                                BorderBrush="{DynamicResource BorderDark}"
-                                Command="{Binding SaveProjectCommand}"
-                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M0,0 H7 L10,3 V10 H0 Z M3,0 V3 H6 V0 M2,6 H8 V10 H2 Z"
-                                      Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"
-                                      VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                <TextBlock Text="{DynamicResource Header.Save}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Padding="10,4" Margin="2"
-                                Background="{DynamicResource BgPrimary}" Foreground="{DynamicResource TextPrimary}"
-                                BorderBrush="{DynamicResource BorderDark}"
-                                Command="{Binding SaveProjectAsCommand}"
-                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M0,0 H7 L10,3 V10 H0 Z M3,0 V3 H6 V0"
-                                      Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"
-                                      VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                <TextBlock Text="{DynamicResource Header.SaveAs}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Padding="10,4" Margin="2"
-                                Style="{DynamicResource PrimaryButton}"
-                                Command="{Binding ImportPptxCommand}"
-                                IsEnabled="{Binding CanPptx}"
-                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M5,0 V7 M2,5 L5,8 L8,5 M1,10 V12 H9 V10"
-                                      Stroke="#FFFFFF" StrokeThickness="1"
-                                      VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                <TextBlock Text="{DynamicResource Header.ImportPptx}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
+                    <!-- Spacer -->
+                    <Border/>
                 </DockPanel>
             </DockPanel>
         </Border>
 
         <!-- ================================================================ -->
-        <!-- B) Menu Bar                                                       -->
+        <!-- B) Menu Bar (Always visible)                                      -->
         <!-- ================================================================ -->
         <Menu Grid.Row="1"
               Background="{DynamicResource TitlebarBg}"
               Foreground="{DynamicResource TextPrimary}"
               Padding="6,2">
-            <!-- ファイル -->
             <MenuItem Header="{DynamicResource Menu.File}">
                 <MenuItem Header="{DynamicResource Menu.File.New}" InputGestureText="Ctrl+N"
                           Command="{Binding NewProjectCommand}"/>
@@ -214,11 +185,14 @@
                 <MenuItem Header="{DynamicResource Menu.File.SaveAs}" InputGestureText="Ctrl+Shift+S"
                           Command="{Binding SaveProjectAsCommand}"/>
                 <Separator/>
+                <MenuItem Header="{DynamicResource Header.ImportPptx}"
+                          Command="{Binding ImportPptxCommand}"
+                          IsEnabled="{Binding CanPptx}"/>
+                <Separator/>
                 <MenuItem Header="{DynamicResource Menu.File.Exit}" InputGestureText="Alt+F4"
                           Command="{Binding ExitCommand}"/>
             </MenuItem>
 
-            <!-- 編集 -->
             <MenuItem Header="{DynamicResource Menu.Edit}">
                 <MenuItem Header="{DynamicResource Menu.Edit.AddScene}" InputGestureText="Ctrl+T"
                           Command="{Binding AddSceneCommand}"/>
@@ -231,7 +205,6 @@
                           Command="{Binding MoveSceneDownCommand}"/>
             </MenuItem>
 
-            <!-- ヘルプ -->
             <MenuItem Header="{DynamicResource Menu.Help}">
                 <MenuItem Header="{DynamicResource Menu.Help.Tutorial}" InputGestureText="F1"
                           Command="{Binding ShowTutorialCommand}"/>
@@ -256,7 +229,7 @@
         </Menu>
 
         <!-- ================================================================ -->
-        <!-- C) Main Content (Left: Scene List | Right: Scene Editor)          -->
+        <!-- C) Main Content                                                   -->
         <!-- ================================================================ -->
         <Grid Grid.Row="2" Margin="4,4,4,2">
             <Grid.ColumnDefinitions>
@@ -268,28 +241,17 @@
             <!-- Left Panel: Scene List -->
             <GroupBox Grid.Column="0" Header="{DynamicResource Scene.List}" Padding="4">
                 <DockPanel>
-                    <!-- Bottom buttons -->
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                                 HorizontalAlignment="Center" Margin="0,4,0,0">
-                        <Button Content="{DynamicResource Common.Add}"
-                                Padding="4,2" Margin="1"
-                                Command="{Binding AddSceneCommand}"
-                                ToolTip="{DynamicResource Scene.Add.Tooltip}"/>
-                        <Button Content="{DynamicResource Common.Remove}"
-                                Padding="4,2" Margin="1"
-                                Command="{Binding RemoveSceneCommand}"
-                                ToolTip="{DynamicResource Scene.Remove.Tooltip}"/>
-                        <Button Content="↑"
-                                Padding="6,2" Margin="1"
-                                Command="{Binding MoveSceneUpCommand}"
-                                ToolTip="{DynamicResource Scene.MoveUp.Tooltip}"/>
-                        <Button Content="↓"
-                                Padding="6,2" Margin="1"
-                                Command="{Binding MoveSceneDownCommand}"
-                                ToolTip="{DynamicResource Scene.MoveDown.Tooltip}"/>
+                        <Button Content="{DynamicResource Common.Add}" Padding="4,2" Margin="1"
+                                Command="{Binding AddSceneCommand}"/>
+                        <Button Content="{DynamicResource Common.Remove}" Padding="4,2" Margin="1"
+                                Command="{Binding RemoveSceneCommand}"/>
+                        <Button Content="↑" Padding="6,2" Margin="1"
+                                Command="{Binding MoveSceneUpCommand}"/>
+                        <Button Content="↓" Padding="6,2" Margin="1"
+                                Command="{Binding MoveSceneDownCommand}"/>
                     </StackPanel>
-
-                    <!-- Scene ListBox -->
                     <ListBox x:Name="SceneListBox"
                              ItemsSource="{Binding SceneItems}"
                              SelectedIndex="{Binding SelectedSceneIndex}"
@@ -303,55 +265,42 @@
                 </DockPanel>
             </GroupBox>
 
-            <!-- GridSplitter -->
-            <GridSplitter Grid.Column="1" Width="5"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"
                           Background="{DynamicResource BorderDefault}"/>
 
             <!-- Right Panel: Scene Editor -->
             <GroupBox Grid.Column="2" Header="{DynamicResource Scene.Editor}" Padding="4">
-                <ScrollViewer VerticalScrollBarVisibility="Auto"
-                              HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="8">
 
-                        <!-- Row 1: Media info -->
+                        <!-- Media info -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                            <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center"
-                                       Margin="0,0,6,0"/>
-                            <TextBlock Text="{Binding MediaName}"
-                                       VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}"
-                                       MinWidth="120" Margin="0,0,8,0"/>
-                            <Button Content="{DynamicResource Common.Select}"
-                                    Padding="10,3" Margin="2"
+                            <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="{Binding MediaName}" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextSecondary}" MinWidth="120" Margin="0,0,8,0"/>
+                            <Button Content="{DynamicResource Common.Select}" Padding="10,3" Margin="2"
                                     Command="{Binding SelectMediaCommand}"/>
-                            <Button Content="{DynamicResource Common.Clear}"
-                                    Padding="10,3" Margin="2"
+                            <Button Content="{DynamicResource Common.Clear}" Padding="10,3" Margin="2"
                                     Command="{Binding ClearMediaCommand}"/>
                         </StackPanel>
 
-                        <!-- Row 2: Preview container + Narration TextBox -->
+                        <!-- Preview + Narration -->
                         <Grid Margin="0,0,0,4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-
-                            <!-- Preview container with overlay preview -->
                             <Border Grid.Column="0" Width="120" Height="180"
-                                    Background="#1a1a2e" CornerRadius="2"
-                                    Margin="0,0,8,0" ClipToBounds="True">
+                                    Background="#1a1a2e" CornerRadius="2" Margin="0,0,8,0" ClipToBounds="True"
+                                    Cursor="Hand" MouseLeftButtonUp="PreviewImage_Click"
+                                    ToolTip="{DynamicResource Preview.ClickToEnlarge}">
                                 <Grid>
                                     <Image x:Name="PreviewImage" Stretch="Uniform"
-                                           VerticalAlignment="Center"
-                                           HorizontalAlignment="Center"/>
+                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     <!-- Text overlay preview layer -->
-                                    <ItemsControl x:Name="OverlayPreviewLayer"
-                                                  ItemsSource="{Binding OverlayPreviewItems}">
+                                    <ItemsControl ItemsSource="{Binding OverlayPreviewItems}">
                                         <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <Canvas/>
-                                            </ItemsPanelTemplate>
+                                            <ItemsPanelTemplate><Canvas/></ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemContainerStyle>
                                             <Style TargetType="ContentPresenter">
@@ -362,140 +311,106 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding Text}" FontSize="{Binding PreviewFontSize}"
-                                                           FontWeight="{Binding FontWeightValue}"
-                                                           Opacity="{Binding Opacity}"
-                                                           MaxWidth="112" TextWrapping="Wrap"
-                                                           TextAlignment="{Binding TextAlignmentValue}">
-                                                    <TextBlock.Foreground>
-                                                        <SolidColorBrush Color="{Binding TextColorValue}"/>
-                                                    </TextBlock.Foreground>
-                                                    <TextBlock.Effect>
-                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="2"
-                                                                          Color="Black" Opacity="0.8"/>
-                                                    </TextBlock.Effect>
+                                                           FontWeight="{Binding FontWeightValue}" Opacity="{Binding Opacity}"
+                                                           MaxWidth="112" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentValue}">
+                                                    <TextBlock.Foreground><SolidColorBrush Color="{Binding TextColorValue}"/></TextBlock.Foreground>
+                                                    <TextBlock.Effect><DropShadowEffect ShadowDepth="1" BlurRadius="2" Color="Black" Opacity="0.8"/></TextBlock.Effect>
                                                 </TextBlock>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
-                                    <!-- Subtitle overlay at bottom -->
-                                    <Border VerticalAlignment="Bottom"
-                                            Background="#80000000" Padding="4,2">
-                                        <TextBlock Text="{Binding SubtitleText}"
-                                                   Foreground="White"
-                                                   FontSize="9" TextWrapping="Wrap"
-                                                   TextAlignment="Center"
-                                                   MaxWidth="112"/>
+                                    <!-- Subtitle overlay -->
+                                    <Border VerticalAlignment="Bottom" Background="#80000000" Padding="4,2">
+                                        <TextBlock Text="{Binding SubtitleText}" Foreground="White"
+                                                   FontSize="9" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="112"/>
+                                    </Border>
+                                    <!-- Zoom icon -->
+                                    <Border HorizontalAlignment="Right" VerticalAlignment="Top"
+                                            Background="#80000000" CornerRadius="0,0,0,4" Padding="4">
+                                        <Path Data="M9,0 A9,9 0 1 0 9,18 A9,9 0 1 0 9,0 M15,15 L20,20"
+                                              Stroke="White" StrokeThickness="1.5" Width="16" Height="16"
+                                              Stretch="Uniform"/>
                                     </Border>
                                 </Grid>
                             </Border>
-
-                            <!-- Narration TextBox with placeholder -->
                             <Grid Grid.Column="1">
                                 <TextBox x:Name="NarrationTextBox"
                                          Text="{Binding NarrationText, UpdateSourceTrigger=PropertyChanged}"
                                          TextWrapping="Wrap" AcceptsReturn="True"
-                                         VerticalScrollBarVisibility="Auto"
-                                         MinHeight="140"
-                                         VerticalContentAlignment="Top"
-                                         Padding="4"/>
+                                         VerticalScrollBarVisibility="Auto" MinHeight="140"
+                                         VerticalContentAlignment="Top" Padding="4"/>
                                 <TextBlock Text="{DynamicResource Scene.Narration.Placeholder}"
                                            Foreground="{DynamicResource TextPlaceholder}" FontStyle="Italic"
-                                           IsHitTestVisible="False"
-                                           Margin="8,6,0,0"
-                                           VerticalAlignment="Top"
+                                           IsHitTestVisible="False" Margin="8,6,0,0" VerticalAlignment="Top"
                                            Visibility="{Binding NarrationPlaceholderVisible, Converter={StaticResource BoolToVis}}"/>
                             </Grid>
                         </Grid>
 
-                        <!-- Row 3: Speaker + Audio controls -->
+                        <!-- Speaker + Audio controls -->
                         <WrapPanel Margin="0,0,0,4">
-                            <TextBlock Text="{DynamicResource Scene.Speaker}" VerticalAlignment="Center"
-                                       Margin="0,0,4,0"/>
-                            <ComboBox MinWidth="180"
-                                      Margin="0,0,12,0"
+                            <TextBlock Text="{DynamicResource Scene.Speaker}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <ComboBox MinWidth="180" Margin="0,0,12,0"
                                       ItemsSource="{Binding SceneSpeakers}"
                                       SelectedIndex="{Binding SelectedSceneSpeakerIndex}"
                                       DisplayMemberPath="DisplayName"/>
-
                             <CheckBox Content="{DynamicResource Scene.KeepAudio}"
                                       IsChecked="{Binding KeepOriginalAudio}"
                                       VerticalAlignment="Center" Margin="0,0,12,0"/>
-
-                            <Button Content="{DynamicResource Scene.PreviewAudio}"
-                                    Padding="8,3" Margin="2"
+                            <Button Content="{DynamicResource Scene.PreviewAudio}" Padding="8,3" Margin="2"
                                     Command="{Binding PreviewAudioCommand}"/>
-                            <Button Content="{DynamicResource Scene.PreviewScene}"
-                                    Padding="8,3" Margin="2"
-                                    Command="{Binding PreviewSceneCommand}"
-                                    ToolTip="{DynamicResource Scene.PreviewScene.Tooltip}"/>
-                            <Button Content="{DynamicResource Scene.Stop}"
-                                    Padding="8,3" Margin="2"
+                            <Button Content="{DynamicResource Scene.PreviewScene}" Padding="8,3" Margin="2"
+                                    Command="{Binding PreviewSceneCommand}"/>
+                            <Button Content="{DynamicResource Scene.Stop}" Padding="8,3" Margin="2"
                                     Command="{Binding StopPreviewCommand}"/>
-
-                            <TextBlock Text="{DynamicResource Scene.SpeechSpeed}" VerticalAlignment="Center"
-                                       Margin="12,0,4,0"/>
-                            <ComboBox Width="90"
-                                      ItemsSource="{Binding SpeechSpeedOptions}"
+                            <TextBlock Text="{DynamicResource Scene.SpeechSpeed}" VerticalAlignment="Center" Margin="12,0,4,0"/>
+                            <ComboBox Width="90" ItemsSource="{Binding SpeechSpeedOptions}"
                                       SelectedIndex="{Binding SelectedSpeechSpeedIndex}"/>
                         </WrapPanel>
 
-                        <!-- Row 4: Subtitle TextBox -->
+                        <!-- Subtitle -->
                         <StackPanel Margin="0,0,0,4">
                             <TextBlock Text="{DynamicResource Scene.Subtitle}" Margin="0,0,0,4"/>
                             <Grid>
                                 <TextBox Text="{Binding SubtitleText, UpdateSourceTrigger=PropertyChanged}"
-                                         Padding="4" Height="28"
-                                         VerticalContentAlignment="Center"
+                                         Padding="4" MinHeight="50" MaxHeight="100"
+                                         TextWrapping="Wrap" AcceptsReturn="True"
+                                         VerticalScrollBarVisibility="Auto"
+                                         VerticalContentAlignment="Top"
                                          IsEnabled="{Binding CanSubtitle}"/>
                                 <TextBlock Text="{Binding SubtitlePlaceholder}"
                                            Foreground="{DynamicResource TextPlaceholder}" FontStyle="Italic"
-                                           IsHitTestVisible="False"
-                                           Margin="8,0,0,0"
-                                           VerticalAlignment="Center"
+                                           IsHitTestVisible="False" Margin="8,6,0,0" VerticalAlignment="Top"
                                            Visibility="{Binding SubtitlePlaceholderVisible, Converter={StaticResource BoolToVis}}"/>
                             </Grid>
                         </StackPanel>
 
-                        <!-- Row 5: Subtitle style -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                            <TextBlock Text="{DynamicResource Scene.SubtitleStyle}" VerticalAlignment="Center"
-                                       Margin="0,0,8,0"/>
+                        <!-- Detail mode only sections -->
+                        <!-- Subtitle style -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                                    Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{DynamicResource Scene.SubtitleStyle}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                             <Border BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                                    CornerRadius="2" Padding="8,2" Margin="0,0,8,0"
-                                    Background="#1a1a2e" MinWidth="40"
-                                    VerticalAlignment="Center">
-                                <TextBlock x:Name="StylePreviewLabel" Text="A"
-                                           FontSize="16" FontWeight="Bold"
-                                           Foreground="White"
-                                           HorizontalAlignment="Center"/>
+                                    CornerRadius="2" Padding="8,2" Margin="0,0,8,0" Background="#1a1a2e" MinWidth="40">
+                                <TextBlock x:Name="StylePreviewLabel" Text="A" FontSize="16" FontWeight="Bold"
+                                           Foreground="White" HorizontalAlignment="Center"/>
                             </Border>
-                            <Button Content="{DynamicResource Scene.SubtitleStyle.Select}"
-                                    Padding="10,3" Margin="2"
-                                    Command="{Binding OpenStyleDialogCommand}"
-                                    IsEnabled="{Binding CanSubtitleStyle}"/>
+                            <Button Content="{DynamicResource Scene.SubtitleStyle.Select}" Padding="10,3" Margin="2"
+                                    Command="{Binding OpenStyleDialogCommand}" IsEnabled="{Binding CanSubtitleStyle}"/>
                         </StackPanel>
 
-                        <!-- Row 6: Text Overlays -->
-                        <StackPanel Margin="0,4,0,4">
+                        <!-- Text Overlays -->
+                        <StackPanel Margin="0,4,0,4" Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
                             <DockPanel Margin="0,0,0,4">
-                                <TextBlock Text="{DynamicResource Overlay.Title}" VerticalAlignment="Center"
-                                           DockPanel.Dock="Left"/>
+                                <TextBlock Text="{DynamicResource Overlay.Title}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Content="{DynamicResource Common.Add}"
-                                            Padding="6,2" Margin="2"
-                                            Command="{Binding AddOverlayCommand}"
-                                            ToolTip="{DynamicResource Overlay.Add.Tooltip}"/>
-                                    <Button Content="{DynamicResource Overlay.CoverTemplate}"
-                                            Padding="6,2" Margin="2"
-                                            Command="{Binding AddCoverTemplateCommand}"
-                                            ToolTip="{DynamicResource Overlay.CoverTemplate.Tooltip}"/>
-                                    <Button Content="{DynamicResource Common.Remove}"
-                                            Padding="6,2" Margin="2"
-                                            Command="{Binding RemoveOverlayCommand}"
-                                            ToolTip="{DynamicResource Overlay.Remove.Tooltip}"/>
+                                    <Button Content="{DynamicResource Common.Add}" Padding="6,2" Margin="2"
+                                            Command="{Binding AddOverlayCommand}"/>
+                                    <Button Content="{DynamicResource Overlay.CoverTemplate}" Padding="6,2" Margin="2"
+                                            Command="{Binding AddCoverTemplateCommand}"/>
+                                    <Button Content="{DynamicResource Common.Remove}" Padding="6,2" Margin="2"
+                                            Command="{Binding RemoveOverlayCommand}"/>
                                 </StackPanel>
                             </DockPanel>
-
                             <!-- Overlay list with reorder buttons -->
                             <DockPanel Visibility="{Binding OverlayListVisible, Converter={StaticResource BoolToVis}}">
                                 <StackPanel DockPanel.Dock="Right" Margin="4,0,0,0" VerticalAlignment="Center">
@@ -508,8 +423,7 @@
                                 </StackPanel>
                                 <ListBox ItemsSource="{Binding OverlayItems}"
                                          SelectedIndex="{Binding SelectedOverlayIndex}"
-                                         Height="80"
-                                         HorizontalContentAlignment="Stretch">
+                                         Height="80" HorizontalContentAlignment="Stretch">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
@@ -526,188 +440,99 @@
                                     </ListBox.ItemTemplate>
                                 </ListBox>
                             </DockPanel>
-
-                            <!-- Selected overlay editor -->
                             <Border BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
                                     CornerRadius="3" Padding="8,6" Margin="0,4,0,0"
                                     Visibility="{Binding OverlayEditorVisible, Converter={StaticResource BoolToVis}}">
                                 <StackPanel>
                                     <!-- Text input -->
-                                    <TextBlock Text="{DynamicResource Overlay.Text}" FontSize="11" Margin="0,0,0,2"/>
-                                    <TextBox Text="{Binding OverlayText, UpdateSourceTrigger=PropertyChanged}"
-                                             Padding="4" Height="28"
-                                             VerticalContentAlignment="Center"/>
-
-                                    <!-- 9-grid quick position + fine-tune -->
-                                    <TextBlock Text="{DynamicResource Overlay.Position}" FontSize="11" Margin="0,6,0,2"/>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <!-- 9-grid position buttons -->
-                                        <UniformGrid Grid.Column="0" Rows="3" Columns="3" Width="90" Height="60">
-                                            <Button Content="◸" FontSize="9" Padding="0" Margin="1"
-                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="top-left"
-                                                    ToolTip="{DynamicResource Overlay.Pos.TopLeft}"/>
-                                            <Button Content="▲" FontSize="9" Padding="0" Margin="1"
-                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="top-center"
-                                                    ToolTip="{DynamicResource Overlay.Pos.TopCenter}"/>
-                                            <Button Content="◹" FontSize="9" Padding="0" Margin="1"
-                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="top-right"
-                                                    ToolTip="{DynamicResource Overlay.Pos.TopRight}"/>
-                                            <Button Content="◀" FontSize="9" Padding="0" Margin="1"
-                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="middle-left"
-                                                    ToolTip="{DynamicResource Overlay.Pos.MiddleLeft}"/>
-                                            <Button Content="●" FontSize="9" Padding="0" Margin="1"
-                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="center"
-                                                    ToolTip="{DynamicResource Overlay.Pos.Center}"/>
-                                            <Button Content="▶" FontSize="9" Padding="0" Margin="1"
-                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="middle-right"
-                                                    ToolTip="{DynamicResource Overlay.Pos.MiddleRight}"/>
-                                            <Button Content="◺" FontSize="9" Padding="0" Margin="1"
-                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="bottom-left"
-                                                    ToolTip="{DynamicResource Overlay.Pos.BottomLeft}"/>
-                                            <Button Content="▼" FontSize="9" Padding="0" Margin="1"
-                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="bottom-center"
-                                                    ToolTip="{DynamicResource Overlay.Pos.BottomCenter}"/>
-                                            <Button Content="◿" FontSize="9" Padding="0" Margin="1"
-                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="bottom-right"
-                                                    ToolTip="{DynamicResource Overlay.Pos.BottomRight}"/>
-                                        </UniformGrid>
-
-                                        <!-- Fine-tune X/Y inputs -->
-                                        <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                                <TextBlock Text="X" FontSize="11" VerticalAlignment="Center"
-                                                           Width="14" Margin="0,0,4,0"/>
-                                                <TextBox Text="{Binding OverlayXPercent, UpdateSourceTrigger=PropertyChanged}"
-                                                         Width="50" VerticalContentAlignment="Center" TextAlignment="Center"
-                                                         FontSize="11"/>
-                                                <TextBlock Text="%" FontSize="11" VerticalAlignment="Center" Margin="2,0,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Y" FontSize="11" VerticalAlignment="Center"
-                                                           Width="14" Margin="0,0,4,0"/>
-                                                <TextBox Text="{Binding OverlayYPercent, UpdateSourceTrigger=PropertyChanged}"
-                                                         Width="50" VerticalContentAlignment="Center" TextAlignment="Center"
-                                                         FontSize="11"/>
-                                                <TextBlock Text="%" FontSize="11" VerticalAlignment="Center" Margin="2,0,0,0"/>
-                                            </StackPanel>
+                                    <DockPanel Margin="0,0,0,4">
+                                        <TextBlock Text="{DynamicResource Overlay.Text}" FontSize="11"
+                                                   VerticalAlignment="Top" Margin="0,4,8,0" DockPanel.Dock="Left"/>
+                                        <TextBox Text="{Binding OverlayText, UpdateSourceTrigger=PropertyChanged}"
+                                                 Padding="4" MinHeight="24" MaxHeight="60"
+                                                 TextWrapping="Wrap" AcceptsReturn="True"
+                                                 VerticalScrollBarVisibility="Auto"
+                                                 VerticalContentAlignment="Top"/>
+                                    </DockPanel>
+                                    <!-- All settings in one row -->
+                                    <WrapPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                                            <TextBlock Text="X:" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                            <TextBox Text="{Binding OverlayXPercent, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="60" TextAlignment="Center" VerticalContentAlignment="Center"/>
                                         </StackPanel>
-                                    </Grid>
-
-                                    <!-- Font size slider + value -->
-                                    <Grid Margin="0,6,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{DynamicResource Overlay.FontSize}" FontSize="11"
-                                                   VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                        <Slider Grid.Column="1" Minimum="16" Maximum="120"
-                                                Value="{Binding OverlayFontSizeSlider}"
-                                                TickFrequency="4" IsSnapToTickEnabled="True"
-                                                VerticalAlignment="Center"/>
-                                        <TextBox Grid.Column="2" Width="40" Margin="6,0,0,0"
-                                                 Text="{Binding OverlayFontSize, UpdateSourceTrigger=PropertyChanged}"
-                                                 VerticalContentAlignment="Center" TextAlignment="Center"
-                                                 FontSize="11"/>
-                                    </Grid>
-
-                                    <!-- Opacity slider -->
-                                    <Grid Margin="0,4,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{DynamicResource Overlay.Opacity}" FontSize="11"
-                                                   VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                        <Slider Grid.Column="1" Minimum="0" Maximum="100"
-                                                Value="{Binding OverlayOpacitySlider}"
-                                                TickFrequency="5" IsSnapToTickEnabled="True"
-                                                VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="2" Width="36" Margin="6,0,0,0"
-                                                   Text="{Binding OverlayOpacityDisplay}" FontSize="11"
-                                                   VerticalAlignment="Center" TextAlignment="Center"/>
-                                    </Grid>
-
-                                    <!-- Alignment + Color row -->
-                                    <WrapPanel Margin="0,6,0,0">
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
-                                            <TextBlock Text="{DynamicResource Overlay.Alignment}" FontSize="11" VerticalAlignment="Center"
-                                                       Margin="0,0,4,0"/>
-                                            <ComboBox Width="80"
-                                                      ItemsSource="{Binding AlignmentOptions}"
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                                            <TextBlock Text="Y:" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                            <TextBox Text="{Binding OverlayYPercent, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="60" TextAlignment="Center" VerticalContentAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                                            <TextBlock Text="{DynamicResource Overlay.FontSize}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                            <TextBox Text="{Binding OverlayFontSize, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="60" TextAlignment="Center" VerticalContentAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                                            <TextBlock Text="{DynamicResource Overlay.Alignment}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                            <ComboBox Width="70" ItemsSource="{Binding AlignmentOptions}"
                                                       SelectedIndex="{Binding SelectedAlignmentIndex}"/>
                                         </StackPanel>
-
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
-                                            <TextBlock Text="{DynamicResource Overlay.Color}" FontSize="11" VerticalAlignment="Center"
-                                                       Margin="0,0,4,0"/>
-                                            <ComboBox Width="80"
-                                                      ItemsSource="{Binding OverlayColorOptions}"
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                                            <TextBlock Text="{DynamicResource Overlay.Color}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                            <ComboBox Width="70" ItemsSource="{Binding OverlayColorOptions}"
                                                       SelectedIndex="{Binding SelectedOverlayColorIndex}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                                            <TextBlock Text="{DynamicResource Overlay.Opacity}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                            <Slider Width="80" Minimum="0" Maximum="100"
+                                                    Value="{Binding OverlayOpacitySlider}"
+                                                    TickFrequency="5" IsSnapToTickEnabled="True"
+                                                    VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding OverlayOpacityDisplay}" FontSize="11"
+                                                       VerticalAlignment="Center" Width="36" Margin="4,0,0,0"/>
                                         </StackPanel>
                                     </WrapPanel>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
 
-                        <!-- Row 7: Duration mode -->
-                        <StackPanel Margin="0,0,0,4">
+                        <!-- Duration mode -->
+                        <StackPanel Margin="0,0,0,4" Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
                             <TextBlock Text="{DynamicResource Duration.Title}" Margin="0,0,0,4"/>
                             <StackPanel Orientation="Horizontal">
-                                <RadioButton Content="{DynamicResource Duration.Auto}"
-                                             IsChecked="{Binding IsAutoDuration}"
-                                             VerticalAlignment="Center" Margin="0,0,16,0"
-                                             GroupName="DurationMode"/>
-                                <RadioButton Content="{DynamicResource Duration.Fixed}"
-                                             IsChecked="{Binding IsFixedDuration}"
-                                             VerticalAlignment="Center" Margin="0,0,8,0"
-                                             GroupName="DurationMode"/>
+                                <RadioButton Content="{DynamicResource Duration.Auto}" IsChecked="{Binding IsAutoDuration}"
+                                             VerticalAlignment="Center" Margin="0,0,16,0" GroupName="DurationMode"/>
+                                <RadioButton Content="{DynamicResource Duration.Fixed}" IsChecked="{Binding IsFixedDuration}"
+                                             VerticalAlignment="Center" Margin="0,0,8,0" GroupName="DurationMode"/>
                                 <TextBox Text="{Binding DurationSeconds, UpdateSourceTrigger=PropertyChanged}"
-                                         Width="60"
-                                         VerticalContentAlignment="Center"
-                                         TextAlignment="Center" Margin="0,0,4,0"
-                                         IsEnabled="{Binding IsFixedDuration}"/>
+                                         Width="60" TextAlignment="Center" Margin="0,0,4,0" IsEnabled="{Binding IsFixedDuration}"/>
                                 <TextBlock Text="{DynamicResource Duration.Range}" VerticalAlignment="Center"
                                            Foreground="{DynamicResource TextTertiary}" FontSize="11"/>
                             </StackPanel>
                         </StackPanel>
 
-                        <!-- Row 8: Transition -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                            <TextBlock Text="{DynamicResource Transition.Title}" VerticalAlignment="Center"
-                                       Margin="0,0,8,0"/>
-                            <ComboBox Width="160"
-                                      Margin="0,0,12,0"
+                        <!-- Transition -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                                    Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{DynamicResource Transition.Title}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <ComboBox Width="160" Margin="0,0,12,0"
                                       ItemsSource="{Binding TransitionDisplayNames}"
                                       SelectedIndex="{Binding SelectedTransitionIndex}"
                                       IsEnabled="{Binding CanTransition}"/>
-                            <TextBlock Text="{DynamicResource Transition.Duration}" VerticalAlignment="Center"
-                                       Margin="0,0,4,0"/>
+                            <TextBlock Text="{DynamicResource Transition.Duration}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                             <TextBox Text="{Binding TransitionDuration, UpdateSourceTrigger=PropertyChanged}"
-                                     Width="60"
-                                     VerticalContentAlignment="Center"
-                                     TextAlignment="Center" Margin="0,0,4,0"
-                                     IsEnabled="{Binding CanTransition}"/>
+                                     Width="60" TextAlignment="Center" Margin="0,0,4,0" IsEnabled="{Binding CanTransition}"/>
                             <TextBlock Text="{DynamicResource Transition.Range}" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextTertiary}" FontSize="11"/>
                         </StackPanel>
 
-                        <!-- Row 8: Intro/Outro -->
-                        <StackPanel Margin="0,4,0,4">
+                        <!-- Intro/Outro -->
+                        <StackPanel Margin="0,4,0,4" Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
                             <TextBlock Text="{DynamicResource IntroOutro.Title}" Margin="0,0,0,4"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-
                                 <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,0">
                                     <TextBlock Text="{DynamicResource IntroOutro.Intro}" VerticalAlignment="Center" Margin="0,0,4,0" FontSize="11"/>
                                     <TextBlock Text="{Binding IntroFileName}" VerticalAlignment="Center"
@@ -718,7 +543,6 @@
                                     <Button Content="✕" Padding="4,2" Margin="1"
                                             Command="{Binding ClearIntroCommand}" FontSize="11"/>
                                 </StackPanel>
-
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                                     <TextBlock Text="{DynamicResource IntroOutro.Outro}" VerticalAlignment="Center" Margin="0,0,4,0" FontSize="11"/>
                                     <TextBlock Text="{Binding OutroFileName}" VerticalAlignment="Center"
@@ -732,10 +556,10 @@
                             </Grid>
                         </StackPanel>
 
-                        <!-- Row 9: Watermark -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                            <TextBlock Text="{DynamicResource Watermark.Title}" VerticalAlignment="Center"
-                                       Margin="0,0,4,0"/>
+                        <!-- Watermark -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                                    Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{DynamicResource Watermark.Title}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                             <TextBlock Text="{Binding WatermarkFileName}" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextSecondary}" FontSize="11"
                                        MinWidth="80" MaxWidth="140" TextTrimming="CharacterEllipsis" Margin="0,0,4,0"/>
@@ -743,29 +567,24 @@
                                     Command="{Binding SelectWatermarkCommand}"/>
                             <Button Content="✕" Padding="4,2" Margin="1"
                                     Command="{Binding ClearWatermarkCommand}"/>
-                            <TextBlock Text="{DynamicResource Watermark.Position}" VerticalAlignment="Center"
-                                       Margin="12,0,4,0"/>
-                            <ComboBox Width="80"
-                                      ItemsSource="{Binding WatermarkPositionOptions}"
+                            <TextBlock Text="{DynamicResource Watermark.Position}" VerticalAlignment="Center" Margin="12,0,4,0"/>
+                            <ComboBox Width="80" ItemsSource="{Binding WatermarkPositionOptions}"
                                       SelectedIndex="{Binding SelectedWatermarkPosIndex}"/>
                         </StackPanel>
 
-                        <!-- Row 10: Template save/load -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                            <TextBlock Text="{DynamicResource Template.Title}" VerticalAlignment="Center"
-                                       Margin="0,0,8,0"/>
+                        <!-- Template -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                                    Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{DynamicResource Template.Title}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                             <Button Content="{DynamicResource Common.Save}" Padding="8,3" Margin="2"
-                                    Command="{Binding SaveTemplateCommand}"
-                                    ToolTip="{DynamicResource Template.Save.Tooltip}"/>
+                                    Command="{Binding SaveTemplateCommand}"/>
                             <Button Content="{DynamicResource Common.Load}" Padding="8,3" Margin="2"
-                                    Command="{Binding LoadTemplateCommand}"
-                                    ToolTip="{DynamicResource Template.Load.Tooltip}"/>
+                                    Command="{Binding LoadTemplateCommand}"/>
                             <Button Content="{DynamicResource Template.OpenOutput}" Padding="8,3" Margin="12,2,2,2"
-                                    Command="{Binding OpenOutputFolderCommand}"
-                                    ToolTip="{DynamicResource Template.OpenOutput.Tooltip}"/>
+                                    Command="{Binding OpenOutputFolderCommand}"/>
                         </StackPanel>
 
-                        <!-- Row 11: Info label -->
+                        <!-- Info label -->
                         <TextBlock Text="{DynamicResource Duration.Info}"
                                    TextWrapping="Wrap" Foreground="{DynamicResource TextTertiary}"
                                    FontSize="11" Margin="0,0,0,0"/>
@@ -784,63 +603,50 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: Export settings controls -->
                 <WrapPanel Grid.Column="0" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Margin="0,2,12,2">
-                        <TextBlock Text="{DynamicResource Export.Speaker}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                        <ComboBox MinWidth="200"
-                                  ItemsSource="{Binding ExportSpeakers}"
-                                  SelectedIndex="{Binding SelectedExportSpeakerIndex}"
-                                  DisplayMemberPath="DisplayName"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,2,12,2">
                         <TextBlock Text="{DynamicResource Export.Resolution}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                        <ComboBox Width="180"
-                                  SelectedIndex="{Binding SelectedResolutionIndex}">
+                        <ComboBox Width="180" SelectedIndex="{Binding SelectedResolutionIndex}">
                             <ComboBoxItem Content="{DynamicResource Export.Res.Portrait}" Tag="1080x1920"/>
                             <ComboBoxItem Content="{DynamicResource Export.Res.Landscape}" Tag="1920x1080"/>
                         </ComboBox>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,2,12,2">
+                    <!-- FPS: Detail mode only -->
+                    <StackPanel Orientation="Horizontal" Margin="0,2,12,2"
+                                Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="FPS:" VerticalAlignment="Center" Margin="0,0,4,0"/>
                         <TextBox Text="{Binding FpsText, UpdateSourceTrigger=PropertyChanged}"
-                                 Width="50"
-                                 VerticalContentAlignment="Center" TextAlignment="Center"/>
+                                 Width="60" TextAlignment="Center"/>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,2,12,2">
-                        <TextBlock Text="{Binding BgmStatusText}"
-                                   VerticalAlignment="Center"
-                                   Foreground="{DynamicResource TextTertiary}"
-                                   Margin="0,0,6,0"/>
-                        <Button Content="{DynamicResource Export.BGM.Settings}"
-                                Padding="8,3"
+                    <!-- BGM: Detail mode only -->
+                    <StackPanel Orientation="Horizontal" Margin="0,2,12,2"
+                                Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding BgmStatusText}" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextTertiary}" Margin="0,0,6,0"/>
+                        <Button Content="{DynamicResource Export.BGM.Settings}" Padding="8,3"
                                 Command="{Binding BgmSettingsCommand}"/>
                     </StackPanel>
                 </WrapPanel>
 
-                <!-- Right: Export button -->
                 <Button Grid.Column="1"
                         Content="{DynamicResource Export.Button}"
                         Width="150" Height="44"
                         FontSize="12" FontWeight="Bold"
                         Style="{DynamicResource PrimaryButton}"
-                        Command="{Binding ExportVideoCommand}"
-                        ToolTip="{DynamicResource Export.Button.Tooltip}"/>
+                        Command="{Binding ExportVideoCommand}"/>
             </Grid>
         </GroupBox>
 
         <!-- ================================================================ -->
-        <!-- E) ProgressBar + Cancel                                           -->
+        <!-- E) ProgressBar                                                    -->
         <!-- ================================================================ -->
         <DockPanel Grid.Row="4" Margin="4,0,4,2"
                    Visibility="{Binding ExportProgressVisible, Converter={StaticResource BoolToVis}}">
             <Button DockPanel.Dock="Right" Content="{DynamicResource Export.Cancel}"
                     Padding="12,2" Margin="4,0,0,0"
-                    Command="{Binding CancelExportCommand}"
-                    ToolTip="{DynamicResource Export.Cancel.Tooltip}"/>
+                    Command="{Binding CancelExportCommand}"/>
             <ProgressBar Height="6" Minimum="0" Maximum="100"
                          Value="{Binding ExportProgressValue, Mode=OneWay}"/>
         </DockPanel>
@@ -852,19 +658,13 @@
             <TextBlock Text="{DynamicResource Export.Log}" DockPanel.Dock="Top" FontSize="11"
                        Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,2"/>
             <TextBox x:Name="LogTextBox" IsReadOnly="True"
-                     VerticalScrollBarVisibility="Auto"
-                     HorizontalScrollBarVisibility="Auto"
-                     TextWrapping="NoWrap" FontSize="11"
-                     FontFamily="Consolas, MS Gothic"
+                     VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                     TextWrapping="NoWrap" FontSize="11" FontFamily="Consolas, MS Gothic"
                      Background="{DynamicResource BgSecondary}"/>
         </DockPanel>
 
-        <!-- Hidden MediaElement for audio preview playback -->
-        <MediaElement x:Name="AudioPlayer"
-                      Grid.Row="0"
-                      LoadedBehavior="Manual"
-                      UnloadedBehavior="Stop"
-                      Visibility="Collapsed"
-                      MediaEnded="AudioPlayer_MediaEnded"/>
+        <MediaElement x:Name="AudioPlayer" Grid.Row="0"
+                      LoadedBehavior="Manual" UnloadedBehavior="Stop"
+                      Visibility="Collapsed" MediaEnded="AudioPlayer_MediaEnded"/>
     </Grid>
 </Window>
