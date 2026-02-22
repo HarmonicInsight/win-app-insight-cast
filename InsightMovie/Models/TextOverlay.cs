@@ -56,6 +56,9 @@ namespace InsightMovie.Models
         [JsonPropertyName("shadowOffset")]
         public int[] ShadowOffset { get; set; } = new[] { 2, 2 };
 
+        [JsonPropertyName("opacity")]
+        public double Opacity { get; set; } = 1.0;
+
         public TextOverlay()
         {
         }

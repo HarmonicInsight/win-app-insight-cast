@@ -1,3 +1,4 @@
+using System.Windows.Media;
 using InsightMovie.Infrastructure;
 using InsightMovie.Models;
 using InsightMovie.Services;
@@ -7,6 +8,7 @@ namespace InsightMovie.ViewModels
     public class OverlayListItem : ViewModelBase
     {
         private string _displayLabel = string.Empty;
+        private Color _colorIndicator = Colors.White;
 
         public TextOverlay Overlay { get; }
 
@@ -14,6 +16,12 @@ namespace InsightMovie.ViewModels
         {
             get => _displayLabel;
             set => SetProperty(ref _displayLabel, value);
+        }
+
+        public Color ColorIndicator
+        {
+            get => _colorIndicator;
+            set => SetProperty(ref _colorIndicator, value);
         }
 
         public OverlayListItem(TextOverlay overlay, int index)
@@ -28,7 +36,16 @@ namespace InsightMovie.ViewModels
             if (text.Length > 15)
                 text = text[..15] + "...";
 
-            DisplayLabel = $"[{index + 1}] {text}  ({Overlay.XPercent:F0}%, {Overlay.YPercent:F0}%)";
+            DisplayLabel = $"[{index + 1}] {text}";
+
+            // Update color indicator from overlay text color
+            if (Overlay.TextColor is { Length: >= 3 })
+            {
+                ColorIndicator = Color.FromRgb(
+                    (byte)Overlay.TextColor[0],
+                    (byte)Overlay.TextColor[1],
+                    (byte)Overlay.TextColor[2]);
+            }
         }
     }
 }

@@ -95,6 +95,8 @@ namespace InsightMovie.ViewModels
         private string _overlayXPercent = "50.0";
         private string _overlayYPercent = "50.0";
         private string _overlayFontSize = "64";
+        private double _overlayFontSizeSlider = 64;
+        private double _overlayOpacitySlider = 100;
         private int _selectedAlignmentIndex;
         private int _selectedOverlayColorIndex;
         private bool _isLoadingOverlay;
@@ -107,6 +109,7 @@ namespace InsightMovie.ViewModels
         public ObservableCollection<SpeakerItem> ExportSpeakers { get; } = new();
         public ObservableCollection<SpeakerItem> SceneSpeakers { get; } = new();
         public ObservableCollection<OverlayListItem> OverlayItems { get; } = new();
+        public ObservableCollection<OverlayPreviewItem> OverlayPreviewItems { get; } = new();
 
         #endregion
 
@@ -380,6 +383,33 @@ namespace InsightMovie.ViewModels
             }
         }
 
+        public double OverlayFontSizeSlider
+        {
+            get => _overlayFontSizeSlider;
+            set
+            {
+                if (SetProperty(ref _overlayFontSizeSlider, value))
+                {
+                    OverlayFontSize = ((int)value).ToString();
+                }
+            }
+        }
+
+        public double OverlayOpacitySlider
+        {
+            get => _overlayOpacitySlider;
+            set
+            {
+                if (SetProperty(ref _overlayOpacitySlider, value))
+                {
+                    OnPropertyChanged(nameof(OverlayOpacityDisplay));
+                    OnOverlayOpacityChanged();
+                }
+            }
+        }
+
+        public string OverlayOpacityDisplay => $"{(int)_overlayOpacitySlider}%";
+
         public bool OverlayListVisible => OverlayItems.Count > 0;
         public bool OverlayEditorVisible => _selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count;
 
@@ -522,6 +552,9 @@ namespace InsightMovie.ViewModels
         public ICommand AddOverlayCommand { get; }
         public ICommand RemoveOverlayCommand { get; }
         public ICommand AddCoverTemplateCommand { get; }
+        public ICommand MoveOverlayUpCommand { get; }
+        public ICommand MoveOverlayDownCommand { get; }
+        public ICommand SetOverlayPositionCommand { get; }
         public ICommand SelectIntroCommand { get; }
         public ICommand ClearIntroCommand { get; }
         public ICommand SelectOutroCommand { get; }
@@ -582,6 +615,9 @@ namespace InsightMovie.ViewModels
             AddOverlayCommand = new RelayCommand(AddOverlay);
             RemoveOverlayCommand = new RelayCommand(RemoveOverlay);
             AddCoverTemplateCommand = new RelayCommand(AddCoverTemplate);
+            MoveOverlayUpCommand = new RelayCommand(MoveOverlayUp);
+            MoveOverlayDownCommand = new RelayCommand(MoveOverlayDown);
+            SetOverlayPositionCommand = new RelayCommand(p => SetOverlayPosition(p as string));
             SelectIntroCommand = new RelayCommand(SelectIntro);
             ClearIntroCommand = new RelayCommand(ClearIntro);
             SelectOutroCommand = new RelayCommand(SelectOutro);
@@ -1059,6 +1095,19 @@ namespace InsightMovie.ViewModels
 
             OnPropertyChanged(nameof(OverlayListVisible));
             OnPropertyChanged(nameof(OverlayEditorVisible));
+            RefreshOverlayPreview();
+        }
+
+        private void RefreshOverlayPreview()
+        {
+            OverlayPreviewItems.Clear();
+            if (_currentScene == null) return;
+
+            foreach (var overlay in _currentScene.TextOverlays)
+            {
+                if (overlay.HasText)
+                    OverlayPreviewItems.Add(new OverlayPreviewItem(overlay));
+            }
         }
 
         private void AddOverlay()
@@ -1093,6 +1142,15 @@ namespace InsightMovie.ViewModels
         {
             if (_currentScene == null) return;
 
+            // Confirm if overlays already exist
+            if (_currentScene.TextOverlays.Count > 0)
+            {
+                var result = _dialogService?.ShowConfirmation(
+                    LocalizationService.GetString("VM.CoverTemplate.ConfirmOverwrite"),
+                    LocalizationService.GetString("VM.CoverTemplate.ConfirmTitle"));
+                if (result != true) return;
+            }
+
             _currentScene.TextOverlays.Clear();
             _currentScene.TextOverlays.Add(TextOverlay.CreateTitle());
             _currentScene.TextOverlays.Add(TextOverlay.CreateSubheading());
@@ -1100,6 +1158,62 @@ namespace InsightMovie.ViewModels
             RefreshOverlayList();
             SelectedOverlayIndex = 0;
             _logger.Log(LocalizationService.GetString("VM.Template.CoverApplied"));
+        }
+
+        private void MoveOverlayUp()
+        {
+            if (_currentScene == null || _selectedOverlayIndex <= 0) return;
+
+            var idx = _selectedOverlayIndex;
+            var overlays = _currentScene.TextOverlays;
+            (overlays[idx - 1], overlays[idx]) = (overlays[idx], overlays[idx - 1]);
+            RefreshOverlayList();
+            SelectedOverlayIndex = idx - 1;
+        }
+
+        private void MoveOverlayDown()
+        {
+            if (_currentScene == null || _selectedOverlayIndex < 0 ||
+                _selectedOverlayIndex >= _currentScene.TextOverlays.Count - 1)
+                return;
+
+            var idx = _selectedOverlayIndex;
+            var overlays = _currentScene.TextOverlays;
+            (overlays[idx], overlays[idx + 1]) = (overlays[idx + 1], overlays[idx]);
+            RefreshOverlayList();
+            SelectedOverlayIndex = idx + 1;
+        }
+
+        private void SetOverlayPosition(string? position)
+        {
+            if (_isLoadingOverlay || position == null) return;
+            var overlay = GetSelectedOverlay();
+            if (overlay == null) return;
+
+            var (x, y) = position switch
+            {
+                "top-left"      => (15.0, 15.0),
+                "top-center"    => (50.0, 15.0),
+                "top-right"     => (85.0, 15.0),
+                "middle-left"   => (15.0, 50.0),
+                "center"        => (50.0, 50.0),
+                "middle-right"  => (85.0, 50.0),
+                "bottom-left"   => (15.0, 85.0),
+                "bottom-center" => (50.0, 85.0),
+                "bottom-right"  => (85.0, 85.0),
+                _ => (50.0, 50.0)
+            };
+
+            _isLoadingOverlay = true;
+            overlay.XPercent = x;
+            overlay.YPercent = y;
+            OverlayXPercent = x.ToString("F1", CultureInfo.InvariantCulture);
+            OverlayYPercent = y.ToString("F1", CultureInfo.InvariantCulture);
+            _isLoadingOverlay = false;
+
+            if (_selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count)
+                OverlayItems[_selectedOverlayIndex].UpdateLabel(_selectedOverlayIndex);
+            RefreshOverlayPreview();
         }
 
         private void OnOverlaySelected()
@@ -1117,6 +1231,11 @@ namespace InsightMovie.ViewModels
             OverlayXPercent = overlay.XPercent.ToString("F1", CultureInfo.InvariantCulture);
             OverlayYPercent = overlay.YPercent.ToString("F1", CultureInfo.InvariantCulture);
             OverlayFontSize = overlay.FontSize.ToString();
+            _overlayFontSizeSlider = overlay.FontSize;
+            OnPropertyChanged(nameof(OverlayFontSizeSlider));
+            _overlayOpacitySlider = overlay.Opacity * 100.0;
+            OnPropertyChanged(nameof(OverlayOpacitySlider));
+            OnPropertyChanged(nameof(OverlayOpacityDisplay));
 
             SelectedAlignmentIndex = overlay.Alignment switch
             {
@@ -1160,6 +1279,7 @@ namespace InsightMovie.ViewModels
 
             if (_selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count)
                 OverlayItems[_selectedOverlayIndex].UpdateLabel(_selectedOverlayIndex);
+            RefreshOverlayPreview();
         }
 
         private void OnOverlayPositionChanged()
@@ -1175,6 +1295,8 @@ namespace InsightMovie.ViewModels
             if (double.TryParse(_overlayYPercent, NumberStyles.Float,
                     CultureInfo.InvariantCulture, out var y))
                 overlay.YPercent = Math.Clamp(y, 0, 100);
+
+            RefreshOverlayPreview();
         }
 
         private void OnOverlayFontSizeChanged()
@@ -1184,7 +1306,22 @@ namespace InsightMovie.ViewModels
             if (overlay == null) return;
 
             if (int.TryParse(_overlayFontSize, out var size))
+            {
                 overlay.FontSize = Math.Clamp(size, 8, 200);
+                _overlayFontSizeSlider = overlay.FontSize;
+                OnPropertyChanged(nameof(OverlayFontSizeSlider));
+                RefreshOverlayPreview();
+            }
+        }
+
+        private void OnOverlayOpacityChanged()
+        {
+            if (_isLoadingOverlay) return;
+            var overlay = GetSelectedOverlay();
+            if (overlay == null) return;
+
+            overlay.Opacity = Math.Clamp(_overlayOpacitySlider / 100.0, 0.0, 1.0);
+            RefreshOverlayPreview();
         }
 
         private void OnOverlayAlignmentChanged()
@@ -1199,6 +1336,7 @@ namespace InsightMovie.ViewModels
                 2 => Models.TextAlignment.Right,
                 _ => Models.TextAlignment.Center
             };
+            RefreshOverlayPreview();
         }
 
         private void OnOverlayColorChanged()
@@ -1208,7 +1346,12 @@ namespace InsightMovie.ViewModels
             if (overlay == null) return;
 
             if (_selectedOverlayColorIndex >= 0 && _selectedOverlayColorIndex < OverlayColorValues.Length)
+            {
                 overlay.TextColor = (int[])OverlayColorValues[_selectedOverlayColorIndex].Clone();
+                if (_selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count)
+                    OverlayItems[_selectedOverlayIndex].UpdateLabel(_selectedOverlayIndex);
+                RefreshOverlayPreview();
+            }
         }
 
         #endregion
