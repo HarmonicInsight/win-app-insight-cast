@@ -28,8 +28,6 @@
     <sys:String x:Key="Window.Maximize">最大化</sys:String>
     <sys:String x:Key="Window.Close">閉じる</sys:String>
     <sys:String x:Key="Window.Restore">元に戻す</sys:String>
-<!-- Mode Toggle -->    <sys:String x:Key="Mode.Simple">シンプル</sys:String>    <sys:String x:Key="Mode.Detail">詳細</sys:String>
-<!-- Preview -->    <sys:String x:Key="Preview.WindowTitle">プレビュー</sys:String>    <sys:String x:Key="Preview.ClickToEnlarge">クリックで拡大</sys:String>
 
     <!-- Language Switcher -->
     <sys:String x:Key="Lang.SwitchTo">English</sys:String>
@@ -108,13 +106,26 @@
     <sys:String x:Key="Overlay.CoverTemplate">表紙テンプレ</sys:String>
     <sys:String x:Key="Overlay.CoverTemplate.Tooltip">表紙用のタイトル＋サブタイトルを追加</sys:String>
     <sys:String x:Key="Overlay.Remove.Tooltip">選択中のオーバーレイを削除</sys:String>
+    <sys:String x:Key="Overlay.MoveUp.Tooltip">上に移動</sys:String>
+    <sys:String x:Key="Overlay.MoveDown.Tooltip">下に移動</sys:String>
     <sys:String x:Key="Overlay.Text">テキスト:</sys:String>
+    <sys:String x:Key="Overlay.Position">配置:</sys:String>
     <sys:String x:Key="Overlay.XPosition">X位置 (%):</sys:String>
     <sys:String x:Key="Overlay.YPosition">Y位置 (%):</sys:String>
     <sys:String x:Key="Overlay.FontSize">サイズ:</sys:String>
+    <sys:String x:Key="Overlay.Opacity">不透明度:</sys:String>
     <sys:String x:Key="Overlay.Alignment">揃え:</sys:String>
     <sys:String x:Key="Overlay.Color">色:</sys:String>
     <sys:String x:Key="Overlay.DefaultText">テキスト</sys:String>
+    <sys:String x:Key="Overlay.Pos.TopLeft">左上</sys:String>
+    <sys:String x:Key="Overlay.Pos.TopCenter">上中央</sys:String>
+    <sys:String x:Key="Overlay.Pos.TopRight">右上</sys:String>
+    <sys:String x:Key="Overlay.Pos.MiddleLeft">左中央</sys:String>
+    <sys:String x:Key="Overlay.Pos.Center">中央</sys:String>
+    <sys:String x:Key="Overlay.Pos.MiddleRight">右中央</sys:String>
+    <sys:String x:Key="Overlay.Pos.BottomLeft">左下</sys:String>
+    <sys:String x:Key="Overlay.Pos.BottomCenter">下中央</sys:String>
+    <sys:String x:Key="Overlay.Pos.BottomRight">右下</sys:String>
 
     <!-- Duration -->
     <sys:String x:Key="Duration.Title">シーンの長さ:</sys:String>
@@ -347,6 +358,8 @@
     <sys:String x:Key="VM.Style.Changed">字幕スタイルを「{0}」に変更しました。</sys:String>
     <sys:String x:Key="VM.Overlay.Added">テキストオーバーレイを追加しました。</sys:String>
     <sys:String x:Key="VM.Overlay.Removed">テキストオーバーレイを削除しました。</sys:String>
+    <sys:String x:Key="VM.CoverTemplate.ConfirmOverwrite">既存のオーバーレイが削除されます。表紙テンプレートを適用しますか？</sys:String>
+    <sys:String x:Key="VM.CoverTemplate.ConfirmTitle">表紙テンプレート</sys:String>
     <sys:String x:Key="VM.Cover.Applied">表紙テンプレートを適用しました。</sys:String>
     <sys:String x:Key="VM.Audio.NoText">ナレーションテキストを入力してください。</sys:String>
     <sys:String x:Key="VM.Audio.NoText.Title">音声プレビュー</sys:String>

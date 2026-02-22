@@ -28,8 +28,6 @@
     <sys:String x:Key="Window.Maximize">Maximize</sys:String>
     <sys:String x:Key="Window.Close">Close</sys:String>
     <sys:String x:Key="Window.Restore">Restore</sys:String>
-<!-- Mode Toggle -->    <sys:String x:Key="Mode.Simple">Simple</sys:String>    <sys:String x:Key="Mode.Detail">Detail</sys:String>
-<!-- Preview -->    <sys:String x:Key="Preview.WindowTitle">Preview</sys:String>    <sys:String x:Key="Preview.ClickToEnlarge">Click to enlarge</sys:String>
 
     <!-- Language Switcher -->
     <sys:String x:Key="Lang.SwitchTo">日本語</sys:String>
@@ -108,13 +106,26 @@
     <sys:String x:Key="Overlay.CoverTemplate">Cover Template</sys:String>
     <sys:String x:Key="Overlay.CoverTemplate.Tooltip">Add title + subtitle for cover page</sys:String>
     <sys:String x:Key="Overlay.Remove.Tooltip">Remove selected overlay</sys:String>
+    <sys:String x:Key="Overlay.MoveUp.Tooltip">Move up</sys:String>
+    <sys:String x:Key="Overlay.MoveDown.Tooltip">Move down</sys:String>
     <sys:String x:Key="Overlay.Text">Text:</sys:String>
+    <sys:String x:Key="Overlay.Position">Position:</sys:String>
     <sys:String x:Key="Overlay.XPosition">X Position (%):</sys:String>
     <sys:String x:Key="Overlay.YPosition">Y Position (%):</sys:String>
     <sys:String x:Key="Overlay.FontSize">Size:</sys:String>
+    <sys:String x:Key="Overlay.Opacity">Opacity:</sys:String>
     <sys:String x:Key="Overlay.Alignment">Align:</sys:String>
     <sys:String x:Key="Overlay.Color">Color:</sys:String>
     <sys:String x:Key="Overlay.DefaultText">Text</sys:String>
+    <sys:String x:Key="Overlay.Pos.TopLeft">Top Left</sys:String>
+    <sys:String x:Key="Overlay.Pos.TopCenter">Top Center</sys:String>
+    <sys:String x:Key="Overlay.Pos.TopRight">Top Right</sys:String>
+    <sys:String x:Key="Overlay.Pos.MiddleLeft">Middle Left</sys:String>
+    <sys:String x:Key="Overlay.Pos.Center">Center</sys:String>
+    <sys:String x:Key="Overlay.Pos.MiddleRight">Middle Right</sys:String>
+    <sys:String x:Key="Overlay.Pos.BottomLeft">Bottom Left</sys:String>
+    <sys:String x:Key="Overlay.Pos.BottomCenter">Bottom Center</sys:String>
+    <sys:String x:Key="Overlay.Pos.BottomRight">Bottom Right</sys:String>
 
     <!-- Duration -->
     <sys:String x:Key="Duration.Title">Scene Duration:</sys:String>
@@ -347,6 +358,8 @@
     <sys:String x:Key="VM.Style.Changed">Changed subtitle style to "{0}".</sys:String>
     <sys:String x:Key="VM.Overlay.Added">Added text overlay.</sys:String>
     <sys:String x:Key="VM.Overlay.Removed">Removed text overlay.</sys:String>
+    <sys:String x:Key="VM.CoverTemplate.ConfirmOverwrite">Existing overlays will be removed. Apply cover template?</sys:String>
+    <sys:String x:Key="VM.CoverTemplate.ConfirmTitle">Cover Template</sys:String>
     <sys:String x:Key="VM.Cover.Applied">Applied cover template.</sys:String>
     <sys:String x:Key="VM.Audio.NoText">Please enter narration text.</sys:String>
     <sys:String x:Key="VM.Audio.NoText.Title">Audio Preview</sys:String>
