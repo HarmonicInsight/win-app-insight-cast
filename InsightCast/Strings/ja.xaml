@@ -92,7 +92,7 @@
     <sys:String x:Key="Scene.Narration.Placeholder">ここに話をさせる内容を入力してください。</sys:String>
     <sys:String x:Key="Scene.Speaker">話者:</sys:String>
     <sys:String x:Key="Scene.KeepAudio">動画音声を残す</sys:String>
-    <sys:String x:Key="Scene.PreviewAudio">▶音声再生</sys:String>
+    <sys:String x:Key="Scene.PreviewAudio">▶試聴</sys:String>
     <sys:String x:Key="Scene.PreviewScene">▶シーンプレビュー</sys:String>
     <sys:String x:Key="Scene.PreviewScene.Tooltip">現在のシーンを動画プレビュー生成</sys:String>
     <sys:String x:Key="Scene.Stop">■停止</sys:String>
@@ -356,7 +356,7 @@
     <sys:String x:Key="VM.Audio.NoText">ナレーションテキストを入力してください。</sys:String>
     <sys:String x:Key="VM.Audio.NoText.Title">音声プレビュー</sys:String>
     <sys:String x:Key="VM.Audio.Generating">音声を生成中...</sys:String>
-    <sys:String x:Key="VM.Audio.Playing">音声再生中</sys:String>
+    <sys:String x:Key="VM.Audio.Playing">試聴中</sys:String>
     <sys:String x:Key="VM.Audio.Error">音声の生成に失敗しました:\n{0}</sys:String>
     <sys:String x:Key="VM.ScenePreview.NoScene">シーンを選択してください。</sys:String>
     <sys:String x:Key="VM.ScenePreview.NoScene.Title">シーンプレビュー</sys:String>
@@ -526,7 +526,7 @@
     <sys:String x:Key="VM.Preview.Generating">音声を生成中...</sys:String>
     <sys:String x:Key="VM.Preview.CacheLoaded">キャッシュから読み込みました</sys:String>
     <sys:String x:Key="VM.Preview.Generated">音声生成完了</sys:String>
-    <sys:String x:Key="VM.Preview.Playing">音声再生中</sys:String>
+    <sys:String x:Key="VM.Preview.Playing">試聴中</sys:String>
     <sys:String x:Key="VM.Preview.Error">音声プレビューエラー</sys:String>
     <sys:String x:Key="VM.Preview.Failed">音声の生成に失敗しました:\n{0}</sys:String>
 
@@ -602,7 +602,7 @@
   1. 左パネルの「＋追加」でシーンを追加
   2.「選択」ボタンで画像・動画を設定
   3. ナレーション欄にテキストを入力
-  4.「▶音声再生」でプレビュー確認
+  4.「▶試聴」でプレビュー確認
   5. 字幕テキスト・スタイルを設定
   6.「動画を書き出し」で生成
 
