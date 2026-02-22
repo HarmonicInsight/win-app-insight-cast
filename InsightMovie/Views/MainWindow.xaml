@@ -337,7 +337,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Preview container -->
+                            <!-- Preview container with overlay preview -->
                             <Border Grid.Column="0" Width="120" Height="180"
                                     Background="#1a1a2e" CornerRadius="2"
                                     Margin="0,0,8,0" ClipToBounds="True">
@@ -345,6 +345,38 @@
                                     <Image x:Name="PreviewImage" Stretch="Uniform"
                                            VerticalAlignment="Center"
                                            HorizontalAlignment="Center"/>
+                                    <!-- Text overlay preview layer -->
+                                    <ItemsControl x:Name="OverlayPreviewLayer"
+                                                  ItemsSource="{Binding OverlayPreviewItems}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <Canvas/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemContainerStyle>
+                                            <Style TargetType="ContentPresenter">
+                                                <Setter Property="Canvas.Left" Value="{Binding CanvasLeft}"/>
+                                                <Setter Property="Canvas.Top" Value="{Binding CanvasTop}"/>
+                                            </Style>
+                                        </ItemsControl.ItemContainerStyle>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Text}" FontSize="{Binding PreviewFontSize}"
+                                                           FontWeight="{Binding FontWeightValue}"
+                                                           Opacity="{Binding Opacity}"
+                                                           MaxWidth="112" TextWrapping="Wrap"
+                                                           TextAlignment="{Binding TextAlignmentValue}">
+                                                    <TextBlock.Foreground>
+                                                        <SolidColorBrush Color="{Binding TextColorValue}"/>
+                                                    </TextBlock.Foreground>
+                                                    <TextBlock.Effect>
+                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="2"
+                                                                          Color="Black" Opacity="0.8"/>
+                                                    </TextBlock.Effect>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                                     <!-- Subtitle overlay at bottom -->
                                     <Border VerticalAlignment="Bottom"
                                             Background="#80000000" Padding="4,2">
@@ -464,59 +496,147 @@
                                 </StackPanel>
                             </DockPanel>
 
-                            <!-- Overlay list -->
-                            <ListBox ItemsSource="{Binding OverlayItems}"
-                                     SelectedIndex="{Binding SelectedOverlayIndex}"
-                                     Height="60"
-                                     HorizontalContentAlignment="Stretch"
-                                     Visibility="{Binding OverlayListVisible, Converter={StaticResource BoolToVis}}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding DisplayLabel}" FontSize="11"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                            <!-- Overlay list with reorder buttons -->
+                            <DockPanel Visibility="{Binding OverlayListVisible, Converter={StaticResource BoolToVis}}">
+                                <StackPanel DockPanel.Dock="Right" Margin="4,0,0,0" VerticalAlignment="Center">
+                                    <Button Content="▲" Padding="4,2" Margin="0,0,0,2" FontSize="10"
+                                            Command="{Binding MoveOverlayUpCommand}"
+                                            ToolTip="{DynamicResource Overlay.MoveUp.Tooltip}"/>
+                                    <Button Content="▼" Padding="4,2" FontSize="10"
+                                            Command="{Binding MoveOverlayDownCommand}"
+                                            ToolTip="{DynamicResource Overlay.MoveDown.Tooltip}"/>
+                                </StackPanel>
+                                <ListBox ItemsSource="{Binding OverlayItems}"
+                                         SelectedIndex="{Binding SelectedOverlayIndex}"
+                                         Height="80"
+                                         HorizontalContentAlignment="Stretch">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Border Width="6" Height="14" CornerRadius="1" Margin="0,0,6,0"
+                                                        VerticalAlignment="Center">
+                                                    <Border.Background>
+                                                        <SolidColorBrush Color="{Binding ColorIndicator}"/>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Text="{Binding DisplayLabel}" FontSize="11"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </DockPanel>
 
                             <!-- Selected overlay editor -->
                             <Border BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
                                     CornerRadius="3" Padding="8,6" Margin="0,4,0,0"
                                     Visibility="{Binding OverlayEditorVisible, Converter={StaticResource BoolToVis}}">
                                 <StackPanel>
+                                    <!-- Text input -->
                                     <TextBlock Text="{DynamicResource Overlay.Text}" FontSize="11" Margin="0,0,0,2"/>
                                     <TextBox Text="{Binding OverlayText, UpdateSourceTrigger=PropertyChanged}"
                                              Padding="4" Height="28"
                                              VerticalContentAlignment="Center"/>
 
-                                    <Grid Margin="0,6,0,0">
+                                    <!-- 9-grid quick position + fine-tune -->
+                                    <TextBlock Text="{DynamicResource Overlay.Position}" FontSize="11" Margin="0,6,0,2"/>
+                                    <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <StackPanel Grid.Column="0" Margin="0,0,4,0">
-                                            <TextBlock Text="{DynamicResource Overlay.XPosition}" FontSize="11" Margin="0,0,0,2"/>
-                                            <TextBox Text="{Binding OverlayXPercent, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="80" HorizontalAlignment="Left"
-                                                     VerticalContentAlignment="Center" TextAlignment="Center"/>
-                                        </StackPanel>
+                                        <!-- 9-grid position buttons -->
+                                        <UniformGrid Grid.Column="0" Rows="3" Columns="3" Width="90" Height="60">
+                                            <Button Content="◸" FontSize="9" Padding="0" Margin="1"
+                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="top-left"
+                                                    ToolTip="{DynamicResource Overlay.Pos.TopLeft}"/>
+                                            <Button Content="▲" FontSize="9" Padding="0" Margin="1"
+                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="top-center"
+                                                    ToolTip="{DynamicResource Overlay.Pos.TopCenter}"/>
+                                            <Button Content="◹" FontSize="9" Padding="0" Margin="1"
+                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="top-right"
+                                                    ToolTip="{DynamicResource Overlay.Pos.TopRight}"/>
+                                            <Button Content="◀" FontSize="9" Padding="0" Margin="1"
+                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="middle-left"
+                                                    ToolTip="{DynamicResource Overlay.Pos.MiddleLeft}"/>
+                                            <Button Content="●" FontSize="9" Padding="0" Margin="1"
+                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="center"
+                                                    ToolTip="{DynamicResource Overlay.Pos.Center}"/>
+                                            <Button Content="▶" FontSize="9" Padding="0" Margin="1"
+                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="middle-right"
+                                                    ToolTip="{DynamicResource Overlay.Pos.MiddleRight}"/>
+                                            <Button Content="◺" FontSize="9" Padding="0" Margin="1"
+                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="bottom-left"
+                                                    ToolTip="{DynamicResource Overlay.Pos.BottomLeft}"/>
+                                            <Button Content="▼" FontSize="9" Padding="0" Margin="1"
+                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="bottom-center"
+                                                    ToolTip="{DynamicResource Overlay.Pos.BottomCenter}"/>
+                                            <Button Content="◿" FontSize="9" Padding="0" Margin="1"
+                                                    Command="{Binding SetOverlayPositionCommand}" CommandParameter="bottom-right"
+                                                    ToolTip="{DynamicResource Overlay.Pos.BottomRight}"/>
+                                        </UniformGrid>
 
-                                        <StackPanel Grid.Column="1">
-                                            <TextBlock Text="{DynamicResource Overlay.YPosition}" FontSize="11" Margin="0,0,0,2"/>
-                                            <TextBox Text="{Binding OverlayYPercent, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="80" HorizontalAlignment="Left"
-                                                     VerticalContentAlignment="Center" TextAlignment="Center"/>
+                                        <!-- Fine-tune X/Y inputs -->
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                                <TextBlock Text="X" FontSize="11" VerticalAlignment="Center"
+                                                           Width="14" Margin="0,0,4,0"/>
+                                                <TextBox Text="{Binding OverlayXPercent, UpdateSourceTrigger=PropertyChanged}"
+                                                         Width="50" VerticalContentAlignment="Center" TextAlignment="Center"
+                                                         FontSize="11"/>
+                                                <TextBlock Text="%" FontSize="11" VerticalAlignment="Center" Margin="2,0,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Y" FontSize="11" VerticalAlignment="Center"
+                                                           Width="14" Margin="0,0,4,0"/>
+                                                <TextBox Text="{Binding OverlayYPercent, UpdateSourceTrigger=PropertyChanged}"
+                                                         Width="50" VerticalContentAlignment="Center" TextAlignment="Center"
+                                                         FontSize="11"/>
+                                                <TextBlock Text="%" FontSize="11" VerticalAlignment="Center" Margin="2,0,0,0"/>
+                                            </StackPanel>
                                         </StackPanel>
                                     </Grid>
 
-                                    <WrapPanel Margin="0,6,0,0">
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
-                                            <TextBlock Text="{DynamicResource Overlay.FontSize}" FontSize="11" VerticalAlignment="Center"
-                                                       Margin="0,0,4,0"/>
-                                            <TextBox Text="{Binding OverlayFontSize, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="50"
-                                                     VerticalContentAlignment="Center" TextAlignment="Center"/>
-                                        </StackPanel>
+                                    <!-- Font size slider + value -->
+                                    <Grid Margin="0,6,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{DynamicResource Overlay.FontSize}" FontSize="11"
+                                                   VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <Slider Grid.Column="1" Minimum="16" Maximum="120"
+                                                Value="{Binding OverlayFontSizeSlider}"
+                                                TickFrequency="4" IsSnapToTickEnabled="True"
+                                                VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2" Width="40" Margin="6,0,0,0"
+                                                 Text="{Binding OverlayFontSize, UpdateSourceTrigger=PropertyChanged}"
+                                                 VerticalContentAlignment="Center" TextAlignment="Center"
+                                                 FontSize="11"/>
+                                    </Grid>
 
+                                    <!-- Opacity slider -->
+                                    <Grid Margin="0,4,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{DynamicResource Overlay.Opacity}" FontSize="11"
+                                                   VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <Slider Grid.Column="1" Minimum="0" Maximum="100"
+                                                Value="{Binding OverlayOpacitySlider}"
+                                                TickFrequency="5" IsSnapToTickEnabled="True"
+                                                VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Width="36" Margin="6,0,0,0"
+                                                   Text="{Binding OverlayOpacityDisplay}" FontSize="11"
+                                                   VerticalAlignment="Center" TextAlignment="Center"/>
+                                    </Grid>
+
+                                    <!-- Alignment + Color row -->
+                                    <WrapPanel Margin="0,6,0,0">
                                         <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
                                             <TextBlock Text="{DynamicResource Overlay.Alignment}" FontSize="11" VerticalAlignment="Center"
                                                        Margin="0,0,4,0"/>

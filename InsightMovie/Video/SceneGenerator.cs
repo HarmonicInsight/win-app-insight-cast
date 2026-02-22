@@ -421,9 +421,11 @@ public class SceneGenerator
         {
             string escapedText = EscapeDrawText(overlay.Text);
 
-            string textColorHex = ArrayToFfmpegColor(overlay.TextColor);
-            string strokeColorHex = ArrayToFfmpegColor(overlay.StrokeColor);
-            string shadowColorHex = ArrayToFfmpegColor(overlay.ShadowColor);
+            // Apply opacity as alpha channel on colors
+            byte alpha = (byte)Math.Clamp((int)(overlay.Opacity * 255), 0, 255);
+            string textColorHex = ArrayToFfmpegColor(overlay.TextColor, alpha);
+            string strokeColorHex = ArrayToFfmpegColor(overlay.StrokeColor, alpha);
+            string shadowColorHex = ArrayToFfmpegColor(overlay.ShadowColor, alpha);
 
             // Calculate pixel position from percentage
             string xExpr = overlay.Alignment switch
@@ -748,6 +750,14 @@ public class SceneGenerator
             return "0xFFFFFF";
         }
         return $"0x{rgb[0]:X2}{rgb[1]:X2}{rgb[2]:X2}";
+    }
+
+    private static string ArrayToFfmpegColor(int[] rgb, byte alpha)
+    {
+        string baseColor = ArrayToFfmpegColor(rgb);
+        if (alpha >= 255) return baseColor;
+        double a = alpha / 255.0;
+        return $"{baseColor}@{a.ToString("F2", CultureInfo.InvariantCulture)}";
     }
 
     /// <summary>
