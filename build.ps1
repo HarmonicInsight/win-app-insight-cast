@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    InsightMovie release build script.
+    InsightCast release build script.
     Publishes the app, downloads FFmpeg, and optionally builds the Inno Setup installer.
 
 .DESCRIPTION
@@ -21,19 +21,19 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$projectDir   = "$PSScriptRoot\InsightMovie"
+$projectDir   = "$PSScriptRoot\InsightCast"
 $publishDir   = "$PSScriptRoot\publish"
 $ffmpegDir    = "$publishDir\ffmpeg"
 $installerDir = "$PSScriptRoot\Installer"
 $toolsDir     = "$PSScriptRoot\_build_tools"
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  InsightMovie Build Script" -ForegroundColor Cyan
+Write-Host "  InsightCast Build Script" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 # ── Step 1: dotnet publish ────────────────────────────────────────────
 Write-Host ""
-Write-Host "[1/4] Publishing InsightMovie..." -ForegroundColor Yellow
+Write-Host "[1/4] Publishing InsightCast..." -ForegroundColor Yellow
 
 if (Test-Path $publishDir) {
     Remove-Item $publishDir -Recurse -Force
@@ -112,7 +112,7 @@ Write-Host ""
 Write-Host "[3/4] Verifying build output..." -ForegroundColor Yellow
 
 $requiredFiles = @(
-    "$publishDir\InsightMovie.exe",
+    "$publishDir\InsightCast.exe",
     "$ffmpegBinDir\ffmpeg.exe"
 )
 
@@ -139,7 +139,7 @@ if ($SkipInstaller) {
 } else {
     Write-Host "[4/4] Building installer..." -ForegroundColor Yellow
 
-    $issFile = "$installerDir\InsightMovie.iss"
+    $issFile = "$installerDir\InsightCast.iss"
     if (-not (Test-Path $issFile)) {
         Write-Host "  WARNING: Inno Setup script not found: $issFile" -ForegroundColor Red
         Write-Host "  Skipping installer build." -ForegroundColor Yellow

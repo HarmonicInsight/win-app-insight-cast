@@ -69,6 +69,9 @@
     <sys:String x:Key="Menu.Edit.RemoveScene">Remove Scene(_D)</sys:String>
     <sys:String x:Key="Menu.Edit.MoveUp">Move Up(_U)</sys:String>
     <sys:String x:Key="Menu.Edit.MoveDown">Move Down(_W)</sys:String>
+    <sys:String x:Key="Menu.AI">AI Edit(_A)</sys:String>
+    <sys:String x:Key="Menu.AI.GenerateProject">Generate Project(_G)</sys:String>
+    <sys:String x:Key="Menu.AI.Settings">OpenAI Settings(_S)</sys:String>
     <sys:String x:Key="Menu.Help">Help(_H)</sys:String>
     <sys:String x:Key="Menu.Help.Tutorial">Tutorial(_T)</sys:String>
     <sys:String x:Key="Menu.Help.FAQ">FAQ(_Q)</sys:String>
@@ -105,18 +108,18 @@
     <!-- Text Overlay -->
     <sys:String x:Key="Overlay.Title">Text Overlay:</sys:String>
     <sys:String x:Key="Overlay.Add.Tooltip">Add text overlay</sys:String>
-    <sys:String x:Key="Overlay.CoverTemplate">Cover Template</sys:String>
+    <sys:String x:Key="Overlay.CoverTemplate">Add Title</sys:String>
     <sys:String x:Key="Overlay.CoverTemplate.Tooltip">Add title + subtitle for cover page</sys:String>
     <sys:String x:Key="Overlay.Remove.Tooltip">Remove selected overlay</sys:String>
     <sys:String x:Key="Overlay.Text">Text:</sys:String>
-    <sys:String x:Key="Overlay.XPosition">X Position (%):</sys:String>
-    <sys:String x:Key="Overlay.YPosition">Y Position (%):</sys:String>
-    <sys:String x:Key="Overlay.FontSize">Size:</sys:String>
+    <sys:String x:Key="Overlay.XPosition">Horizontal:</sys:String>
+    <sys:String x:Key="Overlay.YPosition">Vertical:</sys:String>
+    <sys:String x:Key="Overlay.FontSize">Font Size:</sys:String>
     <sys:String x:Key="Overlay.Alignment">Align:</sys:String>
-    <sys:String x:Key="Overlay.Color">Color:</sys:String>
+    <sys:String x:Key="Overlay.Color">Text Color:</sys:String>
     <sys:String x:Key="Overlay.Opacity">Opacity:</sys:String>
-    <sys:String x:Key="Overlay.MoveUp.Tooltip">Move up</sys:String>
-    <sys:String x:Key="Overlay.MoveDown.Tooltip">Move down</sys:String>
+    <sys:String x:Key="Overlay.MoveUp.Tooltip">Move to front (higher layer)</sys:String>
+    <sys:String x:Key="Overlay.MoveDown.Tooltip">Move to back (lower layer)</sys:String>
     <sys:String x:Key="Overlay.DefaultText">Text</sys:String>
 
     <!-- Duration -->
@@ -563,6 +566,7 @@
     <sys:String x:Key="VM.Export.CompleteOpen">Video export completed.\n\n{0}\n\nWould you like to open the file?</sys:String>
     <sys:String x:Key="VM.Export.ErrorDetail">Export error: {0}</sys:String>
     <sys:String x:Key="VM.Export.FailedDetail">Video export failed:\n{0}</sys:String>
+    <sys:String x:Key="VM.Export.UnknownError">Unknown error occurred</sys:String>
 
     <!-- VM Project Extended -->
     <sys:String x:Key="VM.Project.NewConfirm">Discard current project and create new?\nUnsaved changes will be lost.</sys:String>
@@ -752,6 +756,84 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Overlay.DefaultTitle">Title</sys:String>
     <sys:String x:Key="Overlay.DefaultSubtitle">Subtitle</sys:String>
 
+    <!-- Batch Export -->
+    <sys:String x:Key="Batch.AIGeneration">Processing AI generation...</sys:String>
+    <sys:String x:Key="Batch.Exporting">Exporting video...</sys:String>
+    <sys:String x:Key="Batch.LoadingProject">Loading project JSON...</sys:String>
+    <sys:String x:Key="Batch.FileNotFound">File not found: {0}</sys:String>
+    <sys:String x:Key="Batch.DeserializeFailed">Failed to deserialize JSON.</sys:String>
+    <sys:String x:Key="Batch.Complete">Batch complete: {0}/{1} succeeded</sys:String>
+    <sys:String x:Key="Batch.ProjectComplete">Project complete: {0}</sys:String>
+    <sys:String x:Key="Batch.ProjectFailed">Project failed: {0} - {1}</sys:String>
+
+    <!-- OpenAI Settings -->
+    <sys:String x:Key="OpenAI.Settings.Title">OpenAI API Settings</sys:String>
+    <sys:String x:Key="OpenAI.ApiKey">API Key:</sys:String>
+    <sys:String x:Key="OpenAI.ApiKey.Placeholder">sk-...</sys:String>
+    <sys:String x:Key="OpenAI.ApiKey.Set">Configured</sys:String>
+    <sys:String x:Key="OpenAI.ApiKey.NotSet">Not configured</sys:String>
+    <sys:String x:Key="OpenAI.TestConnection">Test Connection</sys:String>
+    <sys:String x:Key="OpenAI.Testing">Testing...</sys:String>
+    <sys:String x:Key="OpenAI.Connected">Connected</sys:String>
+    <sys:String x:Key="OpenAI.ConnectionFailed">Connection Failed</sys:String>
+    <sys:String x:Key="OpenAI.NarrationModel">Narration Model:</sys:String>
+    <sys:String x:Key="OpenAI.ImageModel">Image Model:</sys:String>
+
+    <!-- JSON Import -->
+    <sys:String x:Key="JsonImport.Title">JSON Import</sys:String>
+    <sys:String x:Key="JsonImport.SelectFile">Select JSON file...</sys:String>
+    <sys:String x:Key="JsonImport.Preview">Preview</sys:String>
+    <sys:String x:Key="JsonImport.ProjectName">Project Name:</sys:String>
+    <sys:String x:Key="JsonImport.SceneCount">Scene Count:</sys:String>
+    <sys:String x:Key="JsonImport.Resolution">Resolution:</sys:String>
+    <sys:String x:Key="JsonImport.Import">Import</sys:String>
+    <sys:String x:Key="JsonImport.Filter">JSON files|*.json|All files|*.*</sys:String>
+
+    <!-- JSON Export Dialog -->
+    <sys:String x:Key="BatchExport.Title">JSON Export</sys:String>
+    <sys:String x:Key="BatchExport.AddProjects">Add Projects</sys:String>
+    <sys:String x:Key="BatchExport.RemoveSelected">Remove Selected</sys:String>
+    <sys:String x:Key="BatchExport.OutputDirectory">Output Folder:</sys:String>
+    <sys:String x:Key="BatchExport.Browse">Browse...</sys:String>
+    <sys:String x:Key="BatchExport.ContinueOnError">Continue on Error</sys:String>
+    <sys:String x:Key="BatchExport.StartBatch">Start Export</sys:String>
+    <sys:String x:Key="BatchExport.Cancel">Cancel</sys:String>
+    <sys:String x:Key="BatchExport.Progress">Progress: {0}/{1}</sys:String>
+    <sys:String x:Key="BatchExport.CurrentProject">Processing: {0}</sys:String>
+    <sys:String x:Key="BatchExport.Status.Waiting">Waiting</sys:String>
+    <sys:String x:Key="BatchExport.Status.Processing">Processing</sys:String>
+    <sys:String x:Key="BatchExport.Status.Success">Success</sys:String>
+    <sys:String x:Key="BatchExport.Status.Failed">Failed</sys:String>
+    <sys:String x:Key="BatchExport.NoProjects">Please add projects.</sys:String>
+    <sys:String x:Key="BatchExport.Complete">JSON export complete\n\nSucceeded: {0}\nFailed: {1}\nDuration: {2}</sys:String>
+
+    <!-- AI Project Generation Dialog -->
+    <sys:String x:Key="AIGenerate.Title">AI Project Generation</sys:String>
+    <sys:String x:Key="AIGenerate.Topic">Topic</sys:String>
+    <sys:String x:Key="AIGenerate.Topic.Hint">Enter your video topic (e.g., "Introduction to Python Programming", "Basics of Healthy Eating")</sys:String>
+    <sys:String x:Key="AIGenerate.Settings">Generation Settings</sys:String>
+    <sys:String x:Key="AIGenerate.Style">Style:</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Educational">Educational</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Conversational">Conversational</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Formal">Formal</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Energetic">Energetic</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Calm">Calm</sys:String>
+    <sys:String x:Key="AIGenerate.SceneCount">Scene Count:</sys:String>
+    <sys:String x:Key="AIGenerate.GenerateImages">Also generate images</sys:String>
+    <sys:String x:Key="AIGenerate.Generate">Generate</sys:String>
+    <sys:String x:Key="AIGenerate.Progress.Preparing">Preparing...</sys:String>
+    <sys:String x:Key="AIGenerate.Progress.Generating">Generating narration...</sys:String>
+    <sys:String x:Key="AIGenerate.Progress.Scene">Generating scene {0}/{1}...</sys:String>
+    <sys:String x:Key="AIGenerate.Progress.Image">Generating image {0}/{1}...</sys:String>
+    <sys:String x:Key="AIGenerate.Error.NoTopic">Please enter a topic.</sys:String>
+    <sys:String x:Key="AIGenerate.Error.NoApiKey">OpenAI API key is not configured. Please set it in AI Edit → OpenAI Settings.</sys:String>
+    <sys:String x:Key="Status.OpenAISettingsUpdated">OpenAI settings updated</sys:String>
+    <sys:String x:Key="Status.AIProjectGenerated">AI project generated</sys:String>
+
+    <!-- Menu additions -->
+    <sys:String x:Key="Menu.File.ImportJson">Import JSON(_J)</sys:String>
+    <sys:String x:Key="Menu.File.BatchExport">JSON Export(_E)</sys:String>
+
     <!-- License errors -->
     <sys:String x:Key="License.Error.Empty">License key is empty.</sys:String>
     <sys:String x:Key="License.Error.Format">Invalid license key format.</sys:String>
@@ -759,5 +841,106 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="License.Error.Invalid">Invalid license key.</sys:String>
     <sys:String x:Key="License.Error.Email">Email address does not match.</sys:String>
     <sys:String x:Key="License.Error.Expired">License has expired ({0}).</sys:String>
+
+    <!-- Planning Tab -->
+    <sys:String x:Key="Tab.Planning">Planning</sys:String>
+    <sys:String x:Key="Tab.VideoGeneration">Video Generation</sys:String>
+    <sys:String x:Key="Planning.AIChat">AI Chat</sys:String>
+    <sys:String x:Key="Planning.SendChat">Send</sys:String>
+    <sys:String x:Key="Planning.GenerateOutline">Generate Outline</sys:String>
+    <sys:String x:Key="Planning.Structure">Structure &amp; Script</sys:String>
+    <sys:String x:Key="Planning.GenerateAllScripts">Generate All Scripts</sys:String>
+    <sys:String x:Key="Planning.ImagePrompt">Image Prompt</sys:String>
+    <sys:String x:Key="Planning.ImagePrompt.Current">Prompt for Current Scene</sys:String>
+    <sys:String x:Key="Planning.GeneratePrompt">Generate Prompt</sys:String>
+    <sys:String x:Key="Planning.CopyPrompt">Copy</sys:String>
+    <sys:String x:Key="Planning.ImageGeneration">Image Generation</sys:String>
+    <sys:String x:Key="Planning.GenerateImage">Generate with DALL-E</sys:String>
+    <sys:String x:Key="Planning.ExternalTool.Hint">* You can also copy the prompt and use DALL-E, Midjourney, Nanobanana, etc.</sys:String>
+    <sys:String x:Key="Planning.Preview">Preview</sys:String>
+    <sys:String x:Key="Planning.HasImage">Image: Yes</sys:String>
+    <sys:String x:Key="Planning.NoImage">Image: No</sys:String>
+    <sys:String x:Key="Planning.HasPrompt">Prompt: Yes</sys:String>
+    <sys:String x:Key="Planning.NoPrompt">Prompt: No</sys:String>
+    <sys:String x:Key="Planning.Style.Photorealistic">Photorealistic</sys:String>
+    <sys:String x:Key="Planning.Style.Illustration">Digital Illustration</sys:String>
+    <sys:String x:Key="Planning.Style.ThreeD">3D Rendered</sys:String>
+    <sys:String x:Key="Planning.Style.Flat">Flat Design</sys:String>
+    <sys:String x:Key="Planning.Style.Minimalist">Minimalist</sys:String>
+
+    <!-- Prompt Builder -->
+    <sys:String x:Key="Planning.PromptBuilder">Prompt Builder</sys:String>
+    <sys:String x:Key="Planning.BuildPrompt">Build Prompt</sys:String>
+    <sys:String x:Key="Planning.SceneType">Scene Type</sys:String>
+    <sys:String x:Key="Planning.SceneType.ProductIntro">Product Introduction</sys:String>
+    <sys:String x:Key="Planning.SceneType.ConceptExplain">Concept Explanation</sys:String>
+    <sys:String x:Key="Planning.SceneType.TutorialStep">Tutorial Step</sys:String>
+    <sys:String x:Key="Planning.SceneType.FeatureShowcase">Feature Showcase</sys:String>
+    <sys:String x:Key="Planning.SceneType.Comparison">Comparison / Before-After</sys:String>
+    <sys:String x:Key="Planning.SceneType.CallToAction">Call to Action</sys:String>
+    <sys:String x:Key="Planning.Composition">Composition</sys:String>
+    <sys:String x:Key="Planning.Composition.WideShot">Wide Shot (Full Context)</sys:String>
+    <sys:String x:Key="Planning.Composition.CloseUp">Close-up (Detail Focus)</sys:String>
+    <sys:String x:Key="Planning.Composition.Centered">Centered (Balanced)</sys:String>
+    <sys:String x:Key="Planning.Composition.ThirdRule">Rule of Thirds (Dynamic)</sys:String>
+    <sys:String x:Key="Planning.Composition.Isometric">Isometric (3D View)</sys:String>
+    <sys:String x:Key="Planning.Mood">Mood</sys:String>
+    <sys:String x:Key="Planning.Mood.Professional">Professional / Corporate</sys:String>
+    <sys:String x:Key="Planning.Mood.Friendly">Friendly / Approachable</sys:String>
+    <sys:String x:Key="Planning.Mood.Modern">Modern / Sleek</sys:String>
+    <sys:String x:Key="Planning.Mood.Elegant">Elegant / Premium</sys:String>
+    <sys:String x:Key="Planning.Mood.Dramatic">Dramatic / Impactful</sys:String>
+    <sys:String x:Key="Planning.VisualStyle">Visual Style</sys:String>
+    <sys:String x:Key="Planning.GeneratePrompt.Tooltip">AI auto-generates image prompt from script</sys:String>
+    <sys:String x:Key="Planning.Chat.User">You</sys:String>
+    <sys:String x:Key="Planning.Chat.AI">AI</sys:String>
+    <sys:String x:Key="Planning.TransferToVideo">To Video Generation</sys:String>
+
+    <!-- Thumbnail Generator -->
+    <sys:String x:Key="Planning.ThumbnailGenerator">Thumbnail Generator</sys:String>
+    <sys:String x:Key="Thumbnail.Pattern">Pattern</sys:String>
+    <sys:String x:Key="Thumbnail.StylePreset">One-Click Style</sys:String>
+    <sys:String x:Key="Thumbnail.MainText">Main Text (10 chars recommended)</sys:String>
+    <sys:String x:Key="Thumbnail.SubText">Sub Text (optional)</sys:String>
+    <sys:String x:Key="Thumbnail.Background">Background</sys:String>
+    <sys:String x:Key="Thumbnail.TextColor">Text Color</sys:String>
+    <sys:String x:Key="Thumbnail.Generate">Generate Thumbnail</sys:String>
+    <sys:String x:Key="Thumbnail.SaveAs">Save As</sys:String>
+    <sys:String x:Key="Thumbnail.OpenFolder">Open Folder</sys:String>
+    <sys:String x:Key="Thumbnail.NoBg">No image</sys:String>
+    <sys:String x:Key="Thumbnail.BgImage">Background Image</sys:String>
+    <sys:String x:Key="Thumbnail.BgColor">Background Color</sys:String>
+    <sys:String x:Key="Thumbnail.Saved">Thumbnail saved successfully</sys:String>
+    <sys:String x:Key="Thumbnail.Error.NoText">Please enter main text</sys:String>
+    <sys:String x:Key="Thumbnail.Error.Generate">Error generating thumbnail</sys:String>
+    <sys:String x:Key="Thumbnail.Error.Save">Error saving thumbnail</sys:String>
+    <sys:String x:Key="Thumbnail.Error.NoThumbnail">Please generate a thumbnail first</sys:String>
+    <sys:String x:Key="Common.Browse">Browse...</sys:String>
+
+    <!-- JSON Editor -->
+    <sys:String x:Key="Planning.ApplyJson">Apply JSON</sys:String>
+    <sys:String x:Key="Planning.JsonMode.Tooltip">Edit structure in JSON format (supports copy &amp; paste from external AI)</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.Hint">Paste JSON generated by external AI and click "Apply JSON"</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.Empty">JSON is empty</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.InvalidFormat">No valid scene data found</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.ParseError">Failed to parse JSON</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.Applied">{0} scenes applied</sys:String>
+
+    <!-- Quick Setup -->
+    <sys:String x:Key="Planning.QuickSetup">Quick Setup</sys:String>
+    <sys:String x:Key="Planning.DropMedia">Drop media here</sys:String>
+    <sys:String x:Key="Planning.BrowseMedia">Browse Files</sys:String>
+    <sys:String x:Key="Planning.VideoPurpose">Video Purpose</sys:String>
+    <sys:String x:Key="Planning.Purpose.Intro">Product/Service Introduction</sys:String>
+    <sys:String x:Key="Planning.Purpose.Tutorial">Tutorial / How-to</sys:String>
+    <sys:String x:Key="Planning.Purpose.Explain">Concept Explanation</sys:String>
+    <sys:String x:Key="Planning.Purpose.Promo">Promotion / Advertisement</sys:String>
+    <sys:String x:Key="Planning.Purpose.CustomHint">Add custom notes (optional)...</sys:String>
+    <sys:String x:Key="Planning.VideoDuration">Video Settings</sys:String>
+    <sys:String x:Key="Planning.TotalLength">Duration</sys:String>
+    <sys:String x:Key="Planning.SceneCount">Scenes</sys:String>
+    <sys:String x:Key="Planning.Scenes">scenes</sys:String>
+    <sys:String x:Key="Planning.Duration.Seconds">sec</sys:String>
+    <sys:String x:Key="Planning.GenerateProject">Auto-Generate Structure</sys:String>
 
 </ResourceDictionary>

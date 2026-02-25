@@ -1,0 +1,295 @@
+<Window x:Class="InsightCast.Views.VideoWizardDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Wizard.Title}"
+        Width="700" Height="550"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource BgPrimary}">
+
+    <Window.Resources>
+        <Style x:Key="StepIndicator" TargetType="Border">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Background" Value="{DynamicResource BgSecondary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDefault}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+        <Style x:Key="StepIndicatorActive" TargetType="Border" BasedOn="{StaticResource StepIndicator}">
+            <Setter Property="Background" Value="{DynamicResource AccentGold}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentGold}"/>
+        </Style>
+        <Style x:Key="StepIndicatorComplete" TargetType="Border" BasedOn="{StaticResource StepIndicator}">
+            <Setter Property="Background" Value="{DynamicResource SuccessGreen}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessGreen}"/>
+        </Style>
+        <Style x:Key="WizardButton" TargetType="Button">
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Margin" Value="4,0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Step Indicators -->
+        <Border Grid.Row="0" Background="{DynamicResource BgSecondary}" Padding="20,16">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <!-- Step 1 -->
+                <StackPanel Orientation="Horizontal">
+                    <Border x:Name="Step1Indicator" Style="{StaticResource StepIndicatorActive}">
+                        <TextBlock Text="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontWeight="Bold" Foreground="White"/>
+                    </Border>
+                    <TextBlock Text="{DynamicResource Wizard.Step1.Short}" VerticalAlignment="Center"
+                               Margin="8,0,0,0" Foreground="{DynamicResource TextPrimary}"/>
+                </StackPanel>
+                <Rectangle Width="40" Height="2" Fill="{DynamicResource BorderDefault}" Margin="12,0"
+                           VerticalAlignment="Center"/>
+                <!-- Step 2 -->
+                <StackPanel Orientation="Horizontal">
+                    <Border x:Name="Step2Indicator" Style="{StaticResource StepIndicator}">
+                        <TextBlock Text="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontWeight="Bold" Foreground="{DynamicResource TextSecondary}"/>
+                    </Border>
+                    <TextBlock Text="{DynamicResource Wizard.Step2.Short}" VerticalAlignment="Center"
+                               Margin="8,0,0,0" Foreground="{DynamicResource TextSecondary}"/>
+                </StackPanel>
+                <Rectangle Width="40" Height="2" Fill="{DynamicResource BorderDefault}" Margin="12,0"
+                           VerticalAlignment="Center"/>
+                <!-- Step 3 -->
+                <StackPanel Orientation="Horizontal">
+                    <Border x:Name="Step3Indicator" Style="{StaticResource StepIndicator}">
+                        <TextBlock Text="3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontWeight="Bold" Foreground="{DynamicResource TextSecondary}"/>
+                    </Border>
+                    <TextBlock Text="{DynamicResource Wizard.Step3.Short}" VerticalAlignment="Center"
+                               Margin="8,0,0,0" Foreground="{DynamicResource TextSecondary}"/>
+                </StackPanel>
+                <Rectangle Width="40" Height="2" Fill="{DynamicResource BorderDefault}" Margin="12,0"
+                           VerticalAlignment="Center"/>
+                <!-- Step 4 -->
+                <StackPanel Orientation="Horizontal">
+                    <Border x:Name="Step4Indicator" Style="{StaticResource StepIndicator}">
+                        <TextBlock Text="4" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontWeight="Bold" Foreground="{DynamicResource TextSecondary}"/>
+                    </Border>
+                    <TextBlock Text="{DynamicResource Wizard.Step4.Short}" VerticalAlignment="Center"
+                               Margin="8,0,0,0" Foreground="{DynamicResource TextSecondary}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Content Area -->
+        <Grid Grid.Row="1" Margin="24">
+            <!-- Step 1: Media Selection -->
+            <Grid x:Name="Step1Panel" Visibility="Visible">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="{DynamicResource Wizard.Step1.Title}"
+                           FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"
+                           Margin="0,0,0,16"/>
+                <Border Grid.Row="1" BorderBrush="{DynamicResource BorderDefault}"
+                        BorderThickness="2" CornerRadius="8" Background="{DynamicResource BgSecondary}"
+                        AllowDrop="True" Drop="OnMediaDrop" DragOver="OnMediaDragOver">
+                    <Grid>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    x:Name="DropHint">
+                            <TextBlock Text="📁" FontSize="48" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{DynamicResource Wizard.Step1.DropHint}"
+                                       FontSize="16" Foreground="{DynamicResource TextSecondary}"
+                                       HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                            <Button Content="{DynamicResource Wizard.Step1.Browse}"
+                                    Margin="0,16,0,0" Padding="16,8"
+                                    Click="OnBrowseMedia"/>
+                        </StackPanel>
+                        <ListBox x:Name="MediaList" Visibility="Collapsed"
+                                 Background="Transparent" BorderThickness="0"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Width="100" Height="100" Margin="4"
+                                            Background="{DynamicResource BgCard}"
+                                            CornerRadius="4" ToolTip="{Binding FileName}">
+                                        <Grid>
+                                            <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <Button Content="✕" Width="20" Height="20"
+                                                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                    Margin="2" Padding="0" FontSize="10"
+                                                    Click="OnRemoveMedia" Tag="{Binding}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Step 2: Purpose Selection -->
+            <Grid x:Name="Step2Panel" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="{DynamicResource Wizard.Step2.Title}"
+                           FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"
+                           Margin="0,0,0,16"/>
+                <TextBlock Grid.Row="1" Text="{DynamicResource Wizard.Step2.Subtitle}"
+                           Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,12"/>
+                <StackPanel Grid.Row="2">
+                    <RadioButton x:Name="PurposeIntro" GroupName="Purpose" Margin="0,4"
+                                 Content="{DynamicResource Wizard.Purpose.Intro}" IsChecked="True"/>
+                    <RadioButton x:Name="PurposeTutorial" GroupName="Purpose" Margin="0,4"
+                                 Content="{DynamicResource Wizard.Purpose.Tutorial}"/>
+                    <RadioButton x:Name="PurposeExplain" GroupName="Purpose" Margin="0,4"
+                                 Content="{DynamicResource Wizard.Purpose.Explain}"/>
+                    <RadioButton x:Name="PurposePromo" GroupName="Purpose" Margin="0,4"
+                                 Content="{DynamicResource Wizard.Purpose.Promo}"/>
+                    <RadioButton x:Name="PurposeCustom" GroupName="Purpose" Margin="0,4"
+                                 Content="{DynamicResource Wizard.Purpose.Custom}"/>
+                    <TextBox x:Name="CustomPurposeText" Height="60" Margin="24,8,0,0"
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             IsEnabled="{Binding IsChecked, ElementName=PurposeCustom}"
+                             Text="" VerticalScrollBarVisibility="Auto"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Step 3: Duration Selection -->
+            <Grid x:Name="Step3Panel" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="{DynamicResource Wizard.Step3.Title}"
+                           FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"
+                           Margin="0,0,0,16"/>
+                <TextBlock Grid.Row="1" Text="{DynamicResource Wizard.Step3.Subtitle}"
+                           Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,12"/>
+                <WrapPanel Grid.Row="2">
+                    <RadioButton x:Name="Duration15" GroupName="Duration" Margin="0,4,16,4"
+                                 Content="15秒" Tag="15"/>
+                    <RadioButton x:Name="Duration30" GroupName="Duration" Margin="0,4,16,4"
+                                 Content="30秒" Tag="30" IsChecked="True"/>
+                    <RadioButton x:Name="Duration60" GroupName="Duration" Margin="0,4,16,4"
+                                 Content="60秒 (1分)" Tag="60"/>
+                    <RadioButton x:Name="Duration90" GroupName="Duration" Margin="0,4,16,4"
+                                 Content="90秒 (1分30秒)" Tag="90"/>
+                    <RadioButton x:Name="Duration120" GroupName="Duration" Margin="0,4,16,4"
+                                 Content="120秒 (2分)" Tag="120"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <RadioButton x:Name="DurationCustom" GroupName="Duration"
+                                     Content="{DynamicResource Wizard.Duration.Custom}" Margin="0,4,8,4"/>
+                        <TextBox x:Name="CustomDurationText" Width="60" Height="24"
+                                 IsEnabled="{Binding IsChecked, ElementName=DurationCustom}"
+                                 Text="45"/>
+                        <TextBlock Text="{DynamicResource Wizard.Duration.Seconds}"
+                                   VerticalAlignment="Center" Margin="4,0,0,0"/>
+                    </StackPanel>
+                </WrapPanel>
+            </Grid>
+
+            <!-- Step 4: Preview & Generate -->
+            <Grid x:Name="Step4Panel" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="{DynamicResource Wizard.Step4.Title}"
+                           FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"
+                           Margin="0,0,0,16"/>
+
+                <!-- Summary -->
+                <Border Grid.Row="1" Background="{DynamicResource BgSecondary}"
+                        CornerRadius="6" Padding="12" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock x:Name="SummaryMedia" Foreground="{DynamicResource TextPrimary}"/>
+                        <TextBlock x:Name="SummaryPurpose" Foreground="{DynamicResource TextPrimary}" Margin="0,4,0,0"/>
+                        <TextBlock x:Name="SummaryDuration" Foreground="{DynamicResource TextPrimary}" Margin="0,4,0,0"/>
+                        <TextBlock x:Name="SummaryScenes" Foreground="{DynamicResource AccentGold}"
+                                   FontWeight="Bold" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Generated Preview -->
+                <Border Grid.Row="2" Background="{DynamicResource BgSecondary}"
+                        CornerRadius="6" Padding="12">
+                    <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="PreviewScroll">
+                            <ItemsControl x:Name="ScenePreviewList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{DynamicResource BgCard}"
+                                                CornerRadius="4" Padding="12" Margin="0,0,0,8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border Grid.Column="0" Width="60" Height="60"
+                                                        Background="{DynamicResource BgSecondary}"
+                                                        CornerRadius="4" Margin="0,0,12,0">
+                                                    <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"/>
+                                                </Border>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding Title}" FontWeight="Bold"
+                                                               Foreground="{DynamicResource TextPrimary}"/>
+                                                    <TextBlock Text="{Binding Duration}" FontSize="11"
+                                                               Foreground="{DynamicResource AccentGold}"/>
+                                                    <TextBlock Text="{Binding Script}" FontSize="11"
+                                                               Foreground="{DynamicResource TextSecondary}"
+                                                               TextTrimming="CharacterEllipsis" MaxHeight="32"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <StackPanel x:Name="GeneratingIndicator" Visibility="Collapsed"
+                                    VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="{DynamicResource Wizard.Generating}"
+                                       FontSize="14" Foreground="{DynamicResource TextSecondary}"/>
+                            <ProgressBar IsIndeterminate="True" Width="200" Height="4" Margin="0,12,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Navigation Buttons -->
+        <Border Grid.Row="2" Background="{DynamicResource BgSecondary}" Padding="24,16">
+            <Grid>
+                <Button x:Name="BackButton" Content="{DynamicResource Wizard.Back}"
+                        Style="{StaticResource WizardButton}"
+                        HorizontalAlignment="Left" Click="OnBack" IsEnabled="False"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="{DynamicResource Common.Cancel}"
+                            Style="{StaticResource WizardButton}"
+                            Click="OnCancel"/>
+                    <Button x:Name="NextButton" Content="{DynamicResource Wizard.Next}"
+                            Style="{StaticResource WizardButton}"
+                            Click="OnNext"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

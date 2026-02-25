@@ -36,6 +36,7 @@ namespace InsightCast.Views
             _vm.OpenFileRequested += OnOpenFileRequested;
             _vm.PreviewVideoReady += OnPreviewVideoReady;
             _vm.ExitRequested += OnExitRequested;
+            _vm.ScenesChanged += OnMainViewModelScenesChanged;
 
             // Wire up logger to log TextBox
             _vm.Logger.LogReceived += OnLogReceived;
@@ -50,7 +51,41 @@ namespace InsightCast.Views
                 _vm.SetDialogService(new DialogService(this));
                 await _vm.InitializeAsync();
                 PopulateRecentFiles();
+
+                // Initialize Planning Tab
+                PlanningTabControl.Initialize(_config, _vm.Project);
+
+                // Sync scene lists when planning tab modifies scenes
+                PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
             };
+        }
+
+        private void OnPlanningTabScenesChanged()
+        {
+            Dispatcher.Invoke(() => _vm.RefreshSceneList());
+        }
+
+        private void OnMainViewModelScenesChanged()
+        {
+            Dispatcher.Invoke(() => PlanningTabControl.RefreshScenes());
+        }
+
+        private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Only handle top-level tab changes
+            if (e.Source != MainTabControl) return;
+
+            // Refresh both scene lists when switching tabs to ensure they're in sync
+            if (MainTabControl.SelectedIndex == 0)
+            {
+                // Switching to Planning tab - refresh planning scenes
+                PlanningTabControl.RefreshScenes();
+            }
+            else if (MainTabControl.SelectedIndex == 1)
+            {
+                // Switching to Video Generation tab - refresh scene list
+                _vm.RefreshSceneList();
+            }
         }
 
         /// <summary>
@@ -555,7 +590,9 @@ namespace InsightCast.Views
             _vm.OpenFileRequested -= OnOpenFileRequested;
             _vm.PreviewVideoReady -= OnPreviewVideoReady;
             _vm.ExitRequested -= OnExitRequested;
+            _vm.ScenesChanged -= OnMainViewModelScenesChanged;
             _vm.Logger.LogReceived -= OnLogReceived;
+            PlanningTabControl.ScenesChanged -= OnPlanningTabScenesChanged;
         }
 
         #endregion

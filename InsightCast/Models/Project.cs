@@ -10,7 +10,7 @@ namespace InsightCast.Models
     public class OutputSettings
     {
         [JsonPropertyName("resolution")]
-        public string Resolution { get; set; } = "1080x1920";
+        public string Resolution { get; set; } = "1920x1080";
 
         [JsonPropertyName("fps")]
         public int Fps { get; set; } = 30;

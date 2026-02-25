@@ -18,6 +18,7 @@ namespace InsightCast.Services
         public string? ThumbnailPath { get; set; }
         public string? ChapterFilePath { get; set; }
         public string? MetadataFilePath { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 
     public class ExportService
@@ -63,13 +64,17 @@ namespace InsightCast.Services
 
             if (!_ffmpeg.CheckAvailable())
             {
-                progress.Report(LocalizationService.GetString("Export.NoFFmpeg"));
+                var msg = LocalizationService.GetString("Export.NoFFmpeg");
+                progress.Report(msg);
+                result.ErrorMessage = msg;
                 return result;
             }
 
             if (project.Scenes.Count == 0 || !project.Scenes.Any(s => s.HasMedia || s.HasNarration))
             {
-                progress.Report(LocalizationService.GetString("Export.NoScenes"));
+                var msg = LocalizationService.GetString("Export.NoScenes");
+                progress.Report(msg);
+                result.ErrorMessage = msg;
                 return result;
             }
 
@@ -178,7 +183,9 @@ namespace InsightCast.Services
 
                 if (!success)
                 {
-                    progress.Report(LocalizationService.GetString("Export.SceneFailed", i + 1));
+                    var msg = LocalizationService.GetString("Export.SceneFailed", i + 1);
+                    progress.Report(msg);
+                    result.ErrorMessage = msg;
                     return result;
                 }
 
@@ -243,7 +250,9 @@ namespace InsightCast.Services
 
             if (!concatOk)
             {
-                progress.Report(LocalizationService.GetString("Export.CombineFailed"));
+                var msg = LocalizationService.GetString("Export.CombineFailed");
+                progress.Report(msg);
+                result.ErrorMessage = msg;
                 return result;
             }
 

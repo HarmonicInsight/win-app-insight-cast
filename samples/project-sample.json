@@ -1,0 +1,106 @@
+{
+  "version": "1.0",
+  "projectPath": null,
+  "output": {
+    "resolution": "1080x1920",
+    "fps": 30,
+    "outputPath": null
+  },
+  "settings": {
+    "voicevoxBaseUrl": "http://127.0.0.1:50021",
+    "voicevoxRunExe": null,
+    "ffmpegPath": null,
+    "fontPath": null
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "mediaPath": "./images/slide1.png",
+      "mediaType": "image",
+      "narrationText": "こんにちは。今日のプレゼンテーションを始めます。",
+      "subtitleText": "プレゼンテーション開始",
+      "speakerId": null,
+      "keepOriginalAudio": false,
+      "subtitleStyleId": "default",
+      "transitionType": "fade",
+      "transitionDuration": 0.5,
+      "durationMode": "auto",
+      "fixedSeconds": 3.0,
+      "speechSpeed": 1.0,
+      "textOverlays": [
+        {
+          "text": "第1章: はじめに",
+          "xPercent": 50.0,
+          "yPercent": 15.0,
+          "fontSize": 72,
+          "fontFamily": null,
+          "fontBold": true,
+          "textColor": [255, 255, 255],
+          "strokeColor": [0, 0, 0],
+          "strokeWidth": 3,
+          "shadowEnabled": false,
+          "shadowColor": null,
+          "shadowOffset": 0,
+          "alignment": "center",
+          "opacity": 1.0
+        }
+      ],
+      "aiGeneration": null
+    },
+    {
+      "id": "scene-002",
+      "mediaPath": null,
+      "mediaType": "none",
+      "narrationText": null,
+      "subtitleText": null,
+      "speakerId": null,
+      "keepOriginalAudio": false,
+      "subtitleStyleId": null,
+      "transitionType": "fade",
+      "transitionDuration": 0.5,
+      "durationMode": "fixed",
+      "fixedSeconds": 5.0,
+      "speechSpeed": 1.0,
+      "textOverlays": [],
+      "aiGeneration": {
+        "generateNarration": true,
+        "narrationTopic": "人工知能の歴史と現代への影響について",
+        "narrationStyle": "educational",
+        "targetDurationSeconds": 30,
+        "additionalInstructions": "初心者向けに分かりやすく説明してください",
+        "generateImage": true,
+        "imageDescription": "AIとロボットが協力して働く未来的なオフィス環境",
+        "imageStyle": "photorealistic"
+      }
+    }
+  ],
+  "bgm": {
+    "filePath": null,
+    "volume": 0.3,
+    "fadeInEnabled": true,
+    "fadeInDuration": 2.0,
+    "fadeInType": "linear",
+    "fadeOutEnabled": true,
+    "fadeOutDuration": 3.0,
+    "fadeOutType": "linear",
+    "loopEnabled": true,
+    "duckingEnabled": true,
+    "duckingVolume": 0.1,
+    "duckingAttack": 0.2,
+    "duckingRelease": 0.5
+  },
+  "watermark": {
+    "imagePath": null,
+    "position": "bottomRight",
+    "opacity": 0.7,
+    "scale": 0.12
+  },
+  "introMediaPath": null,
+  "introDuration": 3.0,
+  "outroMediaPath": null,
+  "outroDuration": 3.0,
+  "defaultTransition": "fade",
+  "defaultTransitionDuration": 0.5,
+  "generateThumbnail": true,
+  "generateChapters": true
+}

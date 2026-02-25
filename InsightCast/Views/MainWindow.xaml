@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:InsightCast.Converters"
+        xmlns:views="clr-namespace:InsightCast.Views"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Title="{Binding WindowTitle}"
         MinWidth="1100" MinHeight="750"
@@ -41,7 +42,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -188,6 +188,10 @@
                 <MenuItem Header="{DynamicResource Header.ImportPptx}"
                           Command="{Binding ImportPptxCommand}"
                           IsEnabled="{Binding CanPptx}"/>
+                <MenuItem Header="{DynamicResource Menu.File.ImportJson}"
+                          Command="{Binding ImportJsonCommand}"/>
+                <MenuItem Header="{DynamicResource Menu.File.BatchExport}"
+                          Command="{Binding BatchExportCommand}"/>
                 <Separator/>
                 <MenuItem Header="{DynamicResource Menu.File.Exit}" InputGestureText="Alt+F4"
                           Command="{Binding ExitCommand}"/>
@@ -204,6 +208,16 @@
                 <MenuItem Header="{DynamicResource Menu.Edit.MoveDown}" InputGestureText="Ctrl+Down"
                           Command="{Binding MoveSceneDownCommand}"/>
             </MenuItem>
+
+            <!-- AI機能一時非表示
+            <MenuItem Header="{DynamicResource Menu.AI}">
+                <MenuItem Header="{DynamicResource Menu.AI.GenerateProject}"
+                          Command="{Binding AIGenerateProjectCommand}"/>
+                <Separator/>
+                <MenuItem Header="{DynamicResource Menu.AI.Settings}"
+                          Command="{Binding OpenAISettingsCommand}"/>
+            </MenuItem>
+            -->
 
             <MenuItem Header="{DynamicResource Menu.Help}">
                 <MenuItem Header="{DynamicResource Menu.Help.Tutorial}" InputGestureText="F1"
@@ -229,9 +243,25 @@
         </Menu>
 
         <!-- ================================================================ -->
-        <!-- C) Main Content                                                   -->
+        <!-- C) Main Content - TabControl                                      -->
         <!-- ================================================================ -->
-        <Grid Grid.Row="2" Margin="4,4,4,2">
+        <TabControl Grid.Row="2" Margin="4,4,4,2" x:Name="MainTabControl"
+                    SelectionChanged="MainTabControl_SelectionChanged">
+            <!-- 企画・制作タブ -->
+            <TabItem Header="{DynamicResource Tab.Planning}">
+                <views:PlanningTab x:Name="PlanningTabControl"/>
+            </TabItem>
+
+            <!-- 動画生成タブ -->
+            <TabItem Header="{DynamicResource Tab.VideoGeneration}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- シーン編集エリア -->
+                    <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="180" MinWidth="140" MaxWidth="300"/>
                 <ColumnDefinition Width="5"/>
@@ -241,6 +271,18 @@
             <!-- Left Panel: Scene List -->
             <GroupBox Grid.Column="0" Header="{DynamicResource Scene.List}" Padding="4">
                 <DockPanel>
+                    <!-- 解像度選択（上部） -->
+                    <Border DockPanel.Dock="Top" Background="{DynamicResource BgSecondary}"
+                            CornerRadius="4" Padding="6" Margin="0,0,0,6">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Export.Resolution}" FontSize="10"
+                                       Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,4"/>
+                            <ComboBox SelectedIndex="{Binding SelectedResolutionIndex}" FontSize="11">
+                                <ComboBoxItem Content="1920x1080 (横)" Tag="1920x1080"/>
+                                <ComboBoxItem Content="1080x1920 (縦)" Tag="1080x1920"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Border>
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                                 HorizontalAlignment="Center" Margin="0,4,0,0">
                         <Button Content="{DynamicResource Common.Add}" Padding="4,2" Margin="1"
@@ -457,14 +499,16 @@
                                     <!-- All settings in one row -->
                                     <WrapPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                                            <TextBlock Text="X:" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                            <TextBlock Text="{DynamicResource Overlay.XPosition}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
                                             <TextBox Text="{Binding OverlayXPercent, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="60" TextAlignment="Center" VerticalContentAlignment="Center"/>
+                                                     Width="50" TextAlignment="Center" VerticalContentAlignment="Center"/>
+                                            <TextBlock Text="%" FontSize="11" VerticalAlignment="Center" Margin="2,0,0,0"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                                            <TextBlock Text="Y:" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                            <TextBlock Text="{DynamicResource Overlay.YPosition}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
                                             <TextBox Text="{Binding OverlayYPercent, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="60" TextAlignment="Center" VerticalContentAlignment="Center"/>
+                                                     Width="50" TextAlignment="Center" VerticalContentAlignment="Center"/>
+                                            <TextBlock Text="%" FontSize="11" VerticalAlignment="Center" Margin="2,0,0,0"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                                             <TextBlock Text="{DynamicResource Overlay.FontSize}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
@@ -591,12 +635,10 @@
                     </StackPanel>
                 </ScrollViewer>
             </GroupBox>
-        </Grid>
+                    </Grid>
 
-        <!-- ================================================================ -->
-        <!-- D) Export Panel                                                   -->
-        <!-- ================================================================ -->
-        <GroupBox Grid.Row="3" Header="{DynamicResource Export.Settings}" Margin="4,2,4,2" Padding="4">
+                    <!-- Export Panel (動画生成タブ内) -->
+                    <GroupBox Grid.Row="1" Header="{DynamicResource Export.Settings}" Margin="0,4,0,0" Padding="4">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -604,14 +646,6 @@
                 </Grid.ColumnDefinitions>
 
                 <WrapPanel Grid.Column="0" VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal" Margin="0,2,12,2">
-                        <TextBlock Text="{DynamicResource Export.Resolution}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                        <ComboBox Width="180" SelectedIndex="{Binding SelectedResolutionIndex}">
-                            <ComboBoxItem Content="{DynamicResource Export.Res.Portrait}" Tag="1080x1920"/>
-                            <ComboBoxItem Content="{DynamicResource Export.Res.Landscape}" Tag="1920x1080"/>
-                        </ComboBox>
-                    </StackPanel>
-
                     <!-- FPS: Detail mode only -->
                     <StackPanel Orientation="Horizontal" Margin="0,2,12,2"
                                 Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
@@ -637,12 +671,15 @@
                         Style="{DynamicResource PrimaryButton}"
                         Command="{Binding ExportVideoCommand}"/>
             </Grid>
-        </GroupBox>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
 
         <!-- ================================================================ -->
-        <!-- E) ProgressBar                                                    -->
+        <!-- D) ProgressBar                                                    -->
         <!-- ================================================================ -->
-        <DockPanel Grid.Row="4" Margin="4,0,4,2"
+        <DockPanel Grid.Row="3" Margin="4,0,4,2"
                    Visibility="{Binding ExportProgressVisible, Converter={StaticResource BoolToVis}}">
             <Button DockPanel.Dock="Right" Content="{DynamicResource Export.Cancel}"
                     Padding="12,2" Margin="4,0,0,0"
@@ -652,9 +689,9 @@
         </DockPanel>
 
         <!-- ================================================================ -->
-        <!-- F) Log Area                                                       -->
+        <!-- E) Log Area                                                       -->
         <!-- ================================================================ -->
-        <DockPanel Grid.Row="5" Height="120" Margin="4,0,4,4">
+        <DockPanel Grid.Row="4" Height="120" Margin="4,0,4,4">
             <TextBlock Text="{DynamicResource Export.Log}" DockPanel.Dock="Top" FontSize="11"
                        Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,2"/>
             <TextBox x:Name="LogTextBox" IsReadOnly="True"

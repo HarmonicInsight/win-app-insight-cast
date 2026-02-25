@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "batchName": "教育動画バッチ 2024Q1",
+  "globalSettings": {
+    "outputDirectory": "./output",
+    "openaiApiKey": "${OPENAI_API_KEY}",
+    "continueOnError": true,
+    "parallelExecution": false
+  },
+  "projects": [
+    {
+      "projectFile": "./project1.json",
+      "outputName": "video1_final.mp4",
+      "overrides": null
+    },
+    {
+      "projectFile": "./project2.json",
+      "outputName": "video2_final.mp4",
+      "overrides": {
+        "resolution": "1920x1080",
+        "fps": 30
+      }
+    },
+    {
+      "projectFile": "./project3.json",
+      "outputName": null
+    }
+  ]
+}

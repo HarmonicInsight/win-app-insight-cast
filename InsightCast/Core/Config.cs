@@ -175,6 +175,33 @@ public class Config
         set => Set("recent_files", value);
     }
 
+    /// <summary>
+    /// OpenAI APIキー（暗号化して保存）。
+    /// </summary>
+    public string? OpenAIApiKey
+    {
+        get => Get<string?>("openai_api_key", null);
+        set => Set("openai_api_key", value);
+    }
+
+    /// <summary>
+    /// OpenAI ナレーション生成モデル。
+    /// </summary>
+    public string OpenAINarrationModel
+    {
+        get => Get<string>("openai_narration_model", "gpt-4o") ?? "gpt-4o";
+        set => Set("openai_narration_model", value);
+    }
+
+    /// <summary>
+    /// OpenAI 画像生成モデル。
+    /// </summary>
+    public string OpenAIImageModel
+    {
+        get => Get<string>("openai_image_model", "dall-e-3") ?? "dall-e-3";
+        set => Set("openai_image_model", value);
+    }
+
     public void AddRecentFile(string path)
     {
         var files = RecentFiles;

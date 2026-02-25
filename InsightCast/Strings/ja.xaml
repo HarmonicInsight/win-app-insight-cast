@@ -69,6 +69,9 @@
     <sys:String x:Key="Menu.Edit.RemoveScene">シーン削除(_D)</sys:String>
     <sys:String x:Key="Menu.Edit.MoveUp">上へ(_U)</sys:String>
     <sys:String x:Key="Menu.Edit.MoveDown">下へ(_W)</sys:String>
+    <sys:String x:Key="Menu.AI">AI編集(_A)</sys:String>
+    <sys:String x:Key="Menu.AI.GenerateProject">プロジェクト生成(_G)</sys:String>
+    <sys:String x:Key="Menu.AI.Settings">OpenAI設定(_S)</sys:String>
     <sys:String x:Key="Menu.Help">ヘルプ(_H)</sys:String>
     <sys:String x:Key="Menu.Help.Tutorial">チュートリアル(_T)</sys:String>
     <sys:String x:Key="Menu.Help.FAQ">FAQ(_Q)</sys:String>
@@ -105,18 +108,18 @@
     <!-- Text Overlay -->
     <sys:String x:Key="Overlay.Title">テキストオーバーレイ:</sys:String>
     <sys:String x:Key="Overlay.Add.Tooltip">テキストオーバーレイを追加</sys:String>
-    <sys:String x:Key="Overlay.CoverTemplate">表紙テンプレ</sys:String>
-    <sys:String x:Key="Overlay.CoverTemplate.Tooltip">表紙用のタイトル＋サブタイトルを追加</sys:String>
+    <sys:String x:Key="Overlay.CoverTemplate">タイトル追加</sys:String>
+    <sys:String x:Key="Overlay.CoverTemplate.Tooltip">表紙用のタイトル＋サブタイトルを一括追加</sys:String>
     <sys:String x:Key="Overlay.Remove.Tooltip">選択中のオーバーレイを削除</sys:String>
     <sys:String x:Key="Overlay.Text">テキスト:</sys:String>
-    <sys:String x:Key="Overlay.XPosition">X位置 (%):</sys:String>
-    <sys:String x:Key="Overlay.YPosition">Y位置 (%):</sys:String>
-    <sys:String x:Key="Overlay.FontSize">サイズ:</sys:String>
+    <sys:String x:Key="Overlay.XPosition">横位置:</sys:String>
+    <sys:String x:Key="Overlay.YPosition">縦位置:</sys:String>
+    <sys:String x:Key="Overlay.FontSize">文字サイズ:</sys:String>
     <sys:String x:Key="Overlay.Alignment">揃え:</sys:String>
-    <sys:String x:Key="Overlay.Color">色:</sys:String>
+    <sys:String x:Key="Overlay.Color">文字色:</sys:String>
     <sys:String x:Key="Overlay.Opacity">不透明度:</sys:String>
-    <sys:String x:Key="Overlay.MoveUp.Tooltip">上に移動</sys:String>
-    <sys:String x:Key="Overlay.MoveDown.Tooltip">下に移動</sys:String>
+    <sys:String x:Key="Overlay.MoveUp.Tooltip">表示順を上に移動（前面へ）</sys:String>
+    <sys:String x:Key="Overlay.MoveDown.Tooltip">表示順を下に移動（背面へ）</sys:String>
     <sys:String x:Key="Overlay.DefaultText">テキスト</sys:String>
 
     <!-- Duration -->
@@ -563,6 +566,7 @@
     <sys:String x:Key="VM.Export.CompleteOpen">動画の書き出しが完了しました。\n\n{0}\n\nファイルを開きますか？</sys:String>
     <sys:String x:Key="VM.Export.ErrorDetail">書き出しエラー: {0}</sys:String>
     <sys:String x:Key="VM.Export.FailedDetail">動画の書き出しに失敗しました:\n{0}</sys:String>
+    <sys:String x:Key="VM.Export.UnknownError">不明なエラーが発生しました</sys:String>
 
     <!-- VM Project Extended -->
     <sys:String x:Key="VM.Project.NewConfirm">現在のプロジェクトを破棄して新規作成しますか？\n保存されていない変更は失われます。</sys:String>
@@ -753,6 +757,84 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Overlay.DefaultTitle">タイトル</sys:String>
     <sys:String x:Key="Overlay.DefaultSubtitle">サブタイトル</sys:String>
 
+    <!-- Batch Export -->
+    <sys:String x:Key="Batch.AIGeneration">AI生成処理中...</sys:String>
+    <sys:String x:Key="Batch.Exporting">動画エクスポート中...</sys:String>
+    <sys:String x:Key="Batch.LoadingProject">プロジェクトJSONを読み込み中...</sys:String>
+    <sys:String x:Key="Batch.FileNotFound">ファイルが見つかりません: {0}</sys:String>
+    <sys:String x:Key="Batch.DeserializeFailed">JSONのデシリアライズに失敗しました。</sys:String>
+    <sys:String x:Key="Batch.Complete">バッチ処理完了: {0}/{1} 成功</sys:String>
+    <sys:String x:Key="Batch.ProjectComplete">プロジェクト完了: {0}</sys:String>
+    <sys:String x:Key="Batch.ProjectFailed">プロジェクト失敗: {0} - {1}</sys:String>
+
+    <!-- OpenAI Settings -->
+    <sys:String x:Key="OpenAI.Settings.Title">OpenAI API設定</sys:String>
+    <sys:String x:Key="OpenAI.ApiKey">APIキー:</sys:String>
+    <sys:String x:Key="OpenAI.ApiKey.Placeholder">sk-...</sys:String>
+    <sys:String x:Key="OpenAI.ApiKey.Set">設定済み</sys:String>
+    <sys:String x:Key="OpenAI.ApiKey.NotSet">未設定</sys:String>
+    <sys:String x:Key="OpenAI.TestConnection">接続テスト</sys:String>
+    <sys:String x:Key="OpenAI.Testing">テスト中...</sys:String>
+    <sys:String x:Key="OpenAI.Connected">接続成功</sys:String>
+    <sys:String x:Key="OpenAI.ConnectionFailed">接続失敗</sys:String>
+    <sys:String x:Key="OpenAI.NarrationModel">ナレーションモデル:</sys:String>
+    <sys:String x:Key="OpenAI.ImageModel">画像生成モデル:</sys:String>
+
+    <!-- JSON Import -->
+    <sys:String x:Key="JsonImport.Title">JSONインポート</sys:String>
+    <sys:String x:Key="JsonImport.SelectFile">JSONファイルを選択...</sys:String>
+    <sys:String x:Key="JsonImport.Preview">プレビュー</sys:String>
+    <sys:String x:Key="JsonImport.ProjectName">プロジェクト名:</sys:String>
+    <sys:String x:Key="JsonImport.SceneCount">シーン数:</sys:String>
+    <sys:String x:Key="JsonImport.Resolution">解像度:</sys:String>
+    <sys:String x:Key="JsonImport.Import">インポート</sys:String>
+    <sys:String x:Key="JsonImport.Filter">JSONファイル|*.json|すべてのファイル|*.*</sys:String>
+
+    <!-- JSON Export Dialog -->
+    <sys:String x:Key="BatchExport.Title">JSONエクスポート</sys:String>
+    <sys:String x:Key="BatchExport.AddProjects">プロジェクトを追加</sys:String>
+    <sys:String x:Key="BatchExport.RemoveSelected">選択を削除</sys:String>
+    <sys:String x:Key="BatchExport.OutputDirectory">出力フォルダ:</sys:String>
+    <sys:String x:Key="BatchExport.Browse">参照...</sys:String>
+    <sys:String x:Key="BatchExport.ContinueOnError">エラー時も続行</sys:String>
+    <sys:String x:Key="BatchExport.StartBatch">エクスポート開始</sys:String>
+    <sys:String x:Key="BatchExport.Cancel">キャンセル</sys:String>
+    <sys:String x:Key="BatchExport.Progress">進捗: {0}/{1}</sys:String>
+    <sys:String x:Key="BatchExport.CurrentProject">処理中: {0}</sys:String>
+    <sys:String x:Key="BatchExport.Status.Waiting">待機中</sys:String>
+    <sys:String x:Key="BatchExport.Status.Processing">処理中</sys:String>
+    <sys:String x:Key="BatchExport.Status.Success">成功</sys:String>
+    <sys:String x:Key="BatchExport.Status.Failed">失敗</sys:String>
+    <sys:String x:Key="BatchExport.NoProjects">プロジェクトを追加してください。</sys:String>
+    <sys:String x:Key="BatchExport.Complete">JSONエクスポート完了\n\n成功: {0}\n失敗: {1}\n処理時間: {2}</sys:String>
+
+    <!-- AI Project Generation Dialog -->
+    <sys:String x:Key="AIGenerate.Title">AIプロジェクト生成</sys:String>
+    <sys:String x:Key="AIGenerate.Topic">トピック</sys:String>
+    <sys:String x:Key="AIGenerate.Topic.Hint">動画のテーマを入力してください（例：「Pythonプログラミング入門」「健康的な食事の基本」）</sys:String>
+    <sys:String x:Key="AIGenerate.Settings">生成設定</sys:String>
+    <sys:String x:Key="AIGenerate.Style">スタイル:</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Educational">教育的</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Conversational">会話調</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Formal">フォーマル</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Energetic">エネルギッシュ</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Calm">落ち着いた</sys:String>
+    <sys:String x:Key="AIGenerate.SceneCount">シーン数:</sys:String>
+    <sys:String x:Key="AIGenerate.GenerateImages">画像も生成する</sys:String>
+    <sys:String x:Key="AIGenerate.Generate">生成</sys:String>
+    <sys:String x:Key="AIGenerate.Progress.Preparing">準備中...</sys:String>
+    <sys:String x:Key="AIGenerate.Progress.Generating">ナレーション生成中...</sys:String>
+    <sys:String x:Key="AIGenerate.Progress.Scene">シーン {0}/{1} を生成中...</sys:String>
+    <sys:String x:Key="AIGenerate.Progress.Image">画像 {0}/{1} を生成中...</sys:String>
+    <sys:String x:Key="AIGenerate.Error.NoTopic">トピックを入力してください。</sys:String>
+    <sys:String x:Key="AIGenerate.Error.NoApiKey">OpenAI APIキーが設定されていません。AI編集 → OpenAI設定から設定してください。</sys:String>
+    <sys:String x:Key="Status.OpenAISettingsUpdated">OpenAI設定を更新しました</sys:String>
+    <sys:String x:Key="Status.AIProjectGenerated">AIプロジェクトを生成しました</sys:String>
+
+    <!-- Menu additions -->
+    <sys:String x:Key="Menu.File.ImportJson">JSONインポート(_J)</sys:String>
+    <sys:String x:Key="Menu.File.BatchExport">JSONエクスポート(_E)</sys:String>
+
     <!-- License errors -->
     <sys:String x:Key="License.Error.Empty">ライセンスキーが入力されていません。</sys:String>
     <sys:String x:Key="License.Error.Format">ライセンスキーの形式が正しくありません。</sys:String>
@@ -760,5 +842,106 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="License.Error.Invalid">ライセンスキーが無効です。</sys:String>
     <sys:String x:Key="License.Error.Email">メールアドレスが一致しません。</sys:String>
     <sys:String x:Key="License.Error.Expired">ライセンスの有効期限が切れています（{0}）。</sys:String>
+
+    <!-- Planning Tab -->
+    <sys:String x:Key="Tab.Planning">企画・制作</sys:String>
+    <sys:String x:Key="Tab.VideoGeneration">動画生成</sys:String>
+    <sys:String x:Key="Planning.AIChat">AI相談</sys:String>
+    <sys:String x:Key="Planning.SendChat">送信</sys:String>
+    <sys:String x:Key="Planning.GenerateOutline">構成を生成</sys:String>
+    <sys:String x:Key="Planning.Structure">構成・スクリプト</sys:String>
+    <sys:String x:Key="Planning.GenerateAllScripts">全スクリプト生成</sys:String>
+    <sys:String x:Key="Planning.ImagePrompt">画像プロンプト</sys:String>
+    <sys:String x:Key="Planning.ImagePrompt.Current">現在のシーンのプロンプト</sys:String>
+    <sys:String x:Key="Planning.GeneratePrompt">プロンプト生成</sys:String>
+    <sys:String x:Key="Planning.CopyPrompt">コピー</sys:String>
+    <sys:String x:Key="Planning.ImageGeneration">画像生成</sys:String>
+    <sys:String x:Key="Planning.GenerateImage">DALL-Eで生成</sys:String>
+    <sys:String x:Key="Planning.ExternalTool.Hint">※ プロンプトをコピーしてDALL-E、Midjourney、Nanobanana等で生成することもできます</sys:String>
+    <sys:String x:Key="Planning.Preview">プレビュー</sys:String>
+    <sys:String x:Key="Planning.HasImage">画像: あり</sys:String>
+    <sys:String x:Key="Planning.NoImage">画像: なし</sys:String>
+    <sys:String x:Key="Planning.HasPrompt">プロンプト: あり</sys:String>
+    <sys:String x:Key="Planning.NoPrompt">プロンプト: なし</sys:String>
+    <sys:String x:Key="Planning.Style.Photorealistic">写実的・フォトリアル</sys:String>
+    <sys:String x:Key="Planning.Style.Illustration">イラスト・デジタルアート</sys:String>
+    <sys:String x:Key="Planning.Style.ThreeD">3Dレンダリング</sys:String>
+    <sys:String x:Key="Planning.Style.Flat">フラットデザイン</sys:String>
+    <sys:String x:Key="Planning.Style.Minimalist">ミニマル・シンプル</sys:String>
+
+    <!-- Prompt Builder -->
+    <sys:String x:Key="Planning.PromptBuilder">プロンプトビルダー</sys:String>
+    <sys:String x:Key="Planning.BuildPrompt">プロンプトを組み立て</sys:String>
+    <sys:String x:Key="Planning.SceneType">シーンタイプ</sys:String>
+    <sys:String x:Key="Planning.SceneType.ProductIntro">製品・サービス紹介</sys:String>
+    <sys:String x:Key="Planning.SceneType.ConceptExplain">概念・仕組み解説</sys:String>
+    <sys:String x:Key="Planning.SceneType.TutorialStep">チュートリアル手順</sys:String>
+    <sys:String x:Key="Planning.SceneType.FeatureShowcase">機能ショーケース</sys:String>
+    <sys:String x:Key="Planning.SceneType.Comparison">比較・ビフォーアフター</sys:String>
+    <sys:String x:Key="Planning.SceneType.CallToAction">CTA・行動喚起</sys:String>
+    <sys:String x:Key="Planning.Composition">構図</sys:String>
+    <sys:String x:Key="Planning.Composition.WideShot">ワイドショット（全体）</sys:String>
+    <sys:String x:Key="Planning.Composition.CloseUp">クローズアップ（詳細）</sys:String>
+    <sys:String x:Key="Planning.Composition.Centered">中央配置（バランス）</sys:String>
+    <sys:String x:Key="Planning.Composition.ThirdRule">三分割法（ダイナミック）</sys:String>
+    <sys:String x:Key="Planning.Composition.Isometric">アイソメトリック（3D俯瞰）</sys:String>
+    <sys:String x:Key="Planning.Mood">雰囲気</sys:String>
+    <sys:String x:Key="Planning.Mood.Professional">プロフェッショナル・企業</sys:String>
+    <sys:String x:Key="Planning.Mood.Friendly">フレンドリー・親しみやすい</sys:String>
+    <sys:String x:Key="Planning.Mood.Modern">モダン・スタイリッシュ</sys:String>
+    <sys:String x:Key="Planning.Mood.Elegant">エレガント・高級感</sys:String>
+    <sys:String x:Key="Planning.Mood.Dramatic">ドラマチック・インパクト</sys:String>
+    <sys:String x:Key="Planning.VisualStyle">ビジュアルスタイル</sys:String>
+    <sys:String x:Key="Planning.GeneratePrompt.Tooltip">AIがスクリプトから画像プロンプトを自動生成</sys:String>
+    <sys:String x:Key="Planning.Chat.User">あなた</sys:String>
+    <sys:String x:Key="Planning.Chat.AI">AI</sys:String>
+    <sys:String x:Key="Planning.TransferToVideo">動画生成へ</sys:String>
+
+    <!-- Thumbnail Generator -->
+    <sys:String x:Key="Planning.ThumbnailGenerator">サムネイルジェネレーター</sys:String>
+    <sys:String x:Key="Thumbnail.Pattern">パターン選択</sys:String>
+    <sys:String x:Key="Thumbnail.StylePreset">ワンクリックスタイル</sys:String>
+    <sys:String x:Key="Thumbnail.MainText">メインテキスト (10文字以内推奨)</sys:String>
+    <sys:String x:Key="Thumbnail.SubText">サブテキスト (補足)</sys:String>
+    <sys:String x:Key="Thumbnail.Background">背景</sys:String>
+    <sys:String x:Key="Thumbnail.TextColor">テキスト色</sys:String>
+    <sys:String x:Key="Thumbnail.Generate">サムネイルを生成</sys:String>
+    <sys:String x:Key="Thumbnail.SaveAs">名前を付けて保存</sys:String>
+    <sys:String x:Key="Thumbnail.OpenFolder">フォルダを開く</sys:String>
+    <sys:String x:Key="Thumbnail.NoBg">画像なし</sys:String>
+    <sys:String x:Key="Thumbnail.BgImage">背景画像</sys:String>
+    <sys:String x:Key="Thumbnail.BgColor">背景色</sys:String>
+    <sys:String x:Key="Thumbnail.Saved">サムネイルを保存しました</sys:String>
+    <sys:String x:Key="Thumbnail.Error.NoText">メインテキストを入力してください</sys:String>
+    <sys:String x:Key="Thumbnail.Error.Generate">サムネイルの生成中にエラーが発生しました</sys:String>
+    <sys:String x:Key="Thumbnail.Error.Save">サムネイルの保存中にエラーが発生しました</sys:String>
+    <sys:String x:Key="Thumbnail.Error.NoThumbnail">先にサムネイルを生成してください</sys:String>
+    <sys:String x:Key="Common.Browse">参照...</sys:String>
+
+    <!-- JSON Editor -->
+    <sys:String x:Key="Planning.ApplyJson">JSONを適用</sys:String>
+    <sys:String x:Key="Planning.JsonMode.Tooltip">JSON形式で構成を編集（外部AIからのコピー&amp;ペースト対応）</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.Hint">外部AIで生成したJSONをペーストして「JSONを適用」をクリック</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.Empty">JSONが空です</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.InvalidFormat">有効なシーンデータがありません</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.ParseError">JSONの解析に失敗しました</sys:String>
+    <sys:String x:Key="Planning.JsonEditor.Applied">{0}件のシーンを適用しました</sys:String>
+
+    <!-- Quick Setup -->
+    <sys:String x:Key="Planning.QuickSetup">クイックセットアップ</sys:String>
+    <sys:String x:Key="Planning.DropMedia">素材をドロップ</sys:String>
+    <sys:String x:Key="Planning.BrowseMedia">ファイルを選択</sys:String>
+    <sys:String x:Key="Planning.VideoPurpose">動画の目的</sys:String>
+    <sys:String x:Key="Planning.Purpose.Intro">製品・サービス紹介</sys:String>
+    <sys:String x:Key="Planning.Purpose.Tutorial">使い方・チュートリアル</sys:String>
+    <sys:String x:Key="Planning.Purpose.Explain">概念・仕組み解説</sys:String>
+    <sys:String x:Key="Planning.Purpose.Promo">プロモーション・広告</sys:String>
+    <sys:String x:Key="Planning.Purpose.CustomHint">補足説明を入力（任意）...</sys:String>
+    <sys:String x:Key="Planning.VideoDuration">動画設定</sys:String>
+    <sys:String x:Key="Planning.TotalLength">長さ</sys:String>
+    <sys:String x:Key="Planning.SceneCount">シーン数</sys:String>
+    <sys:String x:Key="Planning.Scenes">シーン</sys:String>
+    <sys:String x:Key="Planning.Duration.Seconds">秒</sys:String>
+    <sys:String x:Key="Planning.GenerateProject">構成を自動生成</sys:String>
 
 </ResourceDictionary>

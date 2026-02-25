@@ -64,7 +64,7 @@ namespace InsightCast.ViewModels
         private string _bgmStatusText = LocalizationService.GetString("BGM.NotSet");
         private bool _bgmActive;
         private string _fpsText = "30";
-        private int _selectedResolutionIndex;
+        private int _selectedResolutionIndex = 0; // Default: 1920x1080 (横動画)
         private int _selectedExportSpeakerIndex;
         private bool _exportProgressVisible;
         private double _exportProgressValue;
@@ -545,6 +545,9 @@ namespace InsightCast.ViewModels
         /// <summary>Raised when scene preview video is ready. Args: video file path.</summary>
         public event Action<string>? PreviewVideoReady;
 
+        /// <summary>Raised when scenes are added, removed, or modified.</summary>
+        public event Action? ScenesChanged;
+
         #endregion
 
         #region Commands
@@ -592,6 +595,10 @@ namespace InsightCast.ViewModels
         public ICommand OpenRecentFileCommand { get; }
         public ICommand CancelExportCommand { get; }
         public ICommand ExitCommand { get; }
+        public ICommand ImportJsonCommand { get; }
+        public ICommand BatchExportCommand { get; }
+        public ICommand OpenAISettingsCommand { get; }
+        public ICommand AIGenerateProjectCommand { get; }
 
         #endregion
 
@@ -655,6 +662,10 @@ namespace InsightCast.ViewModels
             OpenRecentFileCommand = new RelayCommand(p => { if (p is string path) OpenRecentFile(path); });
             CancelExportCommand = new RelayCommand(CancelExport, () => _isExporting);
             ExitCommand = new RelayCommand(() => ExitRequested?.Invoke());
+            ImportJsonCommand = new RelayCommand(ImportJson);
+            BatchExportCommand = new RelayCommand(OpenBatchExport);
+            OpenAISettingsCommand = new RelayCommand(OpenAISettings);
+            AIGenerateProjectCommand = new RelayCommand(OpenAIGenerateProject);
 
             // Auto-save every 5 minutes
             _autoSaveTimer = new Timer(_ => AutoSave(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
@@ -731,7 +742,7 @@ namespace InsightCast.ViewModels
             if (selectedIndex >= 0 && selectedIndex < SceneItems.Count)
                 SelectedSceneIndex = selectedIndex;
             else if (SceneItems.Count > 0)
-                SelectedSceneIndex = 0;
+                SelectedSceneIndex = SceneItems.Count - 1;  // 一番下を選択
             else
                 SelectedSceneIndex = -1;
 
@@ -805,6 +816,7 @@ namespace InsightCast.ViewModels
             RefreshSceneList();
             SelectedSceneIndex = _project.Scenes.Count - 1;
             _logger.Log(LocalizationService.GetString("VM.Scene.Added", _project.Scenes.Count));
+            ScenesChanged?.Invoke();
         }
 
         private void RemoveScene()
@@ -822,6 +834,7 @@ namespace InsightCast.ViewModels
             _project.RemoveScene(idx);
             RefreshSceneList();
             _logger.Log(LocalizationService.GetString("VM.Scene.Removed", idx + 1));
+            ScenesChanged?.Invoke();
         }
 
         private void MoveSceneUp() => MoveScene(-1);
@@ -838,6 +851,7 @@ namespace InsightCast.ViewModels
             _project.MoveScene(idx, newIdx);
             RefreshSceneList();
             SelectedSceneIndex = newIdx;
+            ScenesChanged?.Invoke();
         }
 
         #endregion
@@ -1439,7 +1453,7 @@ namespace InsightCast.ViewModels
 
             var previewPath = Path.Combine(previewDir, $"preview_{Guid.NewGuid():N}.mp4");
 
-            string resolution = _selectedResolutionIndex == 1 ? "1920x1080" : "1080x1920";
+            string resolution = _selectedResolutionIndex == 0 ? "1920x1080" : "1080x1920";
             int exportSpeakerId = _defaultSpeakerId;
             if (_selectedExportSpeakerIndex >= 0 && _selectedExportSpeakerIndex < ExportSpeakers.Count)
                 exportSpeakerId = ExportSpeakers[_selectedExportSpeakerIndex].StyleId;
@@ -1671,9 +1685,7 @@ namespace InsightCast.ViewModels
             if (int.TryParse(_fpsText, out var parsedFps))
                 fps = Math.Clamp(parsedFps, 15, 60);
 
-            string resolution = "1080x1920";
-            if (_selectedResolutionIndex == 1)
-                resolution = "1920x1080";
+            string resolution = _selectedResolutionIndex == 0 ? "1920x1080" : "1080x1920";
 
             int exportSpeakerId = _defaultSpeakerId;
             if (_selectedExportSpeakerIndex >= 0 && _selectedExportSpeakerIndex < ExportSpeakers.Count)
@@ -1747,9 +1759,12 @@ namespace InsightCast.ViewModels
                     if (!string.IsNullOrEmpty(exportResult.MetadataFilePath))
                         extras.Add(LocalizationService.GetString("VM.Export.Metadata", exportResult.MetadataFilePath));
                     foreach (var extra in extras) _logger.Log(extra);
+                    OnExportFinished(true, outputPath);
                 }
-
-                OnExportFinished(exportResult.Success, outputPath);
+                else
+                {
+                    OnExportFinished(false, exportResult.ErrorMessage ?? LocalizationService.GetString("VM.Export.UnknownError"));
+                }
             }
             catch (OperationCanceledException)
             {
@@ -2251,6 +2266,115 @@ namespace InsightCast.ViewModels
             catch { /* best-effort */ }
 
             return true;
+        }
+
+        #endregion
+
+        #region JSON Import & Batch Export
+
+        private void ImportJson()
+        {
+            if (_dialogService == null) return;
+
+            var batchService = CreateBatchExportService();
+            if (batchService == null) return;
+
+            var dialog = new Views.JsonImportDialog(batchService);
+            dialog.Owner = System.Windows.Application.Current.MainWindow;
+
+            if (dialog.ShowDialog() == true && dialog.ImportedProject != null)
+            {
+                _project = dialog.ImportedProject;
+                RefreshSceneList();
+                if (_project.Scenes.Count > 0)
+                    SelectedSceneIndex = 0;
+
+                WindowTitle = LocalizationService.GetString("VM.ImportProject");
+                StatusText = LocalizationService.GetString("VM.Project.Loaded", _project.Scenes.Count);
+                _isDirty = true;
+            }
+        }
+
+        private void OpenBatchExport()
+        {
+            if (_dialogService == null) return;
+
+            var batchService = CreateBatchExportService();
+            if (batchService == null) return;
+
+            var dialog = new Views.BatchExportDialog(
+                batchService,
+                _defaultSpeakerId,
+                GetStyleForScene);
+            dialog.Owner = System.Windows.Application.Current.MainWindow;
+            dialog.ShowDialog();
+        }
+
+        private void OpenAISettings()
+        {
+            var openAIService = new Services.OpenAI.OpenAIService();
+
+            var dialog = new Views.OpenAISettingsDialog(_config, openAIService);
+            dialog.Owner = System.Windows.Application.Current.MainWindow;
+
+            if (dialog.ShowDialog() == true)
+            {
+                StatusText = LocalizationService.GetString("Status.OpenAISettingsUpdated");
+            }
+        }
+
+        private void OpenAIGenerateProject()
+        {
+            var openAIService = new Services.OpenAI.OpenAIService();
+
+            // Configure API key if available
+            var apiKey = Services.OpenAI.ApiKeyManager.GetApiKey(_config);
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                _ = openAIService.ConfigureAsync(apiKey);
+            }
+
+            var dialog = new Views.AIProjectGenerateDialog(_config, openAIService);
+            dialog.Owner = System.Windows.Application.Current.MainWindow;
+
+            if (dialog.ShowDialog() == true && dialog.GeneratedProject != null)
+            {
+                // Apply generated project
+                _project = dialog.GeneratedProject;
+                _project.ProjectPath = null;
+                RefreshSceneList();
+
+                if (SceneItems.Count > 0)
+                {
+                    SelectedSceneIndex = 0;
+                }
+
+                StatusText = LocalizationService.GetString("Status.AIProjectGenerated");
+            }
+        }
+
+        private Services.Batch.IBatchExportService? CreateBatchExportService()
+        {
+            if (_ffmpegWrapper == null)
+            {
+                _dialogService?.ShowError(
+                    LocalizationService.GetString("App.FFmpeg.NotFound"),
+                    LocalizationService.GetString("Common.Error"));
+                return null;
+            }
+
+            var openAIService = new Services.OpenAI.OpenAIService();
+            var apiKey = Services.OpenAI.ApiKeyManager.GetApiKey(_config);
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                _ = openAIService.ConfigureAsync(apiKey);
+            }
+
+            return new Services.Batch.BatchExportService(
+                _ffmpegWrapper,
+                _voiceVoxClient,
+                _audioCache,
+                openAIService);
         }
 
         #endregion

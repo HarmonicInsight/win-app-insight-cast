@@ -49,3 +49,5 @@ desktop.ini
 .claude/
 _build_tools/
 publish/
+
+nul

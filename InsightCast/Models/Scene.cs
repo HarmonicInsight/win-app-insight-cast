@@ -67,6 +67,18 @@ namespace InsightCast.Models
         [JsonPropertyName("speechSpeed")]
         public double SpeechSpeed { get; set; } = 1.0;
 
+        /// <summary>
+        /// シーンのタイトル（企画段階での見出し）。
+        /// </summary>
+        [JsonPropertyName("title")]
+        public string? Title { get; set; }
+
+        /// <summary>
+        /// AI生成設定。ナレーションや画像をAIで生成する場合に使用。
+        /// </summary>
+        [JsonPropertyName("aiGeneration")]
+        public AIGenerationSettings? AIGeneration { get; set; }
+
         [JsonIgnore]
         public bool HasMedia => !string.IsNullOrEmpty(MediaPath);
 
@@ -78,6 +90,15 @@ namespace InsightCast.Models
 
         [JsonIgnore]
         public bool HasSubtitle => !string.IsNullOrEmpty(SubtitleText);
+
+        [JsonIgnore]
+        public bool HasTitle => !string.IsNullOrEmpty(Title);
+
+        /// <summary>
+        /// AI生成が必要かどうかを判定します。
+        /// </summary>
+        [JsonIgnore]
+        public bool RequiresAIGeneration => AIGeneration?.RequiresGeneration == true;
 
         public Scene()
         {

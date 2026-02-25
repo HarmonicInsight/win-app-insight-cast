@@ -1,0 +1,575 @@
+<UserControl x:Class="InsightCast.Views.PlanningTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:InsightCast.Converters">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+        <Style x:Key="CardBorder" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource BgCard}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDefault}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="4,0"/>
+            <Setter Property="Padding" Value="12,4"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320" MinWidth="280"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="300" MinWidth="250"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left: クイックセットアップ -->
+        <GroupBox Grid.Column="0" Header="{DynamicResource Planning.QuickSetup}" Padding="8">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <!-- 動画の長さとシーン数 -->
+                    <Border Style="{StaticResource CardBorder}">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Planning.VideoDuration}"
+                                       Style="{StaticResource SectionHeader}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 長さ -->
+                                <TextBlock Grid.Column="0" Grid.Row="0" Text="{DynamicResource Planning.TotalLength}"
+                                           FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                                <ComboBox Grid.Column="0" Grid.Row="1" Height="40" Width="100" HorizontalAlignment="Left"
+                                          FontSize="14" SelectedIndex="{Binding SelectedDurationIndex}">
+                                    <ComboBoxItem Content="15秒" Tag="15"/>
+                                    <ComboBoxItem Content="30秒" Tag="30"/>
+                                    <ComboBoxItem Content="60秒" Tag="60"/>
+                                    <ComboBoxItem Content="90秒" Tag="90"/>
+                                    <ComboBoxItem Content="120秒" Tag="120"/>
+                                    <ComboBoxItem Content="180秒" Tag="180"/>
+                                </ComboBox>
+
+                                <!-- シーン数 -->
+                                <TextBlock Grid.Column="1" Grid.Row="0" Text="{DynamicResource Planning.SceneCount}"
+                                           FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="8,0,0,4"/>
+                                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Margin="8,0,0,0">
+                                    <TextBox Width="70" Height="40" FontSize="16" Padding="4,2"
+                                             VerticalContentAlignment="Center" TextAlignment="Center"
+                                             Text="{Binding SceneCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <TextBlock Text="{DynamicResource Planning.Scenes}"
+                                               VerticalAlignment="Center" Margin="6,0,0,0" FontSize="13"
+                                               Foreground="{DynamicResource TextSecondary}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- 計算結果 -->
+                            <Border Background="{DynamicResource BgSecondary}" CornerRadius="4"
+                                    Padding="8,6" Margin="0,8,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding SecondsPerSceneText}"
+                                               Foreground="{DynamicResource AccentGold}"
+                                               FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBlock Text="{Binding MediaStatusText}"
+                                               Foreground="{Binding MediaStatusColor}"
+                                               FontSize="11" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 反映ボタン -->
+                            <Button Content="構成に反映"
+                                    Style="{StaticResource ActionButton}"
+                                    Height="36" FontSize="13" FontWeight="Bold"
+                                    HorizontalAlignment="Stretch" Margin="0,12,0,0"
+                                    Command="{Binding ApplyQuickSetupCommand}"
+                                    ToolTip="シーン数を構成に反映（既存のシーンは上書きされます）"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 生成ボタン（AI機能一時非表示）
+                    <Button Content="{DynamicResource Planning.GenerateProject}"
+                            Style="{StaticResource ActionButton}"
+                            Height="40" FontSize="14" FontWeight="Bold"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding GenerateProjectCommand}"/>
+                    -->
+
+                    <!-- AI相談（一時非表示）
+                    <Expander Header="{DynamicResource Planning.AIChat}" Margin="0,8,0,0"
+                              IsExpanded="False">
+                        <StackPanel Margin="0,8,0,0">
+                            <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding ChatMessages}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,4" Padding="6" CornerRadius="4"
+                                                    Background="{Binding Background}">
+                                                <TextBlock Text="{Binding Text}" TextWrapping="Wrap"
+                                                           FontSize="11" Foreground="{DynamicResource TextPrimary}"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <TextBox Height="40" Margin="0,8,0,0"
+                                     AcceptsReturn="True" TextWrapping="Wrap"
+                                     Text="{Binding ChatInput, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Content="{DynamicResource Planning.SendChat}"
+                                    Style="{StaticResource ActionButton}"
+                                    HorizontalAlignment="Right" Margin="0,8,0,0"
+                                    Command="{Binding SendChatCommand}"/>
+                        </StackPanel>
+                    </Expander>
+                    -->
+                </StackPanel>
+            </ScrollViewer>
+        </GroupBox>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"
+                      Background="{DynamicResource BorderDefault}"/>
+
+        <!-- Center: 構成・スクリプト編集 -->
+        <GroupBox Grid.Column="2" Header="{DynamicResource Planning.Structure}" Padding="8">
+            <DockPanel>
+                <!-- ツールバー -->
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Content="{DynamicResource Common.Add}" Padding="8,4"
+                                Command="{Binding AddSceneCommand}"
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Button Content="{DynamicResource Common.Remove}" Padding="8,4" Margin="4,0"
+                                Command="{Binding RemoveSceneCommand}"
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Button Content="↑" Padding="8,4" Command="{Binding MoveSceneUpCommand}"
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Button Content="↓" Padding="8,4" Margin="4,0" Command="{Binding MoveSceneDownCommand}"
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Separator Margin="8,0"
+                                   Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Button Content="全クリア" Padding="8,4" Foreground="OrangeRed"
+                                Command="{Binding ClearAllScenesCommand}"
+                                ToolTip="全シーンの内容をクリア"
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <!-- AI機能一時非表示
+                        <Separator Margin="8,0"
+                                   Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Button Content="{DynamicResource Planning.GenerateAllScripts}"
+                                Style="{StaticResource ActionButton}"
+                                Command="{Binding GenerateAllScriptsCommand}"
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        -->
+                        <!-- JSONモード時のボタン -->
+                        <Button Content="{DynamicResource Planning.ApplyJson}" Padding="12,4"
+                                Style="{StaticResource ActionButton}"
+                                Command="{Binding ApplyJsonCommand}"
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
+                    <!-- JSONモード切替 -->
+                    <ToggleButton Grid.Column="1" Content="JSON" Padding="12,4"
+                                  IsChecked="{Binding IsJsonMode}"
+                                  ToolTip="{DynamicResource Planning.JsonMode.Tooltip}"/>
+                </Grid>
+
+                <!-- JSON編集モード -->
+                <Grid Visibility="{Binding IsJsonMode, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                        <TextBlock Text="{DynamicResource Planning.JsonEditor.Hint}"
+                                   FontSize="11" Foreground="{DynamicResource TextTertiary}"
+                                   VerticalAlignment="Center"/>
+                        <Button Content="×" Padding="8,2" FontSize="14" FontWeight="Bold"
+                                HorizontalAlignment="Right"
+                                Command="{Binding CloseJsonModeCommand}"
+                                ToolTip="JSONモードを閉じる"/>
+                    </Grid>
+                    <TextBox Grid.Row="1" Text="{Binding ScenesJson, UpdateSourceTrigger=PropertyChanged}"
+                             FontFamily="Consolas" FontSize="12"
+                             AcceptsReturn="True" TextWrapping="NoWrap"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"
+                             Background="{DynamicResource BgSecondary}"/>
+                </Grid>
+
+                <!-- シーン一覧（ビジュアルモード） -->
+                <ListBox x:Name="SceneList" ItemsSource="{Binding PlanningScenes}"
+                         SelectedIndex="{Binding SelectedPlanningSceneIndex}"
+                         HorizontalContentAlignment="Stretch"
+                         Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource CardBorder}" Margin="0,2">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- タイトル行 -->
+                                    <Grid Grid.Row="0" Margin="0,0,0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Index, StringFormat='#{0}'}"
+                                                   FontWeight="Bold" Foreground="{DynamicResource AccentGold}"
+                                                   Margin="0,0,8,0"/>
+                                        <TextBox Grid.Column="1" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+                                                 FontWeight="SemiBold" BorderThickness="0" Background="Transparent"
+                                                 Foreground="{DynamicResource TextPrimary}"/>
+                                        <Button Grid.Column="2" Content="×" Padding="4,0" FontSize="10"
+                                                Foreground="{DynamicResource TextTertiary}"
+                                                Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                                Command="{Binding DataContext.ClearSceneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding Index}"
+                                                ToolTip="このシーンをクリア"/>
+                                    </Grid>
+
+                                    <!-- スクリプト -->
+                                    <TextBox Grid.Row="1" Text="{Binding Script, UpdateSourceTrigger=PropertyChanged}"
+                                             Height="50" AcceptsReturn="True" TextWrapping="Wrap"
+                                             VerticalScrollBarVisibility="Auto"
+                                             Margin="0,0,0,4"/>
+
+                                    <!-- ステータス表示 -->
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                        <TextBlock Text="{DynamicResource Planning.HasImage}"
+                                                   Foreground="{Binding HasImageColor}" FontSize="11"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </GroupBox>
+
+        <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"
+                      Background="{DynamicResource BorderDefault}"/>
+
+        <!-- Right: サムネイルジェネレーター -->
+        <GroupBox Grid.Column="4" Header="{DynamicResource Planning.ThumbnailGenerator}" Padding="8">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <DockPanel>
+                <!-- パターン選択 -->
+                <Border DockPanel.Dock="Top" Style="{StaticResource CardBorder}">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource Thumbnail.Pattern}"
+                                   Style="{StaticResource SectionHeader}"/>
+                        <ComboBox Height="40" FontSize="13"
+                                  ItemsSource="{Binding ThumbnailPatterns}"
+                                  SelectedIndex="{Binding SelectedThumbnailPatternIndex}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="2">
+                                        <Border Width="24" Height="24" CornerRadius="4" Margin="0,0,10,0"
+                                                Background="{Binding ColorBrush}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                                   FontSize="13" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <!-- スタイルプリセット（ワンクリック） -->
+                        <TextBlock Text="{DynamicResource Thumbnail.StylePreset}" Margin="0,10,0,6"
+                                   FontSize="12" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimary}"/>
+                        <ItemsControl ItemsSource="{Binding StylePresets}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Margin="2" Padding="8,6" Cursor="Hand"
+                                            Command="{Binding DataContext.ApplyStylePresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding Style}"
+                                            ToolTip="{Binding Description}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Width="14" Height="14" CornerRadius="2" Margin="0,0,6,0"
+                                                    Background="{Binding ColorBrush}"/>
+                                            <TextBlock Text="{Binding Name}" FontSize="11" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- テキスト入力（3行・Excelスタイル色選択） -->
+                <Border DockPanel.Dock="Top" Style="{StaticResource CardBorder}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <!-- メインテキスト -->
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="メイン" FontSize="11" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Height="36" FontSize="13" FontWeight="Bold" Padding="6,4"
+                                     VerticalContentAlignment="Center"
+                                     Text="{Binding ThumbnailMainText, UpdateSourceTrigger=PropertyChanged}"/>
+                            <!-- フォント選択 -->
+                            <ComboBox Grid.Column="2" Height="36" Margin="4,0,0,0" FontSize="10"
+                                      ItemsSource="{Binding AvailableFonts}"
+                                      SelectedIndex="{Binding SelectedMainFontIndex}"/>
+                            <!-- サイズ選択 -->
+                            <ComboBox Grid.Column="3" Height="36" Margin="4,0,0,0" FontSize="10"
+                                      ItemsSource="{Binding FontSizeOptions}"
+                                      SelectedIndex="{Binding MainFontSizeIndex}"/>
+                            <!-- Excel風ドロップダウンカラーピッカー -->
+                            <ToggleButton x:Name="MainColorToggle" Grid.Column="4" Width="36" Height="36" Margin="4,0,0,0"
+                                          BorderThickness="1" BorderBrush="#666" Padding="0">
+                                <Border Width="24" Height="24" CornerRadius="2"
+                                        Background="{Binding SelectedMainColorBrush}"/>
+                            </ToggleButton>
+                            <Popup IsOpen="{Binding IsChecked, ElementName=MainColorToggle}" StaysOpen="False"
+                                   PlacementTarget="{Binding ElementName=MainColorToggle}" Placement="Bottom">
+                                <Border Background="{DynamicResource BgCard}" BorderBrush="#555" BorderThickness="1"
+                                        CornerRadius="4" Padding="4">
+                                    <ItemsControl ItemsSource="{Binding ColorPalette}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><UniformGrid Columns="10"/></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Width="20" Height="20" Margin="1" CornerRadius="2" Cursor="Hand"
+                                                        Background="{Binding Brush}" BorderThickness="1" BorderBrush="#444"
+                                                        MouseLeftButtonDown="MainColorPalette_Click" Tag="{Binding Index}"
+                                                        ToolTip="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <!-- サブテキスト -->
+                        <Grid Margin="0,4,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="サブ1" FontSize="11" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Height="36" FontSize="13" Padding="6,4"
+                                     VerticalContentAlignment="Center"
+                                     Text="{Binding ThumbnailSubText, UpdateSourceTrigger=PropertyChanged}"/>
+                            <!-- フォント選択 -->
+                            <ComboBox Grid.Column="2" Height="36" Margin="4,0,0,0" FontSize="10"
+                                      ItemsSource="{Binding AvailableFonts}"
+                                      SelectedIndex="{Binding SelectedSubFontIndex}"/>
+                            <!-- サイズ選択 -->
+                            <ComboBox Grid.Column="3" Height="36" Margin="4,0,0,0" FontSize="10"
+                                      ItemsSource="{Binding FontSizeOptions}"
+                                      SelectedIndex="{Binding SubFontSizeIndex}"/>
+                            <ToggleButton x:Name="SubColorToggle" Grid.Column="4" Width="36" Height="36" Margin="4,0,0,0"
+                                          BorderThickness="1" BorderBrush="#666" Padding="0">
+                                <Border Width="24" Height="24" CornerRadius="2"
+                                        Background="{Binding SelectedSubColorBrush}"/>
+                            </ToggleButton>
+                            <Popup IsOpen="{Binding IsChecked, ElementName=SubColorToggle}" StaysOpen="False"
+                                   PlacementTarget="{Binding ElementName=SubColorToggle}" Placement="Bottom">
+                                <Border Background="{DynamicResource BgCard}" BorderBrush="#555" BorderThickness="1"
+                                        CornerRadius="4" Padding="4">
+                                    <ItemsControl ItemsSource="{Binding ColorPalette}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><UniformGrid Columns="10"/></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Width="20" Height="20" Margin="1" CornerRadius="2" Cursor="Hand"
+                                                        Background="{Binding Brush}" BorderThickness="1" BorderBrush="#444"
+                                                        MouseLeftButtonDown="SubColorPalette_Click" Tag="{Binding Index}"
+                                                        ToolTip="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <!-- サブサブテキスト -->
+                        <Grid Margin="0,4,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="サブ2" FontSize="11" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Height="36" FontSize="13" Padding="6,4"
+                                     VerticalContentAlignment="Center"
+                                     Text="{Binding ThumbnailSubSubText, UpdateSourceTrigger=PropertyChanged}"/>
+                            <!-- フォント選択 -->
+                            <ComboBox Grid.Column="2" Height="36" Margin="4,0,0,0" FontSize="10"
+                                      ItemsSource="{Binding AvailableFonts}"
+                                      SelectedIndex="{Binding SelectedSubSubFontIndex}"/>
+                            <!-- サイズ選択 -->
+                            <ComboBox Grid.Column="3" Height="36" Margin="4,0,0,0" FontSize="10"
+                                      ItemsSource="{Binding FontSizeOptions}"
+                                      SelectedIndex="{Binding SubSubFontSizeIndex}"/>
+                            <ToggleButton x:Name="SubSubColorToggle" Grid.Column="4" Width="36" Height="36" Margin="4,0,0,0"
+                                          BorderThickness="1" BorderBrush="#666" Padding="0">
+                                <Border Width="24" Height="24" CornerRadius="2"
+                                        Background="{Binding SelectedSubSubColorBrush}"/>
+                            </ToggleButton>
+                            <Popup IsOpen="{Binding IsChecked, ElementName=SubSubColorToggle}" StaysOpen="False"
+                                   PlacementTarget="{Binding ElementName=SubSubColorToggle}" Placement="Bottom">
+                                <Border Background="{DynamicResource BgCard}" BorderBrush="#555" BorderThickness="1"
+                                        CornerRadius="4" Padding="4">
+                                    <ItemsControl ItemsSource="{Binding ColorPalette}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><UniformGrid Columns="10"/></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Width="20" Height="20" Margin="1" CornerRadius="2" Cursor="Hand"
+                                                        Background="{Binding Brush}" BorderThickness="1" BorderBrush="#444"
+                                                        MouseLeftButtonDown="SubSubColorPalette_Click" Tag="{Binding Index}"
+                                                        ToolTip="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <!-- 文字数 -->
+                        <TextBlock Text="{Binding ThumbnailCharCountText}" Margin="0,4,0,0"
+                                   FontSize="10" Foreground="{Binding ThumbnailCharCountColor}"
+                                   HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 背景設定 -->
+                <Border DockPanel.Dock="Top" Style="{StaticResource CardBorder}" Margin="0,6,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="背景" FontSize="11" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding ThumbnailBgFileName}"
+                                   VerticalAlignment="Center" FontSize="10"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="参照" Padding="6,2" FontSize="10"
+                                    Command="{Binding SelectThumbnailBgCommand}"/>
+                            <Button Content="×" Padding="4,2" Margin="2,0,0,0" FontSize="10"
+                                    Command="{Binding ClearThumbnailBgCommand}"/>
+                        </StackPanel>
+                        <!-- 背景色ピッカー -->
+                        <ToggleButton x:Name="BgColorToggle" Grid.Column="3" Width="32" Height="32" Margin="8,0,0,0"
+                                      BorderThickness="1" BorderBrush="#666" Padding="0">
+                            <Border Width="24" Height="24" CornerRadius="2"
+                                    Background="{Binding SelectedBgColorBrush}"/>
+                        </ToggleButton>
+                        <Popup IsOpen="{Binding IsChecked, ElementName=BgColorToggle}" StaysOpen="False"
+                               PlacementTarget="{Binding ElementName=BgColorToggle}" Placement="Bottom">
+                            <Border Background="{DynamicResource BgCard}" BorderBrush="#555" BorderThickness="1"
+                                    CornerRadius="4" Padding="4">
+                                <ItemsControl ItemsSource="{Binding ColorPalette}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate><UniformGrid Columns="10"/></ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="20" Height="20" Margin="1" CornerRadius="2" Cursor="Hand"
+                                                    Background="{Binding Brush}" BorderThickness="1" BorderBrush="#444"
+                                                    MouseLeftButtonDown="BgColorPalette_Click" Tag="{Binding Index}"
+                                                    ToolTip="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </Border>
+
+                <!-- 生成ボタン -->
+                <Border DockPanel.Dock="Top" Style="{StaticResource CardBorder}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Content="{DynamicResource Thumbnail.Generate}"
+                                    Style="{StaticResource ActionButton}"
+                                    Height="40" FontSize="14" FontWeight="Bold"
+                                    HorizontalAlignment="Stretch"
+                                    Command="{Binding GenerateThumbnailCommand}"/>
+                            <Button Grid.Column="1" Content="クリア" Padding="12,4" Margin="8,0,0,0"
+                                    Height="40" Foreground="OrangeRed"
+                                    Command="{Binding ClearThumbnailCommand}"
+                                    ToolTip="全ての設定とプレビューをクリア"/>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Center">
+                            <Button Content="{DynamicResource Thumbnail.SaveAs}" Padding="12,4"
+                                    Command="{Binding SaveThumbnailCommand}"/>
+                            <Button Content="{DynamicResource Thumbnail.OpenFolder}" Padding="12,4" Margin="8,0,0,0"
+                                    Command="{Binding OpenThumbnailFolderCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- プレビュー -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource Planning.Preview}"
+                                   Style="{StaticResource SectionHeader}"/>
+                        <Border Background="{DynamicResource BgSecondary}"
+                                CornerRadius="4" MinHeight="120">
+                            <Image x:Name="ThumbnailPreview" Source="{Binding ThumbnailPreviewImage}"
+                                   Stretch="Uniform" MaxHeight="180"/>
+                        </Border>
+                        <TextBlock Text="1280 x 720 px (YouTube推奨サイズ)" Margin="0,4,0,0"
+                                   FontSize="10" Foreground="{DynamicResource TextTertiary}"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+            </ScrollViewer>
+        </GroupBox>
+    </Grid>
+</UserControl>
