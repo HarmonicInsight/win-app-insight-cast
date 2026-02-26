@@ -76,6 +76,11 @@ public static class LocalizationService
     }
 
     /// <summary>
+    /// Returns true if the current language is English.
+    /// </summary>
+    public static bool IsEnglish() => _currentLanguage == "en";
+
+    /// <summary>
     /// Toggle between ja and en.
     /// </summary>
     public static string ToggleLanguage()

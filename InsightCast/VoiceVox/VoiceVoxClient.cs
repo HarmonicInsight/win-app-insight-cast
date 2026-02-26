@@ -41,6 +41,96 @@ public class VoiceVoxClient : IDisposable
         "春日部つむぎ"
     };
 
+    /// <summary>
+    /// Romanized display names for VOICEVOX speakers (used in English locale).
+    /// Format: "Romaji (原名)" — proper nouns kept recognizable.
+    /// </summary>
+    private static readonly Dictionary<string, string> SpeakerRomanization = new(StringComparer.Ordinal)
+    {
+        ["四国めたん"]   = "Shikoku Metan",
+        ["ずんだもん"]   = "Zundamon",
+        ["春日部つむぎ"] = "Kasukabe Tsumugi",
+        ["雨晴はう"]     = "Amehare Hau",
+        ["波音リツ"]     = "Namine Ritsu",
+        ["玄野武宏"]     = "Kurono Takehiro",
+        ["白上虎太郎"]   = "Shirakami Kotaro",
+        ["青山龍星"]     = "Aoyama Ryusei",
+        ["冥鳴ひまり"]   = "Meimei Himari",
+        ["九州そら"]     = "Kyushu Sora",
+        ["もち子さん"]   = "Mochiko-san",
+        ["剣崎雌雄"]     = "Kenzaki Mesuo",
+        ["WhiteCUL"]     = "WhiteCUL",
+        ["後鬼"]         = "Goki",
+        ["No.7"]         = "No.7",
+        ["ちび式じい"]   = "Chibishiki Jii",
+        ["櫻歌ミコ"]     = "Ohka Miko",
+        ["小夜/SAYO"]    = "Sayo",
+        ["ナースロボ＿タイプＴ"] = "Nurse Robot Type T",
+        ["†聖騎士 紅桜†"] = "Holy Knight Kouzakura",
+        ["雀松朱司"]     = "Wakamatsu Akashi",
+        ["麒ヶ島宗麟"]   = "Kigashima Sorin",
+        ["春歌ナナ"]     = "Haruka Nana",
+        ["猫使アル"]     = "Nekotsukai Aru",
+        ["猫使ビィ"]     = "Nekotsukai Bii",
+        ["中国うさぎ"]   = "Chugoku Usagi",
+        ["栗田まろん"]   = "Kurita Maron",
+        ["あいえるたん"] = "Aiel-tan",
+        ["満別花丸"]     = "Manbetsu Hanamaru",
+        ["琴詠ニア"]     = "Kotoyomi Nia",
+    };
+
+    /// <summary>
+    /// Romanized style names for VOICEVOX voice styles (used in English locale).
+    /// </summary>
+    private static readonly Dictionary<string, string> StyleRomanization = new(StringComparer.Ordinal)
+    {
+        ["ノーマル"]   = "Normal",
+        ["あまあま"]   = "Sweet",
+        ["ツンツン"]   = "Tsundere",
+        ["セクシー"]   = "Sexy",
+        ["ささやき"]   = "Whisper",
+        ["ヒソヒソ"]   = "Hushed",
+        ["怒り"]       = "Angry",
+        ["悲しみ"]     = "Sad",
+        ["喜び"]       = "Happy",
+        ["やさしい"]   = "Gentle",
+        ["かわいい"]   = "Cute",
+        ["かっこいい"] = "Cool",
+        ["ものまね"]   = "Mimic",
+        ["へろへろ"]   = "Exhausted",
+        ["びえーん"]   = "Crying",
+    };
+
+    /// <summary>
+    /// Returns a localized display name for a VOICEVOX speaker.
+    /// In English locale: "Romaji (原名)"; in Japanese locale: original name.
+    /// </summary>
+    public static string GetLocalizedSpeakerName(string japaneseName)
+    {
+        if (!Services.LocalizationService.IsEnglish())
+            return japaneseName;
+
+        if (SpeakerRomanization.TryGetValue(japaneseName, out var romaji))
+            return $"{romaji} ({japaneseName})";
+
+        return japaneseName;
+    }
+
+    /// <summary>
+    /// Returns a localized display name for a VOICEVOX style.
+    /// In English locale: English name; in Japanese locale: original name.
+    /// </summary>
+    public static string GetLocalizedStyleName(string japaneseName)
+    {
+        if (!Services.LocalizationService.IsEnglish())
+            return japaneseName;
+
+        if (StyleRomanization.TryGetValue(japaneseName, out var english))
+            return english;
+
+        return japaneseName;
+    }
+
     private readonly HttpClient _httpClient;
     private readonly bool _ownsHttpClient;
     private string _baseUrl;

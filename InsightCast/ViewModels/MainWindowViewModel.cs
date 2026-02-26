@@ -963,15 +963,17 @@ namespace InsightCast.ViewModels
                 foreach (var speaker in speakers)
                 {
                     if (!speaker.TryGetProperty("name", out var nameProp)) continue;
-                    var speakerName = nameProp.GetString() ?? "Unknown";
+                    var rawSpeakerName = nameProp.GetString() ?? "Unknown";
+                    var speakerName = VoiceVox.VoiceVoxClient.GetLocalizedSpeakerName(rawSpeakerName);
                     if (!speaker.TryGetProperty("styles", out var styles)) continue;
 
                     foreach (var style in styles.EnumerateArray())
                     {
                         if (!style.TryGetProperty("id", out var idProp)) continue;
                         var styleId = idProp.GetInt32();
-                        var styleName = style.TryGetProperty("name", out var snProp)
-                            ? snProp.GetString() ?? LocalizationService.GetString("VM.Speaker.Normal") : LocalizationService.GetString("VM.Speaker.Normal");
+                        var rawStyleName = style.TryGetProperty("name", out var snProp)
+                            ? snProp.GetString() ?? "ノーマル" : "ノーマル";
+                        var styleName = VoiceVox.VoiceVoxClient.GetLocalizedStyleName(rawStyleName);
                         var displayName = $"{speakerName} ({styleName})";
                         _speakerStyles[styleId] = displayName;
                         ExportSpeakers.Add(new SpeakerItem { DisplayName = displayName, StyleId = styleId });

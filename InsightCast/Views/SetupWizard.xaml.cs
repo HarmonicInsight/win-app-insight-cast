@@ -446,7 +446,8 @@ public partial class SetupWizard : Window
                 var speakerName = "";
                 if (speaker.Value.TryGetProperty("name", out var nameElement))
                 {
-                    speakerName = nameElement.GetString() ?? LocalizationService.GetString("Common.Unknown");
+                    var rawName = nameElement.GetString() ?? LocalizationService.GetString("Common.Unknown");
+                    speakerName = VoiceVox.VoiceVoxClient.GetLocalizedSpeakerName(rawName);
                 }
 
                 Dispatcher.Invoke(() =>
