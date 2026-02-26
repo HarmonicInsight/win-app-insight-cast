@@ -34,18 +34,6 @@ namespace InsightCast.Services
         [JsonPropertyName("defaultTransitionDuration")]
         public double DefaultTransitionDuration { get; set; } = 0.5;
 
-        [JsonPropertyName("introMediaPath")]
-        public string? IntroMediaPath { get; set; }
-
-        [JsonPropertyName("introDuration")]
-        public double IntroDuration { get; set; } = 3.0;
-
-        [JsonPropertyName("outroMediaPath")]
-        public string? OutroMediaPath { get; set; }
-
-        [JsonPropertyName("outroDuration")]
-        public double OutroDuration { get; set; } = 3.0;
-
         [JsonPropertyName("generateThumbnail")]
         public bool GenerateThumbnail { get; set; } = true;
 
@@ -96,10 +84,6 @@ namespace InsightCast.Services
                 Output = DeepCopy(project.Output),
                 DefaultTransition = project.DefaultTransition,
                 DefaultTransitionDuration = project.DefaultTransitionDuration,
-                IntroMediaPath = project.IntroMediaPath,
-                IntroDuration = project.IntroDuration,
-                OutroMediaPath = project.OutroMediaPath,
-                OutroDuration = project.OutroDuration,
                 GenerateThumbnail = project.GenerateThumbnail,
                 GenerateChapters = project.GenerateChapters
             };
@@ -112,10 +96,6 @@ namespace InsightCast.Services
             project.Output = DeepCopy(template.Output);
             project.DefaultTransition = template.DefaultTransition;
             project.DefaultTransitionDuration = template.DefaultTransitionDuration;
-            project.IntroMediaPath = template.IntroMediaPath;
-            project.IntroDuration = template.IntroDuration;
-            project.OutroMediaPath = template.OutroMediaPath;
-            project.OutroDuration = template.OutroDuration;
             project.GenerateThumbnail = template.GenerateThumbnail;
             project.GenerateChapters = template.GenerateChapters;
         }

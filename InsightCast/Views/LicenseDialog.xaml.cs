@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -209,6 +210,16 @@ namespace InsightCast.Views
             UpdateUI();
             ValidationMessage.Text = "ライセンスがクリアされました。";
             ValidationMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xB0, 0xB0, 0xB0));
+        }
+
+        private void TermsLink_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("https://www.insight-office.com/ja/terms") { UseShellExecute = true });
+        }
+
+        private void PrivacyLink_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("https://www.insight-office.com/ja/privacy") { UseShellExecute = true });
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

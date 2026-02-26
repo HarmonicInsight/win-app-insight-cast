@@ -57,6 +57,9 @@ namespace InsightCast.Views
 
                 // Sync scene lists when planning tab modifies scenes
                 PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
+
+                // Default to Video Generation tab (index 1)
+                MainTabControl.SelectedIndex = 1;
             };
         }
 

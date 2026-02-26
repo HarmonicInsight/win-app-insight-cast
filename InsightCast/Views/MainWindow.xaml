@@ -316,15 +316,20 @@
                     <StackPanel Margin="8">
 
                         <!-- Media info -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                            <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                            <TextBlock Text="{Binding MediaName}" VerticalAlignment="Center"
-                                       Foreground="{DynamicResource TextSecondary}" MinWidth="120" Margin="0,0,8,0"/>
-                            <Button Content="{DynamicResource Common.Select}" Padding="10,3" Margin="2"
-                                    Command="{Binding SelectMediaCommand}"/>
-                            <Button Content="{DynamicResource Common.Clear}" Padding="10,3" Margin="2"
-                                    Command="{Binding ClearMediaCommand}"/>
-                        </StackPanel>
+                        <DockPanel Margin="0,0,0,4">
+                            <Button DockPanel.Dock="Right" Content="{DynamicResource Tool.Snipaste}" Padding="10,3" Margin="2"
+                                    ToolTip="{DynamicResource Tool.Snipaste.Tooltip}"
+                                    Command="{Binding LaunchSnipasteCommand}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="{Binding MediaName}" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource TextSecondary}" MinWidth="120" Margin="0,0,8,0"/>
+                                <Button Content="{DynamicResource Common.Select}" Padding="10,3" Margin="2"
+                                        Command="{Binding SelectMediaCommand}"/>
+                                <Button Content="{DynamicResource Common.Clear}" Padding="10,3" Margin="2"
+                                        Command="{Binding ClearMediaCommand}"/>
+                            </StackPanel>
+                        </DockPanel>
 
                         <!-- Preview + Narration -->
                         <Grid Margin="0,0,0,4">
@@ -567,37 +572,6 @@
                                      Width="60" TextAlignment="Center" Margin="0,0,4,0" IsEnabled="{Binding CanTransition}"/>
                             <TextBlock Text="{DynamicResource Transition.Range}" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextTertiary}" FontSize="11"/>
-                        </StackPanel>
-
-                        <!-- Intro/Outro -->
-                        <StackPanel Margin="0,4,0,4" Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Text="{DynamicResource IntroOutro.Title}" Margin="0,0,0,4"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,0">
-                                    <TextBlock Text="{DynamicResource IntroOutro.Intro}" VerticalAlignment="Center" Margin="0,0,4,0" FontSize="11"/>
-                                    <TextBlock Text="{Binding IntroFileName}" VerticalAlignment="Center"
-                                               Foreground="{DynamicResource TextSecondary}" FontSize="11"
-                                               MinWidth="80" MaxWidth="140" TextTrimming="CharacterEllipsis" Margin="0,0,4,0"/>
-                                    <Button Content="{DynamicResource Common.Select}" Padding="6,2" Margin="1"
-                                            Command="{Binding SelectIntroCommand}" FontSize="11"/>
-                                    <Button Content="✕" Padding="4,2" Margin="1"
-                                            Command="{Binding ClearIntroCommand}" FontSize="11"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <TextBlock Text="{DynamicResource IntroOutro.Outro}" VerticalAlignment="Center" Margin="0,0,4,0" FontSize="11"/>
-                                    <TextBlock Text="{Binding OutroFileName}" VerticalAlignment="Center"
-                                               Foreground="{DynamicResource TextSecondary}" FontSize="11"
-                                               MinWidth="80" MaxWidth="140" TextTrimming="CharacterEllipsis" Margin="0,0,4,0"/>
-                                    <Button Content="{DynamicResource Common.Select}" Padding="6,2" Margin="1"
-                                            Command="{Binding SelectOutroCommand}" FontSize="11"/>
-                                    <Button Content="✕" Padding="4,2" Margin="1"
-                                            Command="{Binding ClearOutroCommand}" FontSize="11"/>
-                                </StackPanel>
-                            </Grid>
                         </StackPanel>
 
                         <!-- Watermark -->

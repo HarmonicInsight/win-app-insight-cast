@@ -295,8 +295,8 @@ namespace InsightCast.ViewModels
                 if (int.TryParse(_sceneCount, out var scenes) && scenes > 0)
                 {
                     var secondsPerScene = duration / scenes;
-                    var charsPerScene = secondsPerScene * 4; // 約4文字/秒
-                    return $"→ 1シーン約{secondsPerScene}秒（約{charsPerScene}文字）";
+                    var charsPerScene = secondsPerScene * 4;
+                    return LocalizationService.GetString("Planning.SecondsPerScene", secondsPerScene, charsPerScene);
                 }
                 return "";
             }
@@ -310,12 +310,12 @@ namespace InsightCast.ViewModels
                 var mediaCount = MediaItems.Count;
 
                 if (mediaCount == 0)
-                    return $"画像{sceneCount}枚必要（未追加）";
+                    return LocalizationService.GetString("Planning.Media.Required", sceneCount);
                 if (mediaCount < sceneCount)
-                    return $"画像{sceneCount}枚必要（{mediaCount}枚追加済み、{sceneCount - mediaCount}枚不足）";
+                    return LocalizationService.GetString("Planning.Media.Partial", sceneCount, mediaCount, sceneCount - mediaCount);
                 if (mediaCount == sceneCount)
-                    return $"画像{sceneCount}枚 ✓ OK";
-                return $"画像{mediaCount}枚追加済み（{sceneCount}シーンに使用）";
+                    return LocalizationService.GetString("Planning.Media.Exact", sceneCount);
+                return LocalizationService.GetString("Planning.Media.Excess", mediaCount, sceneCount);
             }
         }
 
@@ -893,7 +893,7 @@ namespace InsightCast.ViewModels
         {
             if (index >= _project.Scenes.Count) return;
             var scene = _project.Scenes[index];
-            scene.Title = title ?? $"シーン {index + 1}";
+            scene.Title = title ?? LocalizationService.GetString("Planning.SceneTitle", index + 1);
             scene.NarrationText = script ?? "";
             scene.SubtitleText = script ?? "";
         }
@@ -1039,7 +1039,7 @@ namespace InsightCast.ViewModels
                 if (result.Success)
                 {
                     ChatMessages.Add(new ChatMessage { Text = result.Text ?? "", IsUser = false });
-                    // TODO: Parse and create scenes
+                    // AI narration result is displayed in chat; scene creation from parsed result is planned for a future release
                 }
                 else
                 {
@@ -1178,14 +1178,14 @@ namespace InsightCast.ViewModels
         {
             if (!int.TryParse(_sceneCount, out var targetCount) || targetCount <= 0)
             {
-                MessageBox.Show("有効なシーン数を入力してください。", "InsightCast",
+                MessageBox.Show(LocalizationService.GetString("Planning.InvalidSceneCount"), "InsightCast",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var result = MessageBox.Show(
-                $"シーン数を {targetCount} に設定します。\n既存のシーンは上書きされます。\n続行しますか？",
-                "構成に反映",
+                LocalizationService.GetString("Planning.ConfirmApply", targetCount),
+                LocalizationService.GetString("Planning.ConfirmApply.Title"),
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result != MessageBoxResult.Yes) return;
@@ -1202,7 +1202,7 @@ namespace InsightCast.ViewModels
             {
                 _project.Scenes.Add(new Scene
                 {
-                    Title = $"シーン {i + 1}",
+                    Title = LocalizationService.GetString("Planning.SceneTitle", i + 1),
                     FixedSeconds = durationPerScene,
                     DurationMode = DurationMode.Fixed
                 });

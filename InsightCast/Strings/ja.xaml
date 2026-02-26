@@ -142,17 +142,6 @@
     <sys:String x:Key="Transition.Type.SlideRight">スライド（右）</sys:String>
     <sys:String x:Key="Transition.Type.ZoomIn">ズームイン</sys:String>
 
-    <!-- Intro / Outro -->
-    <sys:String x:Key="IntroOutro.Title">イントロ / アウトロ:</sys:String>
-    <sys:String x:Key="IntroOutro.Intro">イントロ:</sys:String>
-    <sys:String x:Key="IntroOutro.Outro">アウトロ:</sys:String>
-    <sys:String x:Key="IntroOutro.Intro.Short">イントロ</sys:String>
-    <sys:String x:Key="IntroOutro.Outro.Short">アウトロ</sys:String>
-    <sys:String x:Key="IntroOutro.Intro.Tooltip">オープニング画像/動画を選択</sys:String>
-    <sys:String x:Key="IntroOutro.Outro.Tooltip">エンディング画像/動画を選択</sys:String>
-    <sys:String x:Key="IntroOutro.Intro.Label">イントロ</sys:String>
-    <sys:String x:Key="IntroOutro.Outro.Label">エンディング</sys:String>
-
     <!-- Watermark -->
     <sys:String x:Key="Watermark.Title">ロゴ透かし:</sys:String>
     <sys:String x:Key="Watermark.Short">ロゴ透かし</sys:String>
@@ -364,8 +353,6 @@
     <sys:String x:Key="VM.ScenePreview.NoScene">シーンを選択してください。</sys:String>
     <sys:String x:Key="VM.ScenePreview.NoScene.Title">シーンプレビュー</sys:String>
     <sys:String x:Key="VM.ScenePreview.Error.Title">プレビューエラー</sys:String>
-    <sys:String x:Key="VM.Intro.Set">イントロ設定: {0}</sys:String>
-    <sys:String x:Key="VM.Outro.Set">アウトロ設定: {0}</sys:String>
     <sys:String x:Key="VM.Watermark.Select">ロゴ画像を選択</sys:String>
     <sys:String x:Key="VM.Watermark.Set">ロゴ設定: {0}</sys:String>
     <sys:String x:Key="VM.Template.Saved">テンプレート保存: {0}</sys:String>
@@ -407,6 +394,16 @@
     <sys:String x:Key="VM.File.OpenError">ファイルを開けませんでした</sys:String>
     <sys:String x:Key="VM.Preview.OpenError">プレビュープレイヤーを開けませんでした</sys:String>
 
+    <!-- Snipaste -->
+    <sys:String x:Key="Tool.Snipaste">キャプチャtool</sys:String>
+    <sys:String x:Key="Tool.Snipaste.Tooltip">スクリーンキャプチャツール Snipaste を起動します。
+ボタンをクリックするか、Snipaste 起動後に F1 で画面をキャプチャできます。
+キャプチャした画像はシーンの素材として貼り付けできます。</sys:String>
+    <sys:String x:Key="VM.Snipaste.NotFound">Snipaste が見つかりません。\n\n以下のいずれかの方法で導入してください:\n• https://www.snipaste.com からダウンロード\n• PATH 環境変数に Snipaste.exe のあるフォルダを追加\n• アプリフォルダ内の snipaste\ に配置</sys:String>
+    <sys:String x:Key="VM.Snipaste.NotFound.Title">Snipaste が見つかりません</sys:String>
+    <sys:String x:Key="VM.Snipaste.LaunchError">Snipaste の起動に失敗しました:\n{0}</sys:String>
+    <sys:String x:Key="VM.Snipaste.LaunchError.Title">Snipaste 起動エラー</sys:String>
+
     <!-- Alignment options -->
     <sys:String x:Key="Align.Center">中央</sys:String>
     <sys:String x:Key="Align.Left">左</sys:String>
@@ -447,8 +444,6 @@
     <sys:String x:Key="QVM.PPTX.Error">PPTX取込エラー</sys:String>
     <sys:String x:Key="QVM.Text.Complete">テキスト取込: {0} 段落</sys:String>
     <sys:String x:Key="QVM.Text.Error">テキスト取込エラー</sys:String>
-    <sys:String x:Key="QVM.Intro.Select">イントロ画像/動画を選択</sys:String>
-    <sys:String x:Key="QVM.Outro.Select">アウトロ画像/動画を選択</sys:String>
     <sys:String x:Key="QVM.Watermark.Select">ロゴ画像を選択</sys:String>
     <sys:String x:Key="QVM.SelectFile">資料ファイルを選択</sys:String>
     <sys:String x:Key="QVM.SelectFiles">ファイルを選択（複数可）</sys:String>
@@ -467,12 +462,10 @@
     <sys:String x:Key="Export.Preparing">動画生成を準備中...</sys:String>
     <sys:String x:Key="Export.NoFFmpeg">エラー: ffmpegが検出されていません。</sys:String>
     <sys:String x:Key="Export.NoScenes">エラー: 有効なシーンがありません。素材またはナレーションを設定してください。</sys:String>
-    <sys:String x:Key="Export.GeneratingIntro">イントロを生成中...</sys:String>
     <sys:String x:Key="Export.SceneAudio">シーン {0}/{1}: 音声を生成中...</sys:String>
     <sys:String x:Key="Export.SceneVideo">シーン {0}/{1}: 動画を生成中...</sys:String>
     <sys:String x:Key="Export.SceneLabel">シーン {0}</sys:String>
     <sys:String x:Key="Export.SceneFailed">シーン {0} の生成に失敗しました。</sys:String>
-    <sys:String x:Key="Export.GeneratingOutro">アウトロを生成中...</sys:String>
     <sys:String x:Key="Export.Combining">動画を結合中...</sys:String>
     <sys:String x:Key="Export.CombineFailed">動画の結合に失敗しました。</sys:String>
     <sys:String x:Key="Export.AddingBGM">BGMを追加中...</sys:String>
@@ -542,9 +535,7 @@
     <sys:String x:Key="VM.ScenePreview.NoFFmpeg">ffmpegが検出されていません。\nシーンプレビューにはffmpegが必要です。</sys:String>
     <sys:String x:Key="VM.ScenePreview.Title">プレビューエラー</sys:String>
 
-    <!-- VM Intro/Outro/Watermark -->
-    <sys:String x:Key="VM.Intro.Select">イントロ画像/動画を選択</sys:String>
-    <sys:String x:Key="VM.Outro.Select">アウトロ画像/動画を選択</sys:String>
+    <!-- VM Watermark -->
     <sys:String x:Key="VM.Media.FilterMedia">メディアファイル|*.png;*.jpg;*.jpeg;*.bmp;*.mp4;*.mov|すべてのファイル|*.*</sys:String>
     <sys:String x:Key="VM.Watermark.Filter">画像ファイル|*.png;*.jpg;*.jpeg;*.bmp;*.gif|すべてのファイル|*.*</sys:String>
 
@@ -652,7 +643,7 @@ Q: テンプレートはどこに保存されますか？
 A: %LOCALAPPDATA%\InsightCast\Templates に保存されます。
 
 Q: お問い合わせ先は？
-A: support@h-insight.jp までご連絡ください。</sys:String>
+A: info@h-insight.jp までご連絡ください。</sys:String>
     <sys:String x:Key="VM.FAQ.Title">FAQ</sys:String>
     <sys:String x:Key="VM.About">InsightCast v{0}
 
@@ -661,8 +652,9 @@ VOICEVOX音声エンジンを使用した動画自動生成ツール
 テキストを入力するだけで、ナレーション付き動画を
 簡単に作成できます。
 
-開発元: Harmonic Insight Inc.
-サポート: support@h-insight.jp</sys:String>
+開発元: HARMONIC insight 合同会社
+サポート: info@h-insight.jp
+Web: https://www.insight-office.com</sys:String>
     <sys:String x:Key="VM.About.Title">InsightCastについて</sys:String>
     <sys:String x:Key="VM.Shortcuts">キーボードショートカット一覧
 ─────────────────────
@@ -679,16 +671,14 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="VM.Shortcuts.Title">キーボードショートカット</sys:String>
     <sys:String x:Key="VM.License.Title">ライセンス情報</sys:String>
     <sys:String x:Key="VM.License.Header">ライセンス情報\n─────────────────────\n\nプラン: {0}\n状態: {1}\n有効期限: {2}</sys:String>
-    <sys:String x:Key="VM.Terms.Fallback">利用規約は以下のURLからご確認ください:\nhttps://h-insight.jp/terms\n\nお問い合わせ: info@h-insight.jp</sys:String>
+    <sys:String x:Key="VM.Terms.Fallback">利用規約は以下のURLからご確認ください:\nhttps://www.insight-office.com/ja/terms\n\nお問い合わせ: info@h-insight.jp</sys:String>
     <sys:String x:Key="VM.Terms.Title">利用規約</sys:String>
-    <sys:String x:Key="VM.Privacy.Fallback">プライバシーポリシーは以下のURLからご確認ください:\nhttps://h-insight.jp/privacy\n\nお問い合わせ: info@h-insight.jp</sys:String>
+    <sys:String x:Key="VM.Privacy.Fallback">プライバシーポリシーは以下のURLからご確認ください:\nhttps://www.insight-office.com/ja/privacy\n\nお問い合わせ: info@h-insight.jp</sys:String>
     <sys:String x:Key="VM.Privacy.Title">プライバシーポリシー</sys:String>
 
     <!-- QVM Extended -->
     <sys:String x:Key="QVM.Speaker.LoadFailed">話者一覧の読み込みに失敗</sys:String>
     <sys:String x:Key="QVM.Speaker.Normal">ノーマル</sys:String>
-    <sys:String x:Key="QVM.Intro.Set">イントロ設定: {0}</sys:String>
-    <sys:String x:Key="QVM.Outro.Set">アウトロ設定: {0}</sys:String>
     <sys:String x:Key="QVM.Watermark.Set">ロゴ設定: {0}</sys:String>
     <sys:String x:Key="QVM.BGM.Select">BGMファイルを選択</sys:String>
     <sys:String x:Key="QVM.BGM.Filter">音声ファイル|*.mp3;*.wav;*.ogg;*.flac;*.aac;*.m4a|すべてのファイル|*.*</sys:String>
@@ -724,7 +714,6 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Common.Separator">、</sys:String>
     <sys:String x:Key="Export.Chapter.Short">チャプター</sys:String>
     <sys:String x:Key="Export.ChapterEnding">エンディング</sys:String>
-    <sys:String x:Key="Export.ChapterIntro">イントロ</sys:String>
     <sys:String x:Key="Export.Combining.Short">結合</sys:String>
     <sys:String x:Key="Export.Complete.Short">完了</sys:String>
     <sys:String x:Key="Export.Metadata.Short">メタデータ</sys:String>
@@ -926,6 +915,43 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Planning.JsonEditor.InvalidFormat">有効なシーンデータがありません</sys:String>
     <sys:String x:Key="Planning.JsonEditor.ParseError">JSONの解析に失敗しました</sys:String>
     <sys:String x:Key="Planning.JsonEditor.Applied">{0}件のシーンを適用しました</sys:String>
+
+    <!-- Transition Presets -->
+    <sys:String x:Key="Transition.Preset.None.Name">なし</sys:String>
+    <sys:String x:Key="Transition.Preset.None.Desc">トランジションなし</sys:String>
+    <sys:String x:Key="Transition.Preset.Fade.Name">フェード</sys:String>
+    <sys:String x:Key="Transition.Preset.Fade.Desc">フェードイン・フェードアウト</sys:String>
+    <sys:String x:Key="Transition.Preset.Dissolve.Name">ディゾルブ</sys:String>
+    <sys:String x:Key="Transition.Preset.Dissolve.Desc">クロスディゾルブ</sys:String>
+    <sys:String x:Key="Transition.Preset.WipeLeft.Name">ワイプ（左）</sys:String>
+    <sys:String x:Key="Transition.Preset.WipeLeft.Desc">左方向へのワイプ</sys:String>
+    <sys:String x:Key="Transition.Preset.WipeRight.Name">ワイプ（右）</sys:String>
+    <sys:String x:Key="Transition.Preset.WipeRight.Desc">右方向へのワイプ</sys:String>
+    <sys:String x:Key="Transition.Preset.SlideLeft.Name">スライド（左）</sys:String>
+    <sys:String x:Key="Transition.Preset.SlideLeft.Desc">左方向へのスライド</sys:String>
+    <sys:String x:Key="Transition.Preset.SlideRight.Name">スライド（右）</sys:String>
+    <sys:String x:Key="Transition.Preset.SlideRight.Desc">右方向へのスライド</sys:String>
+    <sys:String x:Key="Transition.Preset.ZoomIn.Name">ズームイン</sys:String>
+    <sys:String x:Key="Transition.Preset.ZoomIn.Desc">ズームインエフェクト</sys:String>
+
+    <!-- BGM status -->
+    <sys:String x:Key="BGM.Set">BGM: {0}</sys:String>
+
+    <!-- Planning ViewModel -->
+    <sys:String x:Key="Planning.SecondsPerScene">→ 1シーン約{0}秒（約{1}文字）</sys:String>
+    <sys:String x:Key="Planning.Media.Required">画像{0}枚必要（未追加）</sys:String>
+    <sys:String x:Key="Planning.Media.Partial">画像{0}枚必要（{1}枚追加済み、{2}枚不足）</sys:String>
+    <sys:String x:Key="Planning.Media.Exact">画像{0}枚 ✓ OK</sys:String>
+    <sys:String x:Key="Planning.Media.Excess">画像{0}枚追加済み（{1}シーンに使用）</sys:String>
+    <sys:String x:Key="Planning.SceneTitle">シーン {0}</sys:String>
+    <sys:String x:Key="Planning.InvalidSceneCount">有効なシーン数を入力してください。</sys:String>
+    <sys:String x:Key="Planning.ConfirmApply">シーン数を {0} に設定します。\n既存のシーンは上書きされます。\n続行しますか？</sys:String>
+    <sys:String x:Key="Planning.ConfirmApply.Title">構成に反映</sys:String>
+
+    <!-- Video Wizard -->
+    <sys:String x:Key="Wizard.SceneTitle">シーン {0}</sys:String>
+    <sys:String x:Key="Wizard.EditScript">（スクリプトを編集してください）</sys:String>
+    <sys:String x:Key="Wizard.Duration">{0}秒</sys:String>
 
     <!-- Quick Setup -->
     <sys:String x:Key="Planning.QuickSetup">クイックセットアップ</sys:String>

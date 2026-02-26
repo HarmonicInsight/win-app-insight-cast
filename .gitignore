@@ -42,6 +42,11 @@ nuget.config
 *~
 .vscode/
 
+## Secrets / Environment
+.env
+.env.*
+*.secrets.json
+
 ## OS
 .DS_Store
 Thumbs.db
@@ -49,5 +54,6 @@ desktop.ini
 .claude/
 _build_tools/
 publish/
+snipaste/
 
 nul

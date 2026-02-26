@@ -440,8 +440,8 @@ namespace InsightCast.Views
                 var idx = _generatedScenes.Count;
                 var scene = new ScenePreviewItem
                 {
-                    Title = $"シーン {idx + 1}",
-                    Script = "（スクリプトを編集してください）",
+                    Title = LocalizationService.GetString("Wizard.SceneTitle", idx + 1),
+                    Script = LocalizationService.GetString("Wizard.EditScript"),
                     ImagePrompt = "professional presentation slide"
                 };
                 FinalizeScene(scene, idx, secondsPerScene);
@@ -452,10 +452,10 @@ namespace InsightCast.Views
         private void FinalizeScene(ScenePreviewItem scene, int index, int secondsPerScene)
         {
             scene.Index = index + 1;
-            scene.Duration = $"{secondsPerScene}秒";
+            scene.Duration = LocalizationService.GetString("Wizard.Duration", secondsPerScene);
 
             if (string.IsNullOrEmpty(scene.Title))
-                scene.Title = $"シーン {index + 1}";
+                scene.Title = LocalizationService.GetString("Wizard.SceneTitle", index + 1);
 
             // Assign media if available
             if (index < _mediaItems.Count)

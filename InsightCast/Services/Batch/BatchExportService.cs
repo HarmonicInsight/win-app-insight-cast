@@ -367,16 +367,6 @@ namespace InsightCast.Services.Batch
                 project.Watermark.ImagePath = Path.GetFullPath(Path.Combine(baseDir, project.Watermark.ImagePath));
             }
 
-            // イントロ/アウトロ
-            if (!string.IsNullOrEmpty(project.IntroMediaPath) && !Path.IsPathRooted(project.IntroMediaPath))
-            {
-                project.IntroMediaPath = Path.GetFullPath(Path.Combine(baseDir, project.IntroMediaPath));
-            }
-
-            if (!string.IsNullOrEmpty(project.OutroMediaPath) && !Path.IsPathRooted(project.OutroMediaPath))
-            {
-                project.OutroMediaPath = Path.GetFullPath(Path.Combine(baseDir, project.OutroMediaPath));
-            }
         }
 
         private static void ApplyOverrides(Project project, BatchOverrides? overrides)

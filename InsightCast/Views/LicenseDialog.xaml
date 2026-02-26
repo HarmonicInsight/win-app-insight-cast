@@ -148,10 +148,25 @@
 
         </StackPanel>
 
-        <!-- Close Button -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-            <Button Content="閉じる" Style="{StaticResource DialogButton}"
-                    IsCancel="True" Click="CloseButton_Click"/>
+        <!-- Legal Links + Close Button -->
+        <StackPanel Grid.Row="1" Margin="0,8,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
+                <TextBlock FontSize="12">
+                    <Hyperlink x:Name="TermsLink" Click="TermsLink_Click">
+                        <Run Text="利用規約"/>
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock Text="  |  " Foreground="{DynamicResource TextTertiary}" FontSize="12"/>
+                <TextBlock FontSize="12">
+                    <Hyperlink x:Name="PrivacyLink" Click="PrivacyLink_Click">
+                        <Run Text="プライバシーポリシー"/>
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="閉じる" Style="{StaticResource DialogButton}"
+                        IsCancel="True" Click="CloseButton_Click"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

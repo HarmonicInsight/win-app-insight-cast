@@ -95,10 +95,6 @@
     "opacity": 0.7,
     "scale": 0.12
   },
-  "introMediaPath": null,
-  "introDuration": 3.0,
-  "outroMediaPath": null,
-  "outroDuration": 3.0,
   "defaultTransition": "fade",
   "defaultTransitionDuration": 0.5,
   "generateThumbnail": true,

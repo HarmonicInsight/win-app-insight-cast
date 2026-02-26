@@ -6,8 +6,9 @@
 .DESCRIPTION
     1. dotnet publish (self-contained, win-x64)
     2. Downloads FFmpeg release binaries
-    3. Copies FFmpeg into the publish output
-    4. Optionally runs Inno Setup to create the installer
+    3. Downloads Snipaste portable (screen capture tool)
+    4. Verifies build output
+    5. Optionally runs Inno Setup to create the installer
 
 .EXAMPLE
     .\build.ps1
@@ -33,7 +34,7 @@ Write-Host "========================================" -ForegroundColor Cyan
 
 # ── Step 1: dotnet publish ────────────────────────────────────────────
 Write-Host ""
-Write-Host "[1/4] Publishing InsightCast..." -ForegroundColor Yellow
+Write-Host "[1/5] Publishing InsightCast..." -ForegroundColor Yellow
 
 if (Test-Path $publishDir) {
     Remove-Item $publishDir -Recurse -Force
@@ -56,7 +57,7 @@ Write-Host "  Published to: $publishDir" -ForegroundColor Green
 
 # ── Step 2: Download FFmpeg ───────────────────────────────────────────
 Write-Host ""
-Write-Host "[2/4] Setting up FFmpeg..." -ForegroundColor Yellow
+Write-Host "[2/5] Setting up FFmpeg..." -ForegroundColor Yellow
 
 $ffmpegBinDir = "$ffmpegDir\bin"
 
@@ -107,13 +108,54 @@ if (-not (Test-Path "$ffmpegBinDir\ffmpeg.exe")) {
     Write-Host "  FFmpeg already present in publish directory." -ForegroundColor Green
 }
 
-# ── Step 3: Verify output ────────────────────────────────────────────
+# ── Step 3: Download Snipaste ────────────────────────────────────────
 Write-Host ""
-Write-Host "[3/4] Verifying build output..." -ForegroundColor Yellow
+Write-Host "[3/5] Setting up Snipaste..." -ForegroundColor Yellow
+
+$snipasteDir = "$publishDir\snipaste"
+
+if (-not (Test-Path "$snipasteDir\Snipaste.exe")) {
+    $snipasteUrl = "https://dl.snipaste.com/win-x64"
+    New-Item -ItemType Directory -Path $toolsDir -Force | Out-Null
+    $snipasteZipPath = "$toolsDir\snipaste-win-x64.zip"
+
+    if (-not (Test-Path $snipasteZipPath)) {
+        Write-Host "  Downloading Snipaste from: $snipasteUrl"
+        Invoke-WebRequest -Uri $snipasteUrl -OutFile $snipasteZipPath -UseBasicParsing
+    } else {
+        Write-Host "  Using cached download: $snipasteZipPath"
+    }
+
+    Write-Host "  Extracting Snipaste..."
+    $tempSnipaste = "$toolsDir\snipaste_extract"
+    if (Test-Path $tempSnipaste) { Remove-Item $tempSnipaste -Recurse -Force }
+    Expand-Archive -Path $snipasteZipPath -DestinationPath $tempSnipaste -Force
+
+    # Find Snipaste.exe inside the extracted directory and copy the whole folder
+    $snipasteExe = Get-ChildItem -Path $tempSnipaste -Recurse -Filter "Snipaste.exe" | Select-Object -First 1
+    if ($snipasteExe) {
+        $snipasteSourceDir = $snipasteExe.DirectoryName
+        New-Item -ItemType Directory -Path $snipasteDir -Force | Out-Null
+        Copy-Item "$snipasteSourceDir\*" $snipasteDir -Recurse -Force
+        Write-Host "  Copied Snipaste to: $snipasteDir" -ForegroundColor Green
+    } else {
+        Write-Host "  WARNING: Snipaste.exe not found in archive!" -ForegroundColor Red
+    }
+
+    # Cleanup
+    Remove-Item $tempSnipaste -Recurse -Force -ErrorAction SilentlyContinue
+} else {
+    Write-Host "  Snipaste already present in publish directory." -ForegroundColor Green
+}
+
+# ── Step 4: Verify output ────────────────────────────────────────────
+Write-Host ""
+Write-Host "[4/5] Verifying build output..." -ForegroundColor Yellow
 
 $requiredFiles = @(
     "$publishDir\InsightCast.exe",
-    "$ffmpegBinDir\ffmpeg.exe"
+    "$ffmpegBinDir\ffmpeg.exe",
+    "$snipasteDir\Snipaste.exe"
 )
 
 $allOk = $true
@@ -132,12 +174,12 @@ if (-not $allOk) {
     exit 1
 }
 
-# ── Step 4: Build Installer (optional) ───────────────────────────────
+# ── Step 5: Build Installer (optional) ───────────────────────────────
 Write-Host ""
 if ($SkipInstaller) {
-    Write-Host "[4/4] Skipping installer build (-SkipInstaller)." -ForegroundColor Yellow
+    Write-Host "[5/5] Skipping installer build (-SkipInstaller)." -ForegroundColor Yellow
 } else {
-    Write-Host "[4/4] Building installer..." -ForegroundColor Yellow
+    Write-Host "[5/5] Building installer..." -ForegroundColor Yellow
 
     $issFile = "$installerDir\InsightCast.iss"
     if (-not (Test-Path $issFile)) {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -83,9 +84,7 @@ namespace InsightCast.ViewModels
         private readonly Dictionary<string, TextStyle> _sceneSubtitleStyles = new();
         private Dictionary<int, string> _speakerStyles = new();
 
-        // Intro/Outro/Watermark
-        private string _introFilePath = string.Empty;
-        private string _outroFilePath = string.Empty;
+        // Watermark
         private string _watermarkFilePath = string.Empty;
         private int _selectedWatermarkPosIndex = 3; // bottom-right
 
@@ -448,26 +447,6 @@ namespace InsightCast.ViewModels
             new[] { 0, 191, 255 },   // 水色
         };
 
-        // Intro/Outro properties
-        public string IntroFilePath
-        {
-            get => _introFilePath;
-            set => SetProperty(ref _introFilePath, value);
-        }
-
-        public string OutroFilePath
-        {
-            get => _outroFilePath;
-            set => SetProperty(ref _outroFilePath, value);
-        }
-
-        public bool HasIntro => !string.IsNullOrEmpty(_introFilePath);
-        public bool HasOutro => !string.IsNullOrEmpty(_outroFilePath);
-        public string IntroFileName => string.IsNullOrEmpty(_introFilePath)
-            ? LocalizationService.GetString("Common.None") : Path.GetFileName(_introFilePath);
-        public string OutroFileName => string.IsNullOrEmpty(_outroFilePath)
-            ? LocalizationService.GetString("Common.None") : Path.GetFileName(_outroFilePath);
-
         // Watermark properties
         public string WatermarkFilePath
         {
@@ -574,10 +553,6 @@ namespace InsightCast.ViewModels
         public ICommand MoveOverlayUpCommand { get; }
         public ICommand MoveOverlayDownCommand { get; }
         public ICommand SetOverlayPositionCommand { get; }
-        public ICommand SelectIntroCommand { get; }
-        public ICommand ClearIntroCommand { get; }
-        public ICommand SelectOutroCommand { get; }
-        public ICommand ClearOutroCommand { get; }
         public ICommand SelectWatermarkCommand { get; }
         public ICommand ClearWatermarkCommand { get; }
         public ICommand SaveTemplateCommand { get; }
@@ -599,6 +574,7 @@ namespace InsightCast.ViewModels
         public ICommand BatchExportCommand { get; }
         public ICommand OpenAISettingsCommand { get; }
         public ICommand AIGenerateProjectCommand { get; }
+        public ICommand LaunchSnipasteCommand { get; }
 
         #endregion
 
@@ -641,10 +617,6 @@ namespace InsightCast.ViewModels
             MoveOverlayUpCommand = new RelayCommand(MoveOverlayUp);
             MoveOverlayDownCommand = new RelayCommand(MoveOverlayDown);
             SetOverlayPositionCommand = new RelayCommand(p => SetOverlayPosition(p as string));
-            SelectIntroCommand = new RelayCommand(SelectIntro);
-            ClearIntroCommand = new RelayCommand(ClearIntro);
-            SelectOutroCommand = new RelayCommand(SelectOutro);
-            ClearOutroCommand = new RelayCommand(ClearOutro);
             SelectWatermarkCommand = new RelayCommand(SelectWatermark);
             ClearWatermarkCommand = new RelayCommand(ClearWatermark);
             SaveTemplateCommand = new RelayCommand(SaveTemplate);
@@ -666,6 +638,7 @@ namespace InsightCast.ViewModels
             BatchExportCommand = new RelayCommand(OpenBatchExport);
             OpenAISettingsCommand = new RelayCommand(OpenAISettings);
             AIGenerateProjectCommand = new RelayCommand(OpenAIGenerateProject);
+            LaunchSnipasteCommand = new RelayCommand(LaunchSnipaste);
 
             // Auto-save every 5 minutes
             _autoSaveTimer = new Timer(_ => AutoSave(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
@@ -1497,55 +1470,7 @@ namespace InsightCast.ViewModels
 
         #endregion
 
-        #region Intro/Outro/Watermark/Template
-
-        private void SelectIntro()
-        {
-            if (_dialogService == null) return;
-            var path = _dialogService.ShowOpenFileDialog(
-                LocalizationService.GetString("VM.Intro.Select"),
-                LocalizationService.GetString("VM.Media.FilterMedia"));
-            if (!string.IsNullOrEmpty(path))
-            {
-                IntroFilePath = path;
-                _project.IntroMediaPath = path;
-                OnPropertyChanged(nameof(HasIntro));
-                OnPropertyChanged(nameof(IntroFileName));
-                _logger.Log(LocalizationService.GetString("VM.Intro.Set", Path.GetFileName(path)));
-            }
-        }
-
-        private void ClearIntro()
-        {
-            IntroFilePath = string.Empty;
-            _project.IntroMediaPath = null;
-            OnPropertyChanged(nameof(HasIntro));
-            OnPropertyChanged(nameof(IntroFileName));
-        }
-
-        private void SelectOutro()
-        {
-            if (_dialogService == null) return;
-            var path = _dialogService.ShowOpenFileDialog(
-                LocalizationService.GetString("VM.Outro.Select"),
-                LocalizationService.GetString("VM.Media.FilterMedia"));
-            if (!string.IsNullOrEmpty(path))
-            {
-                OutroFilePath = path;
-                _project.OutroMediaPath = path;
-                OnPropertyChanged(nameof(HasOutro));
-                OnPropertyChanged(nameof(OutroFileName));
-                _logger.Log(LocalizationService.GetString("VM.Outro.Set", Path.GetFileName(path)));
-            }
-        }
-
-        private void ClearOutro()
-        {
-            OutroFilePath = string.Empty;
-            _project.OutroMediaPath = null;
-            OnPropertyChanged(nameof(HasOutro));
-            OnPropertyChanged(nameof(OutroFileName));
-        }
+        #region Watermark/Template
 
         private void SelectWatermark()
         {
@@ -1628,18 +1553,6 @@ namespace InsightCast.ViewModels
             TemplateService.ApplyToProject(template, _project);
 
             // Sync project settings back to UI
-            if (_project.HasIntro)
-            {
-                IntroFilePath = _project.IntroMediaPath!;
-                OnPropertyChanged(nameof(HasIntro));
-                OnPropertyChanged(nameof(IntroFileName));
-            }
-            if (_project.HasOutro)
-            {
-                OutroFilePath = _project.OutroMediaPath!;
-                OnPropertyChanged(nameof(HasOutro));
-                OnPropertyChanged(nameof(OutroFileName));
-            }
             if (_project.Watermark.HasWatermark)
             {
                 WatermarkFilePath = _project.Watermark.ImagePath!;
@@ -1828,18 +1741,6 @@ namespace InsightCast.ViewModels
 
         private void SyncProjectToUI()
         {
-            if (_project.HasIntro)
-            {
-                IntroFilePath = _project.IntroMediaPath!;
-                OnPropertyChanged(nameof(HasIntro));
-                OnPropertyChanged(nameof(IntroFileName));
-            }
-            if (_project.HasOutro)
-            {
-                OutroFilePath = _project.OutroMediaPath!;
-                OnPropertyChanged(nameof(HasOutro));
-                OnPropertyChanged(nameof(OutroFileName));
-            }
             if (_project.Watermark?.HasWatermark == true)
             {
                 WatermarkFilePath = _project.Watermark.ImagePath!;
@@ -1860,13 +1761,7 @@ namespace InsightCast.ViewModels
             _project = new Project();
             _project.InitializeDefaultScenes();
             _sceneSubtitleStyles.Clear();
-            IntroFilePath = string.Empty;
-            OutroFilePath = string.Empty;
             WatermarkFilePath = string.Empty;
-            OnPropertyChanged(nameof(HasIntro));
-            OnPropertyChanged(nameof(IntroFileName));
-            OnPropertyChanged(nameof(HasOutro));
-            OnPropertyChanged(nameof(OutroFileName));
             OnPropertyChanged(nameof(HasWatermark));
             OnPropertyChanged(nameof(WatermarkFileName));
             WindowTitle = LocalizationService.GetString("VM.NewProject");
@@ -2096,7 +1991,7 @@ namespace InsightCast.ViewModels
         {
             if (_project.Bgm.HasBgm)
             {
-                BgmStatusText = $"BGM: {Path.GetFileName(_project.Bgm.FilePath)}";
+                BgmStatusText = LocalizationService.GetString("BGM.Set", Path.GetFileName(_project.Bgm.FilePath) ?? "");
                 BgmActive = true;
             }
             else
@@ -2189,7 +2084,7 @@ namespace InsightCast.ViewModels
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://h-insight.jp/terms",
+                    FileName = "https://www.insight-office.com/ja/terms",
                     UseShellExecute = true
                 });
             }
@@ -2207,7 +2102,7 @@ namespace InsightCast.ViewModels
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://h-insight.jp/privacy",
+                    FileName = "https://www.insight-office.com/ja/privacy",
                     UseShellExecute = true
                 });
             }
@@ -2350,6 +2245,129 @@ namespace InsightCast.ViewModels
                 }
 
                 StatusText = LocalizationService.GetString("Status.AIProjectGenerated");
+            }
+        }
+
+        /// <summary>
+        /// Searches for the Snipaste executable in common locations.
+        /// Search order: PATH, application-relative paths, common Windows paths.
+        /// </summary>
+        private static string? FindSnipaste()
+        {
+            // --- 1. Search PATH using "where Snipaste" ---
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "where",
+                    Arguments = "Snipaste",
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+
+                using var process = Process.Start(psi);
+                if (process != null)
+                {
+                    string output = process.StandardOutput.ReadToEnd();
+                    process.WaitForExit();
+
+                    if (process.ExitCode == 0 && !string.IsNullOrWhiteSpace(output))
+                    {
+                        string firstLine = output.Split(
+                            new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+                        if (File.Exists(firstLine))
+                            return firstLine;
+                    }
+                }
+            }
+            catch
+            {
+                // "where" command not available or failed; continue searching.
+            }
+
+            // --- 2. Application-relative and working-directory-relative paths ---
+            string appDir = AppDomain.CurrentDomain.BaseDirectory;
+            string cwd = Environment.CurrentDirectory;
+
+            var relativePaths = new List<string>
+            {
+                // From application base directory (works in published/installed builds)
+                Path.Combine(appDir, "snipaste", "Snipaste.exe"),
+                Path.Combine(appDir, "Snipaste.exe"),
+                // From current working directory (works with "dotnet run")
+                Path.Combine(cwd, "snipaste", "Snipaste.exe"),
+                Path.Combine(cwd, "Snipaste.exe"),
+                // build.ps1 publish output
+                Path.Combine(cwd, "publish", "snipaste", "Snipaste.exe"),
+            };
+
+            // Walk up from appDir to find project/solution root
+            string? dir = appDir;
+            for (int i = 0; i < 6 && dir != null; i++)
+            {
+                dir = Path.GetDirectoryName(dir);
+                if (dir != null)
+                {
+                    relativePaths.Add(Path.Combine(dir, "snipaste", "Snipaste.exe"));
+                    relativePaths.Add(Path.Combine(dir, "Snipaste.exe"));
+                }
+            }
+
+            foreach (string path in relativePaths)
+            {
+                string fullPath = Path.GetFullPath(path);
+                if (File.Exists(fullPath))
+                    return fullPath;
+            }
+
+            // --- 3. Common Windows installation paths ---
+            string[] commonPaths =
+            {
+                @"C:\Program Files\Snipaste\Snipaste.exe",
+                @"C:\Program Files (x86)\Snipaste\Snipaste.exe",
+                Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Snipaste", "Snipaste.exe"),
+                Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    "Snipaste", "Snipaste.exe"),
+            };
+
+            foreach (string path in commonPaths)
+            {
+                if (File.Exists(path))
+                    return path;
+            }
+
+            return null;
+        }
+
+        private void LaunchSnipaste()
+        {
+            var snipastePath = FindSnipaste();
+            if (snipastePath == null)
+            {
+                _dialogService?.ShowError(
+                    LocalizationService.GetString("VM.Snipaste.NotFound"),
+                    LocalizationService.GetString("VM.Snipaste.NotFound.Title"));
+                return;
+            }
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = snipastePath,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                _dialogService?.ShowError(
+                    string.Format(LocalizationService.GetString("VM.Snipaste.LaunchError"), ex.Message),
+                    LocalizationService.GetString("VM.Snipaste.LaunchError.Title"));
             }
         }
 

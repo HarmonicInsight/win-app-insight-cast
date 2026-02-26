@@ -142,17 +142,6 @@
     <sys:String x:Key="Transition.Type.SlideRight">Slide (Right)</sys:String>
     <sys:String x:Key="Transition.Type.ZoomIn">Zoom In</sys:String>
 
-    <!-- Intro / Outro -->
-    <sys:String x:Key="IntroOutro.Title">Intro / Outro:</sys:String>
-    <sys:String x:Key="IntroOutro.Intro">Intro:</sys:String>
-    <sys:String x:Key="IntroOutro.Outro">Outro:</sys:String>
-    <sys:String x:Key="IntroOutro.Intro.Short">Intro</sys:String>
-    <sys:String x:Key="IntroOutro.Outro.Short">Outro</sys:String>
-    <sys:String x:Key="IntroOutro.Intro.Tooltip">Select opening image/video</sys:String>
-    <sys:String x:Key="IntroOutro.Outro.Tooltip">Select ending image/video</sys:String>
-    <sys:String x:Key="IntroOutro.Intro.Label">Intro</sys:String>
-    <sys:String x:Key="IntroOutro.Outro.Label">Ending</sys:String>
-
     <!-- Watermark -->
     <sys:String x:Key="Watermark.Title">Logo Watermark:</sys:String>
     <sys:String x:Key="Watermark.Short">Logo Watermark</sys:String>
@@ -364,8 +353,6 @@
     <sys:String x:Key="VM.ScenePreview.NoScene">Please select a scene.</sys:String>
     <sys:String x:Key="VM.ScenePreview.NoScene.Title">Scene Preview</sys:String>
     <sys:String x:Key="VM.ScenePreview.Error.Title">Preview Error</sys:String>
-    <sys:String x:Key="VM.Intro.Set">Intro set: {0}</sys:String>
-    <sys:String x:Key="VM.Outro.Set">Outro set: {0}</sys:String>
     <sys:String x:Key="VM.Watermark.Select">Select Logo Image</sys:String>
     <sys:String x:Key="VM.Watermark.Set">Logo set: {0}</sys:String>
     <sys:String x:Key="VM.Template.Saved">Template saved: {0}</sys:String>
@@ -407,6 +394,16 @@
     <sys:String x:Key="VM.File.OpenError">Failed to open file</sys:String>
     <sys:String x:Key="VM.Preview.OpenError">Failed to open preview player</sys:String>
 
+    <!-- Snipaste -->
+    <sys:String x:Key="Tool.Snipaste">Capture tool</sys:String>
+    <sys:String x:Key="Tool.Snipaste.Tooltip">Launch Snipaste screen capture tool.
+Click the button or press F1 after Snipaste is running to capture the screen.
+Captured images can be pasted as scene media.</sys:String>
+    <sys:String x:Key="VM.Snipaste.NotFound">Snipaste was not found.\n\nPlease install it using one of these methods:\n• Download from https://www.snipaste.com\n• Add the folder containing Snipaste.exe to your PATH\n• Place it in the snipaste\ folder inside the app directory</sys:String>
+    <sys:String x:Key="VM.Snipaste.NotFound.Title">Snipaste Not Found</sys:String>
+    <sys:String x:Key="VM.Snipaste.LaunchError">Failed to launch Snipaste:\n{0}</sys:String>
+    <sys:String x:Key="VM.Snipaste.LaunchError.Title">Snipaste Launch Error</sys:String>
+
     <!-- Alignment options -->
     <sys:String x:Key="Align.Center">Center</sys:String>
     <sys:String x:Key="Align.Left">Left</sys:String>
@@ -447,8 +444,6 @@
     <sys:String x:Key="QVM.PPTX.Error">PPTX Import Error</sys:String>
     <sys:String x:Key="QVM.Text.Complete">Text import: {0} paragraphs</sys:String>
     <sys:String x:Key="QVM.Text.Error">Text Import Error</sys:String>
-    <sys:String x:Key="QVM.Intro.Select">Select intro image/video</sys:String>
-    <sys:String x:Key="QVM.Outro.Select">Select outro image/video</sys:String>
     <sys:String x:Key="QVM.Watermark.Select">Select logo image</sys:String>
     <sys:String x:Key="QVM.SelectFile">Select Material File</sys:String>
     <sys:String x:Key="QVM.SelectFiles">Select Files (Multiple)</sys:String>
@@ -467,12 +462,10 @@
     <sys:String x:Key="Export.Preparing">Preparing video generation...</sys:String>
     <sys:String x:Key="Export.NoFFmpeg">Error: FFmpeg was not detected.</sys:String>
     <sys:String x:Key="Export.NoScenes">Error: No valid scenes. Please set media or narration.</sys:String>
-    <sys:String x:Key="Export.GeneratingIntro">Generating intro...</sys:String>
     <sys:String x:Key="Export.SceneAudio">Scene {0}/{1}: Generating audio...</sys:String>
     <sys:String x:Key="Export.SceneVideo">Scene {0}/{1}: Generating video...</sys:String>
     <sys:String x:Key="Export.SceneLabel">Scene {0}</sys:String>
     <sys:String x:Key="Export.SceneFailed">Scene {0} generation failed.</sys:String>
-    <sys:String x:Key="Export.GeneratingOutro">Generating outro...</sys:String>
     <sys:String x:Key="Export.Combining">Combining videos...</sys:String>
     <sys:String x:Key="Export.CombineFailed">Failed to combine videos.</sys:String>
     <sys:String x:Key="Export.AddingBGM">Adding BGM...</sys:String>
@@ -542,9 +535,7 @@
     <sys:String x:Key="VM.ScenePreview.NoFFmpeg">FFmpeg not found.\nFFmpeg is required for scene preview.</sys:String>
     <sys:String x:Key="VM.ScenePreview.Title">Preview Error</sys:String>
 
-    <!-- VM Intro/Outro/Watermark -->
-    <sys:String x:Key="VM.Intro.Select">Select intro image/video</sys:String>
-    <sys:String x:Key="VM.Outro.Select">Select outro image/video</sys:String>
+    <!-- VM Watermark -->
     <sys:String x:Key="VM.Media.FilterMedia">Media Files|*.png;*.jpg;*.jpeg;*.bmp;*.mp4;*.mov|All Files|*.*</sys:String>
     <sys:String x:Key="VM.Watermark.Filter">Image Files|*.png;*.jpg;*.jpeg;*.bmp;*.gif|All Files|*.*</sys:String>
 
@@ -652,7 +643,7 @@ Q: Where are templates saved?
 A: In %LOCALAPPDATA%\InsightCast\Templates.
 
 Q: How do I contact support?
-A: Email support@h-insight.jp.</sys:String>
+A: Email info@h-insight.jp.</sys:String>
     <sys:String x:Key="VM.FAQ.Title">FAQ</sys:String>
     <sys:String x:Key="VM.About">InsightCast v{0}
 
@@ -660,8 +651,9 @@ Auto video generation tool using VOICEVOX voice engine
 
 Simply enter text to easily create narrated videos.
 
-Developer: Harmonic Insight Inc.
-Support: support@h-insight.jp</sys:String>
+Developer: HARMONIC insight LLC
+Support: info@h-insight.jp
+Web: https://www.insight-office.com</sys:String>
     <sys:String x:Key="VM.About.Title">About InsightCast</sys:String>
     <sys:String x:Key="VM.Shortcuts">Keyboard Shortcuts
 ─────────────────────
@@ -678,16 +670,14 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="VM.Shortcuts.Title">Keyboard Shortcuts</sys:String>
     <sys:String x:Key="VM.License.Title">License Info</sys:String>
     <sys:String x:Key="VM.License.Header">License Info\n─────────────────────\n\nPlan: {0}\nStatus: {1}\nExpires: {2}</sys:String>
-    <sys:String x:Key="VM.Terms.Fallback">Please review the Terms of Service at:\nhttps://h-insight.jp/terms\n\nContact: info@h-insight.jp</sys:String>
+    <sys:String x:Key="VM.Terms.Fallback">Please review the Terms of Service at:\nhttps://www.insight-office.com/terms\n\nContact: info@h-insight.jp</sys:String>
     <sys:String x:Key="VM.Terms.Title">Terms of Service</sys:String>
-    <sys:String x:Key="VM.Privacy.Fallback">Please review the Privacy Policy at:\nhttps://h-insight.jp/privacy\n\nContact: info@h-insight.jp</sys:String>
+    <sys:String x:Key="VM.Privacy.Fallback">Please review the Privacy Policy at:\nhttps://www.insight-office.com/privacy\n\nContact: info@h-insight.jp</sys:String>
     <sys:String x:Key="VM.Privacy.Title">Privacy Policy</sys:String>
 
     <!-- QVM Extended -->
     <sys:String x:Key="QVM.Speaker.LoadFailed">Failed to load speakers</sys:String>
     <sys:String x:Key="QVM.Speaker.Normal">Normal</sys:String>
-    <sys:String x:Key="QVM.Intro.Set">Intro set: {0}</sys:String>
-    <sys:String x:Key="QVM.Outro.Set">Outro set: {0}</sys:String>
     <sys:String x:Key="QVM.Watermark.Set">Logo set: {0}</sys:String>
     <sys:String x:Key="QVM.BGM.Select">Select BGM File</sys:String>
     <sys:String x:Key="QVM.BGM.Filter">Audio Files|*.mp3;*.wav;*.ogg;*.flac;*.aac;*.m4a|All Files|*.*</sys:String>
@@ -723,7 +713,6 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Common.Separator">, </sys:String>
     <sys:String x:Key="Export.Chapter.Short">Chapter</sys:String>
     <sys:String x:Key="Export.ChapterEnding">Ending</sys:String>
-    <sys:String x:Key="Export.ChapterIntro">Intro</sys:String>
     <sys:String x:Key="Export.Combining.Short">Combining</sys:String>
     <sys:String x:Key="Export.Complete.Short">Complete</sys:String>
     <sys:String x:Key="Export.Metadata.Short">Metadata</sys:String>
@@ -925,6 +914,43 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Planning.JsonEditor.InvalidFormat">No valid scene data found</sys:String>
     <sys:String x:Key="Planning.JsonEditor.ParseError">Failed to parse JSON</sys:String>
     <sys:String x:Key="Planning.JsonEditor.Applied">{0} scenes applied</sys:String>
+
+    <!-- Transition Presets -->
+    <sys:String x:Key="Transition.Preset.None.Name">None</sys:String>
+    <sys:String x:Key="Transition.Preset.None.Desc">No transition</sys:String>
+    <sys:String x:Key="Transition.Preset.Fade.Name">Fade</sys:String>
+    <sys:String x:Key="Transition.Preset.Fade.Desc">Fade in / Fade out</sys:String>
+    <sys:String x:Key="Transition.Preset.Dissolve.Name">Dissolve</sys:String>
+    <sys:String x:Key="Transition.Preset.Dissolve.Desc">Cross dissolve</sys:String>
+    <sys:String x:Key="Transition.Preset.WipeLeft.Name">Wipe (Left)</sys:String>
+    <sys:String x:Key="Transition.Preset.WipeLeft.Desc">Wipe to the left</sys:String>
+    <sys:String x:Key="Transition.Preset.WipeRight.Name">Wipe (Right)</sys:String>
+    <sys:String x:Key="Transition.Preset.WipeRight.Desc">Wipe to the right</sys:String>
+    <sys:String x:Key="Transition.Preset.SlideLeft.Name">Slide (Left)</sys:String>
+    <sys:String x:Key="Transition.Preset.SlideLeft.Desc">Slide to the left</sys:String>
+    <sys:String x:Key="Transition.Preset.SlideRight.Name">Slide (Right)</sys:String>
+    <sys:String x:Key="Transition.Preset.SlideRight.Desc">Slide to the right</sys:String>
+    <sys:String x:Key="Transition.Preset.ZoomIn.Name">Zoom In</sys:String>
+    <sys:String x:Key="Transition.Preset.ZoomIn.Desc">Zoom in effect</sys:String>
+
+    <!-- BGM status -->
+    <sys:String x:Key="BGM.Set">BGM: {0}</sys:String>
+
+    <!-- Planning ViewModel -->
+    <sys:String x:Key="Planning.SecondsPerScene">→ Approx. {0} sec/scene (approx. {1} chars)</sys:String>
+    <sys:String x:Key="Planning.Media.Required">Need {0} images (none added)</sys:String>
+    <sys:String x:Key="Planning.Media.Partial">Need {0} images ({1} added, {2} short)</sys:String>
+    <sys:String x:Key="Planning.Media.Exact">{0} images ✓ OK</sys:String>
+    <sys:String x:Key="Planning.Media.Excess">{0} images added (used for {1} scenes)</sys:String>
+    <sys:String x:Key="Planning.SceneTitle">Scene {0}</sys:String>
+    <sys:String x:Key="Planning.InvalidSceneCount">Please enter a valid scene count.</sys:String>
+    <sys:String x:Key="Planning.ConfirmApply">Set scene count to {0}.\nExisting scenes will be overwritten.\nContinue?</sys:String>
+    <sys:String x:Key="Planning.ConfirmApply.Title">Apply to Structure</sys:String>
+
+    <!-- Video Wizard -->
+    <sys:String x:Key="Wizard.SceneTitle">Scene {0}</sys:String>
+    <sys:String x:Key="Wizard.EditScript">(Please edit the script)</sys:String>
+    <sys:String x:Key="Wizard.Duration">{0} sec</sys:String>
 
     <!-- Quick Setup -->
     <sys:String x:Key="Planning.QuickSetup">Quick Setup</sys:String>

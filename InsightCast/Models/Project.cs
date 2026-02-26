@@ -62,18 +62,6 @@ namespace InsightCast.Models
         [JsonPropertyName("watermark")]
         public WatermarkSettings Watermark { get; set; } = new();
 
-        [JsonPropertyName("introMediaPath")]
-        public string? IntroMediaPath { get; set; }
-
-        [JsonPropertyName("introDuration")]
-        public double IntroDuration { get; set; } = 3.0;
-
-        [JsonPropertyName("outroMediaPath")]
-        public string? OutroMediaPath { get; set; }
-
-        [JsonPropertyName("outroDuration")]
-        public double OutroDuration { get; set; } = 3.0;
-
         [JsonPropertyName("defaultTransition")]
         public TransitionType DefaultTransition { get; set; } = TransitionType.Fade;
 
@@ -85,12 +73,6 @@ namespace InsightCast.Models
 
         [JsonPropertyName("generateChapters")]
         public bool GenerateChapters { get; set; } = true;
-
-        [JsonIgnore]
-        public bool HasIntro => !string.IsNullOrEmpty(IntroMediaPath);
-
-        [JsonIgnore]
-        public bool HasOutro => !string.IsNullOrEmpty(OutroMediaPath);
 
         public Project()
         {

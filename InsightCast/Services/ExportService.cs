@@ -88,39 +88,9 @@ namespace InsightCast.Services
             var chapterTimes = new List<(double StartTime, string Title)>();
             double cumulativeDuration = 0;
 
-            // Total steps: scenes + intro? + outro? + concat + bgm? + thumbnail? + metadata?
-            int totalSteps = project.Scenes.Count + 2; // concat + finalize
-            if (project.HasIntro) totalSteps++;
-            if (project.HasOutro) totalSteps++;
+            // Total steps: scenes + concat + finalize
+            int totalSteps = project.Scenes.Count + 2;
             int currentStep = 0;
-
-            // Step: Generate intro scene if configured
-            if (project.HasIntro && File.Exists(project.IntroMediaPath))
-            {
-                currentStep++;
-                progress.Report($"[{currentStep}/{totalSteps}] {LocalizationService.GetString("Export.GeneratingIntro")}");
-                ct.ThrowIfCancellationRequested();
-
-                var introScene = new Scene
-                {
-                    MediaPath = project.IntroMediaPath,
-                    MediaType = IsVideoFile(project.IntroMediaPath) ? MediaType.Video : MediaType.Image,
-                    DurationMode = DurationMode.Fixed,
-                    FixedSeconds = project.IntroDuration
-                };
-
-                var introPath = Path.Combine(tempDir, "scene_intro.mp4");
-                var introSuccess = sceneGen.GenerateScene(introScene, introPath,
-                    project.IntroDuration, resolution, fps, watermark: project.Watermark);
-
-                if (introSuccess)
-                {
-                    scenePaths.Add(introPath);
-                    chapterTimes.Add((0, LocalizationService.GetString("Export.ChapterIntro")));
-                    cumulativeDuration += project.IntroDuration;
-                    // Transition to next scene will be added by the content scene loop
-                }
-            }
 
             // Step: Generate each content scene
             for (int i = 0; i < project.Scenes.Count; i++)
@@ -202,34 +172,6 @@ namespace InsightCast.Services
                         ? scene.TransitionDuration
                         : project.DefaultTransitionDuration;
                     transitions.Add((transType, transDur));
-                }
-            }
-
-            // Step: Generate outro scene if configured
-            if (project.HasOutro && File.Exists(project.OutroMediaPath))
-            {
-                currentStep++;
-                progress.Report($"[{currentStep}/{totalSteps}] {LocalizationService.GetString("Export.GeneratingOutro")}");
-                ct.ThrowIfCancellationRequested();
-
-                var outroScene = new Scene
-                {
-                    MediaPath = project.OutroMediaPath,
-                    MediaType = IsVideoFile(project.OutroMediaPath) ? MediaType.Video : MediaType.Image,
-                    DurationMode = DurationMode.Fixed,
-                    FixedSeconds = project.OutroDuration
-                };
-
-                var outroPath = Path.Combine(tempDir, "scene_outro.mp4");
-                var outroSuccess = sceneGen.GenerateScene(outroScene, outroPath,
-                    project.OutroDuration, resolution, fps, watermark: project.Watermark);
-
-                if (outroSuccess)
-                {
-                    chapterTimes.Add((cumulativeDuration, LocalizationService.GetString("Export.ChapterEnding")));
-                    transitions.Add((project.DefaultTransition, project.DefaultTransitionDuration));
-                    scenePaths.Add(outroPath);
-                    cumulativeDuration += project.OutroDuration;
                 }
             }
 

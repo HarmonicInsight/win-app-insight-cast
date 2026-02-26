@@ -82,16 +82,16 @@ namespace InsightCast.Models
 
     public static class PresetTransitions
     {
-        public static readonly List<(TransitionType Type, string Name, string Description)> PRESET_TRANSITIONS = new()
+        public static List<(TransitionType Type, string Name, string Description)> PRESET_TRANSITIONS => new()
         {
-            (TransitionType.None, "なし", "トランジションなし"),
-            (TransitionType.Fade, "フェード", "フェードイン・フェードアウト"),
-            (TransitionType.Dissolve, "ディゾルブ", "クロスディゾルブ"),
-            (TransitionType.WipeLeft, "ワイプ（左）", "左方向へのワイプ"),
-            (TransitionType.WipeRight, "ワイプ（右）", "右方向へのワイプ"),
-            (TransitionType.SlideLeft, "スライド（左）", "左方向へのスライド"),
-            (TransitionType.SlideRight, "スライド（右）", "右方向へのスライド"),
-            (TransitionType.ZoomIn, "ズームイン", "ズームインエフェクト")
+            (TransitionType.None, LocalizationService.GetString("Transition.Preset.None.Name"), LocalizationService.GetString("Transition.Preset.None.Desc")),
+            (TransitionType.Fade, LocalizationService.GetString("Transition.Preset.Fade.Name"), LocalizationService.GetString("Transition.Preset.Fade.Desc")),
+            (TransitionType.Dissolve, LocalizationService.GetString("Transition.Preset.Dissolve.Name"), LocalizationService.GetString("Transition.Preset.Dissolve.Desc")),
+            (TransitionType.WipeLeft, LocalizationService.GetString("Transition.Preset.WipeLeft.Name"), LocalizationService.GetString("Transition.Preset.WipeLeft.Desc")),
+            (TransitionType.WipeRight, LocalizationService.GetString("Transition.Preset.WipeRight.Name"), LocalizationService.GetString("Transition.Preset.WipeRight.Desc")),
+            (TransitionType.SlideLeft, LocalizationService.GetString("Transition.Preset.SlideLeft.Name"), LocalizationService.GetString("Transition.Preset.SlideLeft.Desc")),
+            (TransitionType.SlideRight, LocalizationService.GetString("Transition.Preset.SlideRight.Name"), LocalizationService.GetString("Transition.Preset.SlideRight.Desc")),
+            (TransitionType.ZoomIn, LocalizationService.GetString("Transition.Preset.ZoomIn.Name"), LocalizationService.GetString("Transition.Preset.ZoomIn.Desc"))
         };
     }
 }
