@@ -839,6 +839,10 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Planning.GenerateOutline">Generate Outline</sys:String>
     <sys:String x:Key="Planning.Structure">Structure &amp; Script</sys:String>
     <sys:String x:Key="Planning.GenerateAllScripts">Generate All Scripts</sys:String>
+    <sys:String x:Key="Planning.ClearAll">Clear All</sys:String>
+    <sys:String x:Key="Planning.ClearAll.Tooltip">Clear all scene contents</sys:String>
+    <sys:String x:Key="Planning.ClearAll.Confirm">Are you sure you want to clear all scenes?</sys:String>
+    <sys:String x:Key="Planning.ClearAll.Confirm.Title">Confirm</sys:String>
     <sys:String x:Key="Planning.ImagePrompt">Image Prompt</sys:String>
     <sys:String x:Key="Planning.ImagePrompt.Current">Prompt for Current Scene</sys:String>
     <sys:String x:Key="Planning.GeneratePrompt">Generate Prompt</sys:String>
@@ -905,6 +909,24 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Thumbnail.Error.Save">Error saving thumbnail</sys:String>
     <sys:String x:Key="Thumbnail.Error.NoThumbnail">Please generate a thumbnail first</sys:String>
     <sys:String x:Key="Common.Browse">Browse...</sys:String>
+    <sys:String x:Key="Common.Browse.Short">Browse</sys:String>
+    <sys:String x:Key="Thumbnail.Clear">Clear</sys:String>
+    <sys:String x:Key="Thumbnail.Clear.All.Tooltip">Clear all settings and preview</sys:String>
+    <sys:String x:Key="Planning.ApplySetup">Apply to Structure</sys:String>
+    <sys:String x:Key="Planning.ApplySetup.Tooltip">Apply scene count to structure (existing scenes will be overwritten)</sys:String>
+    <sys:String x:Key="Duration.15s">15 sec</sys:String>
+    <sys:String x:Key="Duration.30s">30 sec</sys:String>
+    <sys:String x:Key="Duration.60s">60 sec</sys:String>
+    <sys:String x:Key="Duration.90s">90 sec</sys:String>
+    <sys:String x:Key="Duration.120s">120 sec</sys:String>
+    <sys:String x:Key="Duration.180s">180 sec</sys:String>
+    <sys:String x:Key="Duration.60s.Long">60 sec (1 min)</sys:String>
+    <sys:String x:Key="Duration.90s.Long">90 sec (1 min 30 sec)</sys:String>
+    <sys:String x:Key="Duration.120s.Long">120 sec (2 min)</sys:String>
+    <sys:String x:Key="License.Activate">Activate</sys:String>
+    <sys:String x:Key="License.Clear">Clear</sys:String>
+    <sys:String x:Key="Resolution.Landscape">1920x1080 (Landscape)</sys:String>
+    <sys:String x:Key="Resolution.Portrait">1080x1920 (Portrait)</sys:String>
 
     <!-- JSON Editor -->
     <sys:String x:Key="Planning.ApplyJson">Apply JSON</sys:String>

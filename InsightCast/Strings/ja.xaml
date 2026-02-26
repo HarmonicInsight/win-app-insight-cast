@@ -840,6 +840,10 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Planning.GenerateOutline">構成を生成</sys:String>
     <sys:String x:Key="Planning.Structure">構成・スクリプト</sys:String>
     <sys:String x:Key="Planning.GenerateAllScripts">全スクリプト生成</sys:String>
+    <sys:String x:Key="Planning.ClearAll">全クリア</sys:String>
+    <sys:String x:Key="Planning.ClearAll.Tooltip">全シーンの内容をクリア</sys:String>
+    <sys:String x:Key="Planning.ClearAll.Confirm">全シーンの内容をクリアしますか？</sys:String>
+    <sys:String x:Key="Planning.ClearAll.Confirm.Title">確認</sys:String>
     <sys:String x:Key="Planning.ImagePrompt">画像プロンプト</sys:String>
     <sys:String x:Key="Planning.ImagePrompt.Current">現在のシーンのプロンプト</sys:String>
     <sys:String x:Key="Planning.GeneratePrompt">プロンプト生成</sys:String>
@@ -906,6 +910,24 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Thumbnail.Error.Save">サムネイルの保存中にエラーが発生しました</sys:String>
     <sys:String x:Key="Thumbnail.Error.NoThumbnail">先にサムネイルを生成してください</sys:String>
     <sys:String x:Key="Common.Browse">参照...</sys:String>
+    <sys:String x:Key="Common.Browse.Short">参照</sys:String>
+    <sys:String x:Key="Thumbnail.Clear">クリア</sys:String>
+    <sys:String x:Key="Thumbnail.Clear.All.Tooltip">全ての設定とプレビューをクリア</sys:String>
+    <sys:String x:Key="Planning.ApplySetup">構成に反映</sys:String>
+    <sys:String x:Key="Planning.ApplySetup.Tooltip">シーン数を構成に反映（既存のシーンは上書きされます）</sys:String>
+    <sys:String x:Key="Duration.15s">15秒</sys:String>
+    <sys:String x:Key="Duration.30s">30秒</sys:String>
+    <sys:String x:Key="Duration.60s">60秒</sys:String>
+    <sys:String x:Key="Duration.90s">90秒</sys:String>
+    <sys:String x:Key="Duration.120s">120秒</sys:String>
+    <sys:String x:Key="Duration.180s">180秒</sys:String>
+    <sys:String x:Key="Duration.60s.Long">60秒 (1分)</sys:String>
+    <sys:String x:Key="Duration.90s.Long">90秒 (1分30秒)</sys:String>
+    <sys:String x:Key="Duration.120s.Long">120秒 (2分)</sys:String>
+    <sys:String x:Key="License.Activate">アクティベート</sys:String>
+    <sys:String x:Key="License.Clear">クリア</sys:String>
+    <sys:String x:Key="Resolution.Landscape">1920x1080 (横)</sys:String>
+    <sys:String x:Key="Resolution.Portrait">1080x1920 (縦)</sys:String>
 
     <!-- JSON Editor -->
     <sys:String x:Key="Planning.ApplyJson">JSONを適用</sys:String>

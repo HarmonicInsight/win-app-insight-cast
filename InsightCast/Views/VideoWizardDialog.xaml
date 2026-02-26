@@ -185,15 +185,15 @@
                            Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,12"/>
                 <WrapPanel Grid.Row="2">
                     <RadioButton x:Name="Duration15" GroupName="Duration" Margin="0,4,16,4"
-                                 Content="15秒" Tag="15"/>
+                                 Content="{DynamicResource Duration.15s}" Tag="15"/>
                     <RadioButton x:Name="Duration30" GroupName="Duration" Margin="0,4,16,4"
-                                 Content="30秒" Tag="30" IsChecked="True"/>
+                                 Content="{DynamicResource Duration.30s}" Tag="30" IsChecked="True"/>
                     <RadioButton x:Name="Duration60" GroupName="Duration" Margin="0,4,16,4"
-                                 Content="60秒 (1分)" Tag="60"/>
+                                 Content="{DynamicResource Duration.60s.Long}" Tag="60"/>
                     <RadioButton x:Name="Duration90" GroupName="Duration" Margin="0,4,16,4"
-                                 Content="90秒 (1分30秒)" Tag="90"/>
+                                 Content="{DynamicResource Duration.90s.Long}" Tag="90"/>
                     <RadioButton x:Name="Duration120" GroupName="Duration" Margin="0,4,16,4"
-                                 Content="120秒 (2分)" Tag="120"/>
+                                 Content="{DynamicResource Duration.120s.Long}" Tag="120"/>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                         <RadioButton x:Name="DurationCustom" GroupName="Duration"
                                      Content="{DynamicResource Wizard.Duration.Custom}" Margin="0,4,8,4"/>

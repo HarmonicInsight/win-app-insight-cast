@@ -1143,7 +1143,9 @@ namespace InsightCast.ViewModels
 
         private void ClearAllScenes()
         {
-            var result = MessageBox.Show("全シーンの内容をクリアしますか？", "確認",
+            var result = MessageBox.Show(
+                LocalizationService.GetString("Planning.ClearAll.Confirm"),
+                LocalizationService.GetString("Planning.ClearAll.Confirm.Title"),
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result != MessageBoxResult.Yes) return;
 

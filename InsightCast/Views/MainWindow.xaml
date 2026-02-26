@@ -278,8 +278,8 @@
                             <TextBlock Text="{DynamicResource Export.Resolution}" FontSize="10"
                                        Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,4"/>
                             <ComboBox SelectedIndex="{Binding SelectedResolutionIndex}" FontSize="11">
-                                <ComboBoxItem Content="1920x1080 (横)" Tag="1920x1080"/>
-                                <ComboBoxItem Content="1080x1920 (縦)" Tag="1080x1920"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.Landscape}" Tag="1920x1080"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.Portrait}" Tag="1080x1920"/>
                             </ComboBox>
                         </StackPanel>
                     </Border>
