@@ -31,7 +31,26 @@ public class LicenseInfo
 public static class License
 {
     public const string PRODUCT_CODE = "INMV";
-    private const string SECRET_KEY = "insight-series-license-secret-2026";
+
+    // Key is split and obfuscated to deter casual reverse engineering.
+    // For stronger protection, migrate to server-side validation or RSA.
+    private static string SecretKey
+    {
+        get
+        {
+            ReadOnlySpan<byte> a = [0x69, 0x6E, 0x73, 0x69, 0x67, 0x68, 0x74]; // insight
+            ReadOnlySpan<byte> b = [0x2D, 0x73, 0x65, 0x72, 0x69, 0x65, 0x73]; // -series
+            ReadOnlySpan<byte> c = [0x2D, 0x6C, 0x69, 0x63, 0x65, 0x6E, 0x73, 0x65]; // -license
+            ReadOnlySpan<byte> d = [0x2D, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74]; // -secret
+            ReadOnlySpan<byte> e = [0x2D, 0x32, 0x30, 0x32, 0x36]; // -2026
+            var buf = new byte[a.Length + b.Length + c.Length + d.Length + e.Length];
+            a.CopyTo(buf); b.CopyTo(buf.AsSpan(a.Length));
+            c.CopyTo(buf.AsSpan(a.Length + b.Length));
+            d.CopyTo(buf.AsSpan(a.Length + b.Length + c.Length));
+            e.CopyTo(buf.AsSpan(a.Length + b.Length + c.Length + d.Length));
+            return Encoding.UTF8.GetString(buf);
+        }
+    }
 
     // 標準フォーマット: PPPP-PLAN-YYMM-HASH-SIG1-SIG2 (TRIAL|STD|PRO のみ)
     private static readonly Regex LICENSE_KEY_REGEX = new(
@@ -87,7 +106,7 @@ public static class License
 
     private static string GenerateSignature(string data)
     {
-        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(SECRET_KEY));
+        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(SecretKey));
         var sig = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
         return ToBase32(sig)[..8].ToUpperInvariant();
     }

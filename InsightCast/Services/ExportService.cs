@@ -246,7 +246,7 @@ namespace InsightCast.Services
                 if (Directory.Exists(tempDir))
                     Directory.Delete(tempDir, true);
             }
-            catch { /* Best-effort cleanup */ }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Temp cleanup failed: {ex.Message}"); }
 
             progress.Report(LocalizationService.GetString("Export.Done"));
             return result;

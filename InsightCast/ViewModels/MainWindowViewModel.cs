@@ -559,8 +559,11 @@ namespace InsightCast.ViewModels
         public ICommand LoadTemplateCommand { get; }
         public ICommand OpenOutputFolderCommand { get; }
         public ICommand BgmSettingsCommand { get; }
+        public ICommand CopyNarrationToSubtitleCommand { get; }
+        public ICommand ApplyTransitionToAllCommand { get; }
         public ICommand ShowTutorialCommand { get; }
         public ICommand ShowFaqCommand { get; }
+        public ICommand ShowHelpCommand { get; }
         public ICommand ShowLicenseManagerCommand { get; }
         public ICommand ShowLicenseInfoCommand { get; }
         public ICommand ShowAboutCommand { get; }
@@ -623,12 +626,15 @@ namespace InsightCast.ViewModels
             LoadTemplateCommand = new RelayCommand(LoadTemplate);
             OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
             BgmSettingsCommand = new RelayCommand(OpenBgmSettings);
-            ShowTutorialCommand = new RelayCommand(ShowTutorial);
-            ShowFaqCommand = new RelayCommand(ShowFaq);
+            CopyNarrationToSubtitleCommand = new RelayCommand(CopyNarrationToSubtitle);
+            ApplyTransitionToAllCommand = new RelayCommand(ApplyTransitionToAll);
+            ShowTutorialCommand = new RelayCommand(ShowHelp);
+            ShowFaqCommand = new RelayCommand(ShowHelp);
+            ShowHelpCommand = new RelayCommand(ShowHelp);
             ShowLicenseManagerCommand = new RelayCommand(ShowLicenseManager);
             ShowLicenseInfoCommand = new RelayCommand(ShowLicenseInfo);
             ShowAboutCommand = new RelayCommand(ShowAbout);
-            ShowShortcutsCommand = new RelayCommand(ShowShortcuts);
+            ShowShortcutsCommand = new RelayCommand(ShowHelp);
             ShowTermsCommand = new RelayCommand(ShowTerms);
             ShowPrivacyCommand = new RelayCommand(ShowPrivacy);
             OpenRecentFileCommand = new RelayCommand(p => { if (p is string path) OpenRecentFile(path); });
@@ -672,6 +678,36 @@ namespace InsightCast.ViewModels
             await LoadSpeakers();
             LoadSceneSpeakers();
             _logger.Log(LocalizationService.GetString("VM.Initialized"));
+
+            // Background update check (non-blocking)
+            _ = CheckForUpdateAsync();
+        }
+
+        private async Task CheckForUpdateAsync()
+        {
+            try
+            {
+                var update = await Services.UpdateChecker.CheckForUpdateAsync();
+                if (update != null)
+                {
+                    var msg = LocalizationService.GetString("VM.Update.Available", update.Value.Tag);
+                    if (_dialogService?.ShowYesNo(msg,
+                        LocalizationService.GetString("VM.Update.Title")) == true)
+                    {
+                        try
+                        {
+                            System.Diagnostics.Process.Start(
+                                new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = update.Value.Url,
+                                    UseShellExecute = true
+                                });
+                        }
+                        catch { /* Ignore browser launch failure */ }
+                    }
+                }
+            }
+            catch { /* Update check is best-effort */ }
         }
 
         #endregion
@@ -684,11 +720,11 @@ namespace InsightCast.ViewModels
             try
             {
                 var version = await _voiceVoxClient.CheckConnectionAsync();
-                vvStatus = version != null ? LocalizationService.GetString("VM.VoiceVox.Connected", version) : LocalizationService.GetString("VM.VoiceVox.Disconnected");
+                vvStatus = version != null ? LocalizationService.GetString("VM.VoiceVox.Connected", version) : LocalizationService.GetString("VM.VoiceVox.Guide");
             }
             catch
             {
-                vvStatus = LocalizationService.GetString("VM.VoiceVox.Disconnected");
+                vvStatus = LocalizationService.GetString("VM.VoiceVox.Guide");
             }
 
             var ffStatus = _ffmpegWrapper?.CheckAvailable() == true
@@ -1424,7 +1460,7 @@ namespace InsightCast.ViewModels
                 foreach (var old in Directory.GetFiles(previewDir, "preview_*.mp4"))
                     File.Delete(old);
             }
-            catch { /* best-effort cleanup */ }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Preview cleanup: {ex.Message}"); }
 
             var previewPath = Path.Combine(previewDir, $"preview_{Guid.NewGuid():N}.mp4");
 
@@ -1608,6 +1644,7 @@ namespace InsightCast.ViewModels
 
             IsExporting = true;
             _exportCts = new CancellationTokenSource();
+            _exportCts.CancelAfter(TimeSpan.FromHours(4)); // Safety timeout for hung FFmpeg
             ExportProgressValue = 0;
             ExportProgressVisible = true;
 
@@ -1698,14 +1735,42 @@ namespace InsightCast.ViewModels
             }
         }
 
-        private void OnExportFinished(bool success, string message)
+        private async void OnExportFinished(bool success, string message)
         {
             if (success)
             {
                 _project.Output.OutputPath = message;
                 _logger.Log(LocalizationService.GetString("VM.Export.Success", message));
-                if (_dialogService?.ShowYesNo(
-                    LocalizationService.GetString("VM.Export.CompleteOpen", message),
+
+                // D2: Enhanced post-export guidance with output file list
+                // Check file existence on background thread to avoid blocking UI
+                var dir = System.IO.Path.GetDirectoryName(message) ?? "";
+                var baseName = System.IO.Path.GetFileNameWithoutExtension(message);
+
+                var (thumbExists, chapterExists, metaExists) = await Task.Run(() =>
+                {
+                    var t = System.IO.File.Exists(System.IO.Path.Combine(dir, baseName + "_thumbnail.jpg"));
+                    var c = System.IO.File.Exists(System.IO.Path.Combine(dir, baseName + ".chapters.txt"));
+                    var m = System.IO.File.Exists(System.IO.Path.Combine(dir, baseName + ".metadata.txt"));
+                    return (t, c, m);
+                });
+
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine(LocalizationService.GetString("VM.Export.CompleteDetail", message));
+                sb.AppendLine();
+                sb.AppendLine(LocalizationService.GetString("VM.Export.OutputFiles"));
+
+                if (thumbExists)
+                    sb.AppendLine($"  - {LocalizationService.GetString("Export.Thumbnail.Short")}: {baseName}_thumbnail.jpg");
+                if (chapterExists)
+                    sb.AppendLine($"  - {LocalizationService.GetString("Export.Chapter.Short")}: {baseName}.chapters.txt");
+                if (metaExists)
+                    sb.AppendLine($"  - {LocalizationService.GetString("Export.Metadata.Short")}: {baseName}.metadata.txt");
+
+                sb.AppendLine();
+                sb.AppendLine(LocalizationService.GetString("VM.Export.OpenPrompt"));
+
+                if (_dialogService?.ShowYesNo(sb.ToString(),
                     LocalizationService.GetString("VM.Export.Complete")) == true)
                 {
                     OpenFileRequested?.Invoke(message);
@@ -2032,18 +2097,50 @@ namespace InsightCast.ViewModels
 
         #region Menu Handlers
 
-        private void ShowTutorial()
+        private void ShowHelp()
         {
-            _dialogService?.ShowInfo(
-                LocalizationService.GetString("VM.Tutorial"),
-                LocalizationService.GetString("VM.Tutorial.Title"));
+            try
+            {
+                var helpWindow = new Views.HelpWindow
+                {
+                    Owner = System.Windows.Application.Current.MainWindow
+                };
+                helpWindow.ShowDialog();
+            }
+            catch
+            {
+                // Fallback to simple dialog if HelpWindow fails
+                _dialogService?.ShowInfo(
+                    LocalizationService.GetString("VM.Tutorial"),
+                    LocalizationService.GetString("VM.Tutorial.Title"));
+            }
         }
 
-        private void ShowFaq()
+        // B9: Copy narration text to subtitle
+        private void CopyNarrationToSubtitle()
         {
-            _dialogService?.ShowInfo(
-                LocalizationService.GetString("VM.FAQ"),
-                LocalizationService.GetString("VM.FAQ.Title"));
+            if (!string.IsNullOrWhiteSpace(NarrationText))
+            {
+                SubtitleText = NarrationText;
+                StatusText = LocalizationService.GetString("VM.CopiedToSubtitle");
+            }
+        }
+
+        // B10: Apply current transition settings to all scenes
+        private void ApplyTransitionToAll()
+        {
+            if (_project?.Scenes == null || _currentScene == null) return;
+
+            var type = _currentScene.TransitionType;
+            var dur = _currentScene.TransitionDuration;
+
+            foreach (var scene in _project.Scenes)
+            {
+                scene.TransitionType = type;
+                scene.TransitionDuration = dur;
+            }
+            _isDirty = true;
+            StatusText = LocalizationService.GetString("VM.TransitionAppliedAll");
         }
 
         private void ShowLicenseManager()
@@ -2065,20 +2162,12 @@ namespace InsightCast.ViewModels
 
         private void ShowAbout()
         {
-            var version = typeof(MainWindowViewModel).Assembly.GetName().Version;
-            var versionStr = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.0.0";
-
-            _dialogService?.ShowInfo(
-                LocalizationService.GetString("VM.About", versionStr),
-                LocalizationService.GetString("VM.About.Title"));
+            var dialog = new Views.AboutDialog();
+            dialog.Owner = System.Windows.Application.Current.MainWindow;
+            dialog.ShowDialog();
         }
 
-        private void ShowShortcuts()
-        {
-            _dialogService?.ShowInfo(
-                LocalizationService.GetString("VM.Shortcuts"),
-                LocalizationService.GetString("VM.Shortcuts.Title"));
-        }
+        // ShowShortcuts is now handled by ShowHelp()
 
         private void ShowTerms()
         {
@@ -2160,7 +2249,7 @@ namespace InsightCast.ViewModels
                 if (Directory.Exists(pptxDir))
                     Directory.Delete(pptxDir, true);
             }
-            catch { /* best-effort */ }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Cache cleanup: {ex.Message}"); }
 
             return true;
         }

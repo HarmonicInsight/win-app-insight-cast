@@ -121,7 +121,7 @@ public class AudioCache
                 files.RemoveAt(0);
             }
         }
-        catch { /* best-effort cache trimming */ }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Cache trim failed: {ex.Message}"); }
     }
 
     /// <summary>

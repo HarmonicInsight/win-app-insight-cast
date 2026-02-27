@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 
 public class Config
@@ -56,7 +58,7 @@ public class Config
             Directory.CreateDirectory(ConfigDir);
             var options = new JsonSerializerOptions { WriteIndented = true };
             var json = JsonSerializer.Serialize(_data, options);
-            File.WriteAllText(ConfigPath, json);
+            AtomicWriteText(ConfigPath, json);
             _dirty = false;
         }
         catch (Exception ex)
@@ -64,6 +66,33 @@ public class Config
             // Prevent I/O errors (disk full, permissions) from crashing the app
             // when Save is called implicitly from property setters.
             Debug.WriteLine($"Config.Save failed: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Writes text to a file atomically: write to temp file, then rename.
+    /// Prevents corruption if the process crashes mid-write.
+    /// </summary>
+    internal static void AtomicWriteText(string path, string content)
+    {
+        var dir = Path.GetDirectoryName(path) ?? ".";
+        var tempPath = Path.Combine(dir, Path.GetRandomFileName());
+        try
+        {
+            File.WriteAllText(tempPath, content);
+            // Create backup of existing file
+            if (File.Exists(path))
+            {
+                var backupPath = path + ".backup";
+                File.Copy(path, backupPath, overwrite: true);
+            }
+            File.Move(tempPath, path, overwrite: true);
+        }
+        catch
+        {
+            // Clean up temp file on failure
+            try { if (File.Exists(tempPath)) File.Delete(tempPath); } catch { }
+            throw;
         }
     }
 
@@ -142,8 +171,40 @@ public class Config
 
     public string? LicenseEmail
     {
-        get => Get<string?>("license_email", null);
-        set => Set("license_email", value);
+        get
+        {
+            var encrypted = Get<string?>("license_email", null);
+            if (string.IsNullOrEmpty(encrypted)) return null;
+            try
+            {
+                var bytes = Convert.FromBase64String(encrypted);
+                var decrypted = ProtectedData.Unprotect(bytes, null, DataProtectionScope.CurrentUser);
+                return Encoding.UTF8.GetString(decrypted);
+            }
+            catch
+            {
+                // Fallback: treat as plain text (migration from old format)
+                return encrypted;
+            }
+        }
+        set
+        {
+            if (value == null)
+            {
+                Set<string?>("license_email", null);
+                return;
+            }
+            try
+            {
+                var bytes = Encoding.UTF8.GetBytes(value);
+                var encrypted = ProtectedData.Protect(bytes, null, DataProtectionScope.CurrentUser);
+                Set("license_email", Convert.ToBase64String(encrypted));
+            }
+            catch
+            {
+                Set("license_email", value); // Fallback to plain
+            }
+        }
     }
 
     public void MarkSetupCompleted()

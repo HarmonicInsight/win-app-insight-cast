@@ -159,7 +159,7 @@ namespace InsightCast.Models
             ProjectPath = savePath;
 
             var json = JsonSerializer.Serialize(this, SerializerOptions);
-            File.WriteAllText(savePath, json);
+            Core.Config.AtomicWriteText(savePath, json);
         }
 
         public static Project Load(string path)

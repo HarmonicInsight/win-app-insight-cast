@@ -118,6 +118,7 @@ namespace InsightCast.Views
             Dispatcher.Invoke(() =>
             {
                 AudioPlayer.Stop();
+                AudioPlayer.Close();
                 AudioPlayer.Source = null;
             });
         }
@@ -247,6 +248,7 @@ namespace InsightCast.Views
                 bitmap.UriSource = new Uri(scene.MediaPath);
                 bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
                 bitmap.EndInit();
+                bitmap.Freeze();
             }
             catch
             {
@@ -529,10 +531,14 @@ namespace InsightCast.Views
             // Update maximize button icon: restore ↔ maximize
             if (MaximizeIcon != null)
             {
-                MaximizeIcon.Data = Geometry.Parse(
-                    WindowState == WindowState.Maximized
-                        ? "M0,2 H8 V10 H0 Z M2,2 V0 H10 V8 H8"   // Restore (two overlapping squares)
-                        : "M0,0 H10 V10 H0 Z");                     // Maximize (single square)
+                try
+                {
+                    MaximizeIcon.Data = Geometry.Parse(
+                        WindowState == WindowState.Maximized
+                            ? "M0,2 H8 V10 H0 Z M2,2 V0 H10 V8 H8"   // Restore (two overlapping squares)
+                            : "M0,0 H10 V10 H0 Z");                     // Maximize (single square)
+                }
+                catch { /* Geometry strings are static; guard against rare parse failures */ }
                 MaximizeButton.ToolTip = WindowState == WindowState.Maximized
                     ? LocalizationService.GetString("Window.Restore")
                     : LocalizationService.GetString("Window.Maximize");

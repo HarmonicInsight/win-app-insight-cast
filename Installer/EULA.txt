@@ -38,8 +38,20 @@ End User License Agreement (EULA)
    生成されたコンテンツの利用はお客様の責任において行ってください。
 
 4. サードパーティソフトウェア
-   本製品は以下のサードパーティソフトウェアを利用する場合があります：
+   本製品は以下のサードパーティソフトウェアを利用・同梱する場合があります：
+
    - VOICEVOX（音声合成エンジン）: https://voicevox.hiroshiba.jp/
+     ※ VOICEVOX は別途インストールが必要です。
+     ※ VOICEVOX で生成した音声の利用条件は VOICEVOX の利用規約に従います。
+
+   - FFmpeg（動画処理エンジン）: https://ffmpeg.org/
+     本製品には FFmpeg のバイナリが同梱されています。
+     FFmpeg は GNU Lesser General Public License (LGPL) v2.1 以降の
+     ライセンスの下で提供されています。
+     FFmpeg のソースコードは https://ffmpeg.org/download.html から
+     取得できます。
+     LGPL ライセンス全文: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
    各サードパーティソフトウェアの利用規約も併せてご確認ください。
 
 5. 免責事項

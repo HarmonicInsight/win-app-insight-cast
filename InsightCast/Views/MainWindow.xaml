@@ -57,19 +57,22 @@
                     <Button x:Name="MinimizeButton" Click="MinimizeButton_Click"
                             Width="46" Height="32" BorderThickness="0" Background="Transparent"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"
-                            ToolTip="{DynamicResource Window.Minimize}">
+                            ToolTip="{DynamicResource Window.Minimize}"
+                            AutomationProperties.Name="Minimize">
                         <Path Data="M0,0 H10" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"/>
                     </Button>
                     <Button x:Name="MaximizeButton" Click="MaximizeButton_Click"
                             Width="46" Height="32" BorderThickness="0" Background="Transparent"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"
-                            ToolTip="{DynamicResource Window.Maximize}">
+                            ToolTip="{DynamicResource Window.Maximize}"
+                            AutomationProperties.Name="Maximize">
                         <Path x:Name="MaximizeIcon" Data="M0,0 H10 V10 H0 Z" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"/>
                     </Button>
                     <Button x:Name="CloseButton" Click="CloseButton_Click"
                             Width="46" Height="32" BorderThickness="0" Background="Transparent"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"
-                            ToolTip="{DynamicResource Window.Close}">
+                            ToolTip="{DynamicResource Window.Close}"
+                            AutomationProperties.Name="Close">
                         <Path Data="M0,0 L10,10 M0,10 L10,0" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"/>
                     </Button>
                 </StackPanel>
@@ -221,11 +224,7 @@
 
             <MenuItem Header="{DynamicResource Menu.Help}">
                 <MenuItem Header="{DynamicResource Menu.Help.Tutorial}" InputGestureText="F1"
-                          Command="{Binding ShowTutorialCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.Help.FAQ}"
-                          Command="{Binding ShowFaqCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.Help.Shortcuts}"
-                          Command="{Binding ShowShortcutsCommand}"/>
+                          Command="{Binding ShowHelpCommand}"/>
                 <Separator/>
                 <MenuItem Header="{DynamicResource Menu.Help.License}"
                           Command="{Binding ShowLicenseManagerCommand}"/>
@@ -404,11 +403,16 @@
                                       IsChecked="{Binding KeepOriginalAudio}"
                                       VerticalAlignment="Center" Margin="0,0,12,0"/>
                             <Button Content="{DynamicResource Scene.PreviewAudio}" Padding="8,3" Margin="2"
-                                    Command="{Binding PreviewAudioCommand}"/>
+                                    Command="{Binding PreviewAudioCommand}"
+                                    ToolTip="{DynamicResource Scene.PreviewAudio.Tooltip}"
+                                    AutomationProperties.Name="Preview Audio"/>
                             <Button Content="{DynamicResource Scene.PreviewScene}" Padding="8,3" Margin="2"
-                                    Command="{Binding PreviewSceneCommand}"/>
+                                    Command="{Binding PreviewSceneCommand}"
+                                    ToolTip="{DynamicResource Scene.PreviewScene.Tooltip}"
+                                    AutomationProperties.Name="Preview Scene"/>
                             <Button Content="{DynamicResource Scene.Stop}" Padding="8,3" Margin="2"
-                                    Command="{Binding StopPreviewCommand}"/>
+                                    Command="{Binding StopPreviewCommand}"
+                                    ToolTip="{DynamicResource Scene.Stop.Tooltip}"/>
                             <TextBlock Text="{DynamicResource Scene.SpeechSpeed}" VerticalAlignment="Center" Margin="12,0,4,0"/>
                             <ComboBox Width="90" ItemsSource="{Binding SpeechSpeedOptions}"
                                       SelectedIndex="{Binding SelectedSpeechSpeedIndex}"/>
@@ -416,14 +420,23 @@
 
                         <!-- Subtitle -->
                         <StackPanel Margin="0,0,0,4">
-                            <TextBlock Text="{DynamicResource Scene.Subtitle}" Margin="0,0,0,4"/>
+                            <DockPanel Margin="0,0,0,4">
+                                <TextBlock Text="{DynamicResource Scene.Subtitle}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+                                <!-- B9: Copy narration to subtitle -->
+                                <Button Content="{DynamicResource Scene.CopyNarration}" Padding="6,2" Margin="8,0,0,0"
+                                        FontSize="10" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                                        Command="{Binding CopyNarrationToSubtitleCommand}"
+                                        IsEnabled="{Binding CanSubtitle}"
+                                        ToolTip="{DynamicResource Scene.CopyNarration.Tooltip}"/>
+                            </DockPanel>
                             <Grid>
                                 <TextBox Text="{Binding SubtitleText, UpdateSourceTrigger=PropertyChanged}"
                                          Padding="4" MinHeight="50" MaxHeight="100"
                                          TextWrapping="Wrap" AcceptsReturn="True"
                                          VerticalScrollBarVisibility="Auto"
                                          VerticalContentAlignment="Top"
-                                         IsEnabled="{Binding CanSubtitle}"/>
+                                         IsEnabled="{Binding CanSubtitle}"
+                                         ToolTip="{DynamicResource Scene.Subtitle.Tooltip}"/>
                                 <TextBlock Text="{Binding SubtitlePlaceholder}"
                                            Foreground="{DynamicResource TextPlaceholder}" FontStyle="Italic"
                                            IsHitTestVisible="False" Margin="8,6,0,0" VerticalAlignment="Top"
@@ -566,12 +579,19 @@
                             <ComboBox Width="160" Margin="0,0,12,0"
                                       ItemsSource="{Binding TransitionDisplayNames}"
                                       SelectedIndex="{Binding SelectedTransitionIndex}"
-                                      IsEnabled="{Binding CanTransition}"/>
+                                      IsEnabled="{Binding CanTransition}"
+                                      ToolTip="{DynamicResource Transition.Tooltip}"/>
                             <TextBlock Text="{DynamicResource Transition.Duration}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                             <TextBox Text="{Binding TransitionDuration, UpdateSourceTrigger=PropertyChanged}"
-                                     Width="60" TextAlignment="Center" Margin="0,0,4,0" IsEnabled="{Binding CanTransition}"/>
+                                     Width="60" TextAlignment="Center" Margin="0,0,4,0" IsEnabled="{Binding CanTransition}"
+                                     ToolTip="{DynamicResource Transition.Duration.Tooltip}"/>
                             <TextBlock Text="{DynamicResource Transition.Range}" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextTertiary}" FontSize="11"/>
+                            <!-- B10: Apply transition to all scenes -->
+                            <Button Content="{DynamicResource Transition.ApplyAll}" Padding="6,2" Margin="8,0,0,0"
+                                    FontSize="10" Command="{Binding ApplyTransitionToAllCommand}"
+                                    IsEnabled="{Binding CanTransition}"
+                                    ToolTip="{DynamicResource Transition.ApplyAll.Tooltip}"/>
                         </StackPanel>
 
                         <!-- Watermark -->
@@ -643,7 +663,9 @@
                         Width="150" Height="44"
                         FontSize="12" FontWeight="Bold"
                         Style="{DynamicResource PrimaryButton}"
-                        Command="{Binding ExportVideoCommand}"/>
+                        Command="{Binding ExportVideoCommand}"
+                        ToolTip="{DynamicResource Export.Button.Tooltip}"
+                        AutomationProperties.Name="Export Video"/>
             </Grid>
                     </GroupBox>
                 </Grid>

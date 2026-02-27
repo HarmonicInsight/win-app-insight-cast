@@ -31,29 +31,52 @@ SetupLogging=yes
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 LicenseFile=EULA.txt
-; Uncomment and set if you have an icon:
-; SetupIconFile=..\InsightCast\Resources\app.ico
-; UninstallDisplayIcon={app}\{#MyAppExeName}
+SetupIconFile=..\InsightCast\Resources\app.ico
+UninstallDisplayIcon={app}\{#MyAppExeName}
 
 [Languages]
 Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "デスクトップにショートカットを作成"; GroupDescription: "追加オプション:"; Flags: unchecked
-Name: "quicklaunchicon"; Description: "タスクバーにピン留め"; GroupDescription: "追加オプション:"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "quicklaunchicon"; Description: "{cm:TaskPinToTaskbar}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+[CustomMessages]
+japanese.TaskPinToTaskbar=タスクバーにピン留め
+english.TaskPinToTaskbar=Pin to Taskbar
+japanese.VoicevoxPageTitle=VOICEVOX エンジンの確認
+english.VoicevoxPageTitle=VOICEVOX Engine Check
+japanese.VoicevoxPageDesc=InsightCast はナレーション音声の生成に VOICEVOX を使用します。
+english.VoicevoxPageDesc=InsightCast uses VOICEVOX for narration voice generation.
+japanese.VoicevoxExplain=VOICEVOX はテキスト読み上げソフトウェアです。InsightCast の音声生成機能を使うには VOICEVOX のインストールが必要です。（動画生成のみであれば VOICEVOX なしでも利用可能です）
+english.VoicevoxExplain=VOICEVOX is a text-to-speech software. You need VOICEVOX installed to use the voice generation feature. (Video generation works without VOICEVOX.)
+japanese.VoicevoxFound=VOICEVOX が検出されました。
+english.VoicevoxFound=VOICEVOX detected.
+japanese.VoicevoxNotFound=VOICEVOX が見つかりません。
+english.VoicevoxNotFound=VOICEVOX not found.
+japanese.VoicevoxDownload=VOICEVOX 公式サイトを開く (ダウンロード)
+english.VoicevoxDownload=Open VOICEVOX website (Download)
 
 [Files]
 ; Main application (self-contained .NET 8 publish output)
 Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
+[Registry]
+; .icproj file association
+Root: HKA; Subkey: "Software\Classes\.icproj"; ValueType: string; ValueName: ""; ValueData: "InsightCast.Project"; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\InsightCast.Project"; ValueType: string; ValueName: ""; ValueData: "InsightCast Project"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\InsightCast.Project\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
+Root: HKA; Subkey: "Software\Classes\InsightCast.Project\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{group}\{#MyAppName} をアンインストール"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
 ; Launch the app after installation
-Filename: "{app}\{#MyAppExeName}"; Description: "{#MyAppName} を起動"; Flags: nowait postinstall skipifsilent shellexec
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent shellexec
 
 [Code]
 // ── Constants ──────────────────────────────────────────────────────
@@ -102,8 +125,8 @@ procedure CreateVoicevoxPage;
 begin
   VoicevoxPage := CreateCustomPage(
     wpSelectDir,
-    'VOICEVOX エンジンの確認',
-    'InsightCast はナレーション音声の生成に VOICEVOX を使用します。');
+    CustomMessage('VoicevoxPageTitle'),
+    CustomMessage('VoicevoxPageDesc'));
 
   VoicevoxDescLabel := TNewStaticText.Create(VoicevoxPage);
   VoicevoxDescLabel.Parent := VoicevoxPage.Surface;
@@ -113,10 +136,7 @@ begin
   VoicevoxDescLabel.AutoSize := False;
   VoicevoxDescLabel.WordWrap := True;
   VoicevoxDescLabel.Height := 60;
-  VoicevoxDescLabel.Caption :=
-    'VOICEVOX はテキスト読み上げソフトウェアです。' + #13#10 +
-    'InsightCast の音声生成機能を使うには VOICEVOX のインストールが必要です。' + #13#10 +
-    '（動画生成のみであれば VOICEVOX なしでも利用可能です）';
+  VoicevoxDescLabel.Caption := CustomMessage('VoicevoxExplain');
 
   VoicevoxStatusLabel := TNewStaticText.Create(VoicevoxPage);
   VoicevoxStatusLabel.Parent := VoicevoxPage.Surface;
@@ -134,7 +154,7 @@ begin
   VoicevoxDownloadButton.Left := 0;
   VoicevoxDownloadButton.Width := 280;
   VoicevoxDownloadButton.Height := 36;
-  VoicevoxDownloadButton.Caption := 'VOICEVOX 公式サイトを開く (ダウンロード)';
+  VoicevoxDownloadButton.Caption := CustomMessage('VoicevoxDownload');
   VoicevoxDownloadButton.OnClick := @VoicevoxDownloadClick;
 end;
 
@@ -142,13 +162,13 @@ procedure UpdateVoicevoxStatus;
 begin
   if IsVoicevoxInstalled then
   begin
-    VoicevoxStatusLabel.Caption := '✓ VOICEVOX が検出されました。';
+    VoicevoxStatusLabel.Caption := '✓ ' + CustomMessage('VoicevoxFound');
     VoicevoxStatusLabel.Font.Color := clGreen;
     VoicevoxDownloadButton.Visible := False;
   end
   else
   begin
-    VoicevoxStatusLabel.Caption := '✗ VOICEVOX が見つかりません。';
+    VoicevoxStatusLabel.Caption := '✗ ' + CustomMessage('VoicevoxNotFound');
     VoicevoxStatusLabel.Font.Color := $000060FF; // Orange
     VoicevoxDownloadButton.Visible := True;
   end;

@@ -656,6 +656,8 @@ VOICEVOX音声エンジンを使用した動画自動生成ツール
 サポート: info@h-insight.jp
 Web: https://www.insight-office.com</sys:String>
     <sys:String x:Key="VM.About.Title">InsightCastについて</sys:String>
+    <sys:String x:Key="VM.Update.Available">新しいバージョン {0} が利用可能です。ダウンロードページを開きますか？</sys:String>
+    <sys:String x:Key="VM.Update.Title">アップデートのお知らせ</sys:String>
     <sys:String x:Key="VM.Shortcuts">キーボードショートカット一覧
 ─────────────────────
 
@@ -991,5 +993,34 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Planning.Scenes">シーン</sys:String>
     <sys:String x:Key="Planning.Duration.Seconds">秒</sys:String>
     <sys:String x:Key="Planning.GenerateProject">構成を自動生成</sys:String>
+
+    <!-- B9: Copy narration to subtitle -->
+    <sys:String x:Key="Scene.CopyNarration">ナレーション→字幕</sys:String>
+    <sys:String x:Key="Scene.CopyNarration.Tooltip">ナレーションテキストを字幕にコピーします</sys:String>
+    <sys:String x:Key="VM.CopiedToSubtitle">ナレーションを字幕にコピーしました</sys:String>
+
+    <!-- B10: Apply transition to all -->
+    <sys:String x:Key="Transition.ApplyAll">全シーンに適用</sys:String>
+    <sys:String x:Key="Transition.ApplyAll.Tooltip">現在のトランジション設定を全シーンに一括適用します</sys:String>
+    <sys:String x:Key="VM.TransitionAppliedAll">トランジションを全シーンに適用しました</sys:String>
+
+    <!-- C6: Tooltips -->
+    <sys:String x:Key="Scene.PreviewAudio.Tooltip">入力したナレーションテキストを音声で試聴します</sys:String>
+    <sys:String x:Key="Scene.PreviewScene.Tooltip">現在のシーンを動画としてプレビューします（ナレーション・字幕付き）</sys:String>
+    <sys:String x:Key="Scene.Stop.Tooltip">再生中の音声・プレビューを停止します</sys:String>
+    <sys:String x:Key="Scene.Subtitle.Tooltip">動画の下部に表示される字幕テキストを入力します</sys:String>
+    <sys:String x:Key="Transition.Tooltip">シーン切り替え時のエフェクトを選択します（フェード、ワイプ等）</sys:String>
+    <sys:String x:Key="Transition.Duration.Tooltip">トランジションの長さ（0.2〜2.0秒）</sys:String>
+    <sys:String x:Key="Export.Button.Tooltip">全シーンを結合して動画ファイル（MP4）を書き出します</sys:String>
+
+    <!-- D2: Post-export guidance -->
+    <sys:String x:Key="VM.Export.CompleteDetail">動画の書き出しが完了しました。
+
+{0}</sys:String>
+    <sys:String x:Key="VM.Export.OutputFiles">同時に生成されたファイル:</sys:String>
+    <sys:String x:Key="VM.Export.OpenPrompt">動画ファイルを開きますか？</sys:String>
+
+    <!-- A2: VOICEVOX guidance -->
+    <sys:String x:Key="VM.VoiceVox.Guide">VOICEVOX: ✗未接続 — VOICEVOXエンジンを起動してからアプリを再起動してください</sys:String>
 
 </ResourceDictionary>

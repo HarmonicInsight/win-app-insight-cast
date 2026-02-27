@@ -655,6 +655,8 @@ Developer: HARMONIC insight LLC
 Support: info@h-insight.jp
 Web: https://www.insight-office.com</sys:String>
     <sys:String x:Key="VM.About.Title">About InsightCast</sys:String>
+    <sys:String x:Key="VM.Update.Available">A new version {0} is available. Open the download page?</sys:String>
+    <sys:String x:Key="VM.Update.Title">Update Available</sys:String>
     <sys:String x:Key="VM.Shortcuts">Keyboard Shortcuts
 ─────────────────────
 
@@ -990,5 +992,34 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Planning.Scenes">scenes</sys:String>
     <sys:String x:Key="Planning.Duration.Seconds">sec</sys:String>
     <sys:String x:Key="Planning.GenerateProject">Auto-Generate Structure</sys:String>
+
+    <!-- B9: Copy narration to subtitle -->
+    <sys:String x:Key="Scene.CopyNarration">Narration → Subtitle</sys:String>
+    <sys:String x:Key="Scene.CopyNarration.Tooltip">Copy narration text to subtitle</sys:String>
+    <sys:String x:Key="VM.CopiedToSubtitle">Narration copied to subtitle</sys:String>
+
+    <!-- B10: Apply transition to all -->
+    <sys:String x:Key="Transition.ApplyAll">Apply to All</sys:String>
+    <sys:String x:Key="Transition.ApplyAll.Tooltip">Apply current transition settings to all scenes</sys:String>
+    <sys:String x:Key="VM.TransitionAppliedAll">Transition applied to all scenes</sys:String>
+
+    <!-- C6: Tooltips -->
+    <sys:String x:Key="Scene.PreviewAudio.Tooltip">Preview the narration text as audio</sys:String>
+    <sys:String x:Key="Scene.PreviewScene.Tooltip">Preview the current scene as video (with narration and subtitles)</sys:String>
+    <sys:String x:Key="Scene.Stop.Tooltip">Stop playing audio or preview</sys:String>
+    <sys:String x:Key="Scene.Subtitle.Tooltip">Enter subtitle text shown at the bottom of the video</sys:String>
+    <sys:String x:Key="Transition.Tooltip">Select scene transition effect (Fade, Wipe, etc.)</sys:String>
+    <sys:String x:Key="Transition.Duration.Tooltip">Transition duration (0.2–2.0 seconds)</sys:String>
+    <sys:String x:Key="Export.Button.Tooltip">Combine all scenes and export as MP4 video</sys:String>
+
+    <!-- D2: Post-export guidance -->
+    <sys:String x:Key="VM.Export.CompleteDetail">Video export completed.
+
+{0}</sys:String>
+    <sys:String x:Key="VM.Export.OutputFiles">Files generated:</sys:String>
+    <sys:String x:Key="VM.Export.OpenPrompt">Would you like to open the video file?</sys:String>
+
+    <!-- A2: VOICEVOX guidance -->
+    <sys:String x:Key="VM.VoiceVox.Guide">VOICEVOX: ✗ Not connected — Please start VOICEVOX engine and restart the app</sys:String>
 
 </ResourceDictionary>

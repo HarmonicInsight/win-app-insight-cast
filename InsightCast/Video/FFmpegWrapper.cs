@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 /// <summary>
@@ -258,11 +259,24 @@ public class FFmpegWrapper
     /// <param name="args">List of command-line arguments (without the ffmpeg executable itself).</param>
     /// <param name="showOutput">If true, writes stdout/stderr to the console.</param>
     /// <returns>True if the command exited with code 0.</returns>
+    /// <summary>
+    /// Quotes an argument for safe passing to a process command line.
+    /// Prevents injection via user-controlled paths or text.
+    /// </summary>
+    private static string QuoteArg(string arg)
+    {
+        // If argument is already quoted or contains no special chars, return as-is
+        if (arg.StartsWith('"') && arg.EndsWith('"')) return arg;
+        if (!arg.Contains(' ') && !arg.Contains('"') && !arg.Contains('\\')) return arg;
+        // Escape internal quotes and wrap
+        return $"\"{arg.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"";
+    }
+
     public bool RunCommand(List<string> args, bool showOutput = false)
     {
         try
         {
-            string arguments = string.Join(" ", args);
+            string arguments = string.Join(" ", args.Select(QuoteArg));
             var psi = new ProcessStartInfo
             {
                 FileName = FfmpegPath,

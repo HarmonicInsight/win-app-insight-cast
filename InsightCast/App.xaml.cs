@@ -1,6 +1,7 @@
 namespace InsightCast;
 
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using InsightCast.Core;
@@ -24,8 +25,9 @@ public partial class App : Application
         // Global unhandled exception handlers to prevent silent crashes
         DispatcherUnhandledException += (_, args) =>
         {
+            CrashReporter.WriteCrashReport(args.Exception, "DispatcherUnhandledException");
             MessageBox.Show(
-                LocalizationService.GetString("App.Error.Unexpected", args.Exception.Message),
+                LocalizationService.GetString("App.Error.Unexpected", SanitizeErrorMessage(args.Exception.Message)),
                 LocalizationService.GetString("App.Error.Unexpected.Title"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
@@ -35,8 +37,9 @@ public partial class App : Application
         {
             if (args.ExceptionObject is Exception ex)
             {
+                CrashReporter.WriteCrashReport(ex, "AppDomain.UnhandledException");
                 MessageBox.Show(
-                    LocalizationService.GetString("App.Error.Fatal", ex.Message),
+                    LocalizationService.GetString("App.Error.Fatal", SanitizeErrorMessage(ex.Message)),
                     LocalizationService.GetString("App.Error.Fatal.Title"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -150,11 +153,43 @@ public partial class App : Application
         // ── 6. Show main window ─────────────────────────────────────
         var mainWindow = new MainWindow(client, speakerId, ffmpeg, config);
         mainWindow.Show();
+
+        // ── 7. Open project from command-line argument (.icproj file association)
+        if (e.Args.Length > 0 && !string.IsNullOrEmpty(e.Args[0]))
+        {
+            var filePath = e.Args[0];
+            if (System.IO.File.Exists(filePath) &&
+                filePath.EndsWith(".icproj", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    var project = Models.Project.Load(filePath);
+                    mainWindow.LoadProject(project);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        LocalizationService.GetString("App.Error.Startup", ex.Message),
+                        "InsightCast",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
+            }
+        }
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
         _voiceVoxClient?.Dispose();
         base.OnExit(e);
+    }
+
+    /// <summary>
+    /// Sanitize exception messages to hide internal paths (e.g. C:\Users\username\...).
+    /// </summary>
+    internal static string SanitizeErrorMessage(string message)
+    {
+        // Replace full Windows paths with just the filename
+        return Regex.Replace(message, @"[A-Za-z]:\\[^\s""']+\\([^\s""'\\]+)", "$1");
     }
 }

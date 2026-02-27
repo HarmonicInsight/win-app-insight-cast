@@ -246,7 +246,7 @@ public class PptxImporter
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(presentation);
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"PPTX presentation cleanup: {ex.Message}"); }
 
             try
             {
@@ -256,7 +256,7 @@ public class PptxImporter
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(pptApp);
                 }
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"PPTX app cleanup: {ex.Message}"); }
         }
     }
 

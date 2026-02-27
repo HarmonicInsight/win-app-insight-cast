@@ -1,0 +1,103 @@
+<Window x:Class="InsightCast.Views.AboutDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About InsightCast"
+        Width="440" Height="420"
+        MinWidth="400" MinHeight="380"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource BgPrimary}">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- App Name & Version -->
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,16">
+            <TextBlock Text="InsightCast"
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{DynamicResource BrandPrimary}"
+                       HorizontalAlignment="Center"
+                       AutomationProperties.Name="InsightCast"/>
+            <TextBlock x:Name="VersionLabel"
+                       Text="v1.0.0"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextSecondary}"
+                       HorizontalAlignment="Center" Margin="0,4,0,0"
+                       AutomationProperties.Name="Version"/>
+        </StackPanel>
+
+        <!-- Description -->
+        <TextBlock Grid.Row="1"
+                   x:Name="DescriptionText"
+                   TextWrapping="Wrap" TextAlignment="Center"
+                   FontSize="12"
+                   Foreground="{DynamicResource TextSecondary}"
+                   Margin="0,0,0,16"
+                   AutomationProperties.Name="Description"/>
+
+        <!-- Copyright -->
+        <TextBlock Grid.Row="2"
+                   Text="Copyright (C) 2026 HARMONIC insight"
+                   FontSize="11"
+                   Foreground="{DynamicResource TextTertiary}"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,12"/>
+
+        <!-- Third-party attributions -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource BgCard}"
+                BorderBrush="{DynamicResource BorderDefault}"
+                BorderThickness="1" CornerRadius="6"
+                Padding="12" Margin="0,0,0,16">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock x:Name="ThirdPartyHeader"
+                               Text="Third-Party Software"
+                               FontWeight="SemiBold" FontSize="12"
+                               Foreground="{DynamicResource TextPrimary}"
+                               Margin="0,0,0,8"/>
+                    <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondary}"
+                               TextWrapping="Wrap" LineHeight="18">
+                        <Run Text="VOICEVOX" FontWeight="SemiBold"/>
+                        <Run Text=" - Text-to-Speech Engine"/>
+                        <LineBreak/>
+                        <Hyperlink x:Name="VoicevoxLink" NavigateUri="https://voicevox.hiroshiba.jp/"
+                                   RequestNavigate="Hyperlink_RequestNavigate">
+                            https://voicevox.hiroshiba.jp/
+                        </Hyperlink>
+                        <LineBreak/><LineBreak/>
+                        <Run Text="FFmpeg" FontWeight="SemiBold"/>
+                        <Run Text=" - Video Processing (LGPL v2.1+)"/>
+                        <LineBreak/>
+                        <Hyperlink x:Name="FfmpegLink" NavigateUri="https://ffmpeg.org/"
+                                   RequestNavigate="Hyperlink_RequestNavigate">
+                            https://ffmpeg.org/
+                        </Hyperlink>
+                        <LineBreak/><LineBreak/>
+                        <Run Text="DocumentFormat.OpenXml" FontWeight="SemiBold"/>
+                        <Run Text=" - MIT License"/>
+                        <LineBreak/>
+                        <Run Text="System.Text.Json" FontWeight="SemiBold"/>
+                        <Run Text=" - MIT License"/>
+                    </TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Links & Close -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button x:Name="WebsiteButton" Content="Website" MinWidth="80" Height="30"
+                    Margin="4,0" Click="WebsiteButton_Click"
+                    AutomationProperties.Name="Open website"/>
+            <Button x:Name="CloseButton" Content="OK" MinWidth="80" Height="30"
+                    Margin="4,0" IsDefault="True" Click="CloseButton_Click"
+                    AutomationProperties.Name="Close about dialog"/>
+        </StackPanel>
+    </Grid>
+</Window>
