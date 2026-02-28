@@ -52,8 +52,9 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
+            CrashReporter.WriteCrashReport(ex, "StartupAsync");
             MessageBox.Show(
-                LocalizationService.GetString("App.Error.Startup", ex.Message),
+                LocalizationService.GetString("App.Error.Startup", ex.ToString()),
                 LocalizationService.GetString("App.Error.Startup.Title"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

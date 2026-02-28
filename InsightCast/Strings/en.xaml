@@ -97,7 +97,6 @@
     <sys:String x:Key="Scene.KeepAudio">Keep original audio</sys:String>
     <sys:String x:Key="Scene.PreviewAudio">Play Audio</sys:String>
     <sys:String x:Key="Scene.PreviewScene">Preview Scene</sys:String>
-    <sys:String x:Key="Scene.PreviewScene.Tooltip">Generate video preview for current scene</sys:String>
     <sys:String x:Key="Scene.Stop">Stop</sys:String>
     <sys:String x:Key="Scene.SpeechSpeed">Speed:</sys:String>
     <sys:String x:Key="Scene.Subtitle">Subtitle:</sys:String>
@@ -168,7 +167,6 @@
     <sys:String x:Key="Export.Res.Landscape">1920x1080 (Landscape)</sys:String>
     <sys:String x:Key="Export.BGM.Settings">BGM Settings...</sys:String>
     <sys:String x:Key="Export.Button">Export Video</sys:String>
-    <sys:String x:Key="Export.Button.Tooltip">Export project as a video file</sys:String>
     <sys:String x:Key="Export.Cancel">Cancel</sys:String>
     <sys:String x:Key="Export.Cancel.Tooltip">Cancel export/preview</sys:String>
     <sys:String x:Key="Export.Log">Log:</sys:String>

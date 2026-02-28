@@ -97,7 +97,6 @@
     <sys:String x:Key="Scene.KeepAudio">動画音声を残す</sys:String>
     <sys:String x:Key="Scene.PreviewAudio">▶試聴</sys:String>
     <sys:String x:Key="Scene.PreviewScene">▶シーンプレビュー</sys:String>
-    <sys:String x:Key="Scene.PreviewScene.Tooltip">現在のシーンを動画プレビュー生成</sys:String>
     <sys:String x:Key="Scene.Stop">■停止</sys:String>
     <sys:String x:Key="Scene.SpeechSpeed">話速:</sys:String>
     <sys:String x:Key="Scene.Subtitle">字幕:</sys:String>
@@ -168,7 +167,6 @@
     <sys:String x:Key="Export.Res.Landscape">1920x1080 (横動画)</sys:String>
     <sys:String x:Key="Export.BGM.Settings">BGM設定...</sys:String>
     <sys:String x:Key="Export.Button">動画を書き出し</sys:String>
-    <sys:String x:Key="Export.Button.Tooltip">プロジェクトを動画ファイルとして書き出します</sys:String>
     <sys:String x:Key="Export.Cancel">キャンセル</sys:String>
     <sys:String x:Key="Export.Cancel.Tooltip">書き出し/プレビューをキャンセル</sys:String>
     <sys:String x:Key="Export.Log">ログ:</sys:String>
