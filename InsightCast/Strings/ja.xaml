@@ -36,13 +36,13 @@
 
     <!-- App -->
     <sys:String x:Key="App.Error.Unexpected">予期しないエラーが発生しました。\n\n{0}\n\nアプリケーションの動作が不安定になる可能性があります。</sys:String>
-    <sys:String x:Key="App.Error.Unexpected.Title">InsightCast - エラー</sys:String>
+    <sys:String x:Key="App.Error.Unexpected.Title">Insight Training Studio - エラー</sys:String>
     <sys:String x:Key="App.Error.Fatal">致命的なエラーが発生しました。\n\n{0}</sys:String>
-    <sys:String x:Key="App.Error.Fatal.Title">InsightCast - 致命的エラー</sys:String>
+    <sys:String x:Key="App.Error.Fatal.Title">Insight Training Studio - 致命的エラー</sys:String>
     <sys:String x:Key="App.Error.Startup">起動中にエラーが発生しました。\n\n{0}</sys:String>
-    <sys:String x:Key="App.Error.Startup.Title">InsightCast - 起動エラー</sys:String>
+    <sys:String x:Key="App.Error.Startup.Title">Insight Training Studio - 起動エラー</sys:String>
     <sys:String x:Key="App.Config.Corrupted">設定ファイルが破損していたため、デフォルト設定で起動します。\nエンジンURL、話者ID、ライセンス情報の再設定が必要な場合があります。</sys:String>
-    <sys:String x:Key="App.Config.Corrupted.Title">InsightCast - 設定ファイル警告</sys:String>
+    <sys:String x:Key="App.Config.Corrupted.Title">Insight Training Studio - 設定ファイル警告</sys:String>
     <sys:String x:Key="App.FFmpeg.Error">FFmpeg の初期化に失敗しました。\n動画生成機能は使用できません。\n\n{0}\n\n以下のいずれかの方法でFFmpegを配置してください:\n• PATH環境変数にffmpeg.exeのあるフォルダを追加\n• アプリフォルダ内に tools\ffmpeg\bin\ffmpeg.exe を配置\n• build.ps1 を実行して自動ダウンロード</sys:String>
     <sys:String x:Key="App.FFmpeg.NotFound">ffmpegが検出されていません。\n動画の書き出しにはffmpegが必要です。</sys:String>
     <sys:String x:Key="App.FFmpeg.NotFound.Preview">ffmpegが検出されていません。\nシーンプレビューにはffmpegが必要です。</sys:String>
@@ -80,7 +80,7 @@
     <sys:String x:Key="Menu.Help.LicenseInfo">ライセンス情報(_I)</sys:String>
     <sys:String x:Key="Menu.Help.Terms">利用規約</sys:String>
     <sys:String x:Key="Menu.Help.Privacy">プライバシーポリシー</sys:String>
-    <sys:String x:Key="Menu.Help.About">InsightCastについて(_A)</sys:String>
+    <sys:String x:Key="Menu.Help.About">Insight Training Studioについて(_A)</sys:String>
 
     <!-- Scene List -->
     <sys:String x:Key="Scene.List">シーン一覧</sys:String>
@@ -88,6 +88,11 @@
     <sys:String x:Key="Scene.Remove.Tooltip">シーンを削除 (Delete)</sys:String>
     <sys:String x:Key="Scene.MoveUp.Tooltip">上へ移動 (Ctrl+Up)</sys:String>
     <sys:String x:Key="Scene.MoveDown.Tooltip">下へ移動 (Ctrl+Down)</sys:String>
+
+    <!-- Scene Progress -->
+    <sys:String x:Key="Progress.Media">素材</sys:String>
+    <sys:String x:Key="Progress.Narration">ナレーション</sys:String>
+    <sys:String x:Key="Progress.Subtitle">字幕</sys:String>
 
     <!-- Scene Editor -->
     <sys:String x:Key="Scene.Editor">シーン編集</sys:String>
@@ -274,14 +279,14 @@
     <sys:String x:Key="Font.BIZUDMincho">BIZ UD明朝</sys:String>
 
     <!-- Setup Wizard -->
-    <sys:String x:Key="Setup.Title">InsightCast - 初回セットアップ</sys:String>
+    <sys:String x:Key="Setup.Title">Insight Training Studio - 初回セットアップ</sys:String>
     <sys:String x:Key="Setup.Step1">1. ようこそ</sys:String>
     <sys:String x:Key="Setup.Step2">2. エンジン検出</sys:String>
     <sys:String x:Key="Setup.Step3">3. 話者設定</sys:String>
     <sys:String x:Key="Setup.Step4">4. 完了</sys:String>
-    <sys:String x:Key="Setup.Welcome.Title">InsightCast へようこそ</sys:String>
+    <sys:String x:Key="Setup.Welcome.Title">Insight Training Studio へようこそ</sys:String>
     <sys:String x:Key="Setup.Welcome.Subtitle">初回セットアップを開始します</sys:String>
-    <sys:String x:Key="Setup.Welcome.Desc">InsightCast は、VOICEVOX エンジンを使用してナレーション付き動画を自動生成するツールです。</sys:String>
+    <sys:String x:Key="Setup.Welcome.Desc">Insight Training Studio は、VOICEVOX エンジンを使用してナレーション付き動画を自動生成するツールです。</sys:String>
     <sys:String x:Key="Setup.Welcome.Steps">このセットアップでは以下の設定を行います:</sys:String>
     <sys:String x:Key="Setup.Welcome.Step1">1. VOICEVOX エンジンの検出と接続</sys:String>
     <sys:String x:Key="Setup.Welcome.Step2">2. デフォルト話者（ボイス）の選択</sys:String>
@@ -315,15 +320,15 @@
     <sys:String x:Key="Setup.Speaker.NoConnection">エンジンに接続されていません。前のステップに戻ってください。</sys:String>
     <sys:String x:Key="Setup.Complete.Title">セットアップ完了</sys:String>
     <sys:String x:Key="Setup.Complete.Desc">すべての設定が完了しました</sys:String>
-    <sys:String x:Key="Setup.Complete.Ready">InsightCast を使い始める準備ができました。</sys:String>
+    <sys:String x:Key="Setup.Complete.Ready">Insight Training Studio を使い始める準備ができました。</sys:String>
     <sys:String x:Key="Setup.Complete.Hint">「完了」ボタンを押してメイン画面に進みます。</sys:String>
     <sys:String x:Key="Setup.Back">戻る</sys:String>
     <sys:String x:Key="Setup.Next">次へ</sys:String>
     <sys:String x:Key="Setup.Finish">完了</sys:String>
 
     <!-- ViewModel - MainWindow -->
-    <sys:String x:Key="VM.NewProject">InsightCast - 新規プロジェクト</sys:String>
-    <sys:String x:Key="VM.ImportProject">InsightCast - 取込プロジェクト</sys:String>
+    <sys:String x:Key="VM.NewProject">Insight Training Studio - 新規プロジェクト</sys:String>
+    <sys:String x:Key="VM.ImportProject">Insight Training Studio - 取込プロジェクト</sys:String>
     <sys:String x:Key="VM.Initialized">初期化完了</sys:String>
     <sys:String x:Key="VM.Scene.Added">シーン {0} を追加しました。</sys:String>
     <sys:String x:Key="VM.Scene.MinRequired">最低1つのシーンが必要です。</sys:String>
@@ -371,7 +376,7 @@
     <sys:String x:Key="VM.Project.ConfirmNew">現在のプロジェクトを破棄して新規作成しますか？\n保存されていない変更は失われます。</sys:String>
     <sys:String x:Key="VM.Project.ConfirmNew.Title">新規プロジェクト</sys:String>
     <sys:String x:Key="VM.Project.Created">新規プロジェクトを作成しました。</sys:String>
-    <sys:String x:Key="VM.Project.Filter">InsightCastプロジェクト|*.icproj|すべてのファイル|*.*</sys:String>
+    <sys:String x:Key="VM.Project.Filter">Insight Training Studioプロジェクト|*.icproj|すべてのファイル|*.*</sys:String>
     <sys:String x:Key="VM.Project.Opened">プロジェクトを開きました: {0}</sys:String>
     <sys:String x:Key="VM.Project.OpenError">プロジェクトファイルの読み込みに失敗しました:\n{0}</sys:String>
     <sys:String x:Key="VM.Project.OpenError.Title">読み込みエラー</sys:String>
@@ -481,7 +486,7 @@
     <sys:String x:Key="Meta.Header">=== YouTube メタデータ ===</sys:String>
     <sys:String x:Key="Meta.TitleSuggestion">【タイトル案】</sys:String>
     <sys:String x:Key="Meta.Description">【説明文】</sys:String>
-    <sys:String x:Key="Meta.AutoGenerated">この動画はInsightCastで自動生成されました。</sys:String>
+    <sys:String x:Key="Meta.AutoGenerated">この動画はInsight Training Studioで自動生成されました。</sys:String>
     <sys:String x:Key="Meta.Chapters">【チャプター（説明欄に貼り付け）】</sys:String>
     <sys:String x:Key="Meta.Tags">【タグ候補】</sys:String>
     <sys:String x:Key="Meta.Tag.Education">教育</sys:String>
@@ -583,7 +588,7 @@
     <sys:String x:Key="VM.Pptx.Failed">取込エラー</sys:String>
 
     <!-- VM Tutorial / FAQ / About / Shortcuts -->
-    <sys:String x:Key="VM.Tutorial">InsightCast チュートリアル
+    <sys:String x:Key="VM.Tutorial">Insight Training Studio チュートリアル
 ─────────────────────
 
 ■ かんたんモード（QuickMode）
@@ -641,19 +646,19 @@ Q: テンプレートはどこに保存されますか？
 A: %LOCALAPPDATA%\InsightCast\Templates に保存されます。
 
 Q: お問い合わせ先は？
-A: info@h-insight.jp までご連絡ください。</sys:String>
+A: support@harmonic-insight.com までご連絡ください。</sys:String>
     <sys:String x:Key="VM.FAQ.Title">FAQ</sys:String>
-    <sys:String x:Key="VM.About">InsightCast v{0}
+    <sys:String x:Key="VM.About">Insight Training Studio v{0}
 
 VOICEVOX音声エンジンを使用した動画自動生成ツール
 
 テキストを入力するだけで、ナレーション付き動画を
 簡単に作成できます。
 
-開発元: HARMONIC insight 合同会社
-サポート: info@h-insight.jp
-Web: https://www.insight-office.com</sys:String>
-    <sys:String x:Key="VM.About.Title">InsightCastについて</sys:String>
+開発元: HARMONIC insight
+サポート: support@harmonic-insight.com
+Web: https://harmonic-insight.com</sys:String>
+    <sys:String x:Key="VM.About.Title">Insight Training Studioについて</sys:String>
     <sys:String x:Key="VM.Update.Available">新しいバージョン {0} が利用可能です。ダウンロードページを開きますか？</sys:String>
     <sys:String x:Key="VM.Update.Title">アップデートのお知らせ</sys:String>
     <sys:String x:Key="VM.Shortcuts">キーボードショートカット一覧
@@ -671,9 +676,9 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="VM.Shortcuts.Title">キーボードショートカット</sys:String>
     <sys:String x:Key="VM.License.Title">ライセンス情報</sys:String>
     <sys:String x:Key="VM.License.Header">ライセンス情報\n─────────────────────\n\nプラン: {0}\n状態: {1}\n有効期限: {2}</sys:String>
-    <sys:String x:Key="VM.Terms.Fallback">利用規約は以下のURLからご確認ください:\nhttps://www.insight-office.com/ja/terms\n\nお問い合わせ: info@h-insight.jp</sys:String>
+    <sys:String x:Key="VM.Terms.Fallback">利用規約は以下のURLからご確認ください:\nhttps://harmonic-insight.com/ja/terms\n\nお問い合わせ: support@harmonic-insight.com</sys:String>
     <sys:String x:Key="VM.Terms.Title">利用規約</sys:String>
-    <sys:String x:Key="VM.Privacy.Fallback">プライバシーポリシーは以下のURLからご確認ください:\nhttps://www.insight-office.com/ja/privacy\n\nお問い合わせ: info@h-insight.jp</sys:String>
+    <sys:String x:Key="VM.Privacy.Fallback">プライバシーポリシーは以下のURLからご確認ください:\nhttps://harmonic-insight.com/ja/privacy\n\nお問い合わせ: support@harmonic-insight.com</sys:String>
     <sys:String x:Key="VM.Privacy.Title">プライバシーポリシー</sys:String>
 
     <!-- QVM Extended -->
@@ -718,7 +723,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Export.Complete.Short">完了</sys:String>
     <sys:String x:Key="Export.Metadata.Short">メタデータ</sys:String>
     <sys:String x:Key="Export.Thumbnail.Short">サムネイル</sys:String>
-    <sys:String x:Key="Meta.DefaultTitle">InsightCast 動画</sys:String>
+    <sys:String x:Key="Meta.DefaultTitle">Insight Training Studio 動画</sys:String>
     <sys:String x:Key="QVM.BGM.Selected">BGM選択: {0}</sys:String>
     <sys:String x:Key="QVM.BatchImport.Title">ファイルを選択（複数可）</sys:String>
     <sys:String x:Key="QVM.BatchImport.Filter">対応ファイル|*.pptx;*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.mp4;*.avi;*.mov;*.wmv;*.mkv;*.webm;*.txt|すべてのファイル|*.*</sys:String>
@@ -827,7 +832,7 @@ F1              チュートリアルを表示</sys:String>
     <!-- License errors -->
     <sys:String x:Key="License.Error.Empty">ライセンスキーが入力されていません。</sys:String>
     <sys:String x:Key="License.Error.Format">ライセンスキーの形式が正しくありません。</sys:String>
-    <sys:String x:Key="License.Error.Product">このキーは InsightCast 用ではありません。InsightCast 用のキーを入力してください。</sys:String>
+    <sys:String x:Key="License.Error.Product">このキーは Insight Training Studio 用ではありません。Insight Training Studio 用のキーを入力してください。</sys:String>
     <sys:String x:Key="License.Error.Invalid">ライセンスキーが無効です。</sys:String>
     <sys:String x:Key="License.Error.Email">メールアドレスが一致しません。</sys:String>
     <sys:String x:Key="License.Error.Expired">ライセンスの有効期限が切れています（{0}）。</sys:String>
@@ -1020,5 +1025,158 @@ F1              チュートリアルを表示</sys:String>
 
     <!-- A2: VOICEVOX guidance -->
     <sys:String x:Key="VM.VoiceVox.Guide">VOICEVOX: ✗未接続 — VOICEVOXエンジンを起動してからアプリを再起動してください</sys:String>
+
+    <!-- Marketing subtitle -->
+    <sys:String x:Key="App.Subtitle">AIで、伝わる動画をもっと速く。</sys:String>
+
+    <!-- AI Chat Panel -->
+    <sys:String x:Key="Chat.Title">AI アシスタント</sys:String>
+    <sys:String x:Key="Chat.ToggleTooltip">AIアシスタントパネルを開く/閉じる</sys:String>
+    <sys:String x:Key="Chat.Clear">会話をクリア</sys:String>
+    <sys:String x:Key="Chat.Send">送信</sys:String>
+    <sys:String x:Key="Chat.Cancel">キャンセル</sys:String>
+    <sys:String x:Key="Chat.Thinking">考え中...</sys:String>
+    <sys:String x:Key="Chat.Presets">プリセット</sys:String>
+    <sys:String x:Key="Chat.ApiKeyToggle">APIキー設定</sys:String>
+    <sys:String x:Key="Chat.ApiKeyLabel">Claude API キー</sys:String>
+    <sys:String x:Key="Chat.ApiKeySet">設定</sys:String>
+    <sys:String x:Key="Chat.ApiKeyStatus">設定済み</sys:String>
+    <sys:String x:Key="Chat.UsageCalls">コール: </sys:String>
+    <sys:String x:Key="Chat.UsageTokens">トークン: </sys:String>
+    <sys:String x:Key="Chat.UsageCost">コスト: </sys:String>
+
+    <!-- プロンプトライブラリ -->
+    <sys:String x:Key="PromptLib.Tab.Presets">プリセット</sys:String>
+    <sys:String x:Key="PromptLib.Tab.MyPrompts">マイプロンプト</sys:String>
+    <sys:String x:Key="PromptLib.Search.Placeholder">プロンプトを検索...</sys:String>
+    <sys:String x:Key="PromptLib.Sort.Recent">最近</sys:String>
+    <sys:String x:Key="PromptLib.Sort.MostUsed">よく使う</sys:String>
+    <sys:String x:Key="PromptLib.Sort.AtoZ">A-Z</sys:String>
+    <sys:String x:Key="PromptLib.Save.Title">プロンプトを保存</sys:String>
+    <sys:String x:Key="PromptLib.Save.Label">ラベル</sys:String>
+    <sys:String x:Key="PromptLib.Save.Category">カテゴリ</sys:String>
+    <sys:String x:Key="PromptLib.Save.Confirm">保存</sys:String>
+    <sys:String x:Key="PromptLib.Save.Cancel">キャンセル</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Title">プロンプトを編集</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Confirm">更新</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Cancel">キャンセル</sys:String>
+    <sys:String x:Key="PromptLib.Menu.Edit">編集</sys:String>
+    <sys:String x:Key="PromptLib.Menu.Duplicate">複製</sys:String>
+    <sys:String x:Key="PromptLib.Menu.Delete">削除</sys:String>
+    <sys:String x:Key="PromptLib.Delete.Confirm">このプロンプトを削除しますか？</sys:String>
+    <sys:String x:Key="PromptLib.Delete.Warning">この操作は元に戻せません。保存済みプロンプトはお使いの端末から完全に削除されます。</sys:String>
+    <sys:String x:Key="PromptLib.Empty">保存済みプロンプトはありません</sys:String>
+    <sys:String x:Key="PromptLib.Empty.Guide">よく使うプロンプトを保存して、すぐに呼び出せるようにしましょう。
+はじめ方:
+ • チャットでメッセージを送信 → 💾 をクリックして保存
+ • プリセットを右クリック →「マイプロンプトに保存」</sys:String>
+    <sys:String x:Key="PromptLib.UseCount">{0}回使用</sys:String>
+    <sys:String x:Key="PromptLib.DuplicatePreset">マイプロンプトに保存</sys:String>
+
+    <!-- プロンプトライブラリ — ツールチップ -->
+    <sys:String x:Key="PromptLib.Tab.Presets.Tooltip">開発者が用意したプロンプトテンプレート</sys:String>
+    <sys:String x:Key="PromptLib.Tab.MyPrompts.Tooltip">保存したプロンプト — 作成・編集していつでも再利用</sys:String>
+    <sys:String x:Key="PromptLib.Search.Tooltip">ラベルや内容でプロンプトを検索</sys:String>
+    <sys:String x:Key="PromptLib.Sort.Tooltip">並び順を切替: 最近 → よく使う → A-Z</sys:String>
+    <sys:String x:Key="PromptLib.Card.Tooltip">クリックでこのプロンプトをAIに送信</sys:String>
+    <sys:String x:Key="PromptLib.Card.Menu.Tooltip">編集・複製・削除</sys:String>
+    <sys:String x:Key="PromptLib.Save.Btn.Tooltip">このメッセージを再利用プロンプトとして保存</sys:String>
+    <sys:String x:Key="PromptLib.Help.Tooltip">AIアシスタントとプロンプトライブラリのヘルプを開く</sys:String>
+    <sys:String x:Key="PromptLib.Preset.DuplicateTip">右クリックでマイプロンプトにコピーできます</sys:String>
+
+    <!-- プロンプトライブラリ — プレースホルダーとヒント -->
+    <sys:String x:Key="PromptLib.Save.Label.Placeholder">例: 議事録の要約</sys:String>
+    <sys:String x:Key="PromptLib.Save.Category.Placeholder">例: 会議, 企画書, レビュー</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Icon.Placeholder">絵文字</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Prompt.Placeholder">AIに送信する指示を入力...</sys:String>
+    <sys:String x:Key="PromptLib.Save.Privacy">プロンプトはお使いの端末にのみ保存されます（クラウドには送信されません）。</sys:String>
+
+    <!-- APIキーとコスト — ヒント -->
+    <sys:String x:Key="Chat.ApiKey.Privacy">APIキーはお使いの端末にのみ保存されます。外部には共有されません。</sys:String>
+    <sys:String x:Key="Chat.Usage.Note">API使用料はAnthropicからお客様のアカウントに直接請求されます。</sys:String>
+
+    <!-- AI アシスタントパネル（InsightSlide 方式） -->
+    <sys:String x:Key="Ai.PresetPrompts">プリセットプロンプト</sys:String>
+    <sys:String x:Key="Ai.MyPrompts">マイプロンプト</sys:String>
+    <sys:String x:Key="Ai.MyPromptsEmpty">保存済みプロンプトはありません。プロンプトを保存するとここに表示されます。</sys:String>
+    <sys:String x:Key="Ai.Execute">実行</sys:String>
+    <sys:String x:Key="Ai.SaveAsPrompt">プロンプトとして保存</sys:String>
+    <sys:String x:Key="Ai.Result">結果</sys:String>
+    <sys:String x:Key="Ai.Processing">処理中...</sys:String>
+    <sys:String x:Key="Ai.ApiKeySettings">APIキー設定</sys:String>
+    <sys:String x:Key="Ai.EnterApiKey">Claude APIキーを入力</sys:String>
+    <sys:String x:Key="Ai.SetBtn">設定</sys:String>
+    <sys:String x:Key="Ai.Popout">ポップアウト</sys:String>
+    <sys:String x:Key="Ai.PromptEditor">プロンプトエディタ</sys:String>
+    <sys:String x:Key="Ai.CopyMenu">コピー</sys:String>
+    <sys:String x:Key="Ai.SaveThumbnail">サムネイルを保存</sys:String>
+    <sys:String x:Key="Ai.Cancelled">キャンセルしました。</sys:String>
+    <sys:String x:Key="Ai.OpenAIApiKey">OpenAI APIキーを入力 (DALL-E画像生成用)</sys:String>
+    <sys:String x:Key="Ai.OpenAIApiKeyStatus">OpenAI 設定済み</sys:String>
+    <sys:String x:Key="Ai.SetOpenAIBtn">設定</sys:String>
+    <sys:String x:Key="Ai.ImageMode">画像生成</sys:String>
+    <sys:String x:Key="Ai.TextMode">テキスト</sys:String>
+    <sys:String x:Key="Ai.ImageMode.Desc">DALL-E で画像を生成します</sys:String>
+    <sys:String x:Key="Ai.ImageGenerated">画像を生成しました</sys:String>
+    <sys:String x:Key="Ai.DalleError">画像生成に失敗しました</sys:String>
+
+    <!-- プロンプトエディタ ダイアログ -->
+    <sys:String x:Key="PE.Title">プロンプト管理</sys:String>
+    <sys:String x:Key="PE.PromptList">プロンプト一覧</sys:String>
+    <sys:String x:Key="PE.Name">タイトル</sys:String>
+    <sys:String x:Key="PE.Category">カテゴリ</sys:String>
+    <sys:String x:Key="PE.Model">モデル</sys:String>
+    <sys:String x:Key="PE.Mode">モード</sys:String>
+    <sys:String x:Key="PE.PromptText">プロンプト</sys:String>
+    <sys:String x:Key="PE.RequiresContextData">シーンデータ必須</sys:String>
+    <sys:String x:Key="PE.Save">保存</sys:String>
+    <sys:String x:Key="PE.Execute">実行</sys:String>
+    <sys:String x:Key="PE.Add">新規追加</sys:String>
+    <sys:String x:Key="PE.Delete">削除</sys:String>
+    <sys:String x:Key="PE.ModeDesc">Check: シーンデータをAIが修正提案します
+Advice: アドバイスをテキストで返します</sys:String>
+    <sys:String x:Key="PE.NewPrompt">新しいプロンプト</sys:String>
+    <sys:String x:Key="PE.ConfirmDelete">{0} を削除しますか？</sys:String>
+    <sys:String x:Key="PE.ConfirmTitle">確認</sys:String>
+    <sys:String x:Key="PE.OutputType">出力</sys:String>
+    <sys:String x:Key="PE.OutputText">テキスト</sys:String>
+    <sys:String x:Key="PE.OutputImage">画像</sys:String>
+
+    <!-- ヘルプセクション -->
+    <sys:String x:Key="Help.Section.AIAssistant">AIアシスタント</sys:String>
+
+    <!-- Ribbon UI -->
+    <sys:String x:Key="Ribbon.Tab.Home">ホーム</sys:String>
+    <sys:String x:Key="Ribbon.Tab.Help">ヘルプ</sys:String>
+    <sys:String x:Key="Ribbon.Group.Scene">シーン</sys:String>
+    <sys:String x:Key="Ribbon.Group.Export">書き出し</sys:String>
+    <sys:String x:Key="Ribbon.Group.Template">テンプレート</sys:String>
+    <sys:String x:Key="Ribbon.Group.Support">サポート</sys:String>
+    <sys:String x:Key="Ribbon.Group.License">ライセンス</sys:String>
+    <sys:String x:Key="Ribbon.Group.Legal">法的情報</sys:String>
+    <sys:String x:Key="Ribbon.File.New">新規</sys:String>
+    <sys:String x:Key="Ribbon.File.Open">開く</sys:String>
+    <sys:String x:Key="Ribbon.File.Recent">最近使ったファイル</sys:String>
+    <sys:String x:Key="Ribbon.File.Save">上書き保存</sys:String>
+    <sys:String x:Key="Ribbon.File.SaveAs">別名保存</sys:String>
+    <sys:String x:Key="Ribbon.File.ImportPptx">PPTX取込</sys:String>
+    <sys:String x:Key="Ribbon.File.ImportJson">JSONインポート</sys:String>
+    <sys:String x:Key="Ribbon.File.BatchExport">JSONエクスポート</sys:String>
+    <sys:String x:Key="Ribbon.File.Exit">終了</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Add">シーン追加</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Remove">削除</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveUp">上へ</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveDown">下へ</sys:String>
+    <sys:String x:Key="Ribbon.Export.Video">動画を書き出し</sys:String>
+    <sys:String x:Key="Ribbon.Export.Preview">プレビュー</sys:String>
+    <sys:String x:Key="Ribbon.Template.Save">保存</sys:String>
+    <sys:String x:Key="Ribbon.Template.Load">読込</sys:String>
+    <sys:String x:Key="Ribbon.Template.OpenOutput">出力先を開く</sys:String>
+    <sys:String x:Key="Ribbon.Help.Tutorial">チュートリアル</sys:String>
+    <sys:String x:Key="Ribbon.Help.License">ライセンス管理</sys:String>
+    <sys:String x:Key="Ribbon.Help.LicenseInfo">ライセンス情報</sys:String>
+    <sys:String x:Key="Ribbon.Help.Terms">利用規約</sys:String>
+    <sys:String x:Key="Ribbon.Help.Privacy">プライバシー</sys:String>
+    <sys:String x:Key="Ribbon.Help.About">バージョン情報</sys:String>
 
 </ResourceDictionary>

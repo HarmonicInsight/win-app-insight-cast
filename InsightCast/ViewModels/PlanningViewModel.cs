@@ -1180,7 +1180,7 @@ namespace InsightCast.ViewModels
         {
             if (!int.TryParse(_sceneCount, out var targetCount) || targetCount <= 0)
             {
-                MessageBox.Show(LocalizationService.GetString("Planning.InvalidSceneCount"), "InsightCast",
+                MessageBox.Show(LocalizationService.GetString("Planning.InvalidSceneCount"), "Insight Training Studio",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -1296,7 +1296,7 @@ namespace InsightCast.ViewModels
             if (string.IsNullOrWhiteSpace(_thumbnailMainText))
             {
                 MessageBox.Show(LocalizationService.GetString("Thumbnail.Error.NoText"),
-                    "InsightCast", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    "Insight Training Studio", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -1347,7 +1347,7 @@ namespace InsightCast.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"{LocalizationService.GetString("Thumbnail.Error.Generate")}\n{ex.Message}",
-                    "InsightCast", MessageBoxButton.OK, MessageBoxImage.Error);
+                    "Insight Training Studio", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1374,7 +1374,7 @@ namespace InsightCast.ViewModels
             if (string.IsNullOrEmpty(_lastThumbnailPath) || !File.Exists(_lastThumbnailPath))
             {
                 MessageBox.Show(LocalizationService.GetString("Thumbnail.Error.NoThumbnail"),
-                    "InsightCast", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    "Insight Training Studio", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -1391,12 +1391,12 @@ namespace InsightCast.ViewModels
                 {
                     File.Copy(_lastThumbnailPath, dialog.FileName, overwrite: true);
                     MessageBox.Show(LocalizationService.GetString("Thumbnail.Saved"),
-                        "InsightCast", MessageBoxButton.OK, MessageBoxImage.Information);
+                        "Insight Training Studio", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"{LocalizationService.GetString("Thumbnail.Error.Save")}\n{ex.Message}",
-                        "InsightCast", MessageBoxButton.OK, MessageBoxImage.Error);
+                        "Insight Training Studio", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -1593,7 +1593,7 @@ namespace InsightCast.ViewModels
             if (string.IsNullOrWhiteSpace(_scenesJson))
             {
                 MessageBox.Show(LocalizationService.GetString("Planning.JsonEditor.Empty"),
-                    "InsightCast", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    "Insight Training Studio", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -1603,7 +1603,7 @@ namespace InsightCast.ViewModels
                 if (sceneModels == null || sceneModels.Count == 0)
                 {
                     MessageBox.Show(LocalizationService.GetString("Planning.JsonEditor.InvalidFormat"),
-                        "InsightCast", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        "Insight Training Studio", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -1648,13 +1648,13 @@ namespace InsightCast.ViewModels
 
                 MessageBox.Show(
                     string.Format(LocalizationService.GetString("Planning.JsonEditor.Applied"), sceneModels.Count),
-                    "InsightCast", MessageBoxButton.OK, MessageBoxImage.Information);
+                    "Insight Training Studio", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (JsonException ex)
             {
                 MessageBox.Show(
                     $"{LocalizationService.GetString("Planning.JsonEditor.ParseError")}\n\n{ex.Message}",
-                    "InsightCast", MessageBoxButton.OK, MessageBoxImage.Error);
+                    "Insight Training Studio", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

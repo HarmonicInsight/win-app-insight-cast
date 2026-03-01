@@ -14,6 +14,7 @@
     <SolidColorBrush x:Key="BgElevated"  Color="#F5F1EB" />
     <SolidColorBrush x:Key="BgSidebar"   Color="#FAF8F5" />
     <SolidColorBrush x:Key="BgCard"      Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BgHover"    Color="#EEEBE5" />
     <SolidColorBrush x:Key="BgInput"     Color="#FFFFFF" />
 
     <!-- ─────────────────── Text Colors ─────────────────── -->
@@ -751,6 +752,245 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!-- ===================================================================
+         Title Bar Button Styles (insight-sheet compatible)
+         =================================================================== -->
+
+    <!-- Toolbar toggle buttons (panel toggles, AI toggle) -->
+    <Style x:Key="ToolbarButtonStyle" TargetType="Button">
+        <Setter Property="Padding"          Value="8,4" />
+        <Setter Property="Margin"           Value="2" />
+        <Setter Property="Background"       Value="Transparent" />
+        <Setter Property="BorderThickness"  Value="0" />
+        <Setter Property="Foreground"       Value="{StaticResource TextPrimary}" />
+        <Setter Property="Cursor"           Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border" Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}" CornerRadius="4">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource BgHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource BgSecondary}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Title bar compact buttons (Language, License) -->
+    <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+        <Setter Property="Width"            Value="40" />
+        <Setter Property="Height"           Value="32" />
+        <Setter Property="Background"       Value="Transparent" />
+        <Setter Property="BorderThickness"  Value="0" />
+        <Setter Property="Foreground"       Value="{StaticResource TextSecondary}" />
+        <Setter Property="FontSize"         Value="13" />
+        <Setter Property="Cursor"           Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border" Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource BgHover}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Window control buttons (Minimize, Maximize) -->
+    <Style x:Key="WindowControlButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonStyle}">
+        <Setter Property="Width"       Value="46" />
+        <Setter Property="FontFamily"  Value="Segoe MDL2 Assets" />
+        <Setter Property="FontSize"    Value="10" />
+    </Style>
+
+    <!-- Close button (red on hover) -->
+    <Style x:Key="CloseButtonStyle" TargetType="Button">
+        <Setter Property="Width"            Value="46" />
+        <Setter Property="Height"           Value="32" />
+        <Setter Property="Background"       Value="Transparent" />
+        <Setter Property="BorderThickness"  Value="0" />
+        <Setter Property="Foreground"       Value="{StaticResource TextSecondary}" />
+        <Setter Property="FontFamily"       Value="Segoe MDL2 Assets" />
+        <Setter Property="FontSize"         Value="10" />
+        <Setter Property="Cursor"           Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border" Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="#DC2626"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================================================================
+         Ribbon — Ivory & Gold themed (insight-sheet 準拠)
+         =================================================================== -->
+    <Style TargetType="{x:Type ribbon:Ribbon}"
+           xmlns:ribbon="clr-namespace:System.Windows.Controls.Ribbon;assembly=System.Windows.Controls.Ribbon">
+        <Setter Property="Background"     Value="{StaticResource BgPrimary}" />
+        <Setter Property="Foreground"     Value="{StaticResource TextPrimary}" />
+        <Setter Property="FontFamily"     Value="{StaticResource AppFontFamily}" />
+        <Setter Property="FontSize"       Value="12" />
+        <Setter Property="BorderBrush"    Value="{StaticResource BorderLight}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+    </Style>
+
+    <Style TargetType="{x:Type ribbon:RibbonTab}"
+           xmlns:ribbon="clr-namespace:System.Windows.Controls.Ribbon;assembly=System.Windows.Controls.Ribbon">
+        <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+        <Setter Property="FontSize"   Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+    </Style>
+
+    <Style TargetType="{x:Type ribbon:RibbonGroup}"
+           xmlns:ribbon="clr-namespace:System.Windows.Controls.Ribbon;assembly=System.Windows.Controls.Ribbon">
+        <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+        <Setter Property="FontSize"   Value="11" />
+        <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+    </Style>
+
+    <Style TargetType="{x:Type ribbon:RibbonButton}"
+           xmlns:ribbon="clr-namespace:System.Windows.Controls.Ribbon;assembly=System.Windows.Controls.Ribbon">
+        <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+        <Setter Property="FontSize"   Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+        <Setter Property="Cursor"     Value="Hand" />
+    </Style>
+
+    <Style TargetType="{x:Type ribbon:RibbonApplicationMenu}"
+           xmlns:ribbon="clr-namespace:System.Windows.Controls.Ribbon;assembly=System.Windows.Controls.Ribbon">
+        <Setter Property="FontFamily"  Value="{StaticResource AppFontFamily}" />
+        <Setter Property="FontSize"    Value="13" />
+        <Setter Property="Foreground"  Value="#FFFFFF" />
+        <Setter Property="Background"  Value="{StaticResource BrandPrimary}" />
+    </Style>
+
+    <Style TargetType="{x:Type ribbon:RibbonApplicationMenuItem}"
+           xmlns:ribbon="clr-namespace:System.Windows.Controls.Ribbon;assembly=System.Windows.Controls.Ribbon">
+        <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+        <Setter Property="FontSize"   Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+        <Setter Property="Cursor"     Value="Hand" />
+        <Setter Property="Padding"    Value="4,6" />
+    </Style>
+
+    <Style TargetType="{x:Type ribbon:RibbonSeparator}"
+           xmlns:ribbon="clr-namespace:System.Windows.Controls.Ribbon;assembly=System.Windows.Controls.Ribbon">
+        <Setter Property="Background" Value="{StaticResource BorderLight}" />
+    </Style>
+
+    <!-- ─────────────── AI Assistant Panel Styles ─────────────── -->
+
+    <!-- PresetChipStyle — rounded chip buttons for preset prompts -->
+    <Style x:Key="PresetChipStyle" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource BgSecondary}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderDefault}"/>
+        <Setter Property="Padding" Value="8,5"/>
+        <Setter Property="Margin" Value="0,0,4,4"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="10"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource BrandPrimary}"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource BrandLight}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource BrandLight}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource BrandPrimary}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- PanelToggleButtonStyle — collapsible section toggle -->
+    <Style x:Key="PanelToggleButtonStyle" TargetType="ToggleButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="Transparent"
+                            BorderThickness="0,0,0,2"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource BrandPrimary}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource BgHover}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- PanelHeaderStyle — section header with bottom border -->
+    <Style x:Key="PanelHeaderStyle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource BgSecondary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderDefault}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="Padding" Value="12,8"/>
     </Style>
 
 </ResourceDictionary>

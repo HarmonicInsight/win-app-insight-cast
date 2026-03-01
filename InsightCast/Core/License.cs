@@ -12,8 +12,7 @@ public enum PlanCode
 {
     Free,
     Trial,
-    Std,
-    Pro,
+    Biz,
     Ent
 }
 
@@ -52,17 +51,17 @@ public static class License
         }
     }
 
-    // 標準フォーマット: PPPP-PLAN-YYMM-HASH-SIG1-SIG2 (TRIAL|STD|PRO のみ)
+    // 標準フォーマット: PPPP-PLAN-YYMM-HASH-SIG1-SIG2 (TRIAL|BIZ のみ)
     private static readonly Regex LICENSE_KEY_REGEX = new(
-        @"^(INSS|INSP|INPY|FGIN|INMV|INBT)-(TRIAL|STD|PRO)-(\d{4})-([A-Z0-9]{4})-([A-Z0-9]{4})-([A-Z0-9]{4})$",
+        @"^(INSS|IOSH|IOSD|INPY|INMV|INBT|INCA|INIG|IVIN|ISOF)-(TRIAL|BIZ)-(\d{4})-([A-Z0-9]{4})-([A-Z0-9]{4})-([A-Z0-9]{4})$",
         RegexOptions.Compiled);
 
     private static readonly Dictionary<string, PlanCode[]> FEATURE_MATRIX = new()
     {
-        { "subtitle", new[] { PlanCode.Trial, PlanCode.Std, PlanCode.Pro, PlanCode.Ent } },
-        { "subtitle_style", new[] { PlanCode.Trial, PlanCode.Std, PlanCode.Pro, PlanCode.Ent } },
-        { "transition", new[] { PlanCode.Trial, PlanCode.Std, PlanCode.Pro, PlanCode.Ent } },
-        { "pptx_import", new[] { PlanCode.Trial, PlanCode.Std, PlanCode.Pro, PlanCode.Ent } },
+        { "subtitle", new[] { PlanCode.Trial, PlanCode.Biz, PlanCode.Ent } },
+        { "subtitle_style", new[] { PlanCode.Trial, PlanCode.Biz, PlanCode.Ent } },
+        { "transition", new[] { PlanCode.Trial, PlanCode.Biz, PlanCode.Ent } },
+        { "pptx_import", new[] { PlanCode.Trial, PlanCode.Biz, PlanCode.Ent } },
     };
 
     // ── Base32 エンコード (RFC 4648, Python/TypeScript 標準と同一) ──
@@ -248,8 +247,7 @@ public static class License
         var planStr = plan switch
         {
             PlanCode.Trial => "TRIAL",
-            PlanCode.Std   => "STD",
-            PlanCode.Pro   => "PRO",
+            PlanCode.Biz   => "BIZ",
             _ => throw new ArgumentException($"Cannot generate license key for plan: {plan}")
         };
 
@@ -278,9 +276,8 @@ public static class License
         {
             PlanCode.Free  => "FREE",
             PlanCode.Trial => "TRIAL",
-            PlanCode.Std   => "STD",
-            PlanCode.Pro   => "PRO",
-            PlanCode.Ent   => "ENT",
+            PlanCode.Biz   => "BUSINESS",
+            PlanCode.Ent   => "ENTERPRIZE",
             _              => plan.ToString().ToUpperInvariant(),
         };
     }
@@ -290,8 +287,7 @@ public static class License
         return planStr.ToUpperInvariant() switch
         {
             "TRIAL" => PlanCode.Trial,
-            "STD"   => PlanCode.Std,
-            "PRO"   => PlanCode.Pro,
+            "BIZ"   => PlanCode.Biz,
             "ENT"   => PlanCode.Ent,
             _       => PlanCode.Free,
         };

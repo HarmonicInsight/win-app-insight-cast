@@ -45,6 +45,11 @@ public partial class App : Application
                     MessageBoxImage.Error);
             }
         };
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            CrashReporter.WriteCrashReport(args.Exception, "UnobservedTaskException");
+            args.SetObserved();
+        };
 
         try
         {
@@ -143,7 +148,7 @@ public partial class App : Application
         {
             MessageBox.Show(
                 LocalizationService.GetString("App.FFmpeg.Error", ex.Message),
-                "InsightCast",
+                "Insight Training Studio",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }
@@ -171,7 +176,7 @@ public partial class App : Application
                 {
                     MessageBox.Show(
                         LocalizationService.GetString("App.Error.Startup", ex.Message),
-                        "InsightCast",
+                        "Insight Training Studio",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
                 }

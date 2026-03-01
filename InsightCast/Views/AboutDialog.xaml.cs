@@ -13,7 +13,7 @@ public partial class AboutDialog : Window
 
         var isEn = LocalizationService.CurrentLanguage == "EN";
 
-        Title = isEn ? "About InsightCast" : "InsightCast について";
+        Title = isEn ? "About Insight Training Studio" : "Insight Training Studio について";
         DescriptionText.Text = isEn
             ? "Education & Presentation Video Generation Tool"
             : "教育・プレゼンテーション動画生成ツール";
@@ -46,7 +46,7 @@ public partial class AboutDialog : Window
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
-                FileName = "https://www.insight-office.com",
+                FileName = "https://harmonic-insight.com",
                 UseShellExecute = true
             });
         }

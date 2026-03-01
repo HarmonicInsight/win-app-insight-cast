@@ -73,6 +73,7 @@ namespace InsightCast.ViewModels
         // License state
         private LicenseInfo? _licenseInfo;
         private PlanCode _currentPlan = PlanCode.Free;
+        private string _planDisplayName = License.GetPlanDisplayName(PlanCode.Free);
         private bool _canSubtitle;
         private bool _canSubtitleStyle;
         private bool _canTransition;
@@ -284,6 +285,13 @@ namespace InsightCast.ViewModels
         {
             get => _exportProgressValue;
             set => SetProperty(ref _exportProgressValue, value);
+        }
+
+        // License plan display
+        public string PlanDisplayName
+        {
+            get => _planDisplayName;
+            set => SetProperty(ref _planDisplayName, value);
         }
 
         // License feature flags
@@ -500,6 +508,9 @@ namespace InsightCast.ViewModels
 
         // Current scene for UI binding
         public Scene? CurrentScene => _currentScene;
+        public SceneListItem? CurrentSceneItem =>
+            _selectedSceneIndex >= 0 && _selectedSceneIndex < SceneItems.Count
+                ? SceneItems[_selectedSceneIndex] : null;
         public Project Project => _project;
 
         #endregion
@@ -526,6 +537,13 @@ namespace InsightCast.ViewModels
 
         /// <summary>Raised when scenes are added, removed, or modified.</summary>
         public event Action? ScenesChanged;
+
+        /// <summary>外部からシーン変更を通知する（AI ツールから使用）</summary>
+        public void NotifyScenesChanged()
+        {
+            RefreshSceneList();
+            ScenesChanged?.Invoke();
+        }
 
         #endregion
 
@@ -767,6 +785,7 @@ namespace InsightCast.ViewModels
             var item = SceneItems[_selectedSceneIndex];
             _currentScene = item.Scene;
             OnPropertyChanged(nameof(CurrentScene));
+            OnPropertyChanged(nameof(CurrentSceneItem));
 
             if (_currentScene.HasMedia)
             {
@@ -879,6 +898,7 @@ namespace InsightCast.ViewModels
             if (idx >= 0 && idx < SceneItems.Count)
             {
                 SceneItems[idx].UpdateLabel(idx);
+                SceneItems[idx].RefreshProgress();
             }
         }
 
@@ -889,6 +909,10 @@ namespace InsightCast.ViewModels
             if (_isLoadingScene || _currentScene == null) return;
             _isDirty = true;
             _currentScene.SubtitleText = _subtitleText;
+
+            var idx = _selectedSceneIndex;
+            if (idx >= 0 && idx < SceneItems.Count)
+                SceneItems[idx].RefreshProgress();
         }
 
         private void SelectMedia()
@@ -919,6 +943,10 @@ namespace InsightCast.ViewModels
                 ThumbnailUpdateRequested?.Invoke(null);
 
             _logger.Log(LocalizationService.GetString("VM.Media.Set", Path.GetFileName(path)));
+
+            var idx = _selectedSceneIndex;
+            if (idx >= 0 && idx < SceneItems.Count)
+                SceneItems[idx].RefreshProgress();
         }
 
         private void ClearMedia()
@@ -930,6 +958,10 @@ namespace InsightCast.ViewModels
             _isDirty = true;
             ThumbnailUpdateRequested?.Invoke(null);
             _logger.Log(LocalizationService.GetString("VM.Media.Cleared"));
+
+            var idx = _selectedSceneIndex;
+            if (idx >= 0 && idx < SceneItems.Count)
+                SceneItems[idx].RefreshProgress();
         }
 
         private void OnDurationModeChanged()
@@ -2078,6 +2110,7 @@ namespace InsightCast.ViewModels
             var email = _config.LicenseEmail;
             _licenseInfo = License.ValidateLicenseKey(key, email);
             _currentPlan = _licenseInfo?.IsValid == true ? _licenseInfo.Plan : PlanCode.Free;
+            PlanDisplayName = License.GetPlanDisplayName(_currentPlan);
             UpdateFeatureAccess();
         }
 
@@ -2175,7 +2208,7 @@ namespace InsightCast.ViewModels
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://www.insight-office.com/ja/terms",
+                    FileName = "https://harmonic-insight.com/ja/terms",
                     UseShellExecute = true
                 });
             }
@@ -2193,7 +2226,7 @@ namespace InsightCast.ViewModels
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://www.insight-office.com/ja/privacy",
+                    FileName = "https://harmonic-insight.com/ja/privacy",
                     UseShellExecute = true
                 });
             }

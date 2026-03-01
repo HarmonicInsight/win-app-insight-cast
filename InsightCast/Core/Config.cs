@@ -263,6 +263,24 @@ public class Config
         set => Set("openai_image_model", value);
     }
 
+    /// <summary>
+    /// Claude APIキー。
+    /// </summary>
+    public string? ClaudeApiKey
+    {
+        get => Get<string?>("claude_api_key", null);
+        set => Set("claude_api_key", value);
+    }
+
+    /// <summary>
+    /// Claude モデルインデックス (0=Haiku, 1=Sonnet, 2=Opus)。デフォルト: 1(Sonnet)。
+    /// </summary>
+    public int ClaudeModelIndex
+    {
+        get => Get<int>("claude_model_index", 1);
+        set => Set("claude_model_index", value);
+    }
+
     public void AddRecentFile(string path)
     {
         var files = RecentFiles;

@@ -1,7 +1,7 @@
 <Window x:Class="InsightCast.Views.AboutDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="About InsightCast"
+        Title="About Insight Training Studio"
         Width="440" Height="420"
         MinWidth="400" MinHeight="380"
         WindowStartupLocation="CenterOwner"
@@ -19,11 +19,11 @@
 
         <!-- App Name & Version -->
         <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,16">
-            <TextBlock Text="InsightCast"
+            <TextBlock Text="Insight Training Studio"
                        FontSize="24" FontWeight="Bold"
                        Foreground="{DynamicResource BrandPrimary}"
                        HorizontalAlignment="Center"
-                       AutomationProperties.Name="InsightCast"/>
+                       AutomationProperties.Name="Insight Training Studio"/>
             <TextBlock x:Name="VersionLabel"
                        Text="v1.0.0"
                        FontSize="14"

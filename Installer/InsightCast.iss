@@ -4,7 +4,7 @@
 ; Build with:  ISCC.exe InsightCast.iss
 ; Or use:      .\build.ps1
 
-#define MyAppName "InsightCast"
+#define MyAppName "Insight Training Studio"
 #define MyAppVersion "1.0.0"
 #define MyAppPublisher "HARMONIC insight"
 #define MyAppExeName "InsightCast.exe"
@@ -47,9 +47,9 @@ japanese.TaskPinToTaskbar=タスクバーにピン留め
 english.TaskPinToTaskbar=Pin to Taskbar
 japanese.VoicevoxPageTitle=VOICEVOX エンジンの確認
 english.VoicevoxPageTitle=VOICEVOX Engine Check
-japanese.VoicevoxPageDesc=InsightCast はナレーション音声の生成に VOICEVOX を使用します。
-english.VoicevoxPageDesc=InsightCast uses VOICEVOX for narration voice generation.
-japanese.VoicevoxExplain=VOICEVOX はテキスト読み上げソフトウェアです。InsightCast の音声生成機能を使うには VOICEVOX のインストールが必要です。（動画生成のみであれば VOICEVOX なしでも利用可能です）
+japanese.VoicevoxPageDesc=Insight Training Studio はナレーション音声の生成に VOICEVOX を使用します。
+english.VoicevoxPageDesc=Insight Training Studio uses VOICEVOX for narration voice generation.
+japanese.VoicevoxExplain=VOICEVOX はテキスト読み上げソフトウェアです。Insight Training Studio の音声生成機能を使うには VOICEVOX のインストールが必要です。（動画生成のみであれば VOICEVOX なしでも利用可能です）
 english.VoicevoxExplain=VOICEVOX is a text-to-speech software. You need VOICEVOX installed to use the voice generation feature. (Video generation works without VOICEVOX.)
 japanese.VoicevoxFound=VOICEVOX が検出されました。
 english.VoicevoxFound=VOICEVOX detected.
@@ -65,7 +65,7 @@ Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 [Registry]
 ; .icproj file association
 Root: HKA; Subkey: "Software\Classes\.icproj"; ValueType: string; ValueName: ""; ValueData: "InsightCast.Project"; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\InsightCast.Project"; ValueType: string; ValueName: ""; ValueData: "InsightCast Project"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\InsightCast.Project"; ValueType: string; ValueName: ""; ValueData: "Insight Training Studio Project"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\InsightCast.Project\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
 Root: HKA; Subkey: "Software\Classes\InsightCast.Project\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 

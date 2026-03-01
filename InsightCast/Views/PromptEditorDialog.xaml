@@ -1,0 +1,210 @@
+<Window x:Class="InsightCast.Views.PromptEditorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="プロンプト管理"
+        Height="560" Width="740"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Background="{DynamicResource BgPrimary}">
+
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230" MinWidth="150" MaxWidth="400"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" MinWidth="300"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left: Prompt List (Presets + Custom) -->
+        <Border Grid.Column="0" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                CornerRadius="4" Margin="0,0,4,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Background="{DynamicResource BgSecondary}" Padding="8,6"
+                        CornerRadius="4,4,0,0"
+                        BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
+                    <TextBlock x:Name="ListHeaderText" Text="プロンプト一覧"
+                               FontWeight="SemiBold" FontSize="12"
+                               Foreground="{DynamicResource BrandPrimary}"
+                               FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                </Border>
+
+                <TreeView Grid.Row="1" x:Name="PromptTree" BorderThickness="0"
+                          SelectedItemChanged="PromptTree_SelectedItemChanged"
+                          Background="Transparent"
+                          FontFamily="Yu Gothic UI, Meiryo, Segoe UI">
+                    <TreeView.Resources>
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="Padding" Value="2,1"/>
+                            <Setter Property="FontSize" Value="11"/>
+                        </Style>
+                    </TreeView.Resources>
+                </TreeView>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4">
+                    <Button x:Name="AddButton" Content="+" Click="Add_Click" Padding="8,2" Margin="0,0,4,0"
+                            FontSize="14" FontWeight="Bold" Cursor="Hand"
+                            Background="{DynamicResource BrandPrimary}" Foreground="White"
+                            BorderThickness="0"
+                            FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                    <Button x:Name="DeleteButton" Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
+                            Click="Delete_Click" Padding="8,2" FontSize="12" Cursor="Hand"
+                            Background="Transparent" BorderBrush="{DynamicResource Error}"
+                            Foreground="{DynamicResource Error}"
+                            BorderThickness="1"
+                            IsEnabled="False"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Splitter -->
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                      Background="Transparent" Cursor="SizeWE"
+                      ResizeBehavior="PreviousAndNext"/>
+
+        <!-- Right: Editor -->
+        <Border Grid.Column="2" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                CornerRadius="4" Padding="12">
+            <Grid x:Name="EditorPanel" IsEnabled="False">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>  <!-- Row 0: Name label -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 1: Name box -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 2: Category label -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 3: Category box -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 4: Model label -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 5: Model combo -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 6: Output type (text/image) -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 7: Image size (image mode only) -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 8: Mode -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 9: Mode description -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 10: Requires context data -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 11: Prompt label -->
+                    <RowDefinition Height="*"/>     <!-- Row 12: Prompt box -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 13: Buttons -->
+                </Grid.RowDefinitions>
+
+                <!-- Name -->
+                <TextBlock Grid.Row="0" x:Name="NameLabel" Text="タイトル"
+                           FontSize="11" FontWeight="SemiBold" Margin="0,0,0,3"
+                           Foreground="{DynamicResource TextSecondary}"
+                           FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                <TextBox Grid.Row="1" x:Name="NameBox" FontSize="12" Padding="6,4" Margin="0,0,0,8"
+                         BorderBrush="{DynamicResource BorderDefault}"
+                         FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+
+                <!-- Category -->
+                <TextBlock Grid.Row="2" x:Name="CategoryLabel" Text="カテゴリ"
+                           FontSize="11" FontWeight="SemiBold" Margin="0,0,0,3"
+                           Foreground="{DynamicResource TextSecondary}"
+                           FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                <ComboBox Grid.Row="3" x:Name="CategoryComboBox" IsEditable="True"
+                          FontSize="12" Padding="6,4" Margin="0,0,0,8"
+                          BorderBrush="{DynamicResource BorderDefault}"
+                          FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+
+                <!-- Model -->
+                <TextBlock Grid.Row="4" x:Name="ModelLabel" Text="モデル"
+                           FontSize="11" FontWeight="SemiBold" Margin="0,0,0,3"
+                           Foreground="{DynamicResource TextSecondary}"
+                           FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                <ComboBox Grid.Row="5" x:Name="ModelComboBox"
+                          FontSize="12" Padding="4,3" Margin="0,0,0,8"
+                          BorderBrush="{DynamicResource BorderDefault}"
+                          FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+
+                <!-- Output Type: Text / Image -->
+                <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock x:Name="OutputTypeLabel" Text="出力:"
+                               FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"
+                               Margin="0,0,8,0"
+                               Foreground="{DynamicResource TextSecondary}"
+                               FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                    <RadioButton x:Name="OutputText" Content="&#xE8D2; テキスト" GroupName="OutputType"
+                                 IsChecked="True" Margin="0,0,12,0" VerticalAlignment="Center"
+                                 Checked="OutputText_Checked"
+                                 FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"/>
+                    <RadioButton x:Name="OutputImage" Content="&#xEB9F; 画像" GroupName="OutputType"
+                                 VerticalAlignment="Center"
+                                 Checked="OutputImage_Checked"
+                                 FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"/>
+                </StackPanel>
+
+                <!-- Image Size (visible only in image mode) -->
+                <StackPanel Grid.Row="7" x:Name="ImageSizePanel" Orientation="Horizontal"
+                            Margin="0,0,0,8" Visibility="Collapsed">
+                    <TextBlock x:Name="ImageSizeLabel" Text="画像サイズ:"
+                               FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"
+                               Margin="0,0,8,0"
+                               Foreground="{DynamicResource TextSecondary}"
+                               FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                    <ComboBox x:Name="ImageSizeComboBox" FontSize="11" Padding="4,3"
+                              BorderBrush="{DynamicResource BorderDefault}"
+                              FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                </StackPanel>
+
+                <!-- Mode + RequiresContextData -->
+                <StackPanel Grid.Row="8" x:Name="ModePanel" Orientation="Horizontal" Margin="0,0,0,4">
+                    <TextBlock x:Name="ModeLabel" Text="モード:"
+                               FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"
+                               Margin="0,0,8,0"
+                               Foreground="{DynamicResource TextSecondary}"
+                               FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                    <RadioButton x:Name="ModeCheck" Content="Check" GroupName="Mode"
+                                 IsChecked="True" Margin="0,0,12,0" VerticalAlignment="Center"
+                                 FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"/>
+                    <RadioButton x:Name="ModeAdvice" Content="Advice" GroupName="Mode"
+                                 VerticalAlignment="Center"
+                                 FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"/>
+                </StackPanel>
+
+                <!-- Mode description -->
+                <TextBlock Grid.Row="9" x:Name="ModeDescriptionText"
+                           Text="Check: シーンデータをAIが修正提案します&#x0a;Advice: アドバイスをテキストで返します"
+                           FontSize="9.5" FontStyle="Italic"
+                           Foreground="{DynamicResource TextTertiary}"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,6"
+                           FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+
+                <CheckBox Grid.Row="10" x:Name="RequiresContextDataCheckBox"
+                          Content="シーンデータ必須" IsChecked="True"
+                          FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"
+                          VerticalAlignment="Center" Margin="0,0,0,8"/>
+
+                <!-- Prompt Text -->
+                <TextBlock Grid.Row="11" x:Name="PromptLabel" Text="プロンプト"
+                           FontSize="11" FontWeight="SemiBold" Margin="0,0,0,3"
+                           Foreground="{DynamicResource TextSecondary}"
+                           FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                <TextBox Grid.Row="12" x:Name="PromptBox" FontSize="12" Padding="6,4"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         BorderBrush="{DynamicResource BorderDefault}"
+                         FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+
+                <!-- Save + Execute buttons -->
+                <DockPanel Grid.Row="13" Margin="0,8,0,0">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                        <Button x:Name="SaveButton" Content="保存"
+                                Click="Save_Click" Padding="16,6" Cursor="Hand"
+                                Background="{DynamicResource BrandPrimary}" Foreground="White"
+                                BorderThickness="0" FontSize="12" FontWeight="SemiBold"
+                                Margin="0,0,6,0"
+                                FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                        <Button x:Name="ExecuteButton" Content="&#x25B6; 実行"
+                                Click="Execute_Click" Padding="16,6" Cursor="Hand"
+                                Background="{DynamicResource BrandPrimary}" Foreground="White"
+                                BorderThickness="0" FontSize="12" FontWeight="SemiBold"
+                                IsEnabled="False"
+                                FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                    </StackPanel>
+                    <StackPanel />
+                </DockPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -2,12 +2,14 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using InsightCast.Core;
 using InsightCast.Models;
 using InsightCast.Services;
+using InsightCast.Services.Claude;
 using InsightCast.Video;
 using InsightCast.ViewModels;
 using InsightCast.VoiceVox;
@@ -18,6 +20,8 @@ namespace InsightCast.Views
     {
         private readonly MainWindowViewModel _vm;
         private readonly Config _config;
+        private ChatPanelViewModel? _chatVm;
+        private double _lastAiPanelWidth = 420;
 
         public MainWindow(VoiceVoxClient voiceVoxClient, int speakerId,
                           FFmpegWrapper? ffmpegWrapper, Config config)
@@ -57,6 +61,9 @@ namespace InsightCast.Views
 
                 // Sync scene lists when planning tab modifies scenes
                 PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
+
+                // Initialize AI Assistant panel
+                InitializeChatPanel();
 
                 // Default to Video Generation tab (index 1)
                 MainTabControl.SelectedIndex = 1;
@@ -524,21 +531,114 @@ namespace InsightCast.Views
         {
             var newLang = LocalizationService.ToggleLanguage();
             _config.Language = newLang;
+            _chatVm?.RefreshForLanguageChange();
+        }
+
+        private AiAssistantWindow? _aiAssistantWindow;
+
+        private void InitializeChatPanel()
+        {
+            // 初回起動時にデフォルトのマイプロンプトを登録
+            PromptLibraryService.SeedDefaultPrompts();
+
+            var claudeService = new ClaudeService(_config);
+            var thumbnailService = new ThumbnailService();
+            var toolExecutor = new VideoToolExecutor(
+                () => _vm.Project.Scenes,
+                (index, action) =>
+                {
+                    if (index >= 0 && index < _vm.Project.Scenes.Count)
+                    {
+                        action(_vm.Project.Scenes[index]);
+                        _vm.RefreshSceneList();
+                    }
+                },
+                Dispatcher,
+                thumbnailService,
+                addScene: (index) => Dispatcher.Invoke(() =>
+                {
+                    _vm.Project.AddScene(index);
+                    _vm.NotifyScenesChanged();
+                }),
+                removeScene: (index) => Dispatcher.Invoke(() =>
+                {
+                    _vm.Project.RemoveScene(index);
+                    _vm.NotifyScenesChanged();
+                }),
+                moveScene: (from, to) => Dispatcher.Invoke(() =>
+                {
+                    _vm.Project.MoveScene(from, to);
+                    _vm.NotifyScenesChanged();
+                }),
+                getOpenAIApiKey: () => _config.OpenAIApiKey ?? "");
+
+            _chatVm = new ChatPanelViewModel(
+                claudeService,
+                toolExecutor,
+                () => LocalizationService.CurrentLanguage,
+                _config,
+                _config.ClaudeModelIndex);
+
+            ChatPanel.DataContext = _chatVm;
+            ChatPanel.PopOutRequested += OnPopOutAiAssistant;
+
+            // Open AI panel by default
+            _chatVm.IsChatOpen = true;
+            AiPanelColumn.MinWidth = 280;
+            AiPanelColumn.Width = new GridLength(_lastAiPanelWidth, GridUnitType.Pixel);
+        }
+
+        private void OnPopOutAiAssistant()
+        {
+            if (_chatVm == null) return;
+
+            // If already popped out, bring existing window to front
+            if (_aiAssistantWindow != null)
+            {
+                _aiAssistantWindow.Activate();
+                return;
+            }
+
+            _chatVm.IsPoppedOut = true;
+            _aiAssistantWindow = new AiAssistantWindow { Owner = this };
+            _aiAssistantWindow.SetViewModel(_chatVm);
+            _aiAssistantWindow.Closed += (_, _) =>
+            {
+                _aiAssistantWindow = null;
+                if (_chatVm != null)
+                    _chatVm.IsPoppedOut = false;
+            };
+            _aiAssistantWindow.Show();
+        }
+
+        private void AiToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_chatVm == null) return;
+
+            _chatVm.IsChatOpen = !_chatVm.IsChatOpen;
+
+            if (_chatVm.IsChatOpen)
+            {
+                AiPanelColumn.MinWidth = 280;
+                AiPanelColumn.Width = new GridLength(_lastAiPanelWidth, GridUnitType.Pixel);
+            }
+            else
+            {
+                if (AiPanelColumn.ActualWidth > 0)
+                    _lastAiPanelWidth = AiPanelColumn.ActualWidth;
+                AiPanelColumn.MinWidth = 0;
+                AiPanelColumn.Width = new GridLength(0);
+            }
         }
 
         private void Window_StateChanged(object? sender, EventArgs e)
         {
-            // Update maximize button icon: restore ↔ maximize
+            // Update maximize button icon: restore ↔ maximize (Segoe MDL2 Assets glyphs)
             if (MaximizeIcon != null)
             {
-                try
-                {
-                    MaximizeIcon.Data = Geometry.Parse(
-                        WindowState == WindowState.Maximized
-                            ? "M0,2 H8 V10 H0 Z M2,2 V0 H10 V8 H8"   // Restore (two overlapping squares)
-                            : "M0,0 H10 V10 H0 Z");                     // Maximize (single square)
-                }
-                catch { /* Geometry strings are static; guard against rare parse failures */ }
+                MaximizeIcon.Text = WindowState == WindowState.Maximized
+                    ? "\uE923"   // Restore
+                    : "\uE922";  // Maximize
                 MaximizeButton.ToolTip = WindowState == WindowState.Maximized
                     ? LocalizationService.GetString("Window.Restore")
                     : LocalizationService.GetString("Window.Maximize");
@@ -549,25 +649,24 @@ namespace InsightCast.Views
 
         #region Recent Files
 
-        private void RecentFilesMenu_SubmenuOpened(object sender, RoutedEventArgs e)
-        {
-            PopulateRecentFiles();
-        }
-
         private void PopulateRecentFiles()
         {
             RecentFilesMenu.Items.Clear();
             var files = _vm.RecentFiles;
             if (files.Count == 0)
             {
-                var empty = new MenuItem { Header = LocalizationService.GetString("Common.None"), IsEnabled = false };
+                var empty = new RibbonApplicationMenuItem
+                {
+                    Header = LocalizationService.GetString("Common.None"),
+                    IsEnabled = false
+                };
                 RecentFilesMenu.Items.Add(empty);
                 return;
             }
 
             foreach (var file in files)
             {
-                var item = new MenuItem
+                var item = new RibbonApplicationMenuItem
                 {
                     Header = Path.GetFileName(file),
                     ToolTip = file,
@@ -602,6 +701,10 @@ namespace InsightCast.Views
             _vm.ScenesChanged -= OnMainViewModelScenesChanged;
             _vm.Logger.LogReceived -= OnLogReceived;
             PlanningTabControl.ScenesChanged -= OnPlanningTabScenesChanged;
+            ChatPanel.PopOutRequested -= OnPopOutAiAssistant;
+
+            // Close popout window if open
+            _aiAssistantWindow?.Close();
         }
 
         #endregion

@@ -126,11 +126,11 @@ namespace InsightCast.Services
         public void ShowLicenseDialog(Config config)
         {
             // InsightCommon 共通ライセンスダイアログを使用
-            var licenseManager = new InsightLicenseManager("INMV", "InsightCast");
+            var licenseManager = new InsightLicenseManager("INMV", "Insight Training Studio");
             var dialog = new InsightLicenseDialog(new LicenseDialogOptions
             {
                 ProductCode = "INMV",
-                ProductName = "InsightCast",
+                ProductName = "Insight Training Studio",
                 ThemeMode = InsightThemeMode.Light,
                 Locale = "ja",
                 LicenseManager = licenseManager,
@@ -143,10 +143,10 @@ namespace InsightCast.Services
                 },
                 FeatureMatrix = new Dictionary<string, InsightCommon.License.PlanCode[]>
                 {
-                    ["subtitle"]       = new[] { InsightCommon.License.PlanCode.Trial, InsightCommon.License.PlanCode.Pro, InsightCommon.License.PlanCode.Ent },
-                    ["subtitle_style"] = new[] { InsightCommon.License.PlanCode.Trial, InsightCommon.License.PlanCode.Pro, InsightCommon.License.PlanCode.Ent },
-                    ["transition"]     = new[] { InsightCommon.License.PlanCode.Trial, InsightCommon.License.PlanCode.Pro, InsightCommon.License.PlanCode.Ent },
-                    ["pptx_import"]    = new[] { InsightCommon.License.PlanCode.Trial, InsightCommon.License.PlanCode.Pro, InsightCommon.License.PlanCode.Ent },
+                    ["subtitle"]       = new[] { InsightCommon.License.PlanCode.Trial, InsightCommon.License.PlanCode.Biz, InsightCommon.License.PlanCode.Ent },
+                    ["subtitle_style"] = new[] { InsightCommon.License.PlanCode.Trial, InsightCommon.License.PlanCode.Biz, InsightCommon.License.PlanCode.Ent },
+                    ["transition"]     = new[] { InsightCommon.License.PlanCode.Trial, InsightCommon.License.PlanCode.Biz, InsightCommon.License.PlanCode.Ent },
+                    ["pptx_import"]    = new[] { InsightCommon.License.PlanCode.Trial, InsightCommon.License.PlanCode.Biz, InsightCommon.License.PlanCode.Ent },
                 },
             });
             dialog.Owner = _owner;

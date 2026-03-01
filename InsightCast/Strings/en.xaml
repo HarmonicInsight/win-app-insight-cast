@@ -36,13 +36,13 @@
 
     <!-- App -->
     <sys:String x:Key="App.Error.Unexpected">An unexpected error occurred.\n\n{0}\n\nThe application may become unstable.</sys:String>
-    <sys:String x:Key="App.Error.Unexpected.Title">InsightCast - Error</sys:String>
+    <sys:String x:Key="App.Error.Unexpected.Title">Insight Training Studio - Error</sys:String>
     <sys:String x:Key="App.Error.Fatal">A fatal error occurred.\n\n{0}</sys:String>
-    <sys:String x:Key="App.Error.Fatal.Title">InsightCast - Fatal Error</sys:String>
+    <sys:String x:Key="App.Error.Fatal.Title">Insight Training Studio - Fatal Error</sys:String>
     <sys:String x:Key="App.Error.Startup">An error occurred during startup.\n\n{0}</sys:String>
-    <sys:String x:Key="App.Error.Startup.Title">InsightCast - Startup Error</sys:String>
+    <sys:String x:Key="App.Error.Startup.Title">Insight Training Studio - Startup Error</sys:String>
     <sys:String x:Key="App.Config.Corrupted">The settings file was corrupted. Starting with default settings.\nYou may need to reconfigure the engine URL, speaker ID, and license information.</sys:String>
-    <sys:String x:Key="App.Config.Corrupted.Title">InsightCast - Settings Warning</sys:String>
+    <sys:String x:Key="App.Config.Corrupted.Title">Insight Training Studio - Settings Warning</sys:String>
     <sys:String x:Key="App.FFmpeg.Error">Failed to initialize FFmpeg.\nVideo generation features are unavailable.\n\n{0}\n\nPlease set up FFmpeg using one of the following methods:\n- Add the folder containing ffmpeg.exe to your PATH\n- Place tools\ffmpeg\bin\ffmpeg.exe in the app folder\n- Run build.ps1 for automatic download</sys:String>
     <sys:String x:Key="App.FFmpeg.NotFound">FFmpeg was not found.\nFFmpeg is required for video export.</sys:String>
     <sys:String x:Key="App.FFmpeg.NotFound.Preview">FFmpeg was not found.\nFFmpeg is required for scene preview.</sys:String>
@@ -80,7 +80,7 @@
     <sys:String x:Key="Menu.Help.LicenseInfo">License Info(_I)</sys:String>
     <sys:String x:Key="Menu.Help.Terms">Terms of Service</sys:String>
     <sys:String x:Key="Menu.Help.Privacy">Privacy Policy</sys:String>
-    <sys:String x:Key="Menu.Help.About">About InsightCast(_A)</sys:String>
+    <sys:String x:Key="Menu.Help.About">About Insight Training Studio(_A)</sys:String>
 
     <!-- Scene List -->
     <sys:String x:Key="Scene.List">Scene List</sys:String>
@@ -88,6 +88,11 @@
     <sys:String x:Key="Scene.Remove.Tooltip">Remove scene (Delete)</sys:String>
     <sys:String x:Key="Scene.MoveUp.Tooltip">Move up (Ctrl+Up)</sys:String>
     <sys:String x:Key="Scene.MoveDown.Tooltip">Move down (Ctrl+Down)</sys:String>
+
+    <!-- Scene Progress -->
+    <sys:String x:Key="Progress.Media">Media</sys:String>
+    <sys:String x:Key="Progress.Narration">Narration</sys:String>
+    <sys:String x:Key="Progress.Subtitle">Subtitle</sys:String>
 
     <!-- Scene Editor -->
     <sys:String x:Key="Scene.Editor">Scene Editor</sys:String>
@@ -274,14 +279,14 @@
     <sys:String x:Key="Font.BIZUDMincho">BIZ UDMincho</sys:String>
 
     <!-- Setup Wizard -->
-    <sys:String x:Key="Setup.Title">InsightCast - Initial Setup</sys:String>
+    <sys:String x:Key="Setup.Title">Insight Training Studio - Initial Setup</sys:String>
     <sys:String x:Key="Setup.Step1">1. Welcome</sys:String>
     <sys:String x:Key="Setup.Step2">2. Engine Detection</sys:String>
     <sys:String x:Key="Setup.Step3">3. Speaker Setup</sys:String>
     <sys:String x:Key="Setup.Step4">4. Complete</sys:String>
-    <sys:String x:Key="Setup.Welcome.Title">Welcome to InsightCast</sys:String>
+    <sys:String x:Key="Setup.Welcome.Title">Welcome to Insight Training Studio</sys:String>
     <sys:String x:Key="Setup.Welcome.Subtitle">Let's get started with the initial setup</sys:String>
-    <sys:String x:Key="Setup.Welcome.Desc">InsightCast is a tool that automatically generates narrated videos using the VOICEVOX engine.</sys:String>
+    <sys:String x:Key="Setup.Welcome.Desc">Insight Training Studio is a tool that automatically generates narrated videos using the VOICEVOX engine.</sys:String>
     <sys:String x:Key="Setup.Welcome.Steps">This setup will configure the following:</sys:String>
     <sys:String x:Key="Setup.Welcome.Step1">1. Detect and connect to the VOICEVOX engine</sys:String>
     <sys:String x:Key="Setup.Welcome.Step2">2. Select a default speaker (voice)</sys:String>
@@ -315,15 +320,15 @@
     <sys:String x:Key="Setup.Speaker.NoConnection">Not connected to engine. Please go back to the previous step.</sys:String>
     <sys:String x:Key="Setup.Complete.Title">Setup Complete</sys:String>
     <sys:String x:Key="Setup.Complete.Desc">All settings have been configured</sys:String>
-    <sys:String x:Key="Setup.Complete.Ready">InsightCast is ready to use.</sys:String>
+    <sys:String x:Key="Setup.Complete.Ready">Insight Training Studio is ready to use.</sys:String>
     <sys:String x:Key="Setup.Complete.Hint">Press "Finish" to proceed to the main screen.</sys:String>
     <sys:String x:Key="Setup.Back">Back</sys:String>
     <sys:String x:Key="Setup.Next">Next</sys:String>
     <sys:String x:Key="Setup.Finish">Finish</sys:String>
 
     <!-- ViewModel - MainWindow -->
-    <sys:String x:Key="VM.NewProject">InsightCast - New Project</sys:String>
-    <sys:String x:Key="VM.ImportProject">InsightCast - Imported Project</sys:String>
+    <sys:String x:Key="VM.NewProject">Insight Training Studio - New Project</sys:String>
+    <sys:String x:Key="VM.ImportProject">Insight Training Studio - Imported Project</sys:String>
     <sys:String x:Key="VM.Initialized">Initialized</sys:String>
     <sys:String x:Key="VM.Scene.Added">Added scene {0}.</sys:String>
     <sys:String x:Key="VM.Scene.MinRequired">At least one scene is required.</sys:String>
@@ -371,7 +376,7 @@
     <sys:String x:Key="VM.Project.ConfirmNew">Discard current project and create a new one?\nUnsaved changes will be lost.</sys:String>
     <sys:String x:Key="VM.Project.ConfirmNew.Title">New Project</sys:String>
     <sys:String x:Key="VM.Project.Created">Created new project.</sys:String>
-    <sys:String x:Key="VM.Project.Filter">InsightCast Project|*.icproj|All Files|*.*</sys:String>
+    <sys:String x:Key="VM.Project.Filter">Insight Training Studio Project|*.icproj|All Files|*.*</sys:String>
     <sys:String x:Key="VM.Project.Opened">Opened project: {0}</sys:String>
     <sys:String x:Key="VM.Project.OpenError">Failed to load project file:\n{0}</sys:String>
     <sys:String x:Key="VM.Project.OpenError.Title">Load Error</sys:String>
@@ -481,7 +486,7 @@ Captured images can be pasted as scene media.</sys:String>
     <sys:String x:Key="Meta.Header">=== YouTube Metadata ===</sys:String>
     <sys:String x:Key="Meta.TitleSuggestion">[Title Suggestion]</sys:String>
     <sys:String x:Key="Meta.Description">[Description]</sys:String>
-    <sys:String x:Key="Meta.AutoGenerated">This video was auto-generated with InsightCast.</sys:String>
+    <sys:String x:Key="Meta.AutoGenerated">This video was auto-generated with Insight Training Studio.</sys:String>
     <sys:String x:Key="Meta.Chapters">[Chapters (paste in description)]</sys:String>
     <sys:String x:Key="Meta.Tags">[Suggested Tags]</sys:String>
     <sys:String x:Key="Meta.Tag.Education">Education</sys:String>
@@ -583,7 +588,7 @@ Captured images can be pasted as scene media.</sys:String>
     <sys:String x:Key="VM.Pptx.Failed">Import Error</sys:String>
 
     <!-- VM Tutorial / FAQ / About / Shortcuts -->
-    <sys:String x:Key="VM.Tutorial">InsightCast Tutorial
+    <sys:String x:Key="VM.Tutorial">Insight Training Studio Tutorial
 ─────────────────────
 
 ■ Quick Mode
@@ -641,18 +646,18 @@ Q: Where are templates saved?
 A: In %LOCALAPPDATA%\InsightCast\Templates.
 
 Q: How do I contact support?
-A: Email info@h-insight.jp.</sys:String>
+A: Email support@harmonic-insight.com.</sys:String>
     <sys:String x:Key="VM.FAQ.Title">FAQ</sys:String>
-    <sys:String x:Key="VM.About">InsightCast v{0}
+    <sys:String x:Key="VM.About">Insight Training Studio v{0}
 
 Auto video generation tool using VOICEVOX voice engine
 
 Simply enter text to easily create narrated videos.
 
-Developer: HARMONIC insight LLC
-Support: info@h-insight.jp
-Web: https://www.insight-office.com</sys:String>
-    <sys:String x:Key="VM.About.Title">About InsightCast</sys:String>
+Developer: HARMONIC insight
+Support: support@harmonic-insight.com
+Web: https://harmonic-insight.com</sys:String>
+    <sys:String x:Key="VM.About.Title">About Insight Training Studio</sys:String>
     <sys:String x:Key="VM.Update.Available">A new version {0} is available. Open the download page?</sys:String>
     <sys:String x:Key="VM.Update.Title">Update Available</sys:String>
     <sys:String x:Key="VM.Shortcuts">Keyboard Shortcuts
@@ -670,9 +675,9 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="VM.Shortcuts.Title">Keyboard Shortcuts</sys:String>
     <sys:String x:Key="VM.License.Title">License Info</sys:String>
     <sys:String x:Key="VM.License.Header">License Info\n─────────────────────\n\nPlan: {0}\nStatus: {1}\nExpires: {2}</sys:String>
-    <sys:String x:Key="VM.Terms.Fallback">Please review the Terms of Service at:\nhttps://www.insight-office.com/terms\n\nContact: info@h-insight.jp</sys:String>
+    <sys:String x:Key="VM.Terms.Fallback">Please review the Terms of Service at:\nhttps://harmonic-insight.com/ja/terms\n\nContact: support@harmonic-insight.com</sys:String>
     <sys:String x:Key="VM.Terms.Title">Terms of Service</sys:String>
-    <sys:String x:Key="VM.Privacy.Fallback">Please review the Privacy Policy at:\nhttps://www.insight-office.com/privacy\n\nContact: info@h-insight.jp</sys:String>
+    <sys:String x:Key="VM.Privacy.Fallback">Please review the Privacy Policy at:\nhttps://harmonic-insight.com/ja/privacy\n\nContact: support@harmonic-insight.com</sys:String>
     <sys:String x:Key="VM.Privacy.Title">Privacy Policy</sys:String>
 
     <!-- QVM Extended -->
@@ -717,7 +722,7 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Export.Complete.Short">Complete</sys:String>
     <sys:String x:Key="Export.Metadata.Short">Metadata</sys:String>
     <sys:String x:Key="Export.Thumbnail.Short">Thumbnail</sys:String>
-    <sys:String x:Key="Meta.DefaultTitle">InsightCast Video</sys:String>
+    <sys:String x:Key="Meta.DefaultTitle">Insight Training Studio Video</sys:String>
     <sys:String x:Key="QVM.BGM.Selected">BGM selected: {0}</sys:String>
     <sys:String x:Key="QVM.BatchImport.Title">Select Files (Multiple)</sys:String>
     <sys:String x:Key="QVM.BatchImport.Filter">Supported Files|*.pptx;*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.mp4;*.avi;*.mov;*.wmv;*.mkv;*.webm;*.txt|All Files|*.*</sys:String>
@@ -826,7 +831,7 @@ F1              Show tutorial</sys:String>
     <!-- License errors -->
     <sys:String x:Key="License.Error.Empty">License key is empty.</sys:String>
     <sys:String x:Key="License.Error.Format">Invalid license key format.</sys:String>
-    <sys:String x:Key="License.Error.Product">This key is not for InsightCast. Please enter an InsightCast key.</sys:String>
+    <sys:String x:Key="License.Error.Product">This key is not for Insight Training Studio. Please enter an Insight Training Studio key.</sys:String>
     <sys:String x:Key="License.Error.Invalid">Invalid license key.</sys:String>
     <sys:String x:Key="License.Error.Email">Email address does not match.</sys:String>
     <sys:String x:Key="License.Error.Expired">License has expired ({0}).</sys:String>
@@ -1019,5 +1024,158 @@ F1              Show tutorial</sys:String>
 
     <!-- A2: VOICEVOX guidance -->
     <sys:String x:Key="VM.VoiceVox.Guide">VOICEVOX: ✗ Not connected — Please start VOICEVOX engine and restart the app</sys:String>
+
+    <!-- Marketing subtitle -->
+    <sys:String x:Key="App.Subtitle">Create training videos faster with AI.</sys:String>
+
+    <!-- AI Chat Panel -->
+    <sys:String x:Key="Chat.Title">AI Assistant</sys:String>
+    <sys:String x:Key="Chat.ToggleTooltip">Open/close AI assistant panel</sys:String>
+    <sys:String x:Key="Chat.Clear">Clear chat</sys:String>
+    <sys:String x:Key="Chat.Send">Send</sys:String>
+    <sys:String x:Key="Chat.Cancel">Cancel</sys:String>
+    <sys:String x:Key="Chat.Thinking">Thinking...</sys:String>
+    <sys:String x:Key="Chat.Presets">Presets</sys:String>
+    <sys:String x:Key="Chat.ApiKeyToggle">API Key Settings</sys:String>
+    <sys:String x:Key="Chat.ApiKeyLabel">Claude API Key</sys:String>
+    <sys:String x:Key="Chat.ApiKeySet">Set</sys:String>
+    <sys:String x:Key="Chat.ApiKeyStatus">Configured</sys:String>
+    <sys:String x:Key="Chat.UsageCalls">Calls: </sys:String>
+    <sys:String x:Key="Chat.UsageTokens">Tokens: </sys:String>
+    <sys:String x:Key="Chat.UsageCost">Cost: </sys:String>
+
+    <!-- Prompt Library -->
+    <sys:String x:Key="PromptLib.Tab.Presets">Presets</sys:String>
+    <sys:String x:Key="PromptLib.Tab.MyPrompts">My Prompts</sys:String>
+    <sys:String x:Key="PromptLib.Search.Placeholder">Search prompts...</sys:String>
+    <sys:String x:Key="PromptLib.Sort.Recent">Recent</sys:String>
+    <sys:String x:Key="PromptLib.Sort.MostUsed">Most Used</sys:String>
+    <sys:String x:Key="PromptLib.Sort.AtoZ">A-Z</sys:String>
+    <sys:String x:Key="PromptLib.Save.Title">Save Prompt</sys:String>
+    <sys:String x:Key="PromptLib.Save.Label">Label</sys:String>
+    <sys:String x:Key="PromptLib.Save.Category">Category</sys:String>
+    <sys:String x:Key="PromptLib.Save.Confirm">Save</sys:String>
+    <sys:String x:Key="PromptLib.Save.Cancel">Cancel</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Title">Edit Prompt</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Confirm">Update</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Cancel">Cancel</sys:String>
+    <sys:String x:Key="PromptLib.Menu.Edit">Edit</sys:String>
+    <sys:String x:Key="PromptLib.Menu.Duplicate">Duplicate</sys:String>
+    <sys:String x:Key="PromptLib.Menu.Delete">Delete</sys:String>
+    <sys:String x:Key="PromptLib.Delete.Confirm">Delete this prompt?</sys:String>
+    <sys:String x:Key="PromptLib.Delete.Warning">This action cannot be undone. The saved prompt will be permanently removed from your device.</sys:String>
+    <sys:String x:Key="PromptLib.Empty">No saved prompts yet</sys:String>
+    <sys:String x:Key="PromptLib.Empty.Guide">Save prompts you use often for quick access.
+To get started, try one of these:
+ • Send a message in the chat, then click 💾 to save it
+ • Right-click a preset and select "Save to My Prompts"</sys:String>
+    <sys:String x:Key="PromptLib.UseCount">Used {0} times</sys:String>
+    <sys:String x:Key="PromptLib.DuplicatePreset">Save to My Prompts</sys:String>
+
+    <!-- Prompt Library — Tooltips -->
+    <sys:String x:Key="PromptLib.Tab.Presets.Tooltip">Built-in prompt templates provided by the developer</sys:String>
+    <sys:String x:Key="PromptLib.Tab.MyPrompts.Tooltip">Your saved prompts — create, edit, and reuse anytime</sys:String>
+    <sys:String x:Key="PromptLib.Search.Tooltip">Search prompts by label or content</sys:String>
+    <sys:String x:Key="PromptLib.Sort.Tooltip">Change sort order: Recent → Most Used → A-Z</sys:String>
+    <sys:String x:Key="PromptLib.Card.Tooltip">Click to send this prompt to the AI</sys:String>
+    <sys:String x:Key="PromptLib.Card.Menu.Tooltip">Edit, duplicate, or delete this prompt</sys:String>
+    <sys:String x:Key="PromptLib.Save.Btn.Tooltip">Save this message as a reusable prompt</sys:String>
+    <sys:String x:Key="PromptLib.Help.Tooltip">Open help for the AI Assistant &amp; Prompt Library</sys:String>
+    <sys:String x:Key="PromptLib.Preset.DuplicateTip">Right-click to save a copy to My Prompts</sys:String>
+
+    <!-- Prompt Library — Placeholders & Hints -->
+    <sys:String x:Key="PromptLib.Save.Label.Placeholder">e.g. Summarize meeting notes</sys:String>
+    <sys:String x:Key="PromptLib.Save.Category.Placeholder">e.g. Meeting, Planning, Review</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Icon.Placeholder">Emoji</sys:String>
+    <sys:String x:Key="PromptLib.Edit.Prompt.Placeholder">Enter the instructions to send to the AI...</sys:String>
+    <sys:String x:Key="PromptLib.Save.Privacy">Prompts are saved locally on this device only — not sent to the cloud.</sys:String>
+
+    <!-- API Key &amp; Cost — Hints -->
+    <sys:String x:Key="Chat.ApiKey.Privacy">Your API key is stored locally on this device only and is never shared.</sys:String>
+    <sys:String x:Key="Chat.Usage.Note">API usage is billed directly by Anthropic to your account.</sys:String>
+
+    <!-- AI Assistant Panel (InsightSlide style) -->
+    <sys:String x:Key="Ai.PresetPrompts">Preset Prompts</sys:String>
+    <sys:String x:Key="Ai.MyPrompts">My Prompts</sys:String>
+    <sys:String x:Key="Ai.MyPromptsEmpty">No saved prompts yet. Save a prompt to see it here.</sys:String>
+    <sys:String x:Key="Ai.Execute">Execute</sys:String>
+    <sys:String x:Key="Ai.SaveAsPrompt">Save as Prompt</sys:String>
+    <sys:String x:Key="Ai.Result">Result</sys:String>
+    <sys:String x:Key="Ai.Processing">Processing...</sys:String>
+    <sys:String x:Key="Ai.ApiKeySettings">API Key Settings</sys:String>
+    <sys:String x:Key="Ai.EnterApiKey">Enter your Claude API key</sys:String>
+    <sys:String x:Key="Ai.SetBtn">Set</sys:String>
+    <sys:String x:Key="Ai.Popout">Pop Out</sys:String>
+    <sys:String x:Key="Ai.PromptEditor">Prompt Editor</sys:String>
+    <sys:String x:Key="Ai.CopyMenu">Copy</sys:String>
+    <sys:String x:Key="Ai.SaveThumbnail">Save Thumbnail</sys:String>
+    <sys:String x:Key="Ai.Cancelled">Cancelled.</sys:String>
+    <sys:String x:Key="Ai.OpenAIApiKey">Enter OpenAI API key (for DALL-E image generation)</sys:String>
+    <sys:String x:Key="Ai.OpenAIApiKeyStatus">OpenAI Key Set</sys:String>
+    <sys:String x:Key="Ai.SetOpenAIBtn">Set</sys:String>
+    <sys:String x:Key="Ai.ImageMode">Image</sys:String>
+    <sys:String x:Key="Ai.TextMode">Text</sys:String>
+    <sys:String x:Key="Ai.ImageMode.Desc">Generate images with DALL-E</sys:String>
+    <sys:String x:Key="Ai.ImageGenerated">Image generated</sys:String>
+    <sys:String x:Key="Ai.DalleError">Image generation failed</sys:String>
+
+    <!-- Prompt Editor Dialog -->
+    <sys:String x:Key="PE.Title">Prompt Manager</sys:String>
+    <sys:String x:Key="PE.PromptList">Prompt List</sys:String>
+    <sys:String x:Key="PE.Name">Title</sys:String>
+    <sys:String x:Key="PE.Category">Category</sys:String>
+    <sys:String x:Key="PE.Model">Model</sys:String>
+    <sys:String x:Key="PE.Mode">Mode</sys:String>
+    <sys:String x:Key="PE.PromptText">Prompt</sys:String>
+    <sys:String x:Key="PE.RequiresContextData">Requires scene data</sys:String>
+    <sys:String x:Key="PE.Save">Save</sys:String>
+    <sys:String x:Key="PE.Execute">Execute</sys:String>
+    <sys:String x:Key="PE.Add">Add New</sys:String>
+    <sys:String x:Key="PE.Delete">Delete</sys:String>
+    <sys:String x:Key="PE.ModeDesc">Check: AI proposes edits to scene data
+Advice: AI returns text advice</sys:String>
+    <sys:String x:Key="PE.NewPrompt">New Prompt</sys:String>
+    <sys:String x:Key="PE.ConfirmDelete">Delete "{0}"?</sys:String>
+    <sys:String x:Key="PE.ConfirmTitle">Confirm</sys:String>
+    <sys:String x:Key="PE.OutputType">Output</sys:String>
+    <sys:String x:Key="PE.OutputText">Text</sys:String>
+    <sys:String x:Key="PE.OutputImage">Image</sys:String>
+
+    <!-- Help Section -->
+    <sys:String x:Key="Help.Section.AIAssistant">AI Assistant</sys:String>
+
+    <!-- Ribbon UI -->
+    <sys:String x:Key="Ribbon.Tab.Home">Home</sys:String>
+    <sys:String x:Key="Ribbon.Tab.Help">Help</sys:String>
+    <sys:String x:Key="Ribbon.Group.Scene">Scene</sys:String>
+    <sys:String x:Key="Ribbon.Group.Export">Export</sys:String>
+    <sys:String x:Key="Ribbon.Group.Template">Template</sys:String>
+    <sys:String x:Key="Ribbon.Group.Support">Support</sys:String>
+    <sys:String x:Key="Ribbon.Group.License">License</sys:String>
+    <sys:String x:Key="Ribbon.Group.Legal">Legal</sys:String>
+    <sys:String x:Key="Ribbon.File.New">New</sys:String>
+    <sys:String x:Key="Ribbon.File.Open">Open</sys:String>
+    <sys:String x:Key="Ribbon.File.Recent">Recent Files</sys:String>
+    <sys:String x:Key="Ribbon.File.Save">Save</sys:String>
+    <sys:String x:Key="Ribbon.File.SaveAs">Save As</sys:String>
+    <sys:String x:Key="Ribbon.File.ImportPptx">Import PPTX</sys:String>
+    <sys:String x:Key="Ribbon.File.ImportJson">Import JSON</sys:String>
+    <sys:String x:Key="Ribbon.File.BatchExport">JSON Export</sys:String>
+    <sys:String x:Key="Ribbon.File.Exit">Exit</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Add">Add Scene</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Remove">Remove</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveUp">Up</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveDown">Down</sys:String>
+    <sys:String x:Key="Ribbon.Export.Video">Export Video</sys:String>
+    <sys:String x:Key="Ribbon.Export.Preview">Preview</sys:String>
+    <sys:String x:Key="Ribbon.Template.Save">Save</sys:String>
+    <sys:String x:Key="Ribbon.Template.Load">Load</sys:String>
+    <sys:String x:Key="Ribbon.Template.OpenOutput">Open Output</sys:String>
+    <sys:String x:Key="Ribbon.Help.Tutorial">Tutorial</sys:String>
+    <sys:String x:Key="Ribbon.Help.License">License Manager</sys:String>
+    <sys:String x:Key="Ribbon.Help.LicenseInfo">License Info</sys:String>
+    <sys:String x:Key="Ribbon.Help.Terms">Terms of Service</sys:String>
+    <sys:String x:Key="Ribbon.Help.Privacy">Privacy Policy</sys:String>
+    <sys:String x:Key="Ribbon.Help.About">About</sys:String>
 
 </ResourceDictionary>

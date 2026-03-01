@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:InsightCast.Converters"
         xmlns:views="clr-namespace:InsightCast.Views"
+        xmlns:ribbon="clr-namespace:System.Windows.Controls.Ribbon;assembly=System.Windows.Controls.Ribbon"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Title="{Binding WindowTitle}"
         MinWidth="1100" MinHeight="750"
@@ -47,204 +48,273 @@
         </Grid.RowDefinitions>
 
         <!-- ================================================================ -->
-        <!-- A) Header / Custom Title Bar (Simplified)                        -->
+        <!-- A) Header / Custom Title Bar (insight-sheet style)                -->
         <!-- ================================================================ -->
-        <Border Grid.Row="0" Background="{DynamicResource TitlebarBg}"
-                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
-            <DockPanel>
-                <!-- Right: Window control buttons -->
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top">
+        <Border Grid.Row="0" Background="{DynamicResource BgSecondary}"
+                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1"
+                MinHeight="48">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: Product name, version, plan badge, subtitle -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                    <TextBlock Text="Insight Training Studio" FontSize="15" FontWeight="SemiBold"
+                               Foreground="{DynamicResource BrandPrimary}" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="VersionLabel" Text="v1.0.0" FontSize="11"
+                               Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                    <Border x:Name="PlanBadge" Background="{DynamicResource BrandLight}"
+                            CornerRadius="4" Padding="8,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="PlanBadgeText" Text="{Binding PlanDisplayName}" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource BrandPrimary}"/>
+                    </Border>
+                    <TextBlock Text="{DynamicResource App.Subtitle}" FontSize="11"
+                               Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                </StackPanel>
+
+                <!-- Right: toggles, buttons, window controls -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- Mode Toggle -->
+                    <Border Background="{DynamicResource BgPrimary}" CornerRadius="12"
+                            Padding="2" Margin="0,0,4,0" VerticalAlignment="Center"
+                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Content="{DynamicResource Mode.Simple}"
+                                         IsChecked="{Binding IsSimpleMode}"
+                                         GroupName="UIMode" Cursor="Hand">
+                                <RadioButton.Template>
+                                    <ControlTemplate TargetType="RadioButton">
+                                        <Border x:Name="border" Background="Transparent" CornerRadius="10" Padding="10,4">
+                                            <TextBlock x:Name="text" Text="{TemplateBinding Content}"
+                                                       FontSize="11" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextSecondary}"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="{DynamicResource BrandPrimary}"/>
+                                                <Setter TargetName="text" Property="Foreground" Value="White"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </RadioButton.Template>
+                            </RadioButton>
+                            <RadioButton Content="{DynamicResource Mode.Detail}"
+                                         IsChecked="{Binding IsSimpleMode, Converter={StaticResource InverseBool}}"
+                                         GroupName="UIMode" Cursor="Hand">
+                                <RadioButton.Template>
+                                    <ControlTemplate TargetType="RadioButton">
+                                        <Border x:Name="border" Background="Transparent" CornerRadius="10" Padding="10,4">
+                                            <TextBlock x:Name="text" Text="{TemplateBinding Content}"
+                                                       FontSize="11" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextSecondary}"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="{DynamicResource BrandPrimary}"/>
+                                                <Setter TargetName="text" Property="Foreground" Value="White"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </RadioButton.Template>
+                            </RadioButton>
+                        </StackPanel>
+                    </Border>
+
+                    <Rectangle Width="1" Height="20" Fill="{DynamicResource BorderDefault}" Margin="4,0"/>
+
+                    <!-- AI Assistant toggle -->
+                    <Button x:Name="AiToggleButton" Click="AiToggleButton_Click"
+                            Style="{StaticResource ToolbarButtonStyle}"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                            ToolTip="{DynamicResource Chat.ToggleTooltip}"
+                            AutomationProperties.Name="AI Assistant">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE799;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,4,0"
+                                       VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}"/>
+                            <TextBlock Text="AI" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextSecondary}"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Rectangle Width="1" Height="20" Fill="{DynamicResource BorderDefault}" Margin="4,0"/>
+
+                    <!-- Language Toggle -->
+                    <Button x:Name="LangSwitchButton" Click="LangSwitchButton_Click"
+                            Content="{DynamicResource Lang.SwitchTo}"
+                            Style="{StaticResource TitleBarButtonStyle}"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                            ToolTip="{DynamicResource Lang.SwitchTo}"
+                            FontSize="11" FontWeight="SemiBold"/>
+
+                    <!-- License Button -->
+                    <Button Command="{Binding ShowLicenseManagerCommand}"
+                            Style="{StaticResource TitleBarButtonStyle}"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                            ToolTip="{DynamicResource Header.LicenseManager}">
+                        <TextBlock Text="&#xE192;" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
+                    </Button>
+
+                    <!-- Minimize -->
                     <Button x:Name="MinimizeButton" Click="MinimizeButton_Click"
-                            Width="46" Height="32" BorderThickness="0" Background="Transparent"
+                            Style="{StaticResource WindowControlButtonStyle}"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"
                             ToolTip="{DynamicResource Window.Minimize}"
                             AutomationProperties.Name="Minimize">
-                        <Path Data="M0,0 H10" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"/>
+                        <TextBlock Text="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
                     </Button>
+
+                    <!-- Maximize/Restore -->
                     <Button x:Name="MaximizeButton" Click="MaximizeButton_Click"
-                            Width="46" Height="32" BorderThickness="0" Background="Transparent"
+                            Style="{StaticResource WindowControlButtonStyle}"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"
                             ToolTip="{DynamicResource Window.Maximize}"
                             AutomationProperties.Name="Maximize">
-                        <Path x:Name="MaximizeIcon" Data="M0,0 H10 V10 H0 Z" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"/>
+                        <TextBlock x:Name="MaximizeIcon" Text="&#xE922;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
                     </Button>
+
+                    <!-- Close -->
                     <Button x:Name="CloseButton" Click="CloseButton_Click"
-                            Width="46" Height="32" BorderThickness="0" Background="Transparent"
+                            Style="{StaticResource CloseButtonStyle}"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"
                             ToolTip="{DynamicResource Window.Close}"
                             AutomationProperties.Name="Close">
-                        <Path Data="M0,0 L10,10 M0,10 L10,0" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"/>
+                        <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
                     </Button>
                 </StackPanel>
-
-                <DockPanel Margin="10,6,0,6">
-                    <!-- Left: App title -->
-                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="InsightCast" FontSize="18" FontWeight="Bold"
-                                   Foreground="{DynamicResource TitlebarFg}" VerticalAlignment="Center"/>
-                        <TextBlock x:Name="VersionLabel" Text="v1.0.0" Foreground="{DynamicResource TitlebarSecondary}"
-                                   FontSize="11" VerticalAlignment="Bottom" Margin="8,0,0,4"/>
-                    </StackPanel>
-
-                    <!-- Right: Mode toggle + Lang + License + Status -->
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                        <!-- Mode Toggle -->
-                        <Border Background="{DynamicResource BgSecondary}" CornerRadius="12"
-                                Padding="2" Margin="0,0,8,0" VerticalAlignment="Center"
-                                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                            <StackPanel Orientation="Horizontal">
-                                <RadioButton Content="{DynamicResource Mode.Simple}"
-                                             IsChecked="{Binding IsSimpleMode}"
-                                             GroupName="UIMode" Cursor="Hand">
-                                    <RadioButton.Template>
-                                        <ControlTemplate TargetType="RadioButton">
-                                            <Border x:Name="border" Background="Transparent" CornerRadius="10" Padding="10,4">
-                                                <TextBlock x:Name="text" Text="{TemplateBinding Content}"
-                                                           FontSize="11" FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource TextSecondary}"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsChecked" Value="True">
-                                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource BrandPrimary}"/>
-                                                    <Setter TargetName="text" Property="Foreground" Value="White"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </RadioButton.Template>
-                                </RadioButton>
-                                <RadioButton Content="{DynamicResource Mode.Detail}"
-                                             IsChecked="{Binding IsSimpleMode, Converter={StaticResource InverseBool}}"
-                                             GroupName="UIMode" Cursor="Hand">
-                                    <RadioButton.Template>
-                                        <ControlTemplate TargetType="RadioButton">
-                                            <Border x:Name="border" Background="Transparent" CornerRadius="10" Padding="10,4">
-                                                <TextBlock x:Name="text" Text="{TemplateBinding Content}"
-                                                           FontSize="11" FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource TextSecondary}"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsChecked" Value="True">
-                                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource BrandPrimary}"/>
-                                                    <Setter TargetName="text" Property="Foreground" Value="White"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </RadioButton.Template>
-                                </RadioButton>
-                            </StackPanel>
-                        </Border>
-
-                        <Button Padding="6,3" Margin="2" FontSize="11"
-                                Background="{DynamicResource BgPrimary}" Foreground="{DynamicResource TextPrimary}"
-                                BorderBrush="{DynamicResource BorderDark}"
-                                x:Name="LangSwitchButton" Click="LangSwitchButton_Click"
-                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                            <TextBlock Text="{DynamicResource Lang.SwitchTo}" VerticalAlignment="Center"/>
-                        </Button>
-                        <Button Padding="6,3" Margin="2" FontSize="11"
-                                Background="{DynamicResource BgPrimary}" Foreground="{DynamicResource TextPrimary}"
-                                BorderBrush="{DynamicResource BorderDark}"
-                                Command="{Binding ShowLicenseManagerCommand}"
-                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M6,0 L12,3 V7 L6,12 L0,7 V3 Z"
-                                      Stroke="{DynamicResource TextPrimary}" StrokeThickness="1"
-                                      VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                <TextBlock Text="{DynamicResource Header.LicenseManager}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Border Background="{DynamicResource BgSecondary}" CornerRadius="3"
-                                Padding="8,3" Margin="4,0,0,0" VerticalAlignment="Center"
-                                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1">
-                            <TextBlock Text="{Binding StatusText}"
-                                       Foreground="{DynamicResource TextSecondary}" FontSize="11"/>
-                        </Border>
-                    </StackPanel>
-
-                    <!-- Spacer -->
-                    <Border/>
-                </DockPanel>
-            </DockPanel>
+            </Grid>
         </Border>
 
         <!-- ================================================================ -->
-        <!-- B) Menu Bar (Always visible)                                      -->
+        <!-- B) Ribbon (replaces Menu Bar)                                     -->
         <!-- ================================================================ -->
-        <Menu Grid.Row="1"
-              Background="{DynamicResource TitlebarBg}"
-              Foreground="{DynamicResource TextPrimary}"
-              Padding="6,2">
-            <MenuItem Header="{DynamicResource Menu.File}">
-                <MenuItem Header="{DynamicResource Menu.File.New}" InputGestureText="Ctrl+N"
-                          Command="{Binding NewProjectCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.File.Open}" InputGestureText="Ctrl+O"
-                          Command="{Binding OpenProjectCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.File.Recent}" x:Name="RecentFilesMenu"
-                          SubmenuOpened="RecentFilesMenu_SubmenuOpened"/>
-                <Separator/>
-                <MenuItem Header="{DynamicResource Menu.File.Save}" InputGestureText="Ctrl+S"
-                          Command="{Binding SaveProjectCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.File.SaveAs}" InputGestureText="Ctrl+Shift+S"
-                          Command="{Binding SaveProjectAsCommand}"/>
-                <Separator/>
-                <MenuItem Header="{DynamicResource Header.ImportPptx}"
-                          Command="{Binding ImportPptxCommand}"
-                          IsEnabled="{Binding CanPptx}"/>
-                <MenuItem Header="{DynamicResource Menu.File.ImportJson}"
-                          Command="{Binding ImportJsonCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.File.BatchExport}"
-                          Command="{Binding BatchExportCommand}"/>
-                <Separator/>
-                <MenuItem Header="{DynamicResource Menu.File.Exit}" InputGestureText="Alt+F4"
-                          Command="{Binding ExitCommand}"/>
-            </MenuItem>
+        <ribbon:Ribbon Grid.Row="1" x:Name="MainRibbon">
 
-            <MenuItem Header="{DynamicResource Menu.Edit}">
-                <MenuItem Header="{DynamicResource Menu.Edit.AddScene}" InputGestureText="Ctrl+T"
-                          Command="{Binding AddSceneCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.Edit.RemoveScene}" InputGestureText="Delete"
-                          Command="{Binding RemoveSceneCommand}"/>
-                <Separator/>
-                <MenuItem Header="{DynamicResource Menu.Edit.MoveUp}" InputGestureText="Ctrl+Up"
-                          Command="{Binding MoveSceneUpCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.Edit.MoveDown}" InputGestureText="Ctrl+Down"
-                          Command="{Binding MoveSceneDownCommand}"/>
-            </MenuItem>
+            <!-- Application Menu (File operations) -->
+            <ribbon:Ribbon.ApplicationMenu>
+                <ribbon:RibbonApplicationMenu KeyTip="F">
+                    <ribbon:RibbonApplicationMenuItem Header="{DynamicResource Ribbon.File.New}"
+                            InputGestureText="Ctrl+N" Command="{Binding NewProjectCommand}"
+                            ImageSource="{x:Static conv:MdlIcons.NewFile}"/>
+                    <ribbon:RibbonApplicationMenuItem Header="{DynamicResource Ribbon.File.Open}"
+                            InputGestureText="Ctrl+O" Command="{Binding OpenProjectCommand}"
+                            ImageSource="{x:Static conv:MdlIcons.OpenFile}"/>
+                    <ribbon:RibbonApplicationMenuItem x:Name="RecentFilesMenu"
+                            Header="{DynamicResource Ribbon.File.Recent}"
+                            ImageSource="{x:Static conv:MdlIcons.Recent}"/>
+                    <ribbon:RibbonSeparator/>
+                    <ribbon:RibbonApplicationMenuItem Header="{DynamicResource Ribbon.File.Save}"
+                            InputGestureText="Ctrl+S" Command="{Binding SaveProjectCommand}"
+                            ImageSource="{x:Static conv:MdlIcons.SaveFile}"/>
+                    <ribbon:RibbonApplicationMenuItem Header="{DynamicResource Ribbon.File.SaveAs}"
+                            InputGestureText="Ctrl+Shift+S" Command="{Binding SaveProjectAsCommand}"
+                            ImageSource="{x:Static conv:MdlIcons.SaveAs}"/>
+                    <ribbon:RibbonSeparator/>
+                    <ribbon:RibbonApplicationMenuItem Header="{DynamicResource Ribbon.File.ImportPptx}"
+                            Command="{Binding ImportPptxCommand}" IsEnabled="{Binding CanPptx}"
+                            ImageSource="{x:Static conv:MdlIcons.Import}"/>
+                    <ribbon:RibbonApplicationMenuItem Header="{DynamicResource Ribbon.File.ImportJson}"
+                            Command="{Binding ImportJsonCommand}"
+                            ImageSource="{x:Static conv:MdlIcons.Import}"/>
+                    <ribbon:RibbonApplicationMenuItem Header="{DynamicResource Ribbon.File.BatchExport}"
+                            Command="{Binding BatchExportCommand}"
+                            ImageSource="{x:Static conv:MdlIcons.Export}"/>
+                    <ribbon:RibbonSeparator/>
+                    <ribbon:RibbonApplicationMenuItem Header="{DynamicResource Ribbon.File.Exit}"
+                            InputGestureText="Alt+F4" Command="{Binding ExitCommand}"
+                            ImageSource="{x:Static conv:MdlIcons.Exit}"/>
+                </ribbon:RibbonApplicationMenu>
+            </ribbon:Ribbon.ApplicationMenu>
 
-            <!-- AI機能一時非表示
-            <MenuItem Header="{DynamicResource Menu.AI}">
-                <MenuItem Header="{DynamicResource Menu.AI.GenerateProject}"
-                          Command="{Binding AIGenerateProjectCommand}"/>
-                <Separator/>
-                <MenuItem Header="{DynamicResource Menu.AI.Settings}"
-                          Command="{Binding OpenAISettingsCommand}"/>
-            </MenuItem>
-            -->
+            <!-- Home Tab -->
+            <ribbon:RibbonTab Header="{DynamicResource Ribbon.Tab.Home}" KeyTip="H">
+                <!-- Scene Group -->
+                <ribbon:RibbonGroup Header="{DynamicResource Ribbon.Group.Scene}">
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Scene.Add}"
+                            Command="{Binding AddSceneCommand}" KeyTip="A"
+                            SmallImageSource="{x:Static conv:MdlIcons.Add}"/>
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Scene.Remove}"
+                            Command="{Binding RemoveSceneCommand}" KeyTip="D"
+                            SmallImageSource="{x:Static conv:MdlIcons.Delete}"/>
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Scene.MoveUp}"
+                            Command="{Binding MoveSceneUpCommand}" KeyTip="U"
+                            SmallImageSource="{x:Static conv:MdlIcons.MoveUp}"/>
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Scene.MoveDown}"
+                            Command="{Binding MoveSceneDownCommand}" KeyTip="W"
+                            SmallImageSource="{x:Static conv:MdlIcons.MoveDown}"/>
+                </ribbon:RibbonGroup>
 
-            <MenuItem Header="{DynamicResource Menu.Help}">
-                <MenuItem Header="{DynamicResource Menu.Help.Tutorial}" InputGestureText="F1"
-                          Command="{Binding ShowHelpCommand}"/>
-                <Separator/>
-                <MenuItem Header="{DynamicResource Menu.Help.License}"
-                          Command="{Binding ShowLicenseManagerCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.Help.LicenseInfo}"
-                          Command="{Binding ShowLicenseInfoCommand}"/>
-                <Separator/>
-                <MenuItem Header="{DynamicResource Menu.Help.Terms}"
-                          Command="{Binding ShowTermsCommand}"/>
-                <MenuItem Header="{DynamicResource Menu.Help.Privacy}"
-                          Command="{Binding ShowPrivacyCommand}"/>
-                <Separator/>
-                <MenuItem Header="{DynamicResource Menu.Help.About}"
-                          Command="{Binding ShowAboutCommand}"/>
-            </MenuItem>
-        </Menu>
+                <!-- Export Group -->
+                <ribbon:RibbonGroup Header="{DynamicResource Ribbon.Group.Export}">
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Export.Video}"
+                            Command="{Binding ExportVideoCommand}" KeyTip="V"
+                            SmallImageSource="{x:Static conv:MdlIcons.Video}"/>
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Export.Preview}"
+                            Command="{Binding PreviewSceneCommand}" KeyTip="P"
+                            SmallImageSource="{x:Static conv:MdlIcons.Play}"/>
+                </ribbon:RibbonGroup>
+
+                <!-- Template Group -->
+                <ribbon:RibbonGroup Header="{DynamicResource Ribbon.Group.Template}">
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Template.Save}"
+                            Command="{Binding SaveTemplateCommand}" KeyTip="TS"
+                            SmallImageSource="{x:Static conv:MdlIcons.Save}"/>
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Template.Load}"
+                            Command="{Binding LoadTemplateCommand}" KeyTip="TL"
+                            SmallImageSource="{x:Static conv:MdlIcons.Load}"/>
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Template.OpenOutput}"
+                            Command="{Binding OpenOutputFolderCommand}" KeyTip="TO"
+                            SmallImageSource="{x:Static conv:MdlIcons.FolderOpen}"/>
+                </ribbon:RibbonGroup>
+            </ribbon:RibbonTab>
+
+            <!-- Help Tab -->
+            <ribbon:RibbonTab Header="{DynamicResource Ribbon.Tab.Help}" KeyTip="E">
+                <!-- Support Group -->
+                <ribbon:RibbonGroup Header="{DynamicResource Ribbon.Group.Support}">
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Help.Tutorial}"
+                            Command="{Binding ShowHelpCommand}" KeyTip="T"
+                            SmallImageSource="{x:Static conv:MdlIcons.Tutorial}"/>
+                </ribbon:RibbonGroup>
+
+                <!-- License Group -->
+                <ribbon:RibbonGroup Header="{DynamicResource Ribbon.Group.License}">
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Help.License}"
+                            Command="{Binding ShowLicenseManagerCommand}" KeyTip="L"
+                            SmallImageSource="{x:Static conv:MdlIcons.License}"/>
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Help.LicenseInfo}"
+                            Command="{Binding ShowLicenseInfoCommand}" KeyTip="I"
+                            SmallImageSource="{x:Static conv:MdlIcons.Info}"/>
+                </ribbon:RibbonGroup>
+
+                <!-- Legal Group -->
+                <ribbon:RibbonGroup Header="{DynamicResource Ribbon.Group.Legal}">
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Help.Terms}"
+                            Command="{Binding ShowTermsCommand}" KeyTip="R"
+                            SmallImageSource="{x:Static conv:MdlIcons.Document}"/>
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Help.Privacy}"
+                            Command="{Binding ShowPrivacyCommand}" KeyTip="Y"
+                            SmallImageSource="{x:Static conv:MdlIcons.Privacy}"/>
+                    <ribbon:RibbonButton Label="{DynamicResource Ribbon.Help.About}"
+                            Command="{Binding ShowAboutCommand}" KeyTip="B"
+                            SmallImageSource="{x:Static conv:MdlIcons.Info}"/>
+                </ribbon:RibbonGroup>
+            </ribbon:RibbonTab>
+        </ribbon:Ribbon>
 
         <!-- ================================================================ -->
-        <!-- C) Main Content - TabControl                                      -->
+        <!-- C) Main Content - TabControl + AI Panel                           -->
         <!-- ================================================================ -->
-        <TabControl Grid.Row="2" Margin="4,4,4,2" x:Name="MainTabControl"
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition x:Name="AiPanelColumn" Width="0" MinWidth="0" MaxWidth="800"/>
+            </Grid.ColumnDefinitions>
+
+        <TabControl Grid.Column="0" Margin="4,4,4,2" x:Name="MainTabControl"
                     SelectionChanged="MainTabControl_SelectionChanged">
             <!-- 企画・制作タブ -->
             <TabItem Header="{DynamicResource Tab.Planning}">
@@ -299,7 +369,85 @@
                              HorizontalContentAlignment="Stretch">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Label}"/>
+                                <StackPanel Margin="0,1">
+                                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" Margin="0,0,0,2"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border CornerRadius="2" Padding="3,1" Margin="0,0,2,0" MinWidth="28">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding StepMediaDone}" Value="True">
+                                                            <Setter Property="Background" Value="{DynamicResource Success}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{DynamicResource Progress.Media}" FontSize="9" HorizontalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding StepMediaDone}" Value="True">
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Border>
+                                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,2,0" FontSize="10"/>
+                                        <Border CornerRadius="2" Padding="3,1" Margin="0,0,2,0" MinWidth="28">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding StepNarrationDone}" Value="True">
+                                                            <Setter Property="Background" Value="{DynamicResource Success}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{DynamicResource Progress.Narration}" FontSize="9" HorizontalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding StepNarrationDone}" Value="True">
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Border>
+                                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,2,0" FontSize="10"/>
+                                        <Border CornerRadius="2" Padding="3,1" MinWidth="28">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding StepSubtitleDone}" Value="True">
+                                                            <Setter Property="Background" Value="{DynamicResource Success}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{DynamicResource Progress.Subtitle}" FontSize="9" HorizontalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding StepSubtitleDone}" Value="True">
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
@@ -310,7 +458,89 @@
                           Background="{DynamicResource BorderDefault}"/>
 
             <!-- Right Panel: Scene Editor -->
-            <GroupBox Grid.Column="2" Header="{DynamicResource Scene.Editor}" Padding="4">
+            <GroupBox Grid.Column="2" Padding="4">
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal" DataContext="{Binding CurrentSceneItem}">
+                        <TextBlock Text="{DynamicResource Scene.Editor}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                        <!-- 素材 chevron -->
+                        <Border CornerRadius="3" Padding="10,3" Margin="0,0,4,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StepMediaDone}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Success}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{DynamicResource Progress.Media}" FontSize="11" HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StepMediaDone}" Value="True">
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,4,0" FontSize="14"/>
+                        <!-- ナレーション chevron -->
+                        <Border CornerRadius="3" Padding="10,3" Margin="0,0,4,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StepNarrationDone}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Success}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{DynamicResource Progress.Narration}" FontSize="11" HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StepNarrationDone}" Value="True">
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,4,0" FontSize="14"/>
+                        <!-- 字幕 chevron -->
+                        <Border CornerRadius="3" Padding="10,3">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StepSubtitleDone}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource Success}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{DynamicResource Progress.Subtitle}" FontSize="11" HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StepSubtitleDone}" Value="True">
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                    </StackPanel>
+                </GroupBox.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="8">
 
@@ -627,7 +857,7 @@
                                    TextWrapping="Wrap" Foreground="{DynamicResource TextTertiary}"
                                    FontSize="11" Margin="0,0,0,0"/>
                     </StackPanel>
-                </ScrollViewer>
+                    </ScrollViewer>
             </GroupBox>
                     </Grid>
 
@@ -671,6 +901,26 @@
                 </Grid>
             </TabItem>
         </TabControl>
+
+            <!-- GridSplitter for AI panel resize -->
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center"
+                          VerticalAlignment="Stretch" Cursor="SizeWE"
+                          Background="{DynamicResource BorderDefault}"
+                          Visibility="{Binding DataContext.IsChatOpen, ElementName=ChatPanel, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}">
+                <GridSplitter.Style>
+                    <Style TargetType="GridSplitter">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AccentDefault}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </GridSplitter.Style>
+            </GridSplitter>
+
+            <!-- AI Assistant Panel -->
+            <views:ChatPanelView x:Name="ChatPanel" Grid.Column="2"/>
+        </Grid>
 
         <!-- ================================================================ -->
         <!-- D) ProgressBar                                                    -->

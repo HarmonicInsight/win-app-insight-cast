@@ -28,29 +28,29 @@ public partial class HelpWindow : Window
         _isEn = LocalizationService.CurrentLanguage == "EN";
         _initialSection = sectionId;
 
-        Title = _isEn ? "InsightCast - Help" : "InsightCast - ヘルプ";
+        Title = _isEn ? "Insight Training Studio - Help" : "Insight Training Studio - ヘルプ";
         TocHeader.Text = _isEn ? "Contents" : "目次";
         SearchPlaceholder.Text = _isEn ? "Search..." : "検索...";
 
         _sectionIds = new[]
         {
-            "overview", "ui-layout", "quick-mode", "scene-editor", "narration",
+            "overview", "quickstart", "ui-layout", "scene-editor", "narration",
             "subtitle-text", "bgm-effects", "planning", "export",
-            "shortcuts", "faq", "license", "system-req", "support"
+            "shortcuts", "faq", "ai-assistant", "license", "system-req", "support"
         };
 
         _sectionNames = _isEn
             ? new[]
             {
-                "Overview", "UI Layout", "Quick Mode", "Scene Editor", "Narration",
+                "Overview", "Quick Start", "UI Layout", "Scene Editor", "Narration",
                 "Subtitles & Text", "BGM & Effects", "Planning Tab", "Export",
-                "Keyboard Shortcuts", "FAQ", "License", "System Requirements", "Support"
+                "Keyboard Shortcuts", "FAQ", "AI Assistant", "License", "System Requirements", "Support"
             }
             : new[]
             {
-                "はじめに", "画面構成", "かんたんモード", "シーン編集", "ナレーション",
+                "はじめに", "クイックスタート", "画面構成", "シーン編集", "ナレーション",
                 "字幕・テキスト", "BGM・エフェクト", "企画・制作", "書き出し",
-                "キーボードショートカット", "FAQ", "ライセンス", "システム要件", "お問い合わせ"
+                "キーボードショートカット", "FAQ", "AIアシスタント", "ライセンス", "システム要件", "お問い合わせ"
             };
 
         NavList.ItemsSource = _sectionNames;
@@ -194,7 +194,9 @@ public partial class HelpWindow : Window
 
     private void HelpBrowser_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
     {
-        if (e.Uri != null && e.Uri.Scheme.StartsWith("http", StringComparison.Ordinal))
+        if (e.Uri == null) return;
+
+        if (e.Uri.Scheme.StartsWith("http", StringComparison.Ordinal))
         {
             e.Cancel = true;
             try
@@ -209,6 +211,11 @@ public partial class HelpWindow : Window
             {
                 // Ignore if browser launch fails
             }
+        }
+        else if (e.Uri.Scheme is "javascript" or "vbscript" or "data")
+        {
+            // Block potentially dangerous URI schemes
+            e.Cancel = true;
         }
     }
 
@@ -451,32 +458,66 @@ public partial class HelpWindow : Window
         // Overview
         sb.Append($"""
             <div class="hero" id="overview">
-                <h1>InsightCast</h1>
-                <div class="subtitle">テキストを入力するだけで、ナレーション付き動画を自動生成</div>
+                <h1>Insight Training Studio</h1>
+                <div class="subtitle">教育・研修動画をかんたん作成</div>
                 <div class="version">v{ver}</div>
             </div>
 
-            <p>InsightCast は、VOICEVOX 音声エンジンを使用してナレーション付き動画を自動生成する Windows デスクトップアプリケーションです。
-            PowerPoint、画像、動画ファイルを取り込み、テキストを入力するだけでプロ品質の動画を作成できます。</p>
+            <p>Insight Training Studio は、教育・研修向けのナレーション付き動画を手軽に作成できる Windows デスクトップアプリケーションです。
+            PowerPoint や画像・動画素材を取り込み、ナレーション原稿を入力するだけで、VOICEVOX 音声エンジンによる自然な読み上げ付きの動画を自動生成します。</p>
 
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h4>かんたん動画生成</h4>
-                    <p>ファイルをドロップして設定するだけ。数分でナレーション付き動画が完成します。</p>
+                    <h4>かんたん動画作成</h4>
+                    <p>素材をドロップしてテキストを入力するだけ。専門知識がなくても数分で研修動画が完成します。</p>
                 </div>
                 <div class="feature-card">
-                    <h4>VOICEVOX ナレーション</h4>
-                    <p>多彩なキャラクターボイスを使い分け。話速も自由に調整できます。</p>
+                    <h4>自動ナレーション</h4>
+                    <p>VOICEVOX エンジンによる自然な日本語音声。多彩なボイスと話速調整で、用途に合った読み上げを実現します。</p>
                 </div>
                 <div class="feature-card">
                     <h4>字幕・テキスト装飾</h4>
-                    <p>10種類以上のプリセットスタイル。テキストオーバーレイも自由に配置。</p>
+                    <p>10種類以上のプリセットスタイルから選べる字幕機能。テキストオーバーレイで画面上に自由にテキストを配置できます。</p>
                 </div>
                 <div class="feature-card">
-                    <h4>サムネイル自動生成</h4>
-                    <p>YouTube向けサムネイルをワンクリックで生成。カラーパターンも豊富。</p>
+                    <h4>PowerPoint 取り込み</h4>
+                    <p>既存の研修資料（.pptx）をそのまま取り込み。スライドごとにシーンが自動作成され、ノートがナレーションになります。</p>
                 </div>
             </div>
+
+            <hr class="section-divider">
+            """);
+
+        // Quick Start
+        sb.Append("""
+            <h1 id="quickstart">クイックスタート</h1>
+            <p>初めてお使いの方は、以下の手順で最初の動画を作成してみましょう。</p>
+
+            <h2>動画を作成する（3ステップ）</h2>
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                <strong>素材を取り込む</strong> — 「企画・制作」タブのドロップゾーンに、画像・動画・PowerPoint ファイルをドラッグ＆ドロップします。
+                複数ファイルを一度にドロップすると、ファイルごとにシーンが自動作成されます。
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                <strong>ナレーションを設定</strong> — 各シーンのテキスト欄に、読み上げさせたい原稿を入力します。
+                話者（ボイス）・話速・向き（横/縦）を設定します。
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                <strong>動画を書き出す</strong> — 「動画を生成」ボタンをクリック。保存先を選択すると、ナレーション付き動画が自動で生成されます。
+            </div></div>
+
+            <div class="tip">
+                <span class="tip-label">ヒント:</span> PowerPoint (.pptx) を取り込むと、スライドが画像として、スピーカーノートがナレーション原稿として自動設定されます。
+                既存の研修資料をそのまま動画化できる最も効率的な方法です。
+            </div>
+
+            <h2>完成後の操作</h2>
+            <ul>
+                <li><strong>動画を再生</strong> — 完成した動画をデフォルトプレイヤーで確認</li>
+                <li><strong>出力フォルダを開く</strong> — サムネイル (.jpg)・チャプター (.chapters.txt)・メタデータ (.metadata.txt) も同時に出力されます</li>
+                <li><strong>設定を変えて再生成</strong> — 話者や向きを変えてワンクリックで再生成</li>
+                <li><strong>詳細エディタで編集</strong> — 「動画生成」タブに切り替えて、シーン単位の細かい編集が可能</li>
+            </ul>
 
             <hr class="section-divider">
             """);
@@ -484,75 +525,44 @@ public partial class HelpWindow : Window
         // UI Layout
         sb.Append("""
             <h1 id="ui-layout">画面構成</h1>
-            <p>InsightCast のメイン画面は、<strong>2つのタブ</strong>で構成されています。</p>
+            <p>メイン画面は <strong>2つのタブ</strong> で構成されています。目的に合わせてタブを切り替えてお使いください。</p>
 
             <h2>タイトルバー</h2>
-            <p>画面最上部に、ファイル操作ボタン（新規・開く・保存・別名保存・PPTX取込）と
-            ライセンス管理ボタンが配置されています。</p>
+            <p>画面最上部に、以下のボタンが並んでいます。</p>
+            <ul>
+                <li><strong>新規</strong> — 新しいプロジェクトを作成</li>
+                <li><strong>開く</strong> — 保存済みプロジェクト (.icproj) を開く</li>
+                <li><strong>保存 / 別名保存</strong> — プロジェクトを保存</li>
+                <li><strong>PPTX取込</strong> — PowerPoint ファイルを取り込み</li>
+                <li><strong>ライセンス管理</strong> — ライセンスの確認・アクティベート</li>
+            </ul>
 
             <h2>メニューバー</h2>
-            <p>タイトルバーの下にメニューバーがあります。</p>
             <ul>
-                <li><strong>ファイル</strong> — 新規作成、開く、最近使ったファイル、保存、別名保存、PPTX取込、JSONインポート/エクスポート、終了</li>
-                <li><strong>編集</strong> — シーン追加/削除、シーンの並び替え</li>
-                <li><strong>ヘルプ</strong> — ヘルプ、ライセンス管理、利用規約、プライバシーポリシー、バージョン情報</li>
+                <li><strong>ファイル</strong> — 新規、開く、最近使ったファイル、保存、別名保存、PPTX取込、JSON入出力、終了</li>
+                <li><strong>編集</strong> — シーンの追加・削除・並び替え</li>
+                <li><strong>AI編集</strong> — AI によるプロジェクト自動生成、OpenAI 設定</li>
+                <li><strong>ヘルプ</strong> — ヘルプ、チュートリアル、ライセンス管理、利用規約、バージョン情報</li>
             </ul>
 
-            <h2>企画・制作タブ</h2>
-            <p>動画の企画段階で使うタブです。3つの領域に分かれています。</p>
+            <h2>「企画・制作」タブ</h2>
+            <p>動画の企画段階で使用します。3つのエリアに分かれています。</p>
             <ul>
-                <li><strong>クイックセットアップ（左）</strong> — 動画の長さ・シーン数の設定、素材のドロップ</li>
-                <li><strong>構成・スクリプト（中央）</strong> — シーン構成の編集、JSON形式でのインポート</li>
-                <li><strong>サムネイルジェネレーター（右）</strong> — YouTube向けサムネイルの作成</li>
+                <li><strong>クイックセットアップ（左）</strong> — 素材の取り込み、動画の長さ・シーン数の設定</li>
+                <li><strong>構成・スクリプト（中央）</strong> — シーン構成の編集、JSON インポート</li>
+                <li><strong>サムネイルジェネレーター（右）</strong> — サムネイル画像の作成</li>
             </ul>
 
-            <h2>動画生成タブ</h2>
-            <p>実際の動画編集・書き出しを行うタブです。</p>
+            <h2>「動画生成」タブ</h2>
+            <p>動画の編集・書き出しを行います。</p>
             <ul>
                 <li><strong>シーン一覧（左）</strong> — シーンの追加・削除・並び替え、解像度設定</li>
-                <li><strong>シーン編集（中央）</strong> — 素材選択、ナレーション入力、字幕、テキストオーバーレイ、トランジション設定</li>
-                <li><strong>書き出し設定（右）</strong> — 話者選択、BGM設定、動画書き出し</li>
+                <li><strong>シーン編集（中央）</strong> — 素材、ナレーション、字幕、テキストオーバーレイ、トランジション</li>
+                <li><strong>書き出し設定（右）</strong> — 話者設定、BGM、書き出し実行</li>
             </ul>
 
             <h2>ステータスバー</h2>
-            <p>画面下部に、VOICEVOX接続状態、FFmpeg検出状態、言語切替ボタンが表示されます。</p>
-
-            <hr class="section-divider">
-            """);
-
-        // Quick Mode
-        sb.Append("""
-            <h1 id="quick-mode">かんたんモード</h1>
-            <p>企画・制作タブの「クイックセットアップ」は、最速で動画を作成する方法です。</p>
-
-            <h2>基本ワークフロー</h2>
-            <div class="step"><div class="step-num">1</div><div class="step-text">
-                <strong>素材を取り込む</strong> — ファイルをドロップゾーンにドラッグ＆ドロップ、または「ファイルを選択」ボタンをクリック。
-                PowerPoint (.pptx)・画像 (PNG/JPG/BMP/GIF)・動画 (MP4/AVI/MOV)・テキスト (.txt) に対応。
-            </div></div>
-            <div class="step"><div class="step-num">2</div><div class="step-text">
-                <strong>設定を調整</strong> — 話者（ボイス）、向き（横動画/縦動画）、切り替え効果、話速を設定。
-            </div></div>
-            <div class="step"><div class="step-num">3</div><div class="step-text">
-                <strong>動画を生成</strong> — 「動画を生成」ボタンをクリック。保存先を選択すると自動で書き出しが始まります。
-            </div></div>
-
-            <div class="tip">
-                <span class="tip-label">ヒント:</span> 複数ファイルを一度にドロップすると、ファイルごとにシーンが自動作成されます。
-                「複数ファイルを一括取込」ボタンからも複数選択できます。
-            </div>
-
-            <h2>生成後の操作</h2>
-            <ul>
-                <li><strong>動画を開く</strong> — 完成した動画をデフォルトプレイヤーで再生</li>
-                <li><strong>出力フォルダを開く</strong> — サムネイル (.jpg)、チャプター (.chapters.txt)、メタデータ (.metadata.txt) も同時に出力されます</li>
-                <li><strong>設定変えて再生成</strong> — 話者や向きを変えて再生成</li>
-                <li><strong>詳細エディタで開く</strong> — 動画生成タブに切り替えて細かい編集が可能</li>
-            </ul>
-
-            <h2>複数ファイルの一括取込</h2>
-            <p>「複数ファイルを一括取込」ボタンをクリックすると、ファイルダイアログから複数ファイルをまとめて選択・取込できます。
-            PPTX、画像、動画、テキストを混在させることも可能です。</p>
+            <p>画面下部に、VOICEVOX 接続状態・FFmpeg 検出状態・言語切替（JA / EN）が表示されます。</p>
 
             <hr class="section-divider">
             """);
@@ -560,40 +570,33 @@ public partial class HelpWindow : Window
         // Scene Editor
         sb.Append("""
             <h1 id="scene-editor">シーン編集</h1>
-            <p>動画生成タブでは、シーン単位で動画を構成・編集します。</p>
+            <p>「動画生成」タブでは、動画をシーン単位で構成・編集します。</p>
 
-            <h2>シーンの追加・削除</h2>
-            <ul>
-                <li><strong>追加</strong> — 「＋追加」ボタン、または <kbd>Ctrl</kbd>+<kbd>T</kbd></li>
-                <li><strong>削除</strong> — 「－削除」ボタン、または <kbd>Delete</kbd>（最低1シーン必要）</li>
-                <li><strong>並び替え</strong> — 「↑」「↓」ボタン、または <kbd>Ctrl</kbd>+<kbd>↑</kbd> / <kbd>Ctrl</kbd>+<kbd>↓</kbd></li>
-            </ul>
+            <h2>シーンの操作</h2>
+            <table>
+                <tr><th>操作</th><th>方法</th></tr>
+                <tr><td>シーンを追加</td><td>「＋追加」ボタン、または <kbd>Ctrl</kbd>+<kbd>T</kbd></td></tr>
+                <tr><td>シーンを削除</td><td>「－削除」ボタン、または <kbd>Delete</kbd>（最低1シーン必要）</td></tr>
+                <tr><td>順序を変更</td><td>「↑」「↓」ボタン、または <kbd>Ctrl</kbd>+<kbd>↑</kbd> / <kbd>Ctrl</kbd>+<kbd>↓</kbd></td></tr>
+            </table>
 
             <h2>素材の設定</h2>
             <p>各シーンに画像または動画素材を1つ設定できます。</p>
             <ul>
-                <li>「選択」ボタンで画像・動画ファイルを選択</li>
+                <li>「選択」ボタンでファイルを選択（PNG, JPG, BMP, GIF, MP4, AVI, MOV 等）</li>
                 <li>プレビュー画像をクリックすると拡大表示</li>
-                <li>「クリア」ボタンで素材を解除（黒背景になります）</li>
+                <li>「クリア」で素材を解除（黒背景になります）</li>
             </ul>
-
-            <div class="tip">
-                <span class="tip-label">ヒント:</span> 対応画像形式: PNG, JPG, BMP, GIF。対応動画形式: MP4, AVI, MOV, WMV, MKV, WebM。
-            </div>
-
-            <h2>動画素材の設定</h2>
-            <p>動画ファイルを素材に設定した場合、「動画音声を残す」チェックボックスが表示されます。
-            チェックを入れると、元の動画の音声がナレーションに加えて再生されます。</p>
+            <p>動画ファイルを素材にした場合、「動画音声を残す」をチェックすると元の動画の音声を保持できます。</p>
 
             <h2>シーンの長さ</h2>
             <ul>
-                <li><strong>自動</strong> — ナレーション音声の長さに応じて自動決定（推奨）</li>
-                <li><strong>固定</strong> — 0.1〜60秒の範囲で固定値を指定</li>
+                <li><strong>自動（推奨）</strong> — ナレーション音声の長さに合わせて自動決定</li>
+                <li><strong>固定</strong> — 0.1〜60秒の範囲で指定</li>
             </ul>
 
             <h2>シーンプレビュー</h2>
-            <p>「▶シーンプレビュー」ボタンで、現在のシーンを動画としてプレビューできます。
-            ナレーション音声、字幕、テキストオーバーレイが反映された状態を確認できます。</p>
+            <p>「▶シーンプレビュー」ボタンで、ナレーション・字幕・テキストオーバーレイを反映した状態を動画として確認できます。</p>
 
             <hr class="section-divider">
             """);
@@ -601,38 +604,36 @@ public partial class HelpWindow : Window
         // Narration
         sb.Append("""
             <h1 id="narration">ナレーション</h1>
-            <p>InsightCast は VOICEVOX 音声エンジンを使用して、テキストから自然な日本語ナレーションを生成します。</p>
+            <p>VOICEVOX 音声エンジンを使用して、入力したテキストから自然な日本語ナレーションを自動生成します。</p>
 
-            <h2>ナレーションテキスト</h2>
-            <p>シーン編集パネルのテキスト入力欄に、話させたい内容を入力します。
-            入力したテキストが音声合成されてナレーションになります。</p>
+            <h2>ナレーションの入力</h2>
+            <p>シーン編集パネルのテキスト欄に、読み上げさせたい内容を入力してください。
+            入力したテキストがそのまま音声合成されてナレーションになります。</p>
 
             <h2>話者（ボイス）の選択</h2>
-            <p>VOICEVOX エンジンに登録されている話者から選択できます。各話者にはスタイル（ノーマル、あまあま、ツンツンなど）があり、
-            場面に応じて使い分けが可能です。</p>
+            <p>VOICEVOX に登録されている話者から選択できます。話者ごとにスタイル（ノーマル、あまあま、ツンツン等）があり、
+            場面に合わせて使い分けが可能です。</p>
             <ul>
-                <li><strong>シーン個別の話者</strong> — 各シーンの「話者」ドロップダウンで設定（「デフォルト」を選ぶとプロジェクト設定を使用）</li>
-                <li><strong>書き出し設定の話者</strong> — 右パネル書き出し設定の「話者」はプロジェクト全体のデフォルト</li>
+                <li><strong>シーン個別の話者</strong> — 各シーンの「話者」で個別設定（「デフォルト」を選ぶと書き出し設定の話者を使用）</li>
+                <li><strong>書き出し設定の話者</strong> — 右パネルの「話者」でプロジェクト全体のデフォルトを設定</li>
             </ul>
 
             <h2>話速の調整</h2>
-            <p>ナレーションの速さを4段階から選べます。</p>
             <table>
-                <tr><th>設定</th><th>速度倍率</th><th>用途</th></tr>
-                <tr><td>ゆっくり</td><td>0.8x</td><td>ゆっくり丁寧に説明したい場合</td></tr>
-                <tr><td>標準</td><td>1.0x</td><td>通常の速さ（デフォルト）</td></tr>
+                <tr><th>設定</th><th>速度</th><th>おすすめの用途</th></tr>
+                <tr><td>ゆっくり</td><td>0.8x</td><td>初心者向け研修、丁寧な説明</td></tr>
+                <tr><td>標準</td><td>1.0x</td><td>一般的な解説（デフォルト）</td></tr>
                 <tr><td>やや速い</td><td>1.2x</td><td>テンポよく進めたい場合</td></tr>
-                <tr><td>速い</td><td>1.5x</td><td>短時間で多くの情報を伝えたい場合</td></tr>
+                <tr><td>速い</td><td>1.5x</td><td>短時間に多くの情報を伝えたい場合</td></tr>
             </table>
 
             <h2>試聴</h2>
-            <p>「▶試聴」ボタンで、入力したナレーションテキストの音声を事前に確認できます。
-            ナレーションテキストが空の場合は試聴できません。</p>
+            <p>「▶試聴」ボタンで、書き出し前にナレーション音声を確認できます。</p>
 
             <div class="note">
                 <span class="note-label">VOICEVOX エンジンについて:</span>
-                InsightCast を使用するには、VOICEVOX エンジンが起動している必要があります。
-                初回起動時のセットアップウィザードで接続設定を行います。
+                ナレーション生成には VOICEVOX エンジンの起動が必要です。
+                初回起動時のセットアップウィザードで接続先を設定します。
                 接続が切れた場合は、VOICEVOX を再起動してからアプリを再起動してください。
             </div>
 
@@ -644,62 +645,39 @@ public partial class HelpWindow : Window
             <h1 id="subtitle-text">字幕・テキスト</h1>
 
             <h2>字幕</h2>
-            <p>各シーンに字幕テキストを設定できます。字幕は動画の下部に表示されます。</p>
-            <ul>
-                <li>「字幕」欄にテキストを入力</li>
-                <li>空欄の場合、字幕は表示されません</li>
-            </ul>
+            <p>各シーンに字幕テキストを設定できます。字幕は動画の下部に表示されます。
+            空欄の場合、字幕は表示されません。</p>
 
             <h3>字幕スタイル</h3>
-            <p>「選択...」ボタンで字幕スタイル設定ダイアログが開きます。10種類以上のプリセットスタイルから選べます。</p>
+            <p>「選択...」ボタンで字幕スタイル設定ダイアログが開きます。10種類以上のプリセットから選べます。</p>
             <table>
-                <tr><th>スタイル名</th><th>特徴</th></tr>
-                <tr><td>デフォルト</td><td>白文字に黒縁取り。シンプルで読みやすい</td></tr>
-                <tr><td>ニュース風</td><td>ニュース番組のテロップ風</td></tr>
-                <tr><td>映画風</td><td>映画字幕のエレガントなスタイル</td></tr>
-                <tr><td>バラエティ風</td><td>明るくポップなスタイル</td></tr>
-                <tr><td>ドキュメンタリー風</td><td>落ち着いた情報番組風</td></tr>
-                <tr><td>教育・解説風</td><td>わかりやすい教育コンテンツ向け</td></tr>
-                <tr><td>ホラー風</td><td>ダークで不気味なスタイル</td></tr>
-                <tr><td>かわいい風</td><td>パステルカラーのかわいいスタイル</td></tr>
-                <tr><td>テック風</td><td>モダンなテクノロジー系スタイル</td></tr>
-                <tr><td>エレガント風</td><td>高級感のあるスタイル</td></tr>
+                <tr><th>スタイル</th><th>特徴</th><th>おすすめの用途</th></tr>
+                <tr><td>デフォルト</td><td>白文字に黒縁取り</td><td>汎用</td></tr>
+                <tr><td>教育・解説風</td><td>わかりやすく読みやすい</td><td>研修動画、eラーニング</td></tr>
+                <tr><td>ニュース風</td><td>ニュース番組のテロップ風</td><td>社内報、お知らせ</td></tr>
+                <tr><td>ドキュメンタリー風</td><td>落ち着いた情報番組風</td><td>事例紹介、レポート</td></tr>
+                <tr><td>映画風</td><td>エレガントなスタイル</td><td>ブランド紹介</td></tr>
+                <tr><td>テック風</td><td>モダンなデザイン</td><td>IT系研修、技術解説</td></tr>
             </table>
 
             <h3>カスタム設定</h3>
-            <p>プリセットをベースに、以下を個別にカスタマイズできます。</p>
-            <ul>
-                <li><strong>フォント</strong> — 游ゴシック UI、メイリオ、MS ゴシック、BIZ UDゴシック など</li>
-                <li><strong>サイズ</strong> — フォントサイズ</li>
-                <li><strong>文字色</strong> — 任意のカラーを指定</li>
-                <li><strong>縁取り色</strong> — 文字の縁取りの色</li>
-                <li><strong>縁取り幅</strong> — 縁取りの太さ</li>
-            </ul>
+            <p>プリセットをベースに、フォント・サイズ・文字色・縁取り色・縁取り幅を個別にカスタマイズできます。</p>
 
             <h2>テキストオーバーレイ</h2>
-            <p>字幕とは別に、画面上の任意の位置にテキストを配置できます。タイトル、キャプション、注釈などに使えます。</p>
+            <p>字幕とは別に、画面上の任意の位置にテキストを配置できます。
+            タイトル、見出し、注釈、ポイントの強調などに活用してください。</p>
 
-            <h3>オーバーレイの追加</h3>
-            <ul>
-                <li>「＋」ボタンで新しいオーバーレイを追加</li>
-                <li>「タイトル追加」ボタンで表紙用のタイトル＋サブタイトルを一括追加</li>
-            </ul>
-
-            <h3>オーバーレイの設定項目</h3>
+            <h3>テキストオーバーレイの設定項目</h3>
             <table>
                 <tr><th>項目</th><th>説明</th></tr>
                 <tr><td>テキスト</td><td>表示する文字列</td></tr>
                 <tr><td>横位置 (%)</td><td>画面左端からの水平位置（0〜100%）</td></tr>
                 <tr><td>縦位置 (%)</td><td>画面上端からの垂直位置（0〜100%）</td></tr>
                 <tr><td>文字サイズ</td><td>フォントサイズ</td></tr>
-                <tr><td>揃え</td><td>左・中央・右</td></tr>
+                <tr><td>揃え</td><td>左揃え・中央揃え・右揃え</td></tr>
                 <tr><td>文字色</td><td>テキストの色</td></tr>
-                <tr><td>不透明度</td><td>0%（完全透明）〜100%（不透明）</td></tr>
+                <tr><td>不透明度</td><td>0%（透明）〜100%（不透明）</td></tr>
             </table>
-
-            <div class="tip">
-                <span class="tip-label">ヒント:</span> オーバーレイの表示順は「↑」「↓」ボタンで変更できます。上にあるほど前面に表示されます。
-            </div>
 
             <hr class="section-divider">
             """);
@@ -709,32 +687,28 @@ public partial class HelpWindow : Window
             <h1 id="bgm-effects">BGM・エフェクト</h1>
 
             <h2>BGM（バックグラウンドミュージック）</h2>
-            <p>書き出し設定パネルの「BGM設定...」ボタンから、BGMの詳細設定ができます。</p>
-
-            <h3>BGMファイル</h3>
-            <p>対応形式: MP3, WAV, OGG, M4A, AAC, FLAC, WMA</p>
+            <p>書き出し設定パネルの「BGM設定...」ボタンから設定できます。
+            対応形式: MP3, WAV, OGG, M4A, AAC, FLAC, WMA</p>
 
             <h3>音量設定</h3>
             <table>
                 <tr><th>設定</th><th>説明</th></tr>
                 <tr><td>メイン音量</td><td>BGMの基本音量</td></tr>
-                <tr><td>ダッキング</td><td>ナレーション再生中にBGM音量を自動で下げる機能</td></tr>
-                <tr><td>ダッキング音量</td><td>ダッキング時の音量</td></tr>
-                <tr><td>アタック</td><td>ダッキングが始まるまでの時間</td></tr>
-                <tr><td>リリース</td><td>ダッキングから通常音量に戻るまでの時間</td></tr>
+                <tr><td>ダッキング</td><td>ナレーション再生中にBGM音量を自動で下げる</td></tr>
+                <tr><td>ダッキング音量</td><td>ナレーション中のBGM音量</td></tr>
+                <tr><td>アタック / リリース</td><td>ダッキングの開始・終了にかかる時間</td></tr>
             </table>
 
-            <h3>フェード設定</h3>
+            <h3>フェード・ループ</h3>
             <ul>
-                <li><strong>フェードイン</strong> — BGMの始まりを徐々に音量を上げて自然に開始</li>
-                <li><strong>フェードアウト</strong> — BGMの終わりを徐々に音量を下げて自然に終了</li>
+                <li><strong>フェードイン</strong> — BGMの開始を徐々に音量を上げて自然に</li>
+                <li><strong>フェードアウト</strong> — BGMの終了を徐々に音量を下げて自然に</li>
                 <li><strong>ループ再生</strong> — 動画がBGMより長い場合、BGMを繰り返し再生</li>
             </ul>
 
-            <h2>トランジション</h2>
-            <p>シーン間の切り替え効果を設定できます。</p>
+            <h2>トランジション（シーン切り替え効果）</h2>
             <table>
-                <tr><th>エフェクト</th><th>説明</th></tr>
+                <tr><th>効果</th><th>説明</th></tr>
                 <tr><td>なし</td><td>瞬時に切り替え</td></tr>
                 <tr><td>フェード</td><td>フェードイン・フェードアウト</td></tr>
                 <tr><td>ディゾルブ</td><td>前後のシーンが重なって切り替わる</td></tr>
@@ -742,15 +716,11 @@ public partial class HelpWindow : Window
                 <tr><td>スライド（左/右）</td><td>画面がスライドして切り替え</td></tr>
                 <tr><td>ズームイン</td><td>ズームしながら切り替え</td></tr>
             </table>
-            <p>トランジションの時間は 0.2〜2.0 秒の範囲で調整できます。</p>
+            <p>切り替え時間は 0.2〜2.0 秒で調整できます。</p>
 
             <h2>ロゴ透かし（ウォーターマーク）</h2>
-            <p>動画にロゴやブランド画像を重ねて表示できます。</p>
-            <ul>
-                <li>「選択」ボタンでロゴ画像（PNG推奨）を選択</li>
-                <li>表示位置: 左上、右上、左下、右下、中央 から選択</li>
-                <li>「クリア」ボタンでロゴを解除</li>
-            </ul>
+            <p>動画に会社ロゴやブランド画像を重ねて表示できます。
+            表示位置は左上・右上・左下・右下・中央から選択可能です。</p>
 
             <hr class="section-divider">
             """);
@@ -758,50 +728,37 @@ public partial class HelpWindow : Window
         // Planning Tab
         sb.Append("""
             <h1 id="planning">企画・制作タブ</h1>
-            <p>企画・制作タブは、動画の構成を事前に計画し、効率的に制作を進めるための機能です。</p>
+            <p>動画の構成を事前に計画し、効率的に制作を進めるための機能です。</p>
 
             <h2>クイックセットアップ</h2>
             <p>左パネルで動画の基本設定と素材の取り込みを行います。</p>
             <ul>
-                <li><strong>動画の目的</strong> — 製品紹介、チュートリアル、概念解説、プロモーション から選択</li>
-                <li><strong>長さ</strong> — 15秒〜180秒（3分）の範囲で設定</li>
-                <li><strong>シーン数</strong> — 動画を構成するシーンの数を設定</li>
+                <li><strong>動画の目的</strong> — 製品紹介、チュートリアル、概念解説、プロモーション</li>
+                <li><strong>長さ</strong> — 15秒〜180秒（3分）</li>
+                <li><strong>シーン数</strong> — 動画を構成するシーンの数</li>
                 <li><strong>構成に反映</strong> — 設定をシーンリストに反映</li>
             </ul>
 
             <h2>構成・スクリプト</h2>
             <p>中央パネルでシーンごとのタイトルとスクリプト（ナレーション原稿）を編集します。</p>
-
-            <h3>シーンリストモード</h3>
-            <p>各シーンのタイトルとスクリプトを直接編集できます。</p>
-
-            <h3>JSONモード</h3>
-            <p>外部AIで生成したJSON形式のシーン構成をペーストして一括適用できます。「JSONを適用」ボタンで反映されます。</p>
-
-            <h2>画像プロンプトビルダー</h2>
-            <p>AI画像生成用のプロンプトを組み立てるツールです。</p>
             <ul>
-                <li><strong>シーンタイプ</strong> — 製品紹介、概念解説、チュートリアル手順、機能ショーケースなど</li>
-                <li><strong>構図</strong> — ワイドショット、クローズアップ、中央配置、三分割法、アイソメトリック</li>
-                <li><strong>雰囲気</strong> — プロフェッショナル、フレンドリー、モダン、エレガント、ドラマチック</li>
-                <li><strong>ビジュアルスタイル</strong> — 写実的、イラスト、3D、フラット、ミニマル</li>
+                <li><strong>シーンリストモード</strong> — シーンのタイトルとスクリプトを直接編集</li>
+                <li><strong>JSONモード</strong> — JSON 形式のシーン構成を貼り付けて一括適用</li>
             </ul>
-            <p>生成されたプロンプトは DALL-E、Midjourney 等の画像生成サービスで使用できます。</p>
+
+            <h2>AI プロジェクト生成</h2>
+            <p>メニュー「AI編集」→「プロジェクト生成」で、テーマや目的を入力するだけで AI がシーン構成・ナレーション原稿を自動生成します。
+            生成結果はそのまま動画制作に活用できます。</p>
+
+            <div class="note">
+                <span class="note-label">AI機能について:</span>
+                AI プロジェクト生成を使用するには、Claude (Anthropic) の API キーが必要です。
+                画面右側の AI アシスタントパネルの 🔑 ボタンから設定してください。
+            </div>
 
             <h2>サムネイルジェネレーター</h2>
-            <p>右パネルでYouTube向けサムネイル（1280×720px）を作成できます。</p>
-            <ul>
-                <li><strong>パターン選択</strong> — カラーパターンを選択</li>
-                <li><strong>ワンクリックスタイル</strong> — プリセットスタイルを適用</li>
-                <li><strong>メインテキスト</strong> — 大きく表示されるメインタイトル（10文字以内推奨）</li>
-                <li><strong>サブテキスト</strong> — 補足テキスト</li>
-                <li><strong>背景</strong> — 画像または単色の背景</li>
-                <li><strong>テキスト色</strong> — カラーパレットから選択</li>
-            </ul>
-
-            <h2>動画生成タブへの引き継ぎ</h2>
-            <p>「動画生成へ」ボタンで、企画・制作タブで作成した構成を動画生成タブに引き継ぎ、
-            詳細な編集・書き出しに進めます。</p>
+            <p>右パネルでサムネイル画像（1280×720px）を作成できます。
+            カラーパターンの選択、メインテキスト・サブテキストの設定、背景画像の設定が可能です。</p>
 
             <hr class="section-divider">
             """);
@@ -811,51 +768,40 @@ public partial class HelpWindow : Window
             <h1 id="export">書き出し</h1>
 
             <h2>動画の書き出し</h2>
-            <p>動画生成タブの右パネルで書き出し設定を行い、「動画を書き出し」ボタンで動画を生成します。</p>
+            <p>「動画生成」タブの右パネルで設定を行い、「動画を書き出し」ボタンで動画を生成します。</p>
 
             <h3>書き出し設定</h3>
             <table>
                 <tr><th>設定</th><th>説明</th></tr>
                 <tr><td>話者</td><td>プロジェクト全体のデフォルト話者</td></tr>
-                <tr><td>解像度</td><td>1920×1080（横動画）または 1080×1920（縦動画）</td></tr>
+                <tr><td>解像度</td><td>1920×1080（横動画）/ 1080×1920（縦動画）</td></tr>
                 <tr><td>BGM設定</td><td>バックグラウンドミュージックの設定</td></tr>
             </table>
 
             <h3>出力ファイル</h3>
-            <p>動画の書き出し時に、以下のファイルが同フォルダに自動生成されます。</p>
+            <p>書き出し時に以下のファイルが自動生成されます。</p>
             <table>
                 <tr><th>ファイル</th><th>説明</th></tr>
                 <tr><td>○○○.mp4</td><td>動画ファイル</td></tr>
                 <tr><td>○○○_thumbnail.jpg</td><td>サムネイル画像（1280×720px）</td></tr>
-                <tr><td>○○○.chapters.txt</td><td>チャプターファイル（YouTubeの説明欄に貼り付け可能）</td></tr>
+                <tr><td>○○○.chapters.txt</td><td>チャプターファイル</td></tr>
                 <tr><td>○○○.metadata.txt</td><td>メタデータ（タイトル案・説明文・タグ候補）</td></tr>
             </table>
 
-            <div class="tip">
-                <span class="tip-label">ヒント:</span> チャプターファイルをYouTubeの説明欄にそのまま貼り付けると、動画にチャプターマーカーが自動設定されます。
-            </div>
-
             <h2>プロジェクトの保存</h2>
-            <p>InsightCast のプロジェクトは <code>.icproj</code> 形式で保存されます。
-            <kbd>Ctrl</kbd>+<kbd>S</kbd> で上書き保存、<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> で別名保存。</p>
+            <p>プロジェクトは <code>.icproj</code> 形式で保存されます。</p>
+            <ul>
+                <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — 上書き保存</li>
+                <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> — 別名保存</li>
+            </ul>
 
             <h2>PPTX取込</h2>
             <p>PowerPoint (.pptx) ファイルを取り込むと、スライドごとにシーンが自動作成されます。
-            スライドの画像とスピーカーノートが自動的にシーンの素材・ナレーションに設定されます。</p>
-
-            <div class="note">
-                <span class="note-label">注意:</span> PPTX取込機能は Trial 以上のプランで利用可能です。
-            </div>
-
-            <h2>JSONインポート/エクスポート</h2>
-            <ul>
-                <li><strong>JSONインポート</strong> — ファイル → JSONインポート で、JSON形式のプロジェクトを読み込み</li>
-                <li><strong>JSONエクスポート</strong> — ファイル → JSONエクスポート で、複数プロジェクトを一括書き出し</li>
-            </ul>
+            スライド画像とスピーカーノートがシーンの素材・ナレーションに自動設定されます。</p>
 
             <h2>テンプレート</h2>
             <p>BGM・透かし・解像度などの設定をテンプレートとして保存・読込できます。
-            「テンプレ保存」で現在の設定を保存、「テンプレ読込」で保存済み設定を適用します。</p>
+            同じ設定で複数の動画を作成する際に便利です。</p>
 
             <hr class="section-divider">
             """);
@@ -874,7 +820,6 @@ public partial class HelpWindow : Window
                 <tr><td><kbd>Ctrl</kbd>+<kbd>↑</kbd></td><td>シーンを上へ移動</td></tr>
                 <tr><td><kbd>Ctrl</kbd>+<kbd>↓</kbd></td><td>シーンを下へ移動</td></tr>
                 <tr><td><kbd>F1</kbd></td><td>ヘルプを表示</td></tr>
-                <tr><td><kbd>Alt</kbd>+<kbd>F4</kbd></td><td>アプリケーションを終了</td></tr>
             </table>
 
             <hr class="section-divider">
@@ -884,66 +829,107 @@ public partial class HelpWindow : Window
         sb.Append("""
             <h1 id="faq">よくある質問（FAQ）</h1>
 
-            <h2>セットアップ・接続</h2>
+            <h2>初期設定</h2>
 
-            <h3>Q: VOICEVOX が接続できません。</h3>
+            <h3>Q: VOICEVOX に接続できません。</h3>
             <p>A: VOICEVOX エンジンが起動しているか確認してください。
-            通常、VOICEVOX はローカルの <code>http://127.0.0.1:50021</code> で動作しています。
-            初回起動時のセットアップウィザードで接続設定を行います。
-            接続が切れた場合は、VOICEVOX を再起動してから InsightCast を再起動してください。</p>
+            通常 <code>http://127.0.0.1:50021</code> で動作しています。
+            VOICEVOX を再起動してからアプリを再起動してください。</p>
 
             <h3>Q: FFmpeg が見つからないと表示されます。</h3>
-            <p>A: FFmpeg は動画生成に必須のツールです。以下の方法で導入してください。</p>
+            <p>A: FFmpeg は動画生成に必須です。以下のいずれかの方法で導入してください。</p>
             <ul>
-                <li>PATH環境変数に ffmpeg.exe のあるフォルダを追加</li>
-                <li>アプリフォルダ内に <code>tools\ffmpeg\bin\ffmpeg.exe</code> を配置</li>
-                <li><code>build.ps1</code> を実行して自動ダウンロード</li>
+                <li>PATH 環境変数に ffmpeg.exe のあるフォルダを追加</li>
+                <li>アプリフォルダ内の <code>tools\ffmpeg\bin\</code> に ffmpeg.exe を配置</li>
             </ul>
 
-            <h2>動画生成</h2>
+            <h3>Q: VOICEVOX のポート番号を変更したい。</h3>
+            <p>A: VOICEVOX エンジンの起動オプションでポート番号を変更した場合は、
+            本製品側の設定でも接続先ポートを合わせてください。デフォルトは <code>50021</code> です。</p>
+
+            <h2>動画作成</h2>
 
             <h3>Q: 動画の書き出しに失敗します。</h3>
             <p>A: 以下を確認してください。</p>
             <ul>
-                <li>FFmpeg がインストールされ、PATH に含まれているか</li>
+                <li>FFmpeg が正しくインストールされ、PATH に含まれているか</li>
                 <li>VOICEVOX エンジンが起動しているか</li>
-                <li>保存先のディスクに十分な空き容量があるか</li>
-                <li>保存先のパスに日本語や特殊文字が含まれていないか</li>
+                <li>保存先ディスクに十分な空き容量があるか</li>
+                <li>保存先パスに日本語や特殊文字が含まれていないか</li>
             </ul>
 
-            <h3>Q: 書き出しをキャンセルしたい。</h3>
-            <p>A: 進捗バー横の「キャンセル」ボタンをクリックしてください。</p>
-
             <h3>Q: 素材なしでも動画は作れますか？</h3>
-            <p>A: はい。素材が設定されていないシーンは黒背景で生成されます。
-            テキストオーバーレイと字幕を組み合わせれば、画像なしでも動画を作成できます。</p>
+            <p>A: はい。素材のないシーンは黒背景で生成されます。
+            テキストオーバーレイと字幕を活用すれば、画像なしでも教材を作成できます。</p>
 
-            <h2>機能・対応形式</h2>
+            <h3>Q: PowerPoint を取り込んだら文字が表示されません。</h3>
+            <p>A: PPTX取込ではスライドを画像として取り込むため、テキストはそのまま画像に含まれます。
+            スピーカーノートに記載した内容がナレーション原稿になります。</p>
 
-            <h3>Q: 対応ファイル形式は？</h3>
-            <p>A:</p>
-            <table>
-                <tr><th>種類</th><th>対応形式</th></tr>
-                <tr><td>画像</td><td>PNG, JPG/JPEG, BMP, GIF</td></tr>
-                <tr><td>動画</td><td>MP4, AVI, MOV, WMV, MKV, WebM</td></tr>
-                <tr><td>音声 (BGM)</td><td>MP3, WAV, OGG, FLAC, AAC, M4A, WMA</td></tr>
-                <tr><td>その他</td><td>PPTX, TXT, JSON</td></tr>
-            </table>
+            <h3>Q: シーンの表示時間を変更したい。</h3>
+            <p>A: シーンの表示時間はナレーション音声の長さに基づいて自動計算されます。
+            ナレーションテキストを編集して長さを調整するか、企画タブのシーン秒数設定をご利用ください。</p>
+
+            <h3>Q: 対応している画像形式は？</h3>
+            <p>A: JPEG (.jpg/.jpeg)、PNG (.png)、BMP (.bmp)、GIF (.gif) に対応しています。
+            推奨は 1920×1080 以上の JPEG または PNG です。</p>
+
+            <h3>Q: BGM の音量を調整したい。</h3>
+            <p>A: エクスポート設定パネルで BGM の音量レベルを調整できます。
+            ナレーションが聞き取りやすいよう、BGM は控えめの音量がおすすめです。</p>
+
+            <h2>AI アシスタント</h2>
+
+            <h3>Q: AI アシスタントの利用にはお金がかかりますか？</h3>
+            <p>A: AI アシスタント機能自体は無料ですが、Anthropic の Claude API キーが必要です。
+            API 使用料は Anthropic からお客様に直接請求されます（BYOK 方式）。
+            本製品が API 利用料を徴収することはありません。</p>
+
+            <h3>Q: API キーはどこで取得できますか？</h3>
+            <p>A: Anthropic のコンソール (<code>console.anthropic.com</code>) でアカウントを作成し、
+            API キーを発行してください。キーは <code>sk-ant-</code> で始まります。</p>
+
+            <h3>Q: AI がシーンを直接変更してしまいましたが、元に戻せますか？</h3>
+            <p>A: <kbd>Ctrl</kbd>+<kbd>Z</kbd> でアンドゥが可能です。
+            AI の自動実行（check モード）は、実行前にプロジェクトを保存しておくことをおすすめします。</p>
+
+            <h3>Q: サムネイル自動生成で背景画像を使うには？</h3>
+            <p>A: シーンに画像素材が設定されていれば、AI が自動的に背景画像として活用します。
+            プリセット「サムネイル自動生成」を実行すると、AI がシーンの画像を検出して背景に使用します。</p>
+
+            <h2>ライセンス</h2>
 
             <h3>Q: 字幕やトランジションが使えません。</h3>
-            <p>A: Trial 以上のプランが必要です。「ヘルプ」→「ライセンス管理」からライセンスをアクティベートしてください。</p>
+            <p>A: TRIAL または BIZ 以上のプランが必要です。「ヘルプ」→「ライセンス管理」からライセンスをアクティベートしてください。</p>
+
+            <h3>Q: ライセンスキーの入力方法は？</h3>
+            <p>A: メニュー「ヘルプ」→「ライセンス管理」でメールアドレスとライセンスキーを入力し、
+            「アクティベート」をクリックしてください。</p>
+
+            <h3>Q: FREE プランから BIZ にアップグレードする方法は？</h3>
+            <p>A: 営業担当またはパートナー（販売代理店）にお問い合わせください。
+            ライセンスキーを受け取ったら、「ヘルプ」→「ライセンス管理」でアクティベートしてください。</p>
+
+            <h2>その他</h2>
 
             <h3>Q: テンプレートはどこに保存されますか？</h3>
             <p>A: <code>%LOCALAPPDATA%\InsightCast\Templates</code> に保存されます。</p>
 
-            <h2>その他</h2>
-
             <h3>Q: 言語を切り替えたい。</h3>
-            <p>A: ステータスバーの言語切替ボタン（JA / EN）をクリックすると、日本語と英語を切り替えられます。</p>
+            <p>A: ステータスバーの言語切替ボタン（JA / EN）をクリックしてください。アプリ全体の表示言語が切り替わります。</p>
 
-            <h3>Q: ライセンスキーの入力方法は？</h3>
-            <p>A: メニュー「ヘルプ」→「ライセンス管理」からメールアドレスとライセンスキーを入力し、
-            「アクティベート」ボタンをクリックしてください。</p>
+            <h3>Q: プロジェクトファイルはどの形式ですか？</h3>
+            <p>A: <code>.icproj</code> 形式で保存されます。
+            <kbd>Ctrl</kbd>+<kbd>S</kbd> で上書き保存、<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> で名前を付けて保存できます。</p>
+
+            <h3>Q: 動画の書き出しで出力されるファイルは？</h3>
+            <p>A: 書き出し時に以下の 4 ファイルが生成されます。</p>
+            <ul>
+                <li><code>*.mp4</code> — 動画ファイル</li>
+                <li><code>*_thumbnail.jpg</code> — サムネイル画像（1280×720）</li>
+                <li><code>*.chapters.txt</code> — チャプターマーカー</li>
+                <li><code>*.metadata.txt</code> — メタデータ（タイトル・説明・タグ）</li>
+            </ul>
 
             <hr class="section-divider">
             """);
@@ -951,48 +937,35 @@ public partial class HelpWindow : Window
         // License
         sb.Append("""
             <h1 id="license">ライセンス</h1>
-            <p>InsightCast は以下の3つのプランで提供されています。用途に合わせてお選びください。</p>
+            <p>Insight Training Studio は以下の4つのプランで提供されています（全製品 法人向け B2B Only）。</p>
 
             <h2>プラン比較表</h2>
             <table>
-                <tr><th>機能</th><th>Free</th><th>Trial</th><th>Pro</th></tr>
-                <tr><td>シーン作成</td><td>3シーンまで</td><td>無制限</td><td>無制限</td></tr>
-                <tr><td>VOICEVOX ナレーション</td><td>○</td><td>○</td><td>○</td></tr>
-                <tr><td>字幕表示</td><td>—</td><td>○</td><td>○</td></tr>
-                <tr><td>字幕スタイル（10種以上）</td><td>—</td><td>○</td><td>○</td></tr>
-                <tr><td>トランジション効果</td><td>—</td><td>○</td><td>○</td></tr>
-                <tr><td>PPTX取込</td><td>—</td><td>○</td><td>○</td></tr>
-                <tr><td>テンプレート保存・読込</td><td>—</td><td>○</td><td>○</td></tr>
-                <tr><td>テキストオーバーレイ</td><td>○</td><td>○</td><td>○</td></tr>
-                <tr><td>サムネイル生成</td><td>○</td><td>○</td><td>○</td></tr>
-                <tr><td>BGM設定</td><td>○</td><td>○</td><td>○</td></tr>
-                <tr><td>動画書き出し（MP4）</td><td>○</td><td>○</td><td>○</td></tr>
-                <tr><td>チャプター・メタデータ出力</td><td>○</td><td>○</td><td>○</td></tr>
-                <tr><td>バッチエクスポート</td><td>—</td><td>—</td><td>○</td></tr>
+                <tr><th>機能</th><th>FREE</th><th>TRIAL</th><th>BIZ</th><th>ENT</th></tr>
+                <tr><td>利用期間</td><td>無期限</td><td>30日間</td><td>365日</td><td>要相談</td></tr>
+                <tr><td>動画生成</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
+                <tr><td>VOICEVOX ナレーション</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
+                <tr><td>テキストオーバーレイ</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
+                <tr><td>BGM設定</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
+                <tr><td>動画書き出し（MP4）</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
+                <tr><td>字幕表示</td><td>×</td><td>○</td><td>○</td><td>○</td></tr>
+                <tr><td>字幕スタイル選択</td><td>×</td><td>○</td><td>○</td><td>○</td></tr>
+                <tr><td>トランジション効果</td><td>×</td><td>○</td><td>○</td><td>○</td></tr>
+                <tr><td>PPTX取込</td><td>×</td><td>○</td><td>○</td><td>○</td></tr>
+                <tr><td>最大解像度</td><td>1080p</td><td>1080p</td><td>1080p</td><td>4K</td></tr>
+                <tr><td>最大ファイルサイズ</td><td>200MB</td><td>200MB</td><td>200MB</td><td>無制限</td></tr>
             </table>
 
             <div class="tip">
-                <span class="tip-label">おすすめ:</span>
-                まずは Free プランで基本機能をお試しください。
-                字幕やトランジションが必要になったら Trial / Pro へアップグレードできます。
+                <span class="tip-label">プランについて:</span>
+                FREE プランは基本機能を無期限でお使いいただけます。
+                TRIAL は全機能を30日間お試しいただける評価版です。
+                継続してご利用いただく場合は、BIZ プランへアップグレードしてください。
             </div>
 
-            <h2>こんな方におすすめ</h2>
-            <table>
-                <tr><th>プラン</th><th>おすすめの方</th></tr>
-                <tr><td><strong>Free</strong></td><td>まずは試してみたい方、シンプルな動画を作りたい方</td></tr>
-                <tr><td><strong>Trial</strong></td><td>字幕付き動画を作りたい方、PPTX変換を使いたい方</td></tr>
-                <tr><td><strong>Pro</strong></td><td>業務で大量の動画を制作する方、全機能を使いたい方</td></tr>
-            </table>
-
-            <h2>ライセンスの管理</h2>
-
-            <h3>ライセンスの確認</h3>
-            <p>メニュー → ヘルプ → ライセンス情報 で、現在のプラン・状態・有効期限を確認できます。</p>
-
-            <h3>ライセンスの入力・アクティベート</h3>
+            <h2>ライセンスのアクティベート</h2>
             <div class="step"><div class="step-num">1</div><div class="step-text">
-                メニュー → ヘルプ → 「ライセンス管理」をクリック
+                メニュー「ヘルプ」→「ライセンス管理」を開く
             </div></div>
             <div class="step"><div class="step-num">2</div><div class="step-text">
                 購入時に届いたメールアドレスとライセンスキーを入力
@@ -1003,7 +976,7 @@ public partial class HelpWindow : Window
 
             <div class="note">
                 <span class="note-label">ご注意:</span>
-                ライセンスキーは InsightCast 専用です。他の HARMONIC insight 製品のキーは使用できません。
+                ライセンスキーは Insight Training Studio 専用です。他の HARMONIC insight 製品のキーは使用できません。
             </div>
 
             <hr class="section-divider">
@@ -1016,23 +989,128 @@ public partial class HelpWindow : Window
                 <tr><th>項目</th><th>要件</th></tr>
                 <tr><td>OS</td><td>Windows 10 / 11（64bit）</td></tr>
                 <tr><td>ランタイム</td><td>.NET 8.0 デスクトップランタイム</td></tr>
-                <tr><td>必須ソフトウェア</td><td>VOICEVOX エンジン</td></tr>
+                <tr><td>必須ソフトウェア</td><td>VOICEVOX エンジン（ナレーション生成に必要）</td></tr>
                 <tr><td>必須ツール</td><td>FFmpeg（動画生成に必要）</td></tr>
-                <tr><td>メモリ</td><td>4GB以上推奨</td></tr>
-                <tr><td>ストレージ</td><td>500MB以上の空き容量（動画出力を含まず）</td></tr>
+                <tr><td>メモリ</td><td>4GB 以上推奨</td></tr>
+                <tr><td>ストレージ</td><td>500MB 以上の空き容量（動画出力を含まず）</td></tr>
             </table>
 
-            <h2>必須コンポーネントのインストール</h2>
+            <h2>VOICEVOX のインストール</h2>
+            <p><a href="https://voicevox.hiroshiba.jp/">VOICEVOX 公式サイト</a>からダウンロード・インストールしてください。
+            アプリ起動前に VOICEVOX エンジンを起動しておく必要があります。</p>
 
-            <h3>VOICEVOX エンジン</h3>
-            <p>VOICEVOX 公式サイトからダウンロード・インストールしてください。
-            InsightCast 起動前に VOICEVOX エンジンを起動しておく必要があります。</p>
-
-            <h3>FFmpeg</h3>
+            <h2>FFmpeg のインストール</h2>
             <p>動画の生成・プレビューに FFmpeg が必要です。
-            <code>build.ps1</code> を実行すると自動ダウンロードされます。
-            手動で導入する場合は、ffmpeg.exe を PATH に追加するか、
-            アプリフォルダ内の <code>tools\ffmpeg\bin\</code> に配置してください。</p>
+            ffmpeg.exe を PATH 環境変数に追加するか、アプリフォルダ内の <code>tools\ffmpeg\bin\</code> に配置してください。</p>
+
+            <hr class="section-divider">
+            """);
+
+        // AI Assistant
+        sb.Append("""
+            <h1 id="ai-assistant">AIアシスタント</h1>
+            <p>Claude AI を活用して、ナレーション作成・字幕編集・動画構成の提案・サムネイル生成などを行えます。
+            画面右上のアシスタントボタンでパネルを開きます。</p>
+
+            <h2>基本的な使い方</h2>
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                <strong>APIキーの設定</strong> — パネル右上の 🔑 ボタンをクリックし、Anthropic の API キーを入力して「設定」をクリックします。
+                <br><em>※ キーは DPAPI で暗号化され、お使いの端末にのみ保存されます。外部には送信されません。</em>
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                <strong>モデルの選択</strong> — パネル左上のドロップダウンで使用する Claude モデルを選択します。
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                <strong>プロンプトの入力</strong> — テキスト欄に質問や指示を入力し、「実行」ボタン（または <kbd>Ctrl</kbd>+<kbd>Enter</kbd>）で送信します。
+            </div></div>
+
+            <h2>パネルのボタン</h2>
+            <table>
+                <tr><th>ボタン</th><th>機能</th></tr>
+                <tr><td>?</td><td>ヘルプ — このページの AI アシスタントセクションを開きます</td></tr>
+                <tr><td>⧉</td><td>ポップアウト — AI パネルを独立したウィンドウとして表示します</td></tr>
+                <tr><td>🔑</td><td>APIキー設定 — Anthropic の API キーを設定・変更します</td></tr>
+            </table>
+
+            <h2>プリセットプロンプト</h2>
+            <p>開発者が用意した 25 種類のプロンプトテンプレートです。10 カテゴリに分類されており、
+            ワンクリックで実行できます。🎯 セクションを展開して表示します。</p>
+            <table>
+                <tr><th>カテゴリ</th><th>内容</th></tr>
+                <tr><td>字幕・翻訳</td><td>ナレーションからの字幕生成、日英翻訳</td></tr>
+                <tr><td>ナレーション</td><td>スライドノートからのナレーション生成、校正</td></tr>
+                <tr><td>構成アドバイス</td><td>動画構成のチェック、教育効果の評価</td></tr>
+                <tr><td>サムネイル</td><td>サムネイル自動生成、タイトル・キャッチコピー提案</td></tr>
+                <tr><td>研修・教育</td><td>新人研修、業務手順書変換、安全教育</td></tr>
+                <tr><td>ビジネス活用</td><td>製品紹介、社内通知、会議要約</td></tr>
+                <tr><td>ワンボタン自動化</td><td>スライドから全自動動画作成、日英バイリンガル</td></tr>
+                <tr><td>トーン調整</td><td>簡潔化、フォーマル化、カジュアル化</td></tr>
+                <tr><td>マーケティング</td><td>SNSショートスクリプト、エレベーターピッチ</td></tr>
+                <tr><td>品質改善</td><td>長さ均一化、読み仮名補正、トーン統一</td></tr>
+            </table>
+            <ul>
+                <li>各プリセットにマウスを合わせると、ツールチップでプロンプト内容がプレビューされます。</li>
+                <li>右クリック →「マイプロンプトに保存」で、マイプロンプトにコピーしてカスタマイズできます。</li>
+            </ul>
+
+            <h2>実行モード</h2>
+            <p>プリセットには 2 つの実行モードがあります。</p>
+            <table>
+                <tr><th>モード</th><th>動作</th><th>用途</th></tr>
+                <tr><td><strong>check</strong>（自動実行）</td><td>AI がツールを使ってシーンのナレーション・字幕・サムネイルなどを直接操作します</td><td>字幕生成、ナレーション設定、トーン調整など</td></tr>
+                <tr><td><strong>advice</strong>（アドバイス）</td><td>AI が分析結果やアドバイスをテキストで返します。データは変更されません</td><td>構成チェック、教育効果評価、タイトル提案など</td></tr>
+            </table>
+
+            <h2>サムネイル自動生成</h2>
+            <p>AI が動画の内容を分析し、最適なサムネイル画像（1280×720px）を自動生成します。</p>
+            <ol>
+                <li>プリセット「🖼️ サムネイル自動生成」をクリック</li>
+                <li>AI が動画の内容を分析し、3 パターンのサムネイルを生成</li>
+                <li>結果エリアにサムネイルのプレビューが表示されます</li>
+                <li>「サムネイルを保存」ボタンで PNG ファイルとして保存</li>
+            </ol>
+            <p>11 種類のレイアウトパターンと 6 種類のカラースタイルから、AI が内容に合った組み合わせを選択します。
+            シーンに画像素材がある場合は、背景画像としても活用されます。</p>
+
+            <h2>マイプロンプト（プロンプトライブラリ）</h2>
+            <p>よく使うプロンプトを保存して、いつでも呼び出せる機能です。
+            業務で繰り返し使う指示を蓄積・改善していくことで、作業効率が向上します。
+            📚 セクションを展開して表示します。</p>
+
+            <h3>プロンプトの保存方法</h3>
+            <table>
+                <tr><th>方法</th><th>手順</th></tr>
+                <tr><td>入力欄から保存</td><td>プロンプトを入力し、入力欄の下の 💾 ボタンをクリック</td></tr>
+                <tr><td>プリセットから派生</td><td>プリセットを右クリック →「マイプロンプトに保存」</td></tr>
+            </table>
+
+            <h3>プロンプトの管理</h3>
+            <p>マイプロンプトのカードを右クリックすると、以下の操作メニューが表示されます。</p>
+            <ul>
+                <li><strong>実行</strong> — カードをクリックすると、プロンプトが入力欄にロードされます。</li>
+                <li><strong>編集</strong> — 右クリック →「編集」で、ラベル・カテゴリ・アイコン・本文を変更できます。</li>
+                <li><strong>複製</strong> — 右クリック →「複製」で、既存プロンプトをベースに新しいものを作成できます。</li>
+                <li><strong>削除</strong> — 右クリック →「削除」で削除できます（元に戻せません）。</li>
+            </ul>
+
+            <h3>データの保存場所</h3>
+            <p>マイプロンプトはお使いの端末のローカルフォルダに個別の JSON ファイルとして保存されます。
+            クラウドには送信されません。</p>
+            <pre>%LOCALAPPDATA%\InsightCast\Prompts\</pre>
+
+            <h2>使用状況の確認</h2>
+            <p>API キーを設定すると、パネル上部に使用状況が表示されます。</p>
+            <table>
+                <tr><th>項目</th><th>説明</th></tr>
+                <tr><td>コール数</td><td>API 呼び出し回数</td></tr>
+                <tr><td>トークン数</td><td>入力 / 出力トークン数</td></tr>
+                <tr><td>概算コスト</td><td>セッション中の推定 API 使用料（USD）</td></tr>
+            </table>
+            <div class="tip">
+                <span class="tip-label">API 利用料:</span>
+                API の使用料は Anthropic からお客様のアカウントに直接請求されます（BYOK 方式）。
+                本製品は API 使用料を一切徴収しません。
+            </div>
 
             <hr class="section-divider">
             """);
@@ -1045,19 +1123,19 @@ public partial class HelpWindow : Window
             <h2>サポート窓口</h2>
             <table>
                 <tr><th>項目</th><th>情報</th></tr>
-                <tr><td>メール</td><td>info@h-insight.jp</td></tr>
-                <tr><td>開発元</td><td>HARMONIC insight 合同会社</td></tr>
-                <tr><td>Web</td><td><a href="https://www.insight-office.com">https://www.insight-office.com</a></td></tr>
+                <tr><td>メール</td><td>support@harmonic-insight.com</td></tr>
+                <tr><td>開発元</td><td>HARMONIC insight</td></tr>
+                <tr><td>Web</td><td><a href="https://harmonic-insight.com">https://harmonic-insight.com</a></td></tr>
             </table>
 
             <h2>利用規約・プライバシーポリシー</h2>
             <ul>
-                <li><a href="https://www.insight-office.com/ja/terms">利用規約</a></li>
-                <li><a href="https://www.insight-office.com/ja/privacy">プライバシーポリシー</a></li>
+                <li><a href="https://harmonic-insight.com/ja/terms">利用規約</a></li>
+                <li><a href="https://harmonic-insight.com/ja/privacy">プライバシーポリシー</a></li>
             </ul>
 
             <h2>VOICEVOX について</h2>
-            <p>InsightCast は VOICEVOX 音声エンジンを利用しています。
+            <p>本製品は VOICEVOX 音声エンジンを利用しています。
             VOICEVOX の利用にあたっては、各キャラクターの利用規約をご確認ください。</p>
             """);
     }
@@ -1071,32 +1149,67 @@ public partial class HelpWindow : Window
         // Overview
         sb.Append($"""
             <div class="hero" id="overview">
-                <h1>InsightCast</h1>
-                <div class="subtitle">Auto-generate narrated videos from text input</div>
+                <h1>Insight Training Studio</h1>
+                <div class="subtitle">Create training and educational videos with ease</div>
                 <div class="version">v{ver}</div>
             </div>
 
-            <p>InsightCast is a Windows desktop application that automatically generates narrated videos using the VOICEVOX text-to-speech engine.
-            Import PowerPoint presentations, images, or video files, enter your narration text, and create professional-quality videos in minutes.</p>
+            <p>Insight Training Studio is a Windows desktop application for creating narrated educational and training videos.
+            Import PowerPoint presentations, images, or video files, enter your narration scripts,
+            and the VOICEVOX text-to-speech engine automatically generates natural-sounding narration.</p>
 
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h4>Easy Video Generation</h4>
-                    <p>Drop files and configure settings. Narrated videos are ready in minutes.</p>
+                    <h4>Easy Video Creation</h4>
+                    <p>Drop media files and enter text. Professional training videos are ready in minutes, no expertise required.</p>
                 </div>
                 <div class="feature-card">
-                    <h4>VOICEVOX Narration</h4>
-                    <p>Choose from a variety of character voices. Adjust speech speed freely.</p>
+                    <h4>Auto Narration</h4>
+                    <p>Natural Japanese speech powered by VOICEVOX. Multiple voices and adjustable speed for any scenario.</p>
                 </div>
                 <div class="feature-card">
                     <h4>Subtitles & Text</h4>
-                    <p>10+ preset subtitle styles. Place text overlays anywhere on screen.</p>
+                    <p>10+ preset subtitle styles. Place text overlays anywhere on screen for titles, captions, and annotations.</p>
                 </div>
                 <div class="feature-card">
-                    <h4>Auto Thumbnail</h4>
-                    <p>Generate YouTube thumbnails with one click. Rich color patterns available.</p>
+                    <h4>PowerPoint Import</h4>
+                    <p>Import existing training materials (.pptx) directly. Slides become scenes, speaker notes become narration.</p>
                 </div>
             </div>
+
+            <hr class="section-divider">
+            """);
+
+        // Quick Start
+        sb.Append("""
+            <h1 id="quickstart">Quick Start</h1>
+            <p>Follow these steps to create your first video.</p>
+
+            <h2>Create a Video (3 Steps)</h2>
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                <strong>Import media</strong> — Drag & drop images, videos, or PowerPoint files onto the drop zone in the Planning tab.
+                Dropping multiple files creates one scene per file automatically.
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                <strong>Set narration</strong> — Enter the text to be spoken in each scene's text field.
+                Configure speaker (voice), speed, and orientation (landscape/portrait).
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                <strong>Export video</strong> — Click "Generate Video", choose a save location, and the narrated video is generated automatically.
+            </div></div>
+
+            <div class="tip">
+                <span class="tip-label">Tip:</span> Importing a PowerPoint (.pptx) file automatically converts slides to images and speaker notes to narration scripts.
+                This is the most efficient way to turn existing training materials into videos.
+            </div>
+
+            <h2>After Completion</h2>
+            <ul>
+                <li><strong>Play Video</strong> — Preview the completed video in your default player</li>
+                <li><strong>Open Output Folder</strong> — View thumbnail (.jpg), chapters (.chapters.txt), and metadata (.metadata.txt)</li>
+                <li><strong>Regenerate</strong> — Change speaker or orientation and regenerate with one click</li>
+                <li><strong>Edit in Detail</strong> — Switch to the Video Generation tab for scene-level editing</li>
+            </ul>
 
             <hr class="section-divider">
             """);
@@ -1104,33 +1217,37 @@ public partial class HelpWindow : Window
         // UI Layout
         sb.Append("""
             <h1 id="ui-layout">UI Layout</h1>
-            <p>InsightCast's main window is organized into <strong>two tabs</strong>.</p>
+            <p>The main window has <strong>two tabs</strong>. Switch between them based on your workflow.</p>
 
             <h2>Title Bar</h2>
-            <p>The top bar contains file operation buttons (New, Open, Save, Save As, Import PPTX) and a License Manager button.</p>
+            <ul>
+                <li><strong>New</strong> — Create a new project</li>
+                <li><strong>Open</strong> — Open a saved project (.icproj)</li>
+                <li><strong>Save / Save As</strong> — Save the project</li>
+                <li><strong>Import PPTX</strong> — Import a PowerPoint file</li>
+                <li><strong>License Manager</strong> — View and activate license</li>
+            </ul>
 
             <h2>Menu Bar</h2>
-            <p>Below the title bar is the menu bar:</p>
             <ul>
-                <li><strong>File</strong> — New, Open, Recent Files, Save, Save As, Import PPTX, JSON Import/Export, Exit</li>
-                <li><strong>Edit</strong> — Add/Remove Scene, Reorder Scenes</li>
-                <li><strong>Help</strong> — Help, License Manager, Terms, Privacy Policy, About</li>
+                <li><strong>File</strong> — New, Open, Recent Files, Save, Save As, PPTX Import, JSON Import/Export, Exit</li>
+                <li><strong>Edit</strong> — Add/Remove/Reorder Scenes</li>
+                <li><strong>AI Edit</strong> — AI project generation, OpenAI settings</li>
+                <li><strong>Help</strong> — Help, Tutorial, License Manager, Terms, About</li>
             </ul>
 
             <h2>Planning Tab</h2>
-            <p>Used during the video planning stage. Divided into three areas:</p>
             <ul>
-                <li><strong>Quick Setup (Left)</strong> — Set video duration, scene count, drop media files</li>
+                <li><strong>Quick Setup (Left)</strong> — Import media, set duration and scene count</li>
                 <li><strong>Structure & Script (Center)</strong> — Edit scene structure, JSON import</li>
-                <li><strong>Thumbnail Generator (Right)</strong> — Create YouTube thumbnails</li>
+                <li><strong>Thumbnail Generator (Right)</strong> — Create thumbnail images</li>
             </ul>
 
             <h2>Video Generation Tab</h2>
-            <p>Where you edit and export your video:</p>
             <ul>
                 <li><strong>Scene List (Left)</strong> — Add, remove, reorder scenes; set resolution</li>
-                <li><strong>Scene Editor (Center)</strong> — Media selection, narration input, subtitles, overlays, transitions</li>
-                <li><strong>Export Settings (Right)</strong> — Speaker selection, BGM settings, video export</li>
+                <li><strong>Scene Editor (Center)</strong> — Media, narration, subtitles, overlays, transitions</li>
+                <li><strong>Export Settings (Right)</strong> — Speaker, BGM, export</li>
             </ul>
 
             <h2>Status Bar</h2>
@@ -1139,75 +1256,28 @@ public partial class HelpWindow : Window
             <hr class="section-divider">
             """);
 
-        // Quick Mode
-        sb.Append("""
-            <h1 id="quick-mode">Quick Mode</h1>
-            <p>The Quick Setup panel in the Planning tab is the fastest way to create a video.</p>
-
-            <h2>Basic Workflow</h2>
-            <div class="step"><div class="step-num">1</div><div class="step-text">
-                <strong>Import media</strong> — Drag & drop files onto the drop zone, or click "Select File".
-                Supports PowerPoint (.pptx), images (PNG/JPG/BMP/GIF), video (MP4/AVI/MOV), and text (.txt).
-            </div></div>
-            <div class="step"><div class="step-num">2</div><div class="step-text">
-                <strong>Configure settings</strong> — Set speaker (voice), orientation (landscape/portrait), transition, and speed.
-            </div></div>
-            <div class="step"><div class="step-num">3</div><div class="step-text">
-                <strong>Generate video</strong> — Click "Generate Video", choose save location, and export starts automatically.
-            </div></div>
-
-            <div class="tip">
-                <span class="tip-label">Tip:</span> Dropping multiple files at once creates one scene per file.
-                You can also use the "Import multiple files" button for batch selection.
-            </div>
-
-            <h2>After Generation</h2>
-            <ul>
-                <li><strong>Open Video</strong> — Play the completed video in your default player</li>
-                <li><strong>Open Output Folder</strong> — View thumbnail (.jpg), chapters (.chapters.txt), and metadata (.metadata.txt)</li>
-                <li><strong>Regenerate</strong> — Change speaker or orientation and generate again</li>
-                <li><strong>Open in Editor</strong> — Switch to Video Generation tab for detailed editing</li>
-            </ul>
-
-            <hr class="section-divider">
-            """);
-
         // Scene Editor
         sb.Append("""
             <h1 id="scene-editor">Scene Editor</h1>
-            <p>In the Video Generation tab, you compose and edit your video scene by scene.</p>
+            <p>In the Video Generation tab, compose and edit your video scene by scene.</p>
 
-            <h2>Adding & Removing Scenes</h2>
-            <ul>
-                <li><strong>Add</strong> — "+ Add" button or <kbd>Ctrl</kbd>+<kbd>T</kbd></li>
-                <li><strong>Remove</strong> — "- Remove" button or <kbd>Delete</kbd> (minimum 1 scene required)</li>
-                <li><strong>Reorder</strong> — Arrow buttons or <kbd>Ctrl</kbd>+<kbd>Up</kbd> / <kbd>Ctrl</kbd>+<kbd>Down</kbd></li>
-            </ul>
+            <h2>Scene Operations</h2>
+            <table>
+                <tr><th>Action</th><th>How</th></tr>
+                <tr><td>Add Scene</td><td>"+ Add" button or <kbd>Ctrl</kbd>+<kbd>T</kbd></td></tr>
+                <tr><td>Remove Scene</td><td>"- Remove" button or <kbd>Delete</kbd> (minimum 1 scene)</td></tr>
+                <tr><td>Reorder</td><td>Arrow buttons or <kbd>Ctrl</kbd>+<kbd>Up</kbd> / <kbd>Ctrl</kbd>+<kbd>Down</kbd></td></tr>
+            </table>
 
             <h2>Setting Media</h2>
-            <p>Each scene can have one image or video file as its media:</p>
-            <ul>
-                <li>Click "Select" to choose an image/video file</li>
-                <li>Click the preview image to enlarge</li>
-                <li>Click "Clear" to remove media (black background)</li>
-            </ul>
-
-            <div class="tip">
-                <span class="tip-label">Tip:</span> Supported images: PNG, JPG, BMP, GIF. Supported videos: MP4, AVI, MOV, WMV, MKV, WebM.
-            </div>
-
-            <h2>Video Media Options</h2>
-            <p>When a video file is set as media, the "Keep original audio" checkbox appears.
-            When checked, the video's original audio plays alongside narration.</p>
+            <p>Each scene can have one image or video file. Supported formats: PNG, JPG, BMP, GIF, MP4, AVI, MOV, etc.</p>
+            <p>When using a video file, check "Keep original audio" to preserve the video's audio alongside narration.</p>
 
             <h2>Scene Duration</h2>
             <ul>
-                <li><strong>Auto</strong> — Duration matches narration length (recommended)</li>
-                <li><strong>Fixed</strong> — Set a specific duration from 0.1 to 60 seconds</li>
+                <li><strong>Auto (Recommended)</strong> — Duration matches narration length</li>
+                <li><strong>Fixed</strong> — Set a specific duration (0.1 to 60 seconds)</li>
             </ul>
-
-            <h2>Scene Preview</h2>
-            <p>Click "Preview Scene" to generate a video preview of the current scene with narration, subtitles, and overlays applied.</p>
 
             <hr class="section-divider">
             """);
@@ -1215,36 +1285,30 @@ public partial class HelpWindow : Window
         // Narration
         sb.Append("""
             <h1 id="narration">Narration</h1>
-            <p>InsightCast uses the VOICEVOX speech engine to generate natural Japanese narration from text.</p>
+            <p>Automatically generate natural Japanese narration from text using the VOICEVOX speech engine.</p>
 
-            <h2>Narration Text</h2>
-            <p>Enter the text you want spoken in the narration input area of the scene editor.
-            The text will be synthesized into speech and used as narration.</p>
+            <h2>Entering Narration</h2>
+            <p>Type the text to be spoken in the scene editor's text field. The text is synthesized into speech for narration.</p>
 
             <h2>Speaker Selection</h2>
-            <p>Choose from speakers registered in the VOICEVOX engine. Each speaker has styles (Normal, Sweet, Tsundere, etc.):</p>
             <ul>
                 <li><strong>Per-scene speaker</strong> — Set in each scene's "Speaker" dropdown ("Default" uses project settings)</li>
-                <li><strong>Export speaker</strong> — The "Speaker" in export settings is the project-wide default</li>
+                <li><strong>Export speaker</strong> — Set the project-wide default in the export panel</li>
             </ul>
 
             <h2>Speech Speed</h2>
             <table>
                 <tr><th>Setting</th><th>Speed</th><th>Best For</th></tr>
-                <tr><td>Slow</td><td>0.8x</td><td>Careful, detailed explanations</td></tr>
+                <tr><td>Slow</td><td>0.8x</td><td>Beginner training, detailed explanations</td></tr>
                 <tr><td>Normal</td><td>1.0x</td><td>Standard pace (default)</td></tr>
-                <tr><td>Slightly Fast</td><td>1.2x</td><td>Brisk, efficient delivery</td></tr>
+                <tr><td>Slightly Fast</td><td>1.2x</td><td>Brisk delivery</td></tr>
                 <tr><td>Fast</td><td>1.5x</td><td>Information-dense content</td></tr>
             </table>
 
-            <h2>Audio Preview</h2>
-            <p>Click "Play Audio" to preview the narration before generating. Narration text must not be empty.</p>
-
             <div class="note">
                 <span class="note-label">About VOICEVOX:</span>
-                The VOICEVOX engine must be running for InsightCast to work.
-                The setup wizard configures the connection on first launch.
-                If disconnected, restart VOICEVOX and then restart the app.
+                The VOICEVOX engine must be running for narration to work.
+                Configure the connection in the setup wizard on first launch.
             </div>
 
             <hr class="section-divider">
@@ -1255,45 +1319,12 @@ public partial class HelpWindow : Window
             <h1 id="subtitle-text">Subtitles & Text</h1>
 
             <h2>Subtitles</h2>
-            <p>Set subtitle text for each scene. Subtitles appear at the bottom of the video.</p>
-            <ul>
-                <li>Enter text in the "Subtitle" field</li>
-                <li>Leave empty for no subtitles</li>
-            </ul>
-
-            <h3>Subtitle Styles</h3>
-            <p>Click "Select..." to open the style dialog. Choose from 10+ preset styles:</p>
-            <table>
-                <tr><th>Style</th><th>Description</th></tr>
-                <tr><td>Default</td><td>White text with black outline. Simple and readable.</td></tr>
-                <tr><td>News</td><td>News broadcast ticker style</td></tr>
-                <tr><td>Cinema</td><td>Elegant movie subtitle style</td></tr>
-                <tr><td>Variety</td><td>Bright and pop style</td></tr>
-                <tr><td>Documentary</td><td>Calm information program style</td></tr>
-                <tr><td>Education</td><td>Clear educational content style</td></tr>
-                <tr><td>Horror</td><td>Dark and eerie style</td></tr>
-                <tr><td>Cute</td><td>Pastel-colored cute style</td></tr>
-                <tr><td>Tech</td><td>Modern technology style</td></tr>
-                <tr><td>Elegant</td><td>Premium, sophisticated style</td></tr>
-            </table>
-
-            <h3>Custom Settings</h3>
-            <p>Customize font, size, text color, stroke color, and stroke width based on presets.</p>
+            <p>Add subtitle text to each scene. Subtitles appear at the bottom of the video.
+            Choose from 10+ preset styles including Default, Education, News, Documentary, Cinema, and Tech.</p>
 
             <h2>Text Overlays</h2>
-            <p>Place text anywhere on screen, separate from subtitles. Useful for titles, captions, and annotations.</p>
-
-            <h3>Overlay Properties</h3>
-            <table>
-                <tr><th>Property</th><th>Description</th></tr>
-                <tr><td>Text</td><td>The text to display</td></tr>
-                <tr><td>Horizontal (%)</td><td>Position from left (0-100%)</td></tr>
-                <tr><td>Vertical (%)</td><td>Position from top (0-100%)</td></tr>
-                <tr><td>Font Size</td><td>Text size</td></tr>
-                <tr><td>Alignment</td><td>Left, Center, or Right</td></tr>
-                <tr><td>Color</td><td>Text color</td></tr>
-                <tr><td>Opacity</td><td>0% (transparent) to 100% (opaque)</td></tr>
-            </table>
+            <p>Place text anywhere on screen for titles, headings, annotations, or emphasis.
+            Configure text, position, size, alignment, color, and opacity.</p>
 
             <hr class="section-divider">
             """);
@@ -1303,26 +1334,8 @@ public partial class HelpWindow : Window
             <h1 id="bgm-effects">BGM & Effects</h1>
 
             <h2>BGM (Background Music)</h2>
-            <p>Click "BGM Settings..." in the export panel to configure background music.</p>
-
-            <h3>Supported Formats</h3>
-            <p>MP3, WAV, OGG, M4A, AAC, FLAC, WMA</p>
-
-            <h3>Volume Settings</h3>
-            <table>
-                <tr><th>Setting</th><th>Description</th></tr>
-                <tr><td>Main Volume</td><td>Base BGM volume</td></tr>
-                <tr><td>Ducking</td><td>Auto-lower BGM during narration</td></tr>
-                <tr><td>Attack</td><td>Time to start ducking</td></tr>
-                <tr><td>Release</td><td>Time to return to normal volume</td></tr>
-            </table>
-
-            <h3>Fade & Loop</h3>
-            <ul>
-                <li><strong>Fade In</strong> — Gradually increase volume at the start</li>
-                <li><strong>Fade Out</strong> — Gradually decrease volume at the end</li>
-                <li><strong>Loop</strong> — Repeat BGM if video is longer than the music</li>
-            </ul>
+            <p>Configure BGM via "BGM Settings..." in the export panel. Supports MP3, WAV, OGG, M4A, AAC, FLAC, WMA.
+            Features include volume control, ducking (auto-lower during narration), fade in/out, and loop playback.</p>
 
             <h2>Transitions</h2>
             <table>
@@ -1330,14 +1343,13 @@ public partial class HelpWindow : Window
                 <tr><td>None</td><td>Instant switch</td></tr>
                 <tr><td>Fade</td><td>Fade in/out</td></tr>
                 <tr><td>Dissolve</td><td>Cross-dissolve between scenes</td></tr>
-                <tr><td>Wipe (L/R)</td><td>Wipe transition left or right</td></tr>
-                <tr><td>Slide (L/R)</td><td>Slide transition left or right</td></tr>
+                <tr><td>Wipe (L/R)</td><td>Wipe transition</td></tr>
+                <tr><td>Slide (L/R)</td><td>Slide transition</td></tr>
                 <tr><td>Zoom In</td><td>Zoom transition</td></tr>
             </table>
-            <p>Transition duration: 0.2 to 2.0 seconds.</p>
 
             <h2>Logo Watermark</h2>
-            <p>Overlay a logo or brand image on your video. Position: Top-Left, Top-Right, Bottom-Left, Bottom-Right, or Center.</p>
+            <p>Overlay a company logo or brand image. Position: Top-Left, Top-Right, Bottom-Left, Bottom-Right, or Center.</p>
 
             <hr class="section-divider">
             """);
@@ -1348,24 +1360,17 @@ public partial class HelpWindow : Window
             <p>Plan your video structure before editing for efficient production.</p>
 
             <h2>Quick Setup</h2>
-            <ul>
-                <li><strong>Video Purpose</strong> — Product intro, tutorial, concept explanation, or promotion</li>
-                <li><strong>Duration</strong> — 15 to 180 seconds (3 minutes)</li>
-                <li><strong>Scene Count</strong> — Number of scenes in the video</li>
-            </ul>
+            <p>Set video purpose, duration (15-180s), and scene count in the left panel.</p>
 
             <h2>Structure & Script</h2>
-            <p>Edit scene titles and narration scripts in the center panel. Use JSON mode for importing AI-generated structures.</p>
+            <p>Edit scene titles and narration scripts. Use JSON mode for importing AI-generated structures.</p>
 
-            <h2>Image Prompt Builder</h2>
-            <p>Build AI image generation prompts with scene type, composition, mood, and visual style selectors.
-            Copy the prompt and use it in DALL-E, Midjourney, or similar services.</p>
+            <h2>AI Project Generation</h2>
+            <p>Go to "AI Edit" &gt; "Generate Project" to have AI automatically create scene structures and narration scripts from a theme or topic.
+            Requires a Claude (Anthropic) API key. Set it via the 🔑 button in the AI Assistant panel on the right side.</p>
 
             <h2>Thumbnail Generator</h2>
-            <p>Create YouTube thumbnails (1280x720px) with color patterns, text styling, and background images.</p>
-
-            <h2>Transfer to Video</h2>
-            <p>Click "Transfer to Video" to carry your planned structure into the Video Generation tab for detailed editing.</p>
+            <p>Create thumbnail images (1280x720px) with color patterns, text, and background images.</p>
 
             <hr class="section-divider">
             """);
@@ -1375,42 +1380,24 @@ public partial class HelpWindow : Window
             <h1 id="export">Export</h1>
 
             <h2>Video Export</h2>
-            <p>Configure export settings in the right panel and click "Export Video".</p>
-
-            <h3>Export Settings</h3>
-            <table>
-                <tr><th>Setting</th><th>Description</th></tr>
-                <tr><td>Speaker</td><td>Default speaker for the project</td></tr>
-                <tr><td>Resolution</td><td>1920x1080 (Landscape) or 1080x1920 (Portrait)</td></tr>
-                <tr><td>BGM</td><td>Background music settings</td></tr>
-            </table>
-
-            <h3>Output Files</h3>
+            <p>Configure settings in the right panel and click "Export Video". Output files include:</p>
             <table>
                 <tr><th>File</th><th>Description</th></tr>
                 <tr><td>*.mp4</td><td>Video file</td></tr>
                 <tr><td>*_thumbnail.jpg</td><td>Thumbnail image (1280x720)</td></tr>
-                <tr><td>*.chapters.txt</td><td>Chapter file (paste in YouTube description)</td></tr>
+                <tr><td>*.chapters.txt</td><td>Chapter markers</td></tr>
                 <tr><td>*.metadata.txt</td><td>Metadata (title, description, tags)</td></tr>
             </table>
-
-            <div class="tip">
-                <span class="tip-label">Tip:</span> Paste the chapters file content into your YouTube description to auto-create chapter markers.
-            </div>
 
             <h2>Project Files</h2>
             <p>Projects are saved as <code>.icproj</code> files.
             <kbd>Ctrl</kbd>+<kbd>S</kbd> to save, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> to save as.</p>
 
             <h2>PPTX Import</h2>
-            <p>Import PowerPoint (.pptx) files to auto-create scenes from slides. Slide images and speaker notes become scene media and narration.</p>
-
-            <div class="note">
-                <span class="note-label">Note:</span> PPTX import requires a Trial plan or above.
-            </div>
+            <p>Import PowerPoint (.pptx) to auto-create scenes from slides. Speaker notes become narration scripts.</p>
 
             <h2>Templates</h2>
-            <p>Save and load settings templates (BGM, watermark, resolution) with "Save Template" and "Load Template".</p>
+            <p>Save and load settings (BGM, watermark, resolution) as templates for consistent video production.</p>
 
             <hr class="section-divider">
             """);
@@ -1429,7 +1416,6 @@ public partial class HelpWindow : Window
                 <tr><td><kbd>Ctrl</kbd>+<kbd>Up</kbd></td><td>Move Scene Up</td></tr>
                 <tr><td><kbd>Ctrl</kbd>+<kbd>Down</kbd></td><td>Move Scene Down</td></tr>
                 <tr><td><kbd>F1</kbd></td><td>Show Help</td></tr>
-                <tr><td><kbd>Alt</kbd>+<kbd>F4</kbd></td><td>Exit Application</td></tr>
             </table>
 
             <hr class="section-divider">
@@ -1439,49 +1425,86 @@ public partial class HelpWindow : Window
         sb.Append("""
             <h1 id="faq">FAQ</h1>
 
-            <h2>Setup & Connection</h2>
+            <h2>Setup</h2>
 
             <h3>Q: Cannot connect to VOICEVOX.</h3>
-            <p>A: Ensure the VOICEVOX engine is running. It typically runs at <code>http://127.0.0.1:50021</code>.
-            The setup wizard configures the connection on first launch.
-            If disconnected, restart VOICEVOX and then restart InsightCast.</p>
+            <p>A: Ensure the VOICEVOX engine is running (typically at <code>http://127.0.0.1:50021</code>).
+            Restart VOICEVOX, then restart the app.</p>
 
             <h3>Q: FFmpeg not found.</h3>
-            <p>A: FFmpeg is required for video generation. Install it by:</p>
-            <ul>
-                <li>Adding the ffmpeg.exe folder to your PATH</li>
-                <li>Placing <code>tools\ffmpeg\bin\ffmpeg.exe</code> in the app folder</li>
-                <li>Running <code>build.ps1</code> for automatic download</li>
-            </ul>
+            <p>A: FFmpeg is required for video generation. Add ffmpeg.exe to your PATH or place it in <code>tools\ffmpeg\bin\</code> within the app folder.</p>
 
-            <h2>Video Generation</h2>
+            <h3>Q: How do I change the VOICEVOX port?</h3>
+            <p>A: If you changed the VOICEVOX engine port in its startup options, make sure to update the connection port in this app's settings accordingly. The default is <code>50021</code>.</p>
+
+            <h2>Video Creation</h2>
 
             <h3>Q: Video export fails.</h3>
-            <p>A: Check that FFmpeg is installed, VOICEVOX is running, there's enough disk space,
-            and the save path doesn't contain special characters.</p>
+            <p>A: Check the following:</p>
+            <ul>
+                <li>FFmpeg is installed and in your PATH</li>
+                <li>VOICEVOX engine is running</li>
+                <li>Enough free disk space at the save location</li>
+                <li>Save path does not contain special or non-ASCII characters</li>
+            </ul>
 
-            <h3>Q: How to cancel an export?</h3>
-            <p>A: Click the "Cancel" button next to the progress bar.</p>
+            <h3>Q: Can I create a video without media?</h3>
+            <p>A: Yes. Scenes without media use a black background. Combine with text overlays and subtitles to create content.</p>
 
-            <h2>Features</h2>
+            <h3>Q: How do I change scene duration?</h3>
+            <p>A: Scene duration is automatically calculated based on narration audio length. Adjust by editing narration text or use the scene duration settings in the Planning tab.</p>
 
-            <h3>Q: Supported file formats?</h3>
-            <table>
-                <tr><th>Type</th><th>Formats</th></tr>
-                <tr><td>Images</td><td>PNG, JPG/JPEG, BMP, GIF</td></tr>
-                <tr><td>Videos</td><td>MP4, AVI, MOV, WMV, MKV, WebM</td></tr>
-                <tr><td>Audio (BGM)</td><td>MP3, WAV, OGG, FLAC, AAC, M4A, WMA</td></tr>
-                <tr><td>Other</td><td>PPTX, TXT, JSON</td></tr>
-            </table>
+            <h3>Q: What image formats are supported?</h3>
+            <p>A: JPEG (.jpg/.jpeg), PNG (.png), BMP (.bmp), and GIF (.gif). JPEG or PNG at 1920×1080 or above is recommended.</p>
+
+            <h3>Q: How do I adjust BGM volume?</h3>
+            <p>A: BGM volume can be adjusted in the export settings panel. A lower BGM volume is recommended to keep narration clearly audible.</p>
+
+            <h2>AI Assistant</h2>
+
+            <h3>Q: Does the AI Assistant cost money?</h3>
+            <p>A: The AI Assistant feature itself is free, but requires an Anthropic Claude API key. API usage is billed directly by Anthropic to your account (BYOK model). This product does not charge any API fees.</p>
+
+            <h3>Q: Where can I get an API key?</h3>
+            <p>A: Create an account at the Anthropic console (<code>console.anthropic.com</code>) and generate an API key. Keys start with <code>sk-ant-</code>.</p>
+
+            <h3>Q: AI directly modified my scenes — can I undo?</h3>
+            <p>A: Use <kbd>Ctrl</kbd>+<kbd>Z</kbd> to undo. We recommend saving your project before running AI auto-execution (check mode) presets.</p>
+
+            <h3>Q: How do I use a background image for thumbnail generation?</h3>
+            <p>A: If a scene has image media, AI will automatically detect and use it as a thumbnail background. Run the "Auto-generate thumbnails" preset and AI will find suitable scene images.</p>
+
+            <h2>License</h2>
 
             <h3>Q: Subtitles and transitions are not available.</h3>
-            <p>A: These features require a Trial plan or above. Go to Help > License Manager to activate your license.</p>
-
-            <h3>Q: How to switch language?</h3>
-            <p>A: Click the language toggle button (JA/EN) in the status bar.</p>
+            <p>A: These require a TRIAL or BIZ plan or above. Go to Help &gt; License Manager to activate your license.</p>
 
             <h3>Q: How to enter a license key?</h3>
-            <p>A: Go to Help > License Manager, enter your email and license key, then click "Activate".</p>
+            <p>A: Go to Help &gt; License Manager, enter your email and key, then click "Activate".</p>
+
+            <h3>Q: How do I upgrade from FREE to BIZ?</h3>
+            <p>A: Contact your sales representative or partner (reseller). Once you receive a license key, activate it via Help &gt; License Manager.</p>
+
+            <h2>Other</h2>
+
+            <h3>Q: Where are templates saved?</h3>
+            <p>A: Templates are saved in <code>%LOCALAPPDATA%\InsightCast\Templates</code>.</p>
+
+            <h3>Q: How do I switch languages?</h3>
+            <p>A: Click the language toggle button (JA / EN) in the status bar. The entire app UI language will switch.</p>
+
+            <h3>Q: What is the project file format?</h3>
+            <p>A: Projects are saved as <code>.icproj</code> files.
+            Use <kbd>Ctrl</kbd>+<kbd>S</kbd> to save or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> to save as.</p>
+
+            <h3>Q: What files are created during video export?</h3>
+            <p>A: Video export generates 4 files:</p>
+            <ul>
+                <li><code>*.mp4</code> — Video file</li>
+                <li><code>*_thumbnail.jpg</code> — Thumbnail image (1280×720)</li>
+                <li><code>*.chapters.txt</code> — Chapter markers</li>
+                <li><code>*.metadata.txt</code> — Metadata (title, description, tags)</li>
+            </ul>
 
             <hr class="section-divider">
             """);
@@ -1489,30 +1512,30 @@ public partial class HelpWindow : Window
         // License
         sb.Append("""
             <h1 id="license">License</h1>
-            <p>InsightCast is available in three plans. Choose the one that fits your needs.</p>
+            <p>Insight Training Studio is available in the following plans (B2B only):</p>
 
             <h2>Plan Comparison</h2>
             <table>
-                <tr><th>Feature</th><th>Free</th><th>Trial</th><th>Pro</th></tr>
-                <tr><td>Scene Creation</td><td>Up to 3</td><td>Unlimited</td><td>Unlimited</td></tr>
-                <tr><td>VOICEVOX Narration</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>Subtitles</td><td>—</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>Subtitle Styles (10+)</td><td>—</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>Transitions</td><td>—</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>PPTX Import</td><td>—</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>Templates</td><td>—</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>Text Overlays</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>Thumbnail Generator</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>BGM Settings</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>Video Export (MP4)</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>Chapter & Metadata</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                <tr><td>Batch Export</td><td>—</td><td>—</td><td>Yes</td></tr>
+                <tr><th>Feature</th><th>FREE</th><th>TRIAL</th><th>BIZ</th><th>ENT</th></tr>
+                <tr><td>Duration</td><td>Unlimited</td><td>30 days</td><td>365 days</td><td>Custom</td></tr>
+                <tr><td>Video Generation</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>VOICEVOX Narration</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Text Overlays</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>BGM</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Video Export (MP4)</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Subtitles</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Subtitle Styles</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Transitions</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>PPTX Import</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Max Resolution</td><td>1080p</td><td>1080p</td><td>1080p</td><td>4K</td></tr>
+                <tr><td>Max File Size</td><td>200MB</td><td>200MB</td><td>200MB</td><td>Unlimited</td></tr>
             </table>
 
             <div class="tip">
-                <span class="tip-label">Tip:</span>
-                Start with the Free plan to explore the basics.
-                Upgrade to Trial or Pro when you need subtitles, transitions, or PPTX import.
+                <span class="tip-label">About Plans:</span>
+                The FREE plan provides core features with no time limit.
+                The TRIAL plan provides full access to all features for 30 days.
+                Upgrade to BIZ for continued use.
             </div>
 
             <h2>License Activation</h2>
@@ -1522,7 +1545,7 @@ public partial class HelpWindow : Window
 
             <div class="note">
                 <span class="note-label">Note:</span>
-                License keys are specific to InsightCast. Keys for other HARMONIC insight products cannot be used.
+                License keys are specific to Insight Training Studio. Keys for other HARMONIC insight products cannot be used.
             </div>
 
             <hr class="section-divider">
@@ -1535,11 +1558,120 @@ public partial class HelpWindow : Window
                 <tr><th>Requirement</th><th>Details</th></tr>
                 <tr><td>OS</td><td>Windows 10 / 11 (64-bit)</td></tr>
                 <tr><td>Runtime</td><td>.NET 8.0 Desktop Runtime</td></tr>
-                <tr><td>Required Software</td><td>VOICEVOX Engine</td></tr>
+                <tr><td>Required Software</td><td>VOICEVOX Engine (for narration)</td></tr>
                 <tr><td>Required Tool</td><td>FFmpeg (for video generation)</td></tr>
                 <tr><td>Memory</td><td>4GB+ recommended</td></tr>
                 <tr><td>Storage</td><td>500MB+ free space (excluding video output)</td></tr>
             </table>
+
+            <hr class="section-divider">
+            """);
+
+        // AI Assistant
+        sb.Append("""
+            <h1 id="ai-assistant">AI Assistant</h1>
+            <p>Use Claude AI to create narration, edit subtitles, analyze video structure, generate thumbnails,
+            and more. Open the panel using the assistant button in the top-right corner.</p>
+
+            <h2>Getting Started</h2>
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                <strong>Set your API key</strong> — Click the 🔑 button in the panel header, enter your Anthropic API key, and click "Set".
+                <br><em>Your key is encrypted with DPAPI and stored locally on this device only. It is never shared externally.</em>
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                <strong>Choose a model</strong> — Select the Claude model from the dropdown at the top-left of the panel.
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                <strong>Enter a prompt</strong> — Type your question or instruction and click "Execute" (or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>).
+            </div></div>
+
+            <h2>Panel Buttons</h2>
+            <table>
+                <tr><th>Button</th><th>Function</th></tr>
+                <tr><td>?</td><td>Help — Opens this page at the AI Assistant section</td></tr>
+                <tr><td>⧉</td><td>Pop Out — Opens the AI panel in a standalone window</td></tr>
+                <tr><td>🔑</td><td>API Key — Set or change your Anthropic API key</td></tr>
+            </table>
+
+            <h2>Preset Prompts</h2>
+            <p>25 ready-made prompt templates organized into 10 categories. Expand the 🎯 section to view them.
+            Click any preset to load it into the editor.</p>
+            <table>
+                <tr><th>Category</th><th>Content</th></tr>
+                <tr><td>Subtitles &amp; Translation</td><td>Generate subtitles from narration, JP/EN translation</td></tr>
+                <tr><td>Narration</td><td>Generate narration from slide notes, proofreading</td></tr>
+                <tr><td>Structure Advice</td><td>Check video structure, evaluate educational effectiveness</td></tr>
+                <tr><td>Thumbnail</td><td>Auto-generate thumbnails, title &amp; catchphrase suggestions</td></tr>
+                <tr><td>Training &amp; Education</td><td>Onboarding, procedure conversion, safety training</td></tr>
+                <tr><td>Business</td><td>Product introduction, internal announcements, meeting summaries</td></tr>
+                <tr><td>One-Click</td><td>Full auto video from slides, bilingual JP/EN</td></tr>
+                <tr><td>Tone Adjustment</td><td>Make concise, formal, or casual</td></tr>
+                <tr><td>Marketing</td><td>SNS short scripts, elevator pitches</td></tr>
+                <tr><td>Quality</td><td>Normalize length, pronunciation hints, unify tone</td></tr>
+            </table>
+            <ul>
+                <li>Hover over a preset to preview its full prompt text in a tooltip.</li>
+                <li>Right-click &gt; "Save to My Prompts" to create a customizable copy.</li>
+            </ul>
+
+            <h2>Execution Modes</h2>
+            <p>Presets have two execution modes:</p>
+            <table>
+                <tr><th>Mode</th><th>Behavior</th><th>Use Cases</th></tr>
+                <tr><td><strong>check</strong> (Auto-execute)</td><td>AI uses tools to directly modify scene narration, subtitles, thumbnails, etc.</td><td>Subtitle generation, narration setup, tone adjustment</td></tr>
+                <tr><td><strong>advice</strong> (Advisory)</td><td>AI returns analysis and suggestions as text. No data is modified.</td><td>Structure check, educational evaluation, title suggestions</td></tr>
+            </table>
+
+            <h2>Thumbnail Auto-Generation</h2>
+            <p>AI analyzes your video content and automatically generates optimal thumbnail images (1280×720px).</p>
+            <ol>
+                <li>Click the "🖼️ Auto-generate thumbnails" preset</li>
+                <li>AI analyzes the video content and generates 3 thumbnail patterns</li>
+                <li>A thumbnail preview appears in the result area</li>
+                <li>Click "Save Thumbnail" to save as a PNG file</li>
+            </ol>
+            <p>AI selects from 11 layout patterns and 6 color styles to match your video content.
+            If a scene has image media, it can be used as a background image.</p>
+
+            <h2>My Prompts (Prompt Library)</h2>
+            <p>Save prompts you use frequently for quick access.
+            Build up a library of refined prompts to improve your workflow over time.
+            Expand the 📚 section to view them.</p>
+
+            <h3>How to Save Prompts</h3>
+            <table>
+                <tr><th>Method</th><th>Steps</th></tr>
+                <tr><td>From input</td><td>Type a prompt, then click the 💾 button below the input area</td></tr>
+                <tr><td>From presets</td><td>Right-click a preset &gt; "Save to My Prompts"</td></tr>
+            </table>
+
+            <h3>Managing Prompts</h3>
+            <p>Right-click a My Prompt card to access the following actions:</p>
+            <ul>
+                <li><strong>Run</strong> — Click a card to load the prompt into the editor.</li>
+                <li><strong>Edit</strong> — Right-click &gt; "Edit" to change label, category, icon, or prompt text.</li>
+                <li><strong>Duplicate</strong> — Right-click &gt; "Duplicate" to create a new prompt based on an existing one.</li>
+                <li><strong>Delete</strong> — Right-click &gt; "Delete" to permanently remove a prompt.</li>
+            </ul>
+
+            <h3>Data Storage</h3>
+            <p>My Prompts are saved as individual JSON files in a local folder on your device.
+            They are never sent to the cloud.</p>
+            <pre>%LOCALAPPDATA%\InsightCast\Prompts\</pre>
+
+            <h2>Usage Monitoring</h2>
+            <p>Once an API key is set, usage statistics are displayed at the top of the panel:</p>
+            <table>
+                <tr><th>Item</th><th>Description</th></tr>
+                <tr><td>Calls</td><td>Number of API calls made</td></tr>
+                <tr><td>Tokens</td><td>Input / Output token counts</td></tr>
+                <tr><td>Cost</td><td>Estimated API cost for the session (USD)</td></tr>
+            </table>
+            <div class="tip">
+                <span class="tip-label">API Costs:</span>
+                API usage is billed directly by Anthropic to your account (BYOK model).
+                This product does not charge any API usage fees.
+            </div>
 
             <hr class="section-divider">
             """);
@@ -1549,19 +1681,19 @@ public partial class HelpWindow : Window
             <h1 id="support">Support</h1>
             <table>
                 <tr><th>Item</th><th>Details</th></tr>
-                <tr><td>Email</td><td>info@h-insight.jp</td></tr>
-                <tr><td>Developer</td><td>HARMONIC insight LLC</td></tr>
-                <tr><td>Website</td><td><a href="https://www.insight-office.com">https://www.insight-office.com</a></td></tr>
+                <tr><td>Email</td><td>support@harmonic-insight.com</td></tr>
+                <tr><td>Developer</td><td>HARMONIC insight</td></tr>
+                <tr><td>Website</td><td><a href="https://harmonic-insight.com">https://harmonic-insight.com</a></td></tr>
             </table>
 
             <h2>Legal</h2>
             <ul>
-                <li><a href="https://www.insight-office.com/ja/terms">Terms of Service</a></li>
-                <li><a href="https://www.insight-office.com/ja/privacy">Privacy Policy</a></li>
+                <li><a href="https://harmonic-insight.com/ja/terms">Terms of Service</a></li>
+                <li><a href="https://harmonic-insight.com/ja/privacy">Privacy Policy</a></li>
             </ul>
 
             <h2>About VOICEVOX</h2>
-            <p>InsightCast uses the VOICEVOX speech engine.
+            <p>This product uses the VOICEVOX speech engine.
             Please review each character's usage terms when using VOICEVOX voices.</p>
             """);
     }

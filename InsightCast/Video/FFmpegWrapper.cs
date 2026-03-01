@@ -304,11 +304,11 @@ public class FFmpegWrapper
             {
                 if (!string.IsNullOrEmpty(stdout))
                 {
-                    Console.WriteLine(stdout);
+                    Debug.WriteLine(stdout);
                 }
                 if (!string.IsNullOrEmpty(stderr))
                 {
-                    Console.Error.WriteLine(stderr);
+                    Debug.WriteLine($"FFmpeg stderr: {stderr}");
                 }
             }
 

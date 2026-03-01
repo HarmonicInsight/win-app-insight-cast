@@ -46,6 +46,9 @@ nuget.config
 .env
 .env.*
 *.secrets.json
+credentials
+credentials.*
+appsettings.*.json
 
 ## OS
 .DS_Store
@@ -57,3 +60,5 @@ publish/
 snipaste/
 
 nul
+Output/
+*_wpftmp.csproj

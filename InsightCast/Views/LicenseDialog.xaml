@@ -130,7 +130,7 @@
                              FontFamily="Consolas"
                              VerticalContentAlignment="Center"
                              Padding="6,0"
-                             Tag="INMV-PRO-2601-XXXX-XXXX-XXXX"/>
+                             Tag="INMV-BIZ-2601-XXXX-XXXX-XXXX"/>
                     <!-- Placeholder watermark via Tag, applied in code-behind -->
 
                     <TextBlock x:Name="ValidationMessage" Text=""
