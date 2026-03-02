@@ -5,6 +5,9 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- InsightCommon 共通テーマ（Colors, Icons, Styles） -->
+                <ResourceDictionary Source="pack://application:,,,/InsightCommon;component/UI/Resources/InsightTheme.xaml"/>
+                <!-- アプリ固有スタイル（オーバーライド用） -->
                 <ResourceDictionary Source="Themes/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

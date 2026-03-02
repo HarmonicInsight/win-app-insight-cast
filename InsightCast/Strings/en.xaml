@@ -32,7 +32,7 @@
 <!-- Preview -->    <sys:String x:Key="Preview.WindowTitle">Preview</sys:String>    <sys:String x:Key="Preview.ClickToEnlarge">Click to enlarge</sys:String>
 
     <!-- Language Switcher -->
-    <sys:String x:Key="Lang.SwitchTo">日本語</sys:String>
+    <sys:String x:Key="Lang.SwitchTo">EN</sys:String>
 
     <!-- App -->
     <sys:String x:Key="App.Error.Unexpected">An unexpected error occurred.\n\n{0}\n\nThe application may become unstable.</sys:String>
@@ -386,7 +386,7 @@
     <sys:String x:Key="VM.Recent.NotFound">File not found:\n{0}</sys:String>
     <sys:String x:Key="VM.Recent.NotFound.Title">Recent Files</sys:String>
     <sys:String x:Key="VM.BGM.Updated">BGM settings updated.</sys:String>
-    <sys:String x:Key="VM.Subtitle.ProRequired">Subtitles are available with Trial/Pro plan or above</sys:String>
+    <sys:String x:Key="VM.Subtitle.ProRequired">Subtitles are available with Trial/BIZ plan or above</sys:String>
     <sys:String x:Key="VM.License.Active">Active</sys:String>
     <sys:String x:Key="VM.License.Inactive">Inactive/Not registered</sys:String>
     <sys:String x:Key="VM.License.Info">Plan: {0}\nStatus: {1}\nExpires: {2}</sys:String>
@@ -548,6 +548,12 @@ Captured images can be pasted as scene media.</sys:String>
     <sys:String x:Key="VM.Template.None">No saved templates.</sys:String>
     <sys:String x:Key="VM.Template.Title">Templates</sys:String>
     <sys:String x:Key="VM.Template.Select">Select Template</sys:String>
+    <sys:String x:Key="Template.Rename">Rename</sys:String>
+    <sys:String x:Key="Template.Apply">Apply</sys:String>
+    <sys:String x:Key="Template.EnterNewName">Enter new name:</sys:String>
+    <sys:String x:Key="Template.Deleted">Template deleted: {0}</sys:String>
+    <sys:String x:Key="Template.Renamed">Template renamed: {0}</sys:String>
+    <sys:String x:Key="Template.DeleteConfirm">Delete template "{0}"?</sys:String>
 
     <!-- VM Export Extended -->
     <sys:String x:Key="VM.Export.InProgress">Export is in progress.</sys:String>
@@ -575,7 +581,7 @@ Captured images can be pasted as scene media.</sys:String>
     <sys:String x:Key="VM.Project.RecentFiles">Recent Files</sys:String>
 
     <!-- VM PPTX Import -->
-    <sys:String x:Key="VM.Pptx.FeatureLimit">PPTX import is available with Trial/Pro plan or above.\nPlease upgrade your license.</sys:String>
+    <sys:String x:Key="VM.Pptx.FeatureLimit">PPTX import is available with Trial/BIZ plan or above.\nPlease upgrade your license.</sys:String>
     <sys:String x:Key="VM.Pptx.PlanRequired">Feature Restricted</sys:String>
     <sys:String x:Key="VM.Pptx.Select">Select PowerPoint File</sys:String>
     <sys:String x:Key="VM.Pptx.Filter">PowerPoint Files|*.pptx|All Files|*.*</sys:String>
@@ -930,6 +936,11 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Duration.120s.Long">120 sec (2 min)</sys:String>
     <sys:String x:Key="License.Activate">Activate</sys:String>
     <sys:String x:Key="License.Clear">Clear</sys:String>
+    <sys:String x:Key="License.CurrentPlan">Current Plan</sys:String>
+    <sys:String x:Key="License.Features">Features</sys:String>
+    <sys:String x:Key="License.Activation">License Activation</sys:String>
+    <sys:String x:Key="License.Email">Email Address</sys:String>
+    <sys:String x:Key="License.Key">License Key</sys:String>
     <sys:String x:Key="Resolution.Landscape">1920x1080 (Landscape)</sys:String>
     <sys:String x:Key="Resolution.Portrait">1080x1920 (Portrait)</sys:String>
 
@@ -1153,6 +1164,7 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.Group.Support">Support</sys:String>
     <sys:String x:Key="Ribbon.Group.License">License</sys:String>
     <sys:String x:Key="Ribbon.Group.Legal">Legal</sys:String>
+    <sys:String x:Key="Ribbon.File">File</sys:String>
     <sys:String x:Key="Ribbon.File.New">New</sys:String>
     <sys:String x:Key="Ribbon.File.Open">Open</sys:String>
     <sys:String x:Key="Ribbon.File.Recent">Recent Files</sys:String>
@@ -1177,5 +1189,34 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.Help.Terms">Terms of Service</sys:String>
     <sys:String x:Key="Ribbon.Help.Privacy">Privacy Policy</sys:String>
     <sys:String x:Key="Ribbon.Help.About">About</sys:String>
+
+    <!-- Backstage -->
+    <sys:String x:Key="Backstage.Home">Home</sys:String>
+    <sys:String x:Key="Backstage.New">New</sys:String>
+    <sys:String x:Key="Backstage.Open">Open</sys:String>
+    <sys:String x:Key="Backstage.Save">Save</sys:String>
+    <sys:String x:Key="Backstage.SaveAs">Save As</sys:String>
+    <sys:String x:Key="Backstage.Import">Import</sys:String>
+    <sys:String x:Key="Backstage.Export">Export</sys:String>
+    <sys:String x:Key="Backstage.ImportPptx">Import PPTX</sys:String>
+    <sys:String x:Key="Backstage.ImportJson">Import JSON</sys:String>
+    <sys:String x:Key="Backstage.BatchExport">JSON Export</sys:String>
+    <sys:String x:Key="Backstage.Recent">Recent Files</sys:String>
+    <sys:String x:Key="Backstage.Help">Help</sys:String>
+    <sys:String x:Key="Backstage.Settings">Settings</sys:String>
+    <sys:String x:Key="Backstage.License">License</sys:String>
+    <sys:String x:Key="Backstage.About">About</sys:String>
+    <sys:String x:Key="Backstage.Language">Language</sys:String>
+    <sys:String x:Key="Backstage.Exit">Exit</sys:String>
+    <sys:String x:Key="Backstage.Recent.Empty">No recent files</sys:String>
+    <sys:String x:Key="Backstage.Recent.Clear">Clear History</sys:String>
+    <sys:String x:Key="Backstage.Language.Current">Current Language</sys:String>
+    <sys:String x:Key="Backstage.Language.Japanese">Japanese</sys:String>
+    <sys:String x:Key="Backstage.Language.English">English</sys:String>
+    <sys:String x:Key="Backstage.Info.Version">Version</sys:String>
+    <sys:String x:Key="Backstage.Info.Plan">Plan</sys:String>
+    <sys:String x:Key="Backstage.Info.Copyright">Copyright</sys:String>
+    <sys:String x:Key="Backstage.Legal.Terms">Terms of Service</sys:String>
+    <sys:String x:Key="Backstage.Legal.Privacy">Privacy Policy</sys:String>
 
 </ResourceDictionary>

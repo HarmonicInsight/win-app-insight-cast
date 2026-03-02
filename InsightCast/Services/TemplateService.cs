@@ -42,6 +42,9 @@ namespace InsightCast.Services
 
         [JsonPropertyName("defaultSubtitleStyleId")]
         public string? DefaultSubtitleStyleId { get; set; }
+
+        [JsonPropertyName("thumbnailGenerator")]
+        public ThumbnailGeneratorSettings ThumbnailGenerator { get; set; } = new();
     }
 
     public static class TemplateService
@@ -85,7 +88,8 @@ namespace InsightCast.Services
                 DefaultTransition = project.DefaultTransition,
                 DefaultTransitionDuration = project.DefaultTransitionDuration,
                 GenerateThumbnail = project.GenerateThumbnail,
-                GenerateChapters = project.GenerateChapters
+                GenerateChapters = project.GenerateChapters,
+                ThumbnailGenerator = DeepCopy(project.ThumbnailGenerator)
             };
         }
 
@@ -98,6 +102,7 @@ namespace InsightCast.Services
             project.DefaultTransitionDuration = template.DefaultTransitionDuration;
             project.GenerateThumbnail = template.GenerateThumbnail;
             project.GenerateChapters = template.GenerateChapters;
+            project.ThumbnailGenerator = DeepCopy(template.ThumbnailGenerator);
         }
 
         public static void SaveTemplate(ProjectTemplate template)

@@ -74,6 +74,9 @@ namespace InsightCast.Models
         [JsonPropertyName("generateChapters")]
         public bool GenerateChapters { get; set; } = true;
 
+        [JsonPropertyName("thumbnailGenerator")]
+        public ThumbnailGeneratorSettings ThumbnailGenerator { get; set; } = new();
+
         public Project()
         {
         }

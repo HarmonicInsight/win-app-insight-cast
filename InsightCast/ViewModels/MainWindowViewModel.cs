@@ -537,6 +537,7 @@ namespace InsightCast.ViewModels
 
         /// <summary>Raised when scenes are added, removed, or modified.</summary>
         public event Action? ScenesChanged;
+        public event Action? TemplateApplied;
 
         /// <summary>外部からシーン変更を通知する（AI ツールから使用）</summary>
         public void NotifyScenesChanged()
@@ -1600,38 +1601,62 @@ namespace InsightCast.ViewModels
 
         private void LoadTemplate()
         {
-            var templates = TemplateService.LoadAllTemplates();
-            if (templates.Count == 0)
+            while (true)
             {
-                _dialogService?.ShowInfo(LocalizationService.GetString("VM.Template.None"), LocalizationService.GetString("VM.Template.Title"));
-                return;
-            }
+                var templates = TemplateService.LoadAllTemplates();
+                if (templates.Count == 0)
+                {
+                    _dialogService?.ShowInfo(LocalizationService.GetString("VM.Template.None"), LocalizationService.GetString("VM.Template.Title"));
+                    return;
+                }
 
-            ProjectTemplate template;
-            if (templates.Count == 1)
-            {
-                template = templates[0];
-            }
-            else
-            {
-                var names = templates.Select(t => $"{t.Name}  ({t.CreatedAt:yyyy/MM/dd HH:mm})").ToArray();
-                var idx = _dialogService?.ShowListSelectDialog(LocalizationService.GetString("VM.Template.Select"), names) ?? -1;
-                if (idx < 0) return;
-                template = templates[idx];
-            }
+                var (action, selectedIndex, newName) = _dialogService?.ShowTemplateDialog(
+                    LocalizationService.GetString("VM.Template.Select"), templates) ?? (0, -1, null);
 
-            TemplateService.ApplyToProject(template, _project);
+                if (action == 0 || selectedIndex < 0) return; // Cancel
 
-            // Sync project settings back to UI
-            if (_project.Watermark.HasWatermark)
-            {
-                WatermarkFilePath = _project.Watermark.ImagePath!;
-                OnPropertyChanged(nameof(HasWatermark));
-                OnPropertyChanged(nameof(WatermarkFileName));
+                var template = templates[selectedIndex];
+
+                if (action == 2) // Delete
+                {
+                    if (_dialogService?.ShowConfirmation(
+                        LocalizationService.GetString("Template.DeleteConfirm", template.Name),
+                        LocalizationService.GetString("VM.Template.Title")) == true)
+                    {
+                        TemplateService.DeleteTemplate(template.Name);
+                        _logger.Log(LocalizationService.GetString("Template.Deleted", template.Name));
+                    }
+                    continue; // Show dialog again
+                }
+
+                if (action == 3 && !string.IsNullOrWhiteSpace(newName)) // Rename
+                {
+                    var oldName = template.Name;
+                    TemplateService.DeleteTemplate(oldName);
+                    template.Name = newName;
+                    TemplateService.SaveTemplate(template);
+                    _logger.Log(LocalizationService.GetString("Template.Renamed", newName));
+                    continue; // Show dialog again
+                }
+
+                if (action == 1) // Apply
+                {
+                    TemplateService.ApplyToProject(template, _project);
+
+                    // Sync project settings back to UI
+                    if (_project.Watermark.HasWatermark)
+                    {
+                        WatermarkFilePath = _project.Watermark.ImagePath!;
+                        OnPropertyChanged(nameof(HasWatermark));
+                        OnPropertyChanged(nameof(WatermarkFileName));
+                    }
+
+                    UpdateBgmStatus();
+                    TemplateApplied?.Invoke(); // Notify UI to reload thumbnail settings
+                    _logger.Log(LocalizationService.GetString("VM.Template.Applied", template.Name));
+                    return;
+                }
             }
-
-            UpdateBgmStatus();
-            _logger.Log(LocalizationService.GetString("VM.Template.Applied", template.Name));
         }
 
         #endregion

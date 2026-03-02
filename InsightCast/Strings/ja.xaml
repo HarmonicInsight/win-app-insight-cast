@@ -32,7 +32,7 @@
 <!-- Preview -->    <sys:String x:Key="Preview.WindowTitle">プレビュー</sys:String>    <sys:String x:Key="Preview.ClickToEnlarge">クリックで拡大</sys:String>
 
     <!-- Language Switcher -->
-    <sys:String x:Key="Lang.SwitchTo">English</sys:String>
+    <sys:String x:Key="Lang.SwitchTo">JA</sys:String>
 
     <!-- App -->
     <sys:String x:Key="App.Error.Unexpected">予期しないエラーが発生しました。\n\n{0}\n\nアプリケーションの動作が不安定になる可能性があります。</sys:String>
@@ -386,7 +386,7 @@
     <sys:String x:Key="VM.Recent.NotFound">ファイルが見つかりません:\n{0}</sys:String>
     <sys:String x:Key="VM.Recent.NotFound.Title">最近使ったファイル</sys:String>
     <sys:String x:Key="VM.BGM.Updated">BGM設定を更新しました。</sys:String>
-    <sys:String x:Key="VM.Subtitle.ProRequired">字幕機能はTrial・Proプラン以上で利用可能です</sys:String>
+    <sys:String x:Key="VM.Subtitle.ProRequired">字幕機能はTrial・BIZプラン以上で利用可能です</sys:String>
     <sys:String x:Key="VM.License.Active">有効</sys:String>
     <sys:String x:Key="VM.License.Inactive">無効/未登録</sys:String>
     <sys:String x:Key="VM.License.Info">プラン: {0}\n状態: {1}\n有効期限: {2}</sys:String>
@@ -548,6 +548,12 @@
     <sys:String x:Key="VM.Template.None">保存済みテンプレートがありません。</sys:String>
     <sys:String x:Key="VM.Template.Title">テンプレート</sys:String>
     <sys:String x:Key="VM.Template.Select">テンプレートを選択</sys:String>
+    <sys:String x:Key="Template.Rename">名前変更</sys:String>
+    <sys:String x:Key="Template.Apply">適用</sys:String>
+    <sys:String x:Key="Template.EnterNewName">新しい名前を入力:</sys:String>
+    <sys:String x:Key="Template.Deleted">テンプレートを削除しました: {0}</sys:String>
+    <sys:String x:Key="Template.Renamed">テンプレートの名前を変更しました: {0}</sys:String>
+    <sys:String x:Key="Template.DeleteConfirm">テンプレート「{0}」を削除しますか？</sys:String>
 
     <!-- VM Export Extended -->
     <sys:String x:Key="VM.Export.InProgress">書き出し処理が実行中です。</sys:String>
@@ -575,7 +581,7 @@
     <sys:String x:Key="VM.Project.RecentFiles">最近使ったファイル</sys:String>
 
     <!-- VM PPTX Import -->
-    <sys:String x:Key="VM.Pptx.FeatureLimit">PPTX取込機能はTrial・Proプラン以上でご利用いただけます。\nライセンスをアップグレードしてください。</sys:String>
+    <sys:String x:Key="VM.Pptx.FeatureLimit">PPTX取込機能はTrial・BIZプラン以上でご利用いただけます。\nライセンスをアップグレードしてください。</sys:String>
     <sys:String x:Key="VM.Pptx.PlanRequired">機能制限</sys:String>
     <sys:String x:Key="VM.Pptx.Select">PowerPointファイルを選択</sys:String>
     <sys:String x:Key="VM.Pptx.Filter">PowerPointファイル|*.pptx|すべてのファイル|*.*</sys:String>
@@ -931,6 +937,11 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Duration.120s.Long">120秒 (2分)</sys:String>
     <sys:String x:Key="License.Activate">アクティベート</sys:String>
     <sys:String x:Key="License.Clear">クリア</sys:String>
+    <sys:String x:Key="License.CurrentPlan">現在のプラン</sys:String>
+    <sys:String x:Key="License.Features">機能一覧</sys:String>
+    <sys:String x:Key="License.Activation">ライセンス認証</sys:String>
+    <sys:String x:Key="License.Email">メールアドレス</sys:String>
+    <sys:String x:Key="License.Key">ライセンスキー</sys:String>
     <sys:String x:Key="Resolution.Landscape">1920x1080 (横)</sys:String>
     <sys:String x:Key="Resolution.Portrait">1080x1920 (縦)</sys:String>
 
@@ -1154,6 +1165,7 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.Group.Support">サポート</sys:String>
     <sys:String x:Key="Ribbon.Group.License">ライセンス</sys:String>
     <sys:String x:Key="Ribbon.Group.Legal">法的情報</sys:String>
+    <sys:String x:Key="Ribbon.File">ファイル</sys:String>
     <sys:String x:Key="Ribbon.File.New">新規</sys:String>
     <sys:String x:Key="Ribbon.File.Open">開く</sys:String>
     <sys:String x:Key="Ribbon.File.Recent">最近使ったファイル</sys:String>
@@ -1178,5 +1190,34 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.Help.Terms">利用規約</sys:String>
     <sys:String x:Key="Ribbon.Help.Privacy">プライバシー</sys:String>
     <sys:String x:Key="Ribbon.Help.About">バージョン情報</sys:String>
+
+    <!-- Backstage -->
+    <sys:String x:Key="Backstage.Home">ホーム</sys:String>
+    <sys:String x:Key="Backstage.New">新規作成</sys:String>
+    <sys:String x:Key="Backstage.Open">開く</sys:String>
+    <sys:String x:Key="Backstage.Save">保存</sys:String>
+    <sys:String x:Key="Backstage.SaveAs">名前を付けて保存</sys:String>
+    <sys:String x:Key="Backstage.Import">インポート</sys:String>
+    <sys:String x:Key="Backstage.Export">エクスポート</sys:String>
+    <sys:String x:Key="Backstage.ImportPptx">PPTX取込</sys:String>
+    <sys:String x:Key="Backstage.ImportJson">JSONインポート</sys:String>
+    <sys:String x:Key="Backstage.BatchExport">JSONエクスポート</sys:String>
+    <sys:String x:Key="Backstage.Recent">最近使ったファイル</sys:String>
+    <sys:String x:Key="Backstage.Help">ヘルプ</sys:String>
+    <sys:String x:Key="Backstage.Settings">設定</sys:String>
+    <sys:String x:Key="Backstage.License">ライセンス</sys:String>
+    <sys:String x:Key="Backstage.About">バージョン情報</sys:String>
+    <sys:String x:Key="Backstage.Language">言語</sys:String>
+    <sys:String x:Key="Backstage.Exit">終了</sys:String>
+    <sys:String x:Key="Backstage.Recent.Empty">最近使ったファイルはありません</sys:String>
+    <sys:String x:Key="Backstage.Recent.Clear">履歴をクリア</sys:String>
+    <sys:String x:Key="Backstage.Language.Current">現在の言語</sys:String>
+    <sys:String x:Key="Backstage.Language.Japanese">日本語</sys:String>
+    <sys:String x:Key="Backstage.Language.English">English</sys:String>
+    <sys:String x:Key="Backstage.Info.Version">バージョン</sys:String>
+    <sys:String x:Key="Backstage.Info.Plan">プラン</sys:String>
+    <sys:String x:Key="Backstage.Info.Copyright">Copyright</sys:String>
+    <sys:String x:Key="Backstage.Legal.Terms">利用規約</sys:String>
+    <sys:String x:Key="Backstage.Legal.Privacy">プライバシーポリシー</sys:String>
 
 </ResourceDictionary>

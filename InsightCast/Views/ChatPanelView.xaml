@@ -47,9 +47,8 @@
                         <Button Style="{StaticResource SmallButton}"
                                 Command="{Binding OpenPromptEditorCommand}"
                                 ToolTip="{DynamicResource Ai.PromptEditor}"
-                                FontSize="12" Padding="4,2" Margin="0,0,2,0">
-                            <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
-                        </Button>
+                                Content="{DynamicResource Ai.PromptEditor}"
+                                FontSize="11" Padding="8,3" Margin="0,0,4,0"/>
                         <Button Style="{StaticResource SmallButton}"
                                 Click="PopOutButton_Click"
                                 ToolTip="{DynamicResource Ai.Popout}"

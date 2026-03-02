@@ -9,6 +9,7 @@ using InsightCast.Services;
 using InsightCast.Video;
 using InsightCast.Views;
 using InsightCast.VoiceVox;
+using Syncfusion.SfSkinManager;
 
 /// <summary>
 /// Application entry point. Handles first-run setup, engine discovery,
@@ -18,9 +19,16 @@ public partial class App : Application
 {
     private VoiceVoxClient? _voiceVoxClient;
 
-    protected override async void OnStartup(StartupEventArgs e)
+    protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Syncfusion ライセンス設定（Essential Studio 32.x - Community License）
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(
+            "Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1ccXVXQ2ZYVUF2XkBWYEs=");
+
+        // Syncfusion テーマはRibbonのみに適用（カスタムタイトルバーの上書き防止）
+        SfSkinManager.ApplyStylesOnApplication = false;
 
         // Global unhandled exception handlers to prevent silent crashes
         DispatcherUnhandledException += (_, args) =>
@@ -53,11 +61,11 @@ public partial class App : Application
 
         try
         {
-            await StartupAsync(e);
+            StartupCore(e);
         }
         catch (Exception ex)
         {
-            CrashReporter.WriteCrashReport(ex, "StartupAsync");
+            CrashReporter.WriteCrashReport(ex, "StartupCore");
             MessageBox.Show(
                 LocalizationService.GetString("App.Error.Startup", ex.ToString()),
                 LocalizationService.GetString("App.Error.Startup.Title"),
@@ -67,13 +75,12 @@ public partial class App : Application
         }
     }
 
-    private async Task StartupAsync(StartupEventArgs e)
+    private void StartupCore(StartupEventArgs e)
     {
-
-        // ── 1. Load configuration ──────────────────────────────────
+        // ── 1. Load configuration (fast) ──────────────────────────────────
         var config = new Config();
 
-        // ── 1.5. Initialize localization ─────────────────────────────
+        // ── 1.5. Initialize localization (fast) ─────────────────────────────
         LocalizationService.Initialize(config.Language);
 
         if (config.LoadFailed)
@@ -95,9 +102,6 @@ public partial class App : Application
 
             if (result == true)
             {
-                // Persist the values chosen in the wizard.
-                // The wizard creates its own VoiceVoxClient internally;
-                // retrieve the connected client and speaker ID.
                 wizardClient = wizard.GetClient();
                 var wizardSpeakerId = wizard.GetSpeakerId();
 
@@ -111,34 +115,16 @@ public partial class App : Application
             }
             else
             {
-                // User cancelled -- nothing to do, shut down.
                 Shutdown();
                 return;
             }
         }
 
-        // ── 3. Create VOICEVOX client ──────────────────────────────
-        // Reuse the client from the wizard when available; otherwise create a new one.
+        // ── 3. Create VOICEVOX client (no connection check yet) ────────────
         var client = wizardClient ?? new VoiceVoxClient(config.EngineUrl);
         _voiceVoxClient = client;
 
-        if (!config.IsFirstRun)
-        {
-            // Quick connection check; try auto-discovery on failure.
-            var version = await client.CheckConnectionAsync();
-            if (version == null)
-            {
-                var discovered = await client.DiscoverEngineAsync();
-                if (discovered != null)
-                {
-                    config.BeginUpdate();
-                    config.EngineUrl = discovered.BaseUrl;
-                    config.EndUpdate();
-                }
-            }
-        }
-
-        // ── 4. FFmpeg wrapper ──────────────────────────────────────
+        // ── 4. FFmpeg wrapper (fast - just path lookup) ────────────────────
         FFmpegWrapper? ffmpeg = null;
         try
         {
@@ -146,21 +132,42 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
-                LocalizationService.GetString("App.FFmpeg.Error", ex.Message),
-                "Insight Training Studio",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+            // Defer error message to avoid blocking startup
+            _ = Task.Run(() => Dispatcher.Invoke(() =>
+                MessageBox.Show(
+                    LocalizationService.GetString("App.FFmpeg.Error", ex.Message),
+                    "Insight Training Studio",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning)));
         }
 
         // ── 5. Default speaker ID ──────────────────────────────────
         int speakerId = config.DefaultSpeakerId ?? 13;
 
-        // ── 6. Show main window ─────────────────────────────────────
+        // ── 6. Show main window IMMEDIATELY ─────────────────────────────
         var mainWindow = new MainWindow(client, speakerId, ffmpeg, config);
         mainWindow.Show();
 
-        // ── 7. Open project from command-line argument (.icproj file association)
+        // ── 7. Background: VOICEVOX connection check (non-blocking) ────────
+        if (!config.IsFirstRun)
+        {
+            _ = Task.Run(async () =>
+            {
+                var version = await client.CheckConnectionAsync();
+                if (version == null)
+                {
+                    var discovered = await client.DiscoverEngineAsync();
+                    if (discovered != null)
+                    {
+                        config.BeginUpdate();
+                        config.EngineUrl = discovered.BaseUrl;
+                        config.EndUpdate();
+                    }
+                }
+            });
+        }
+
+        // ── 8. Open project from command-line argument ─────────────────────
         if (e.Args.Length > 0 && !string.IsNullOrEmpty(e.Args[0]))
         {
             var filePath = e.Args[0];

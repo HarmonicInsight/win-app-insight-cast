@@ -1,9 +1,10 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using InsightCast.Core;
@@ -13,6 +14,7 @@ using InsightCast.Services.Claude;
 using InsightCast.Video;
 using InsightCast.ViewModels;
 using InsightCast.VoiceVox;
+using Syncfusion.SfSkinManager;
 
 namespace InsightCast.Views
 {
@@ -41,6 +43,7 @@ namespace InsightCast.Views
             _vm.PreviewVideoReady += OnPreviewVideoReady;
             _vm.ExitRequested += OnExitRequested;
             _vm.ScenesChanged += OnMainViewModelScenesChanged;
+            _vm.TemplateApplied += OnTemplateApplied;
 
             // Wire up logger to log TextBox
             _vm.Logger.LogReceived += OnLogReceived;
@@ -50,23 +53,35 @@ namespace InsightCast.Views
             if (version != null)
                 VersionLabel.Text = $"v{version.Major}.{version.Minor}.{version.Build}";
 
-            Loaded += async (_, _) =>
+            Loaded += (_, _) =>
             {
+                // ── Phase 1: Essential UI setup (immediate) ────────────────
+                // Apply Syncfusion theme and hide backstage
+                SfSkinManager.SetTheme(MainRibbon, new Theme("Office2019White"));
+                MainRibbon.HideBackStage();
+
+                // Set dialog service immediately (needed for UI interactions)
                 _vm.SetDialogService(new DialogService(this));
-                await _vm.InitializeAsync();
-                PopulateRecentFiles();
 
-                // Initialize Planning Tab
-                PlanningTabControl.Initialize(_config, _vm.Project);
-
-                // Sync scene lists when planning tab modifies scenes
-                PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
-
-                // Initialize AI Assistant panel
-                InitializeChatPanel();
-
-                // Default to Video Generation tab (index 1)
+                // Default to Video Generation tab
                 MainTabControl.SelectedIndex = 1;
+
+                // ── Phase 2: Deferred initialization (background/low priority) ──
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, async () =>
+                {
+                    // Load VOICEVOX speakers (network call)
+                    await _vm.InitializeAsync();
+
+                    // UI updates after speaker load
+                    PopulateRecentFiles();
+
+                    // Initialize Planning Tab
+                    PlanningTabControl.Initialize(_config, _vm.Project);
+                    PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
+
+                    // Initialize AI Assistant panel (heavy)
+                    InitializeChatPanel();
+                });
             };
         }
 
@@ -78,6 +93,11 @@ namespace InsightCast.Views
         private void OnMainViewModelScenesChanged()
         {
             Dispatcher.Invoke(() => PlanningTabControl.RefreshScenes());
+        }
+
+        private void OnTemplateApplied()
+        {
+            Dispatcher.Invoke(() => PlanningTabControl.ReloadThumbnailSettings());
         }
 
         private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -508,7 +528,77 @@ namespace InsightCast.Views
 
         #endregion
 
-        #region Custom Title Bar
+        #region Custom Title Bar & Window Resize
+
+        private const int ResizeBorderWidth = 6;
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            var hwnd = new WindowInteropHelper(this).Handle;
+            var source = HwndSource.FromHwnd(hwnd);
+            source?.AddHook(WndProc);
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_NCHITTEST = 0x0084;
+            if (msg == WM_NCHITTEST)
+            {
+                var result = HitTestEdge(lParam);
+                if (result != 0)
+                {
+                    handled = true;
+                    return (IntPtr)result;
+                }
+            }
+            return IntPtr.Zero;
+        }
+
+        private int HitTestEdge(IntPtr lParam)
+        {
+            var screenX = (short)(lParam.ToInt64() & 0xFFFF);
+            var screenY = (short)((lParam.ToInt64() >> 16) & 0xFFFF);
+            var point = PointFromScreen(new Point(screenX, screenY));
+            var w = ActualWidth;
+            var h = ActualHeight;
+            var left = point.X < ResizeBorderWidth;
+            var right = point.X > w - ResizeBorderWidth;
+            var top = point.Y < ResizeBorderWidth;
+            var bottom = point.Y > h - ResizeBorderWidth;
+
+            if (top && left) return 13;      // HTTOPLEFT
+            if (top && right) return 14;     // HTTOPRIGHT
+            if (bottom && left) return 16;   // HTBOTTOMLEFT
+            if (bottom && right) return 17;  // HTBOTTOMRIGHT
+            if (left) return 10;             // HTLEFT
+            if (right) return 11;            // HTRIGHT
+            if (top) return 12;              // HTTOP
+            if (bottom) return 15;           // HTBOTTOM
+            return 0;
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                // Double-click to maximize/restore
+                WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            }
+            else
+            {
+                // Drag to move window
+                if (WindowState == WindowState.Maximized)
+                {
+                    // Restore before dragging from maximized
+                    var point = PointToScreen(e.GetPosition(this));
+                    WindowState = WindowState.Normal;
+                    Left = point.X - (ActualWidth / 2);
+                    Top = point.Y - 20;
+                }
+                DragMove();
+            }
+        }
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -651,30 +741,33 @@ namespace InsightCast.Views
 
         private void PopulateRecentFiles()
         {
-            RecentFilesMenu.Items.Clear();
             var files = _vm.RecentFiles;
-            if (files.Count == 0)
+            BackstageRecentFiles.ItemsSource = files.Select(f =>
             {
-                var empty = new RibbonApplicationMenuItem
+                var lastAccessed = DateTime.MinValue;
+                try
                 {
-                    Header = LocalizationService.GetString("Common.None"),
-                    IsEnabled = false
+                    if (File.Exists(f))
+                        lastAccessed = File.GetLastWriteTime(f);
+                }
+                catch { /* ignore */ }
+                return new RecentFileInfo
+                {
+                    FullPath = f,
+                    FileName = Path.GetFileName(f),
+                    LastAccessed = lastAccessed
                 };
-                RecentFilesMenu.Items.Add(empty);
-                return;
-            }
+            }).ToList();
 
-            foreach (var file in files)
-            {
-                var item = new RibbonApplicationMenuItem
-                {
-                    Header = Path.GetFileName(file),
-                    ToolTip = file,
-                    CommandParameter = file,
-                    Command = _vm.OpenRecentFileCommand
-                };
-                RecentFilesMenu.Items.Add(item);
-            }
+            // Update language radio buttons
+            UpdateLanguageRadioButtons();
+        }
+
+        private void UpdateLanguageRadioButtons()
+        {
+            var currentLang = LocalizationService.CurrentLanguage;
+            LangJaRadio.IsChecked = currentLang == "ja";
+            LangEnRadio.IsChecked = currentLang == "en";
         }
 
         #endregion
@@ -708,5 +801,94 @@ namespace InsightCast.Views
         }
 
         #endregion
+
+        #region Syncfusion Backstage Event Handlers
+
+        private void BackStageNew_Click(object sender, RoutedEventArgs e)
+        {
+            MainRibbon.HideBackStage();
+            _vm.NewProjectCommand.Execute(null);
+        }
+
+        private void BackStageOpen_Click(object sender, RoutedEventArgs e)
+        {
+            MainRibbon.HideBackStage();
+            _vm.OpenProjectCommand.Execute(null);
+        }
+
+        private void BackStageSave_Click(object sender, RoutedEventArgs e)
+        {
+            MainRibbon.HideBackStage();
+            _vm.SaveProjectCommand.Execute(null);
+        }
+
+        private void BackStageSaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            MainRibbon.HideBackStage();
+            _vm.SaveProjectAsCommand.Execute(null);
+        }
+
+        private void BackStageRecentFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string path)
+            {
+                MainRibbon.HideBackStage();
+                _vm.OpenRecentFileCommand.Execute(path);
+            }
+        }
+
+        private void BackStageImportPptx_Click(object sender, RoutedEventArgs e)
+        {
+            MainRibbon.HideBackStage();
+            _vm.ImportPptxCommand.Execute(null);
+        }
+
+        private void BackStageImportJson_Click(object sender, RoutedEventArgs e)
+        {
+            MainRibbon.HideBackStage();
+            _vm.ImportJsonCommand.Execute(null);
+        }
+
+        private void BackStageBatchExport_Click(object sender, RoutedEventArgs e)
+        {
+            MainRibbon.HideBackStage();
+            _vm.BatchExportCommand.Execute(null);
+        }
+
+        private void BackStageLanguageRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton radio && radio.Tag is string lang)
+            {
+                LocalizationService.SetLanguage(lang);
+                _config.Language = lang;
+                _chatVm?.RefreshForLanguageChange();
+            }
+        }
+
+        private void BackStageLicense_Click(object sender, RoutedEventArgs e)
+        {
+            // Backstage を閉じずにライセンスダイアログを表示
+            var dialog = new LicenseDialog { Owner = this };
+            dialog.ShowDialog();
+        }
+
+        private void BackStageExit_Click(object sender, RoutedEventArgs e)
+        {
+            MainRibbon.HideBackStage();
+            _vm.ExitCommand.Execute(null);
+        }
+
+        #endregion
+    }
+
+    /// <summary>Helper class for recent file display</summary>
+    public class RecentFileInfo
+    {
+        public string FullPath { get; set; } = "";
+        public string FileName { get; set; } = "";
+        public DateTime LastAccessed { get; set; }
+        public string LastAccessedDisplay => LastAccessed == DateTime.MinValue
+            ? ""
+            : LastAccessed.ToString("yyyy/MM/dd HH:mm");
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using InsightCast.Models;
 
 namespace InsightCast.Services
@@ -17,5 +18,11 @@ namespace InsightCast.Services
         void ShowLicenseDialog(Core.Config config);
         /// <summary>Shows a selection dialog for a list of items. Returns the selected index or -1 if cancelled.</summary>
         int ShowListSelectDialog(string title, string[] items);
+
+        /// <summary>Shows template management dialog. Returns (action, selectedIndex). Action: 0=cancel, 1=apply, 2=delete, 3=rename.</summary>
+        (int action, int selectedIndex, string? newName) ShowTemplateDialog(string title, List<ProjectTemplate> templates);
+
+        /// <summary>Shows input dialog for text. Returns null if cancelled.</summary>
+        string? ShowInputDialog(string title, string prompt, string? defaultValue = null);
     }
 }

@@ -29,6 +29,12 @@ namespace InsightCast.Views
             _viewModel?.RefreshSceneList();
         }
 
+        /// <summary>サムネイル設定をProjectから再読み込み（テンプレート適用後に呼び出す）</summary>
+        public void ReloadThumbnailSettings()
+        {
+            _viewModel?.LoadThumbnailSettingsFromProject();
+        }
+
         /// <summary>Raised when scenes are added, removed, or modified in the planning tab.</summary>
         public event Action? ScenesChanged
         {

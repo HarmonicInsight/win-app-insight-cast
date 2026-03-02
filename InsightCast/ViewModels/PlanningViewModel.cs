@@ -193,6 +193,9 @@ namespace InsightCast.ViewModels
             _thumbnailPatterns = ThumbnailService.GetPatterns();
             _stylePresets = ThumbnailService.GetStylePresets();
 
+            // Load thumbnail settings from project
+            LoadThumbnailSettingsFromProject();
+
             // Commands
             SendChatCommand = new RelayCommand(async () => await SendChatAsync());
             GenerateOutlineCommand = new RelayCommand(async () => await GenerateOutlineAsync());
@@ -1220,6 +1223,9 @@ namespace InsightCast.ViewModels
 
         private void RequestThumbnailPreviewUpdate()
         {
+            // Save settings to project for template persistence
+            SaveThumbnailSettingsToProject();
+
             // Debounce: wait 300ms before generating preview
             if (_previewDebounceTimer == null)
             {
@@ -1236,6 +1242,73 @@ namespace InsightCast.ViewModels
 
             _previewDebounceTimer.Stop();
             _previewDebounceTimer.Start();
+        }
+
+        /// <summary>
+        /// サムネイル設定をProjectから読み込む（テンプレート適用時に呼び出し）
+        /// </summary>
+        public void LoadThumbnailSettingsFromProject()
+        {
+            var settings = _project.ThumbnailGenerator;
+            _selectedThumbnailPatternIndex = settings.PatternIndex;
+            _thumbnailMainText = settings.MainText;
+            _thumbnailSubText = settings.SubText;
+            _thumbnailSubSubText = settings.SubSubText;
+            _selectedMainFontIndex = settings.MainFontIndex;
+            _selectedSubFontIndex = settings.SubFontIndex;
+            _selectedSubSubFontIndex = settings.SubSubFontIndex;
+            _mainFontSize = settings.MainFontSizeIndex;
+            _subFontSize = settings.SubFontSizeIndex;
+            _subSubFontSize = settings.SubSubFontSizeIndex;
+            _selectedMainColorIndex = settings.MainColorIndex;
+            _selectedSubColorIndex = settings.SubColorIndex;
+            _selectedSubSubColorIndex = settings.SubSubColorIndex;
+            _selectedBgColorIndex = settings.BgColorIndex;
+            _thumbnailBgPath = settings.BgImagePath;
+
+            // Notify all properties changed
+            OnPropertyChanged(nameof(SelectedThumbnailPatternIndex));
+            OnPropertyChanged(nameof(ThumbnailMainText));
+            OnPropertyChanged(nameof(ThumbnailSubText));
+            OnPropertyChanged(nameof(ThumbnailSubSubText));
+            OnPropertyChanged(nameof(SelectedMainFontIndex));
+            OnPropertyChanged(nameof(SelectedSubFontIndex));
+            OnPropertyChanged(nameof(SelectedSubSubFontIndex));
+            OnPropertyChanged(nameof(MainFontSizeIndex));
+            OnPropertyChanged(nameof(SubFontSizeIndex));
+            OnPropertyChanged(nameof(SubSubFontSizeIndex));
+            OnPropertyChanged(nameof(SelectedMainColorIndex));
+            OnPropertyChanged(nameof(SelectedSubColorIndex));
+            OnPropertyChanged(nameof(SelectedSubSubColorIndex));
+            OnPropertyChanged(nameof(SelectedBgColorIndex));
+            OnPropertyChanged(nameof(ThumbnailBgFileName));
+            OnPropertyChanged(nameof(ThumbnailCharCountText));
+            OnPropertyChanged(nameof(ThumbnailCharCountColor));
+
+            // Update preview (don't save back to project - we're loading from it)
+            GenerateThumbnailPreview();
+        }
+
+        /// <summary>
+        /// サムネイル設定をProjectに保存
+        /// </summary>
+        private void SaveThumbnailSettingsToProject()
+        {
+            _project.ThumbnailGenerator.PatternIndex = _selectedThumbnailPatternIndex;
+            _project.ThumbnailGenerator.MainText = _thumbnailMainText;
+            _project.ThumbnailGenerator.SubText = _thumbnailSubText;
+            _project.ThumbnailGenerator.SubSubText = _thumbnailSubSubText;
+            _project.ThumbnailGenerator.MainFontIndex = _selectedMainFontIndex;
+            _project.ThumbnailGenerator.SubFontIndex = _selectedSubFontIndex;
+            _project.ThumbnailGenerator.SubSubFontIndex = _selectedSubSubFontIndex;
+            _project.ThumbnailGenerator.MainFontSizeIndex = _mainFontSize;
+            _project.ThumbnailGenerator.SubFontSizeIndex = _subFontSize;
+            _project.ThumbnailGenerator.SubSubFontSizeIndex = _subSubFontSize;
+            _project.ThumbnailGenerator.MainColorIndex = _selectedMainColorIndex;
+            _project.ThumbnailGenerator.SubColorIndex = _selectedSubColorIndex;
+            _project.ThumbnailGenerator.SubSubColorIndex = _selectedSubSubColorIndex;
+            _project.ThumbnailGenerator.BgColorIndex = _selectedBgColorIndex;
+            _project.ThumbnailGenerator.BgImagePath = _thumbnailBgPath;
         }
 
         private void GenerateThumbnailPreview()
