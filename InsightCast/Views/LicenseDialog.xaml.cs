@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using InsightCast.Core;
 
@@ -29,6 +29,14 @@ namespace InsightCast.Views
         {
             SetupPlaceholder();
             LoadCurrentLicense();
+        }
+
+        // ── TitleBar ───────────────────────────────────────────────────────
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 1)
+                DragMove();
         }
 
         // ── Placeholder Watermark ───────────────────────────────────────
@@ -96,56 +104,45 @@ namespace InsightCast.Views
         private void UpdateUI()
         {
             // Plan display
-            PlanLabel.Text = License.GetPlanDisplayName(_licenseInfo.Plan);
+            PlanText.Text = License.GetPlanDisplayName(_licenseInfo.Plan);
 
             // Plan label color based on plan level
-            PlanLabel.Foreground = _licenseInfo.Plan switch
+            PlanText.Foreground = _licenseInfo.Plan switch
             {
                 PlanCode.Ent   => new SolidColorBrush(Color.FromRgb(0x7C, 0x3A, 0xED)), // Purple
                 PlanCode.Biz   => new SolidColorBrush(Color.FromRgb(0x25, 0x63, 0xEB)), // Blue
                 PlanCode.Trial => new SolidColorBrush(Color.FromRgb(0xF5, 0x9E, 0x0B)), // Amber
-                _ => new SolidColorBrush(Color.FromRgb(0xA8, 0xA2, 0x9E))               // Stone 400
+                _ => (SolidColorBrush)FindResource("BrandPrimary")                      // Gold
             };
 
-            // Status label
+            // Expiry label
             if (_licenseInfo.IsValid && _licenseInfo.ExpiresAt.HasValue)
             {
-                StatusLabel.Text = $"有効期限: {_licenseInfo.ExpiresAt.Value:yyyy年MM月dd日}";
-                StatusLabel.Foreground = new SolidColorBrush(Color.FromRgb(0xB0, 0xB0, 0xB0));
-            }
-            else if (!string.IsNullOrEmpty(_licenseInfo.ErrorMessage))
-            {
-                StatusLabel.Text = _licenseInfo.ErrorMessage;
-                StatusLabel.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B));
+                ExpiryText.Text = $"有効期限: {_licenseInfo.ExpiresAt.Value:yyyy年MM月dd日}";
             }
             else
             {
-                StatusLabel.Text = "";
+                ExpiryText.Text = "";
             }
 
-            // Features
-            UpdateFeatureLabel(FeatureSubtitle, "subtitle", _licenseInfo.Plan);
-            UpdateFeatureLabel(FeatureSubtitleStyle, "subtitle_style", _licenseInfo.Plan);
-            UpdateFeatureLabel(FeatureTransition, "transition", _licenseInfo.Plan);
-            UpdateFeatureLabel(FeaturePptx, "pptx_import", _licenseInfo.Plan);
+            // Update feature status icons based on plan
+            bool isTrial = _licenseInfo.Plan == PlanCode.Trial;
+            bool isBiz = _licenseInfo.Plan == PlanCode.Biz;
+            bool isEnt = _licenseInfo.Plan == PlanCode.Ent;
+            bool hasTrialFeatures = isTrial || isBiz || isEnt;
 
-            // Validation message
-            ValidationMessage.Text = "";
-        }
+            // TRIAL/BIZ features (subtitle, transition, pptx)
+            Feature1Status.Text = hasTrialFeatures ? "✅" : "🔒 TRIAL+";
+            Feature2Status.Text = hasTrialFeatures ? "✅" : "🔒 TRIAL+";
+            Feature3Status.Text = hasTrialFeatures ? "✅" : "🔒 TRIAL+";
 
-        private void UpdateFeatureLabel(TextBlock label, string feature, PlanCode plan)
-        {
-            bool available = License.CanUseFeature(plan, feature);
-            if (available)
-            {
-                label.Text = "\u25CB\u5229\u7528\u53EF\u80FD"; // ○利用可能
-                label.Foreground = new SolidColorBrush(Color.FromRgb(0x4C, 0xAF, 0x50));
-            }
-            else
-            {
-                label.Text = "\u00D7TRIAL\u30FBBIZ\u4EE5\u4E0A\u304C\u5FC5\u8981"; // ×TRIAL・BIZ以上が必要
-                label.Foreground = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
-            }
+            // ENT features (AI assistant, VRM, 4K)
+            Feature4Status.Text = isEnt ? "✅" : "🔒 ENT";
+            Feature5Status.Text = isEnt ? "✅" : "🔒 ENT";
+            Feature6Status.Text = isEnt ? "✅" : "🔒 ENT";
+
+            // Status message
+            StatusMessage.Text = "";
         }
 
         // ── Event Handlers ──────────────────────────────────────────────
@@ -157,15 +154,15 @@ namespace InsightCast.Views
 
             if (string.IsNullOrEmpty(email))
             {
-                ValidationMessage.Text = "メールアドレスを入力してください。";
-                ValidationMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B));
+                StatusMessage.Text = "メールアドレスを入力してください。";
+                StatusMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B));
                 return;
             }
 
             if (string.IsNullOrEmpty(key))
             {
-                ValidationMessage.Text = "ライセンスキーを入力してください。";
-                ValidationMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B));
+                StatusMessage.Text = "ライセンスキーを入力してください。";
+                StatusMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B));
                 return;
             }
 
@@ -177,26 +174,27 @@ namespace InsightCast.Views
                 _config.LicenseKey = key;
                 _config.LicenseEmail = email;
                 _config.EndUpdate();
-                ValidationMessage.Text = "ライセンスが正常にアクティベートされました。";
-                ValidationMessage.Foreground = new SolidColorBrush(Color.FromRgb(0x4C, 0xAF, 0x50));
+                StatusMessage.Text = "ライセンスが正常にアクティベートされました。";
+                StatusMessage.Foreground = new SolidColorBrush(Color.FromRgb(0x4C, 0xAF, 0x50));
             }
             else
             {
-                ValidationMessage.Text = _licenseInfo.ErrorMessage ?? "ライセンスキーが無効です。";
-                ValidationMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B));
+                StatusMessage.Text = _licenseInfo.ErrorMessage ?? "ライセンスキーが無効です。";
+                StatusMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B));
             }
 
             UpdateUI();
-            // Preserve validation message after UpdateUI clears it
+
+            // Preserve status message after UpdateUI
             if (_licenseInfo.IsValid)
             {
-                ValidationMessage.Text = "ライセンスが正常にアクティベートされました。";
-                ValidationMessage.Foreground = new SolidColorBrush(Color.FromRgb(0x4C, 0xAF, 0x50));
+                StatusMessage.Text = "ライセンスが正常にアクティベートされました。";
+                StatusMessage.Foreground = new SolidColorBrush(Color.FromRgb(0x4C, 0xAF, 0x50));
             }
             else
             {
-                ValidationMessage.Text = _licenseInfo.ErrorMessage ?? "ライセンスキーが無効です。";
-                ValidationMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B));
+                StatusMessage.Text = _licenseInfo.ErrorMessage ?? "ライセンスキーが無効です。";
+                StatusMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xFF, 0x6B, 0x6B));
             }
         }
 
@@ -207,18 +205,8 @@ namespace InsightCast.Views
             EmailTextBox.Text = "";
             ShowPlaceholder();
             UpdateUI();
-            ValidationMessage.Text = "ライセンスがクリアされました。";
-            ValidationMessage.Foreground = new SolidColorBrush(Color.FromRgb(0xB0, 0xB0, 0xB0));
-        }
-
-        private void TermsLink_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo("https://harmonic-insight.com/ja/terms") { UseShellExecute = true });
-        }
-
-        private void PrivacyLink_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo("https://harmonic-insight.com/ja/privacy") { UseShellExecute = true });
+            StatusMessage.Text = "ライセンスがクリアされました。";
+            StatusMessage.Foreground = (SolidColorBrush)FindResource("TextSecondary");
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

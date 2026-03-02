@@ -752,8 +752,8 @@ public partial class HelpWindow : Window
 
             <div class="note">
                 <span class="note-label">AI機能について:</span>
-                AI プロジェクト生成を使用するには、Claude (Anthropic) の API キーが必要です。
-                画面右側の AI アシスタントパネルの 🔑 ボタンから設定してください。
+                AI プロジェクト生成を使用するには、OpenAI の API キーが必要です。
+                メニュー「AI編集」→「OpenAI設定」から設定してください。
             </div>
 
             <h2>サムネイルジェネレーター</h2>
@@ -1367,7 +1367,7 @@ public partial class HelpWindow : Window
 
             <h2>AI Project Generation</h2>
             <p>Go to "AI Edit" &gt; "Generate Project" to have AI automatically create scene structures and narration scripts from a theme or topic.
-            Requires a Claude (Anthropic) API key. Set it via the 🔑 button in the AI Assistant panel on the right side.</p>
+            Requires an OpenAI API key. Set it via "AI Edit" &gt; "OpenAI Settings" in the menu.</p>
 
             <h2>Thumbnail Generator</h2>
             <p>Create thumbnail images (1280x720px) with color patterns, text, and background images.</p>
