@@ -23,6 +23,8 @@ public static class VideoToolDefinitions
         MoveScene,
         SetSceneMedia,
         GenerateSceneImage,
+        GenerateAbThumbnails,
+        AddCtaEndcard,
     };
 
     public static readonly ToolDefinition GetScenes = new()
@@ -316,6 +318,69 @@ public static class VideoToolDefinitions
                 },
             },
             ["required"] = new JsonArray("scene_index", "prompt"),
+        },
+    };
+
+    public static readonly ToolDefinition GenerateAbThumbnails = new()
+    {
+        Name = "generate_ab_thumbnails",
+        Description = "A/Bテスト用に複数パターンのサムネイルを一括生成します。5種類のパターン×スタイルの組み合わせで高CTRサムネイルを比較できます。",
+        InputSchema = new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["main_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "サムネイルのメインテキスト",
+                },
+                ["sub_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "サブテキスト（省略可）",
+                },
+                ["sub_sub_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "補足テキスト（省略可）",
+                },
+            },
+            ["required"] = new JsonArray("main_text"),
+        },
+    };
+
+    public static readonly ToolDefinition AddCtaEndcard = new()
+    {
+        Name = "add_cta_endcard",
+        Description = "動画の最後にCTAエンドカードシーンを追加します。templateで用途を選択できます: 'subscribe'（チャンネル登録）、'education'（教育・コンサル向け: 次回予告+個別相談+資料案内）。省略時はsubscribe。",
+        InputSchema = new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["template"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "CTAテンプレート種別。subscribe: チャンネル登録+リンク誘導。education: 次回予告+個別相談+資料案内（教育動画・コンサル向け）。",
+                    ["enum"] = new JsonArray("subscribe", "education"),
+                },
+                ["cta_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "CTAメッセージ（subscribe時: 登録文言、education時: 次回予告文言）。省略時はデフォルト文言を使用。",
+                },
+                ["link_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "リンク誘導メッセージ（subscribe時）またはダウンロード誘導（education時）。省略時はデフォルト文言を使用。",
+                },
+                ["consult_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "個別相談・問い合わせ誘導文言（education時のみ）。省略時はデフォルト文言を使用。",
+                },
+            },
         },
     };
 }

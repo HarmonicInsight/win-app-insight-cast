@@ -251,6 +251,23 @@ namespace InsightCast.ViewModels
             set => SetProperty(ref _selectedResolutionIndex, value);
         }
 
+        private static readonly string[] ResolutionValues =
+        {
+            "1920x1080", // Landscape
+            "1080x1920", // Portrait
+            "1080x1080", // Square (Instagram)
+            "1080x1920", // YouTube Shorts
+            "1080x1920", // Instagram Reels
+            "1080x1920", // TikTok
+        };
+
+        private string GetSelectedResolution()
+        {
+            if (_selectedResolutionIndex >= 0 && _selectedResolutionIndex < ResolutionValues.Length)
+                return ResolutionValues[_selectedResolutionIndex];
+            return "1920x1080";
+        }
+
         public string FpsText
         {
             get => _fpsText;
@@ -596,7 +613,8 @@ namespace InsightCast.ViewModels
         public ICommand BatchExportCommand { get; }
         public ICommand OpenAISettingsCommand { get; }
         public ICommand AIGenerateProjectCommand { get; }
-        public ICommand LaunchSnipasteCommand { get; }
+        public ICommand ScreenCaptureCommand { get; }
+        public ICommand AddCtaEndcardCommand { get; }
 
         #endregion
 
@@ -663,7 +681,8 @@ namespace InsightCast.ViewModels
             BatchExportCommand = new RelayCommand(OpenBatchExport);
             OpenAISettingsCommand = new RelayCommand(OpenAISettings);
             AIGenerateProjectCommand = new RelayCommand(OpenAIGenerateProject);
-            LaunchSnipasteCommand = new RelayCommand(LaunchSnipaste);
+            ScreenCaptureCommand = new RelayCommand(StartScreenCapture);
+            AddCtaEndcardCommand = new RelayCommand(AddCtaEndcard);
 
             // Auto-save every 5 minutes
             _autoSaveTimer = new Timer(_ => AutoSave(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
@@ -684,6 +703,9 @@ namespace InsightCast.ViewModels
 
         /// <summary>Raised when window should close.</summary>
         public event Action? ExitRequested;
+
+        /// <summary>Raised when the user clicks the screen capture button.</summary>
+        public event Action? ScreenCaptureRequested;
 
         public IAppLogger Logger => _logger;
 
@@ -845,6 +867,20 @@ namespace InsightCast.ViewModels
             RefreshSceneList();
             SelectedSceneIndex = _project.Scenes.Count - 1;
             _logger.Log(LocalizationService.GetString("VM.Scene.Added", _project.Scenes.Count));
+            ScenesChanged?.Invoke();
+        }
+
+        private void AddCtaEndcard()
+        {
+            _isDirty = true;
+            var ctaScene = _project.AddScene();
+            ctaScene.Title = LocalizationService.GetString("CTA.ThankYou");
+            ctaScene.DurationMode = DurationMode.Fixed;
+            ctaScene.FixedSeconds = 5.0;
+            ctaScene.TextOverlays = TextOverlay.CreateEducationEndcardSet();
+            RefreshSceneList();
+            SelectedSceneIndex = _project.Scenes.Count - 1;
+            _logger.Log("CTA endcard added");
             ScenesChanged?.Invoke();
         }
 
@@ -1497,7 +1533,7 @@ namespace InsightCast.ViewModels
 
             var previewPath = Path.Combine(previewDir, $"preview_{Guid.NewGuid():N}.mp4");
 
-            string resolution = _selectedResolutionIndex == 0 ? "1920x1080" : "1080x1920";
+            string resolution = GetSelectedResolution();
             int exportSpeakerId = _defaultSpeakerId;
             if (_selectedExportSpeakerIndex >= 0 && _selectedExportSpeakerIndex < ExportSpeakers.Count)
                 exportSpeakerId = ExportSpeakers[_selectedExportSpeakerIndex].StyleId;
@@ -1693,7 +1729,7 @@ namespace InsightCast.ViewModels
             if (int.TryParse(_fpsText, out var parsedFps))
                 fps = Math.Clamp(parsedFps, 15, 60);
 
-            string resolution = _selectedResolutionIndex == 0 ? "1920x1080" : "1080x1920";
+            string resolution = GetSelectedResolution();
 
             int exportSpeakerId = _defaultSpeakerId;
             if (_selectedExportSpeakerIndex >= 0 && _selectedExportSpeakerIndex < ExportSpeakers.Count)
@@ -2397,127 +2433,29 @@ namespace InsightCast.ViewModels
             }
         }
 
-        /// <summary>
-        /// Searches for the Snipaste executable in common locations.
-        /// Search order: PATH, application-relative paths, common Windows paths.
-        /// </summary>
-        private static string? FindSnipaste()
+        private void StartScreenCapture()
         {
-            // --- 1. Search PATH using "where Snipaste" ---
-            try
-            {
-                var psi = new ProcessStartInfo
-                {
-                    FileName = "where",
-                    Arguments = "Snipaste",
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                };
-
-                using var process = Process.Start(psi);
-                if (process != null)
-                {
-                    string output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-
-                    if (process.ExitCode == 0 && !string.IsNullOrWhiteSpace(output))
-                    {
-                        string firstLine = output.Split(
-                            new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
-                        if (File.Exists(firstLine))
-                            return firstLine;
-                    }
-                }
-            }
-            catch
-            {
-                // "where" command not available or failed; continue searching.
-            }
-
-            // --- 2. Application-relative and working-directory-relative paths ---
-            string appDir = AppDomain.CurrentDomain.BaseDirectory;
-            string cwd = Environment.CurrentDirectory;
-
-            var relativePaths = new List<string>
-            {
-                // From application base directory (works in published/installed builds)
-                Path.Combine(appDir, "snipaste", "Snipaste.exe"),
-                Path.Combine(appDir, "Snipaste.exe"),
-                // From current working directory (works with "dotnet run")
-                Path.Combine(cwd, "snipaste", "Snipaste.exe"),
-                Path.Combine(cwd, "Snipaste.exe"),
-                // build.ps1 publish output
-                Path.Combine(cwd, "publish", "snipaste", "Snipaste.exe"),
-            };
-
-            // Walk up from appDir to find project/solution root
-            string? dir = appDir;
-            for (int i = 0; i < 6 && dir != null; i++)
-            {
-                dir = Path.GetDirectoryName(dir);
-                if (dir != null)
-                {
-                    relativePaths.Add(Path.Combine(dir, "snipaste", "Snipaste.exe"));
-                    relativePaths.Add(Path.Combine(dir, "Snipaste.exe"));
-                }
-            }
-
-            foreach (string path in relativePaths)
-            {
-                string fullPath = Path.GetFullPath(path);
-                if (File.Exists(fullPath))
-                    return fullPath;
-            }
-
-            // --- 3. Common Windows installation paths ---
-            string[] commonPaths =
-            {
-                @"C:\Program Files\Snipaste\Snipaste.exe",
-                @"C:\Program Files (x86)\Snipaste\Snipaste.exe",
-                Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "Snipaste", "Snipaste.exe"),
-                Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                    "Snipaste", "Snipaste.exe"),
-            };
-
-            foreach (string path in commonPaths)
-            {
-                if (File.Exists(path))
-                    return path;
-            }
-
-            return null;
+            ScreenCaptureRequested?.Invoke();
         }
 
-        private void LaunchSnipaste()
+        /// <summary>
+        /// Called by the View after a screen capture completes.
+        /// Sets the captured image as the current scene's media.
+        /// </summary>
+        public void ApplyCapturedImage(string imagePath)
         {
-            var snipastePath = FindSnipaste();
-            if (snipastePath == null)
-            {
-                _dialogService?.ShowError(
-                    LocalizationService.GetString("VM.Snipaste.NotFound"),
-                    LocalizationService.GetString("VM.Snipaste.NotFound.Title"));
-                return;
-            }
+            if (_currentScene == null || !File.Exists(imagePath)) return;
 
-            try
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = snipastePath,
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception ex)
-            {
-                _dialogService?.ShowError(
-                    string.Format(LocalizationService.GetString("VM.Snipaste.LaunchError"), ex.Message),
-                    LocalizationService.GetString("VM.Snipaste.LaunchError.Title"));
-            }
+            _currentScene.MediaPath = imagePath;
+            _currentScene.MediaType = Models.MediaType.Image;
+            MediaName = Path.GetFileName(imagePath);
+            _isDirty = true;
+            ThumbnailUpdateRequested?.Invoke(imagePath);
+            _logger.Log(LocalizationService.GetString("VM.Capture.Applied", Path.GetFileName(imagePath)));
+
+            var idx = _selectedSceneIndex;
+            if (idx >= 0 && idx < SceneItems.Count)
+                SceneItems[idx].RefreshProgress();
         }
 
         private Services.Batch.IBatchExportService? CreateBatchExportService()

@@ -222,6 +222,9 @@ namespace InsightCast.ViewModels
             ClearAllScenesCommand = new RelayCommand(ClearAllScenes);
             ClearSceneCommand = new RelayCommand(ClearScene);
 
+            // CTA endcard command
+            AddCtaEndcardCommand = new RelayCommand(AddCtaEndcard);
+
             // Quick setup command
             ApplyQuickSetupCommand = new RelayCommand(ApplyQuickSetup);
 
@@ -672,6 +675,9 @@ namespace InsightCast.ViewModels
 
         // Quick setup command
         public ICommand ApplyQuickSetupCommand { get; }
+
+        // CTA endcard command
+        public ICommand AddCtaEndcardCommand { get; }
 
         #endregion
 
@@ -1176,6 +1182,18 @@ namespace InsightCast.ViewModels
             scene.MediaPath = null;
 
             RefreshSceneList();
+            ScenesChanged?.Invoke();
+        }
+
+        private void AddCtaEndcard()
+        {
+            var ctaScene = _project.AddScene();
+            ctaScene.Title = LocalizationService.GetString("CTA.ThankYou");
+            ctaScene.DurationMode = DurationMode.Fixed;
+            ctaScene.FixedSeconds = 5.0;
+            ctaScene.TextOverlays = TextOverlay.CreateEndcardSet();
+            RefreshSceneList();
+            SelectedPlanningSceneIndex = PlanningScenes.Count - 1;
             ScenesChanged?.Invoke();
         }
 

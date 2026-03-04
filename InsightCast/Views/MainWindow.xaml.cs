@@ -42,6 +42,7 @@ namespace InsightCast.Views
             _vm.OpenFileRequested += OnOpenFileRequested;
             _vm.PreviewVideoReady += OnPreviewVideoReady;
             _vm.ExitRequested += OnExitRequested;
+            _vm.ScreenCaptureRequested += OnScreenCaptureRequested;
             _vm.ScenesChanged += OnMainViewModelScenesChanged;
             _vm.TemplateApplied += OnTemplateApplied;
 
@@ -129,6 +130,41 @@ namespace InsightCast.Views
         #region ViewModel Event Handlers (UI-specific)
 
         private void OnExitRequested() => Close();
+
+        private void OnScreenCaptureRequested()
+        {
+            // Minimize the main window so it doesn't appear in the capture
+            var prevState = WindowState;
+            WindowState = WindowState.Minimized;
+
+            // Small delay to let the window minimize
+            Dispatcher.InvokeAsync(async () =>
+            {
+                await System.Threading.Tasks.Task.Delay(300);
+
+                var captureWindow = new ScreenCaptureWindow();
+                captureWindow.ShowDialog();
+
+                // Restore main window
+                WindowState = prevState;
+                Activate();
+
+                // Handle result
+                if (captureWindow.PinnedToScene && captureWindow.CapturedImagePath != null)
+                {
+                    _vm.ApplyCapturedImage(captureWindow.CapturedImagePath);
+                }
+                else if (captureWindow.CapturedImagePath != null)
+                {
+                    _vm.Logger.Log(Services.LocalizationService.GetString(
+                        "VM.Capture.Saved", captureWindow.CapturedImagePath));
+                }
+                else if (captureWindow.CopiedToClipboard)
+                {
+                    _vm.Logger.Log(Services.LocalizationService.GetString("VM.Capture.Copied"));
+                }
+            });
+        }
 
         private void OnPlayAudioRequested(string path, double speed)
         {
@@ -523,6 +559,12 @@ namespace InsightCast.Views
             {
                 _vm.ShowTutorialCommand.Execute(null);
                 e.Handled = true;
+                return;
+            }
+            if (e.Key == Key.PrintScreen || (e.Key == Key.F5 && Keyboard.Modifiers == ModifierKeys.Control))
+            {
+                _vm.ScreenCaptureCommand.Execute(null);
+                e.Handled = true;
             }
         }
 
@@ -791,6 +833,7 @@ namespace InsightCast.Views
             _vm.OpenFileRequested -= OnOpenFileRequested;
             _vm.PreviewVideoReady -= OnPreviewVideoReady;
             _vm.ExitRequested -= OnExitRequested;
+            _vm.ScreenCaptureRequested -= OnScreenCaptureRequested;
             _vm.ScenesChanged -= OnMainViewModelScenesChanged;
             _vm.Logger.LogReceived -= OnLogReceived;
             PlanningTabControl.ScenesChanged -= OnPlanningTabScenesChanged;

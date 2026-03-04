@@ -397,15 +397,14 @@
     <sys:String x:Key="VM.File.OpenError">Failed to open file</sys:String>
     <sys:String x:Key="VM.Preview.OpenError">Failed to open preview player</sys:String>
 
-    <!-- Snipaste -->
-    <sys:String x:Key="Tool.Snipaste">Capture tool</sys:String>
-    <sys:String x:Key="Tool.Snipaste.Tooltip">Launch Snipaste screen capture tool.
-Click the button or press F1 after Snipaste is running to capture the screen.
-Captured images can be pasted as scene media.</sys:String>
-    <sys:String x:Key="VM.Snipaste.NotFound">Snipaste was not found.\n\nPlease install it using one of these methods:\n• Download from https://www.snipaste.com\n• Add the folder containing Snipaste.exe to your PATH\n• Place it in the snipaste\ folder inside the app directory</sys:String>
-    <sys:String x:Key="VM.Snipaste.NotFound.Title">Snipaste Not Found</sys:String>
-    <sys:String x:Key="VM.Snipaste.LaunchError">Failed to launch Snipaste:\n{0}</sys:String>
-    <sys:String x:Key="VM.Snipaste.LaunchError.Title">Snipaste Launch Error</sys:String>
+    <!-- Screen Capture -->
+    <sys:String x:Key="Tool.ScreenCapture">Screen Capture</sys:String>
+    <sys:String x:Key="Tool.ScreenCapture.Tooltip">Select and capture a region of the screen (PrintScreen / Ctrl+F5).
+Includes annotation tools: rectangle, circle, arrow, text, mosaic.
+After capture, copy to clipboard, save to file, or pin to current scene.</sys:String>
+    <sys:String x:Key="VM.Capture.Applied">Captured image applied to scene: {0}</sys:String>
+    <sys:String x:Key="VM.Capture.Saved">Captured image saved: {0}</sys:String>
+    <sys:String x:Key="VM.Capture.Copied">Captured image copied to clipboard</sys:String>
 
     <!-- Alignment options -->
     <sys:String x:Key="Align.Center">Center</sys:String>
@@ -474,6 +473,8 @@ Captured images can be pasted as scene media.</sys:String>
     <sys:String x:Key="Export.AddingBGM">Adding BGM...</sys:String>
     <sys:String x:Key="Export.GeneratingThumbnail">Generating thumbnail...</sys:String>
     <sys:String x:Key="Export.GeneratingChapters">Generating chapter file...</sys:String>
+    <sys:String x:Key="Export.Resolution.Tooltip">Select output resolution (includes SNS platform presets)</sys:String>
+    <sys:String x:Key="Export.GeneratingSubtitles">Generating subtitle files...</sys:String>
     <sys:String x:Key="Export.GeneratingMetadata">Generating metadata...</sys:String>
     <sys:String x:Key="Export.Done">Export complete</sys:String>
     <sys:String x:Key="Export.Preview.Generating">Generating preview...</sys:String>
@@ -496,6 +497,7 @@ Captured images can be pasted as scene media.</sys:String>
     <sys:String x:Key="Meta.SceneCount">Scenes: {0}</sys:String>
     <sys:String x:Key="Meta.Resolution">Resolution: {0}</sys:String>
     <sys:String x:Key="Meta.GeneratedAt">Generated: {0}</sys:String>
+    <sys:String x:Key="Meta.Hashtags">[Hashtags (for social media)]</sys:String>
 
     <!-- Colors -->
     <sys:String x:Key="Color.White">White</sys:String>
@@ -943,6 +945,27 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="License.Key">License Key</sys:String>
     <sys:String x:Key="Resolution.Landscape">1920x1080 (Landscape)</sys:String>
     <sys:String x:Key="Resolution.Portrait">1080x1920 (Portrait)</sys:String>
+    <sys:String x:Key="Resolution.Square">1080x1080 (Instagram)</sys:String>
+    <sys:String x:Key="Resolution.Shorts">1080x1920 (YouTube Shorts)</sys:String>
+    <sys:String x:Key="Resolution.Reels">1080x1920 (Instagram Reels)</sys:String>
+    <sys:String x:Key="Resolution.TikTok">1080x1920 (TikTok)</sys:String>
+
+    <!-- CTA Endcard Templates -->
+    <sys:String x:Key="CTA.Subscribe">Please subscribe!</sys:String>
+    <sys:String x:Key="CTA.LinkBelow">Check the link below for details ↓</sys:String>
+    <sys:String x:Key="CTA.ThankYou">Thank you for watching!</sys:String>
+    <sys:String x:Key="CTA.AddEndcard">Add CTA Endcard</sys:String>
+    <sys:String x:Key="CTA.AddEndcard.Tooltip">Add a subscribe or link prompt scene at the end of the video</sys:String>
+    <sys:String x:Key="CTA.Template.Subscribe">Subscribe</sys:String>
+    <sys:String x:Key="CTA.Template.Website">Visit Website</sys:String>
+    <sys:String x:Key="CTA.Template.Download">Download</sys:String>
+    <sys:String x:Key="CTA.Template.Contact">Contact Us</sys:String>
+    <sys:String x:Key="CTA.Template.Education">Education / Consulting</sys:String>
+    <sys:String x:Key="CTA.Template.Education.Tooltip">CTA endcard with next lesson preview + consultation + resource download. For educational videos, training, and consulting</sys:String>
+    <sys:String x:Key="CTA.NextLesson">Stay tuned for the next lesson!</sys:String>
+    <sys:String x:Key="CTA.Consultation">Book a consultation ▶</sys:String>
+    <sys:String x:Key="CTA.Download">Download resources from the description ↓</sys:String>
+    <sys:String x:Key="CTA.CourseNav">See full course list in the description</sys:String>
 
     <!-- JSON Editor -->
     <sys:String x:Key="Planning.ApplyJson">Apply JSON</sys:String>
@@ -1018,13 +1041,38 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="VM.TransitionAppliedAll">Transition applied to all scenes</sys:String>
 
     <!-- C6: Tooltips -->
+    <sys:String x:Key="Scene.Narration.Tooltip">Enter the narration text for VOICEVOX to read aloud. For educational videos, 100-150 characters per scene is recommended</sys:String>
+    <sys:String x:Key="Scene.Media.Select.Tooltip">Select an image or video file for the scene background (PNG, JPG, MP4, etc.)</sys:String>
+    <sys:String x:Key="Scene.Media.Clear.Tooltip">Remove the current media file (scene will show black background)</sys:String>
+    <sys:String x:Key="Scene.Speaker.Tooltip">Select the VOICEVOX speaker for this scene. "Default" uses the project-level speaker setting</sys:String>
+    <sys:String x:Key="Scene.KeepAudio.Tooltip">When ON, the original audio from the video source will play together with the narration</sys:String>
+    <sys:String x:Key="Scene.SpeechSpeed.Tooltip">Adjust narration reading speed. For educational videos, 1.0x-1.2x is recommended</sys:String>
     <sys:String x:Key="Scene.PreviewAudio.Tooltip">Preview the narration text as audio</sys:String>
     <sys:String x:Key="Scene.PreviewScene.Tooltip">Preview the current scene as video (with narration and subtitles)</sys:String>
     <sys:String x:Key="Scene.Stop.Tooltip">Stop playing audio or preview</sys:String>
-    <sys:String x:Key="Scene.Subtitle.Tooltip">Enter subtitle text shown at the bottom of the video</sys:String>
+    <sys:String x:Key="Scene.Subtitle.Tooltip">Enter subtitle text shown at the bottom of the video. Improves accessibility and SEO</sys:String>
     <sys:String x:Key="Transition.Tooltip">Select scene transition effect (Fade, Wipe, etc.)</sys:String>
     <sys:String x:Key="Transition.Duration.Tooltip">Transition duration (0.2–2.0 seconds)</sys:String>
-    <sys:String x:Key="Export.Button.Tooltip">Combine all scenes and export as MP4 video</sys:String>
+    <sys:String x:Key="Duration.Auto.Tooltip">Scene duration is automatically determined by narration audio length</sys:String>
+    <sys:String x:Key="Duration.Fixed.Tooltip">Manually set scene duration in seconds. Auto-extends if narration is longer</sys:String>
+    <sys:String x:Key="Export.Button.Tooltip">Export all scenes as MP4 video. Thumbnail, chapters, subtitles, and metadata are also generated</sys:String>
+    <sys:String x:Key="Export.FPS.Tooltip">Video frame rate (frames per second). 30fps is standard for educational videos</sys:String>
+
+    <!-- Overlay Tooltips -->
+    <sys:String x:Key="Overlay.Add.Tooltip">Add a text overlay that can be freely positioned on the scene. Use for titles and annotations</sys:String>
+    <sys:String x:Key="Overlay.CoverTemplate.Tooltip">Add title and subtitle template overlays at once. Convenient for creating cover scenes</sys:String>
+    <sys:String x:Key="Overlay.Remove.Tooltip">Remove the selected text overlay</sys:String>
+
+    <!-- Watermark Tooltips -->
+    <sys:String x:Key="Watermark.Tooltip">Select a watermark (logo) image displayed across the entire video</sys:String>
+    <sys:String x:Key="Watermark.Clear.Tooltip">Remove the watermark image</sys:String>
+    <sys:String x:Key="Watermark.Position.Tooltip">Select watermark position (bottom-right is recommended for YouTube)</sys:String>
+
+    <!-- Tool Tooltips -->
+    <sys:String x:Key="Tool.ScreenCapture.Tooltip">Capture part of the screen, add annotations, and import into the scene. Ideal for tutorial videos</sys:String>
+
+    <!-- Export Resolution Tooltip -->
+    <sys:String x:Key="Export.Resolution.Tooltip">Select video output resolution. 1920x1080 (Landscape) is standard for educational videos</sys:String>
 
     <!-- D2: Post-export guidance -->
     <sys:String x:Key="VM.Export.CompleteDetail">Video export completed.
@@ -1159,6 +1207,8 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.Tab.Home">Home</sys:String>
     <sys:String x:Key="Ribbon.Tab.Help">Help</sys:String>
     <sys:String x:Key="Ribbon.Group.Scene">Scene</sys:String>
+    <sys:String x:Key="Ribbon.Group.Structure">Structure</sys:String>
+    <sys:String x:Key="Ribbon.Group.Production">Production</sys:String>
     <sys:String x:Key="Ribbon.Group.Export">Export</sys:String>
     <sys:String x:Key="Ribbon.Group.Template">Template</sys:String>
     <sys:String x:Key="Ribbon.Group.Support">Support</sys:String>
@@ -1183,6 +1233,20 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.Template.Save">Save</sys:String>
     <sys:String x:Key="Ribbon.Template.Load">Load</sys:String>
     <sys:String x:Key="Ribbon.Template.OpenOutput">Open Output</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Capture">Capture</sys:String>
+    <sys:String x:Key="Ribbon.BGM">BGM Settings</sys:String>
+    <sys:String x:Key="Ribbon.CTA">Add CTA</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Add.Tooltip">Add a new scene (slide) to your educational video</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Remove.Tooltip">Remove the selected scene</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveUp.Tooltip">Move scene up to adjust lecture flow</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveDown.Tooltip">Move scene down to adjust lecture flow</sys:String>
+    <sys:String x:Key="Ribbon.Export.Preview.Tooltip">Preview the current scene as video with narration and subtitles</sys:String>
+    <sys:String x:Key="Ribbon.BGM.Tooltip">Configure background music: file selection, volume, ducking settings</sys:String>
+    <sys:String x:Key="Ribbon.CTA.Tooltip">Add a CTA endcard at the end (next lesson preview, consultation, resource download)</sys:String>
+    <sys:String x:Key="Ribbon.Export.Video.Tooltip">Export all scenes as an MP4 video file. Thumbnail, chapters, subtitles, and metadata are also generated</sys:String>
+    <sys:String x:Key="Ribbon.Template.OpenOutput.Tooltip">Open the last export folder in Explorer</sys:String>
+    <sys:String x:Key="Ribbon.Template.Save.Tooltip">Save current BGM, speaker, resolution settings as a reusable template</sys:String>
+    <sys:String x:Key="Ribbon.Template.Load.Tooltip">Load a saved template and apply all settings at once</sys:String>
     <sys:String x:Key="Ribbon.Help.Tutorial">Tutorial</sys:String>
     <sys:String x:Key="Ribbon.Help.License">License Manager</sys:String>
     <sys:String x:Key="Ribbon.Help.LicenseInfo">License Info</sys:String>
@@ -1218,5 +1282,95 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Backstage.Info.Copyright">Copyright</sys:String>
     <sys:String x:Key="Backstage.Legal.Terms">Terms of Service</sys:String>
     <sys:String x:Key="Backstage.Legal.Privacy">Privacy Policy</sys:String>
+
+    <!-- ================================================================ -->
+    <!-- Additional Tooltips                                               -->
+    <!-- ================================================================ -->
+
+    <!-- BGM Dialog -->
+    <sys:String x:Key="BGM.Browse.Tooltip">Select an audio file for background music</sys:String>
+    <sys:String x:Key="BGM.Clear.Tooltip">Remove the selected BGM file</sys:String>
+    <sys:String x:Key="BGM.MainVolume.Tooltip">Adjust the base volume of background music</sys:String>
+    <sys:String x:Key="BGM.Ducking.Tooltip">Automatically lower BGM volume during narration</sys:String>
+    <sys:String x:Key="BGM.DuckingVolume.Tooltip">BGM volume level during narration</sys:String>
+    <sys:String x:Key="BGM.Attack.Tooltip">Time to lower BGM volume (milliseconds)</sys:String>
+    <sys:String x:Key="BGM.Release.Tooltip">Time to restore BGM volume (milliseconds)</sys:String>
+    <sys:String x:Key="BGM.FadeIn.Tooltip">Gradually increase BGM volume at video start</sys:String>
+    <sys:String x:Key="BGM.FadeIn.Duration.Tooltip">Fade in duration (seconds)</sys:String>
+    <sys:String x:Key="BGM.FadeIn.Type.Tooltip">Linear: constant rate / Exponential: natural curve</sys:String>
+    <sys:String x:Key="BGM.FadeOut.Tooltip">Gradually decrease BGM volume at video end</sys:String>
+    <sys:String x:Key="BGM.FadeOut.Duration.Tooltip">Fade out duration (seconds)</sys:String>
+    <sys:String x:Key="BGM.FadeOut.Type.Tooltip">Linear: constant rate / Exponential: natural curve</sys:String>
+    <sys:String x:Key="BGM.Loop.Tooltip">Loop background music to match video length</sys:String>
+
+    <!-- Batch Export Dialog -->
+    <sys:String x:Key="BatchExport.AddProjects.Tooltip">Add project JSON files for batch processing</sys:String>
+    <sys:String x:Key="BatchExport.RemoveSelected.Tooltip">Remove selected projects from the list</sys:String>
+    <sys:String x:Key="BatchExport.OutputDir.Tooltip">Output folder for exported video files</sys:String>
+    <sys:String x:Key="BatchExport.BrowseDir.Tooltip">Browse for output folder</sys:String>
+    <sys:String x:Key="BatchExport.ContinueOnError.Tooltip">Continue processing remaining projects if one fails</sys:String>
+    <sys:String x:Key="BatchExport.Start.Tooltip">Start exporting all projects in the queue</sys:String>
+
+    <!-- OpenAI Settings Dialog -->
+    <sys:String x:Key="OpenAI.ApiKey.Tooltip">Enter your API key from platform.openai.com</sys:String>
+    <sys:String x:Key="OpenAI.TestConnection.Tooltip">Verify API key validity and connection</sys:String>
+    <sys:String x:Key="OpenAI.NarrationModel.Tooltip">AI model used for narration generation</sys:String>
+    <sys:String x:Key="OpenAI.ImageModel.Tooltip">AI model used for image generation</sys:String>
+
+    <!-- AI Project Generate Dialog -->
+    <sys:String x:Key="AIGenerate.Topic.Tooltip">Describe the topic or content for your video</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Tooltip">Select the narration tone and style</sys:String>
+    <sys:String x:Key="AIGenerate.SceneCount.Tooltip">Number of scenes to auto-generate</sys:String>
+    <sys:String x:Key="AIGenerate.GenerateImages.Tooltip">Also generate images for each scene using AI</sys:String>
+    <sys:String x:Key="AIGenerate.Generate.Tooltip">Start AI-powered project generation</sys:String>
+
+    <!-- Preview Player Dialog -->
+    <sys:String x:Key="Preview.SeekSlider.Tooltip">Drag to seek through the timeline</sys:String>
+    <sys:String x:Key="Preview.Volume.Tooltip">Adjust playback volume</sys:String>
+    <sys:String x:Key="Preview.Speed.Tooltip">Change playback speed</sys:String>
+    <sys:String x:Key="Preview.Close.Tooltip">Close the preview player</sys:String>
+
+    <!-- Video Wizard Dialog -->
+    <sys:String x:Key="Wizard.Browse.Tooltip">Browse and select media files to add</sys:String>
+    <sys:String x:Key="Wizard.RemoveMedia.Tooltip">Remove this media from the list</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Intro.Tooltip">Product or service introduction video</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Tutorial.Tooltip">Step-by-step tutorial content</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Explain.Tooltip">Educational or explanatory content</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Promo.Tooltip">Promotional or marketing video</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Custom.Tooltip">Define a custom purpose</sys:String>
+    <sys:String x:Key="Wizard.CustomPurpose.Tooltip">Describe the specific purpose of your video</sys:String>
+    <sys:String x:Key="Wizard.CustomDuration.Tooltip">Enter duration in seconds</sys:String>
+    <sys:String x:Key="Wizard.Back.Tooltip">Go back to the previous step</sys:String>
+    <sys:String x:Key="Wizard.Next.Tooltip">Proceed to the next step</sys:String>
+
+    <!-- Planning Tab -->
+    <sys:String x:Key="Planning.TotalLength.Tooltip">Select target duration for the video</sys:String>
+    <sys:String x:Key="Planning.SceneCount.Tooltip">Number of scenes in the video</sys:String>
+    <sys:String x:Key="Planning.Add.Tooltip">Add a new scene</sys:String>
+    <sys:String x:Key="Planning.Remove.Tooltip">Remove the selected scene</sys:String>
+    <sys:String x:Key="Planning.MoveUp.Tooltip">Move scene up in order</sys:String>
+    <sys:String x:Key="Planning.MoveDown.Tooltip">Move scene down in order</sys:String>
+    <sys:String x:Key="Planning.ClearScene.Tooltip">Clear this scene's content</sys:String>
+    <sys:String x:Key="Thumbnail.Pattern.Tooltip">Select thumbnail color pattern</sys:String>
+    <sys:String x:Key="Thumbnail.Style.Tooltip">Apply style preset with one click</sys:String>
+    <sys:String x:Key="Thumbnail.Font.Tooltip">Select text font</sys:String>
+    <sys:String x:Key="Thumbnail.FontSize.Tooltip">Select text size</sys:String>
+    <sys:String x:Key="Thumbnail.Color.Tooltip">Change text color</sys:String>
+    <sys:String x:Key="Thumbnail.BgBrowse.Tooltip">Select a background image for thumbnail</sys:String>
+    <sys:String x:Key="Thumbnail.BgClear.Tooltip">Remove the background image</sys:String>
+    <sys:String x:Key="Thumbnail.BgColor.Tooltip">Change background color</sys:String>
+    <sys:String x:Key="Thumbnail.SaveAs.Tooltip">Save the generated thumbnail to a file</sys:String>
+    <sys:String x:Key="Thumbnail.OpenFolder.Tooltip">Open the thumbnail output folder</sys:String>
+
+    <!-- Chat Panel -->
+    <sys:String x:Key="Chat.ApiKey.Claude.Tooltip">Enter your Claude API key (from anthropic.com)</sys:String>
+    <sys:String x:Key="Chat.ApiKey.OpenAI.Tooltip">Enter your OpenAI API key (from platform.openai.com)</sys:String>
+    <sys:String x:Key="Chat.Mode.Text.Tooltip">Switch to text generation mode</sys:String>
+    <sys:String x:Key="Chat.Mode.Image.Tooltip">Switch to image generation mode</sys:String>
+    <sys:String x:Key="Chat.MyPrompts.Tooltip">Show your saved prompts</sys:String>
+    <sys:String x:Key="Chat.PresetPrompts.Tooltip">Show preset prompt library</sys:String>
+    <sys:String x:Key="Chat.Execute.Tooltip">Execute prompt (Ctrl+Enter)</sys:String>
+    <sys:String x:Key="Chat.Cancel.Tooltip">Cancel the current AI operation</sys:String>
+    <sys:String x:Key="Chat.SaveThumbnail.Tooltip">Save the generated thumbnail image</sys:String>
 
 </ResourceDictionary>

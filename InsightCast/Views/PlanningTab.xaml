@@ -60,7 +60,8 @@
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="{DynamicResource Planning.TotalLength}"
                                            FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                                 <ComboBox Grid.Column="0" Grid.Row="1" Height="40" Width="100" HorizontalAlignment="Left"
-                                          FontSize="14" SelectedIndex="{Binding SelectedDurationIndex}">
+                                          FontSize="14" SelectedIndex="{Binding SelectedDurationIndex}"
+                                          ToolTip="{DynamicResource Planning.TotalLength.Tooltip}">
                                     <ComboBoxItem Content="{DynamicResource Duration.15s}" Tag="15"/>
                                     <ComboBoxItem Content="{DynamicResource Duration.30s}" Tag="30"/>
                                     <ComboBoxItem Content="{DynamicResource Duration.60s}" Tag="60"/>
@@ -75,7 +76,8 @@
                                 <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Margin="8,0,0,0">
                                     <TextBox Width="70" Height="40" FontSize="16" Padding="4,2"
                                              VerticalContentAlignment="Center" TextAlignment="Center"
-                                             Text="{Binding SceneCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                             Text="{Binding SceneCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             ToolTip="{DynamicResource Planning.SceneCount.Tooltip}"/>
                                     <TextBlock Text="{DynamicResource Planning.Scenes}"
                                                VerticalAlignment="Center" Margin="6,0,0,0" FontSize="13"
                                                Foreground="{DynamicResource TextSecondary}"/>
@@ -159,19 +161,29 @@
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
                         <Button Content="{DynamicResource Common.Add}" Padding="8,4"
                                 Command="{Binding AddSceneCommand}"
-                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"
+                                ToolTip="{DynamicResource Planning.Add.Tooltip}"/>
                         <Button Content="{DynamicResource Common.Remove}" Padding="8,4" Margin="4,0"
                                 Command="{Binding RemoveSceneCommand}"
-                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"
+                                ToolTip="{DynamicResource Planning.Remove.Tooltip}"/>
                         <Button Content="↑" Padding="8,4" Command="{Binding MoveSceneUpCommand}"
-                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"
+                                ToolTip="{DynamicResource Planning.MoveUp.Tooltip}"/>
                         <Button Content="↓" Padding="8,4" Margin="4,0" Command="{Binding MoveSceneDownCommand}"
-                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"
+                                ToolTip="{DynamicResource Planning.MoveDown.Tooltip}"/>
                         <Separator Margin="8,0"
                                    Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
                         <Button Content="{DynamicResource Planning.ClearAll}" Padding="8,4" Foreground="OrangeRed"
                                 Command="{Binding ClearAllScenesCommand}"
                                 ToolTip="{DynamicResource Planning.ClearAll.Tooltip}"
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Separator Margin="8,0"
+                                   Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Button Content="{DynamicResource CTA.AddEndcard}" Padding="8,4"
+                                Command="{Binding AddCtaEndcardCommand}"
+                                ToolTip="{DynamicResource CTA.AddEndcard.Tooltip}"
                                 Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
                         <!-- AI機能一時非表示
                         <Separator Margin="8,0"
@@ -249,7 +261,7 @@
                                                 Background="Transparent" BorderThickness="0" Cursor="Hand"
                                                 Command="{Binding DataContext.ClearSceneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding Index}"
-                                                ToolTip="このシーンをクリア"/>
+                                                ToolTip="{DynamicResource Planning.ClearScene.Tooltip}"/>
                                     </Grid>
 
                                     <!-- スクリプト -->
@@ -285,7 +297,8 @@
                                    Style="{StaticResource SectionHeader}"/>
                         <ComboBox Height="40" FontSize="13"
                                   ItemsSource="{Binding ThumbnailPatterns}"
-                                  SelectedIndex="{Binding SelectedThumbnailPatternIndex}">
+                                  SelectedIndex="{Binding SelectedThumbnailPatternIndex}"
+                                  ToolTip="{DynamicResource Thumbnail.Pattern.Tooltip}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Margin="2">
@@ -345,14 +358,17 @@
                             <!-- フォント選択 -->
                             <ComboBox Grid.Column="2" Height="36" Margin="4,0,0,0" FontSize="10"
                                       ItemsSource="{Binding AvailableFonts}"
-                                      SelectedIndex="{Binding SelectedMainFontIndex}"/>
+                                      SelectedIndex="{Binding SelectedMainFontIndex}"
+                                      ToolTip="{DynamicResource Thumbnail.Font.Tooltip}"/>
                             <!-- サイズ選択 -->
                             <ComboBox Grid.Column="3" Height="36" Margin="4,0,0,0" FontSize="10"
                                       ItemsSource="{Binding FontSizeOptions}"
-                                      SelectedIndex="{Binding MainFontSizeIndex}"/>
+                                      SelectedIndex="{Binding MainFontSizeIndex}"
+                                      ToolTip="{DynamicResource Thumbnail.FontSize.Tooltip}"/>
                             <!-- Excel風ドロップダウンカラーピッカー -->
                             <ToggleButton x:Name="MainColorToggle" Grid.Column="4" Width="36" Height="36" Margin="4,0,0,0"
-                                          BorderThickness="1" BorderBrush="#666" Padding="0">
+                                          BorderThickness="1" BorderBrush="#666" Padding="0"
+                                          ToolTip="{DynamicResource Thumbnail.Color.Tooltip}">
                                 <Border Width="24" Height="24" CornerRadius="2"
                                         Background="{Binding SelectedMainColorBrush}"/>
                             </ToggleButton>
@@ -393,13 +409,16 @@
                             <!-- フォント選択 -->
                             <ComboBox Grid.Column="2" Height="36" Margin="4,0,0,0" FontSize="10"
                                       ItemsSource="{Binding AvailableFonts}"
-                                      SelectedIndex="{Binding SelectedSubFontIndex}"/>
+                                      SelectedIndex="{Binding SelectedSubFontIndex}"
+                                      ToolTip="{DynamicResource Thumbnail.Font.Tooltip}"/>
                             <!-- サイズ選択 -->
                             <ComboBox Grid.Column="3" Height="36" Margin="4,0,0,0" FontSize="10"
                                       ItemsSource="{Binding FontSizeOptions}"
-                                      SelectedIndex="{Binding SubFontSizeIndex}"/>
+                                      SelectedIndex="{Binding SubFontSizeIndex}"
+                                      ToolTip="{DynamicResource Thumbnail.FontSize.Tooltip}"/>
                             <ToggleButton x:Name="SubColorToggle" Grid.Column="4" Width="36" Height="36" Margin="4,0,0,0"
-                                          BorderThickness="1" BorderBrush="#666" Padding="0">
+                                          BorderThickness="1" BorderBrush="#666" Padding="0"
+                                          ToolTip="{DynamicResource Thumbnail.Color.Tooltip}">
                                 <Border Width="24" Height="24" CornerRadius="2"
                                         Background="{Binding SelectedSubColorBrush}"/>
                             </ToggleButton>
@@ -440,13 +459,16 @@
                             <!-- フォント選択 -->
                             <ComboBox Grid.Column="2" Height="36" Margin="4,0,0,0" FontSize="10"
                                       ItemsSource="{Binding AvailableFonts}"
-                                      SelectedIndex="{Binding SelectedSubSubFontIndex}"/>
+                                      SelectedIndex="{Binding SelectedSubSubFontIndex}"
+                                      ToolTip="{DynamicResource Thumbnail.Font.Tooltip}"/>
                             <!-- サイズ選択 -->
                             <ComboBox Grid.Column="3" Height="36" Margin="4,0,0,0" FontSize="10"
                                       ItemsSource="{Binding FontSizeOptions}"
-                                      SelectedIndex="{Binding SubSubFontSizeIndex}"/>
+                                      SelectedIndex="{Binding SubSubFontSizeIndex}"
+                                      ToolTip="{DynamicResource Thumbnail.FontSize.Tooltip}"/>
                             <ToggleButton x:Name="SubSubColorToggle" Grid.Column="4" Width="36" Height="36" Margin="4,0,0,0"
-                                          BorderThickness="1" BorderBrush="#666" Padding="0">
+                                          BorderThickness="1" BorderBrush="#666" Padding="0"
+                                          ToolTip="{DynamicResource Thumbnail.Color.Tooltip}">
                                 <Border Width="24" Height="24" CornerRadius="2"
                                         Background="{Binding SelectedSubSubColorBrush}"/>
                             </ToggleButton>
@@ -493,13 +515,16 @@
                                    Foreground="{DynamicResource TextSecondary}"/>
                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                             <Button Content="{DynamicResource Common.Browse.Short}" Padding="6,2" FontSize="10"
-                                    Command="{Binding SelectThumbnailBgCommand}"/>
+                                    Command="{Binding SelectThumbnailBgCommand}"
+                                    ToolTip="{DynamicResource Thumbnail.BgBrowse.Tooltip}"/>
                             <Button Content="×" Padding="4,2" Margin="2,0,0,0" FontSize="10"
-                                    Command="{Binding ClearThumbnailBgCommand}"/>
+                                    Command="{Binding ClearThumbnailBgCommand}"
+                                    ToolTip="{DynamicResource Thumbnail.BgClear.Tooltip}"/>
                         </StackPanel>
                         <!-- 背景色ピッカー -->
                         <ToggleButton x:Name="BgColorToggle" Grid.Column="3" Width="32" Height="32" Margin="8,0,0,0"
-                                      BorderThickness="1" BorderBrush="#666" Padding="0">
+                                      BorderThickness="1" BorderBrush="#666" Padding="0"
+                                      ToolTip="{DynamicResource Thumbnail.BgColor.Tooltip}">
                             <Border Width="24" Height="24" CornerRadius="2"
                                     Background="{Binding SelectedBgColorBrush}"/>
                         </ToggleButton>
@@ -546,9 +571,11 @@
 
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Center">
                             <Button Content="{DynamicResource Thumbnail.SaveAs}" Padding="12,4"
-                                    Command="{Binding SaveThumbnailCommand}"/>
+                                    Command="{Binding SaveThumbnailCommand}"
+                                    ToolTip="{DynamicResource Thumbnail.SaveAs.Tooltip}"/>
                             <Button Content="{DynamicResource Thumbnail.OpenFolder}" Padding="12,4" Margin="8,0,0,0"
-                                    Command="{Binding OpenThumbnailFolderCommand}"/>
+                                    Command="{Binding OpenThumbnailFolderCommand}"
+                                    ToolTip="{DynamicResource Thumbnail.OpenFolder.Tooltip}"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>

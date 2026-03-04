@@ -48,7 +48,8 @@
             <StackPanel>
                 <TextBlock Text="{DynamicResource AIGenerate.Topic}" Style="{StaticResource SectionHeader}"/>
                 <TextBox x:Name="TopicTextBox" Height="60" AcceptsReturn="True" TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"/>
+                         VerticalScrollBarVisibility="Auto"
+                         ToolTip="{DynamicResource AIGenerate.Topic.Tooltip}"/>
                 <TextBlock Text="{DynamicResource AIGenerate.Topic.Hint}"
                            Foreground="{DynamicResource TextTertiary}" FontSize="11" Margin="0,4,0,0"/>
             </StackPanel>
@@ -65,7 +66,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="{DynamicResource AIGenerate.Style}" Style="{StaticResource FieldLabel}"/>
-                    <ComboBox x:Name="StyleCombo" Grid.Column="1" Height="28">
+                    <ComboBox x:Name="StyleCombo" Grid.Column="1" Height="28"
+                              ToolTip="{DynamicResource AIGenerate.Style.Tooltip}">
                         <ComboBoxItem Content="{DynamicResource AIGenerate.Style.Educational}" Tag="educational" IsSelected="True"/>
                         <ComboBoxItem Content="{DynamicResource AIGenerate.Style.Conversational}" Tag="conversational"/>
                         <ComboBoxItem Content="{DynamicResource AIGenerate.Style.Formal}" Tag="formal"/>
@@ -81,7 +83,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="{DynamicResource AIGenerate.SceneCount}" Style="{StaticResource FieldLabel}"/>
-                    <ComboBox x:Name="SceneCountCombo" Grid.Column="1" Width="80" Height="28">
+                    <ComboBox x:Name="SceneCountCombo" Grid.Column="1" Width="80" Height="28"
+                              ToolTip="{DynamicResource AIGenerate.SceneCount.Tooltip}">
                         <ComboBoxItem Content="3"/>
                         <ComboBoxItem Content="5" IsSelected="True"/>
                         <ComboBoxItem Content="7"/>
@@ -90,7 +93,8 @@
                 </Grid>
 
                 <CheckBox x:Name="GenerateImagesCheckBox" Content="{DynamicResource AIGenerate.GenerateImages}"
-                          IsChecked="True" Margin="0,4,0,0"/>
+                          IsChecked="True" Margin="0,4,0,0"
+                          ToolTip="{DynamicResource AIGenerate.GenerateImages.Tooltip}"/>
             </StackPanel>
         </Border>
 
@@ -113,7 +117,8 @@
         <!-- Buttons -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="GenerateButton" Content="{DynamicResource AIGenerate.Generate}"
-                    Style="{StaticResource DialogButton}" Click="GenerateButton_Click"/>
+                    Style="{StaticResource DialogButton}" Click="GenerateButton_Click"
+                    ToolTip="{DynamicResource AIGenerate.Generate.Tooltip}"/>
             <Button x:Name="CancelButton" Content="{DynamicResource Common.Cancel}"
                     Style="{StaticResource DialogButton}" IsCancel="True" Click="CancelButton_Click"/>
         </StackPanel>

@@ -376,6 +376,117 @@ namespace InsightCast.Services
             return outputPath;
         }
 
+        /// <summary>
+        /// Generates multiple thumbnail variants for A/B testing.
+        /// Produces one thumbnail per pattern × style combination from the provided lists.
+        /// </summary>
+        public List<string> GenerateAbThumbnails(
+            ThumbnailSettings baseSettings,
+            string outputDir,
+            string baseName,
+            ThumbnailPattern[]? patterns = null,
+            ThumbnailStyle[]? styles = null)
+        {
+            patterns ??= new[]
+            {
+                ThumbnailPattern.PowerWord,
+                ThumbnailPattern.ThreeLine,
+                ThumbnailPattern.FocusLines,
+                ThumbnailPattern.Question,
+                ThumbnailPattern.MainSub
+            };
+
+            styles ??= new[]
+            {
+                ThumbnailStyle.BusinessImpact,
+                ThumbnailStyle.ShockReveal,
+                ThumbnailStyle.TrustManual,
+                ThumbnailStyle.Pop
+            };
+
+            var results = new List<string>();
+            Directory.CreateDirectory(outputDir);
+
+            foreach (var pattern in patterns)
+            {
+                foreach (var style in styles)
+                {
+                    var variant = new ThumbnailSettings
+                    {
+                        Pattern = pattern,
+                        MainText = baseSettings.MainText,
+                        SubText = baseSettings.SubText,
+                        SubSubText = baseSettings.SubSubText,
+                        BackgroundImagePath = baseSettings.BackgroundImagePath,
+                        BackgroundColor = baseSettings.BackgroundColor,
+                        LogoPath = baseSettings.LogoPath,
+                        FontFamily = baseSettings.FontFamily,
+                        MainFontFamily = baseSettings.MainFontFamily,
+                        SubFontFamily = baseSettings.SubFontFamily,
+                        SubSubFontFamily = baseSettings.SubSubFontFamily,
+                        MainFontSize = baseSettings.MainFontSize,
+                        SubFontSize = baseSettings.SubFontSize,
+                        SubSubFontSize = baseSettings.SubSubFontSize,
+                    };
+
+                    // Apply style preset
+                    ApplyStylePreset(variant, style);
+
+                    var fileName = $"{baseName}_{pattern}_{style}.png";
+                    var outputPath = Path.Combine(outputDir, fileName);
+                    GenerateThumbnail(variant, outputPath);
+                    results.Add(outputPath);
+                }
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// Quick A/B test: generates top 5 recommended pattern+style combos for high CTR.
+        /// </summary>
+        public List<string> GenerateQuickAbTest(
+            ThumbnailSettings baseSettings, string outputDir, string baseName)
+        {
+            var combos = new (ThumbnailPattern, ThumbnailStyle)[]
+            {
+                (ThumbnailPattern.PowerWord, ThumbnailStyle.BusinessImpact),
+                (ThumbnailPattern.ThreeLine, ThumbnailStyle.ShockReveal),
+                (ThumbnailPattern.FocusLines, ThumbnailStyle.BusinessImpact),
+                (ThumbnailPattern.Question, ThumbnailStyle.TrustManual),
+                (ThumbnailPattern.MainSub, ThumbnailStyle.Pop),
+            };
+
+            var results = new List<string>();
+            Directory.CreateDirectory(outputDir);
+
+            foreach (var (pattern, style) in combos)
+            {
+                var variant = new ThumbnailSettings
+                {
+                    Pattern = pattern,
+                    MainText = baseSettings.MainText,
+                    SubText = baseSettings.SubText,
+                    SubSubText = baseSettings.SubSubText,
+                    BackgroundImagePath = baseSettings.BackgroundImagePath,
+                    BackgroundColor = baseSettings.BackgroundColor,
+                    LogoPath = baseSettings.LogoPath,
+                    FontFamily = baseSettings.FontFamily,
+                    MainFontFamily = baseSettings.MainFontFamily,
+                    SubFontFamily = baseSettings.SubFontFamily,
+                    SubSubFontFamily = baseSettings.SubSubFontFamily,
+                };
+                ApplyStylePreset(variant, style);
+
+                var fileName = $"{baseName}_AB{results.Count + 1}_{pattern}_{style}.png";
+                var outputPath = Path.Combine(outputDir, fileName);
+                GenerateThumbnail(variant, outputPath);
+                results.Add(outputPath);
+            }
+
+            return results;
+        }
+
         private void DrawBackground(Graphics g, ThumbnailSettings settings)
         {
             if (!string.IsNullOrEmpty(settings.BackgroundImagePath) && File.Exists(settings.BackgroundImagePath))

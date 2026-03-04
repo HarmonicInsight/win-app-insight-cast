@@ -217,70 +217,105 @@
                 </syncfusion:Backstage>
             </syncfusion:Ribbon.BackStage>
 
-            <!-- Home Tab -->
+            <!-- Home Tab — 教育動画ワークフロー順に再編成 -->
             <syncfusion:RibbonTab Caption="{DynamicResource Ribbon.Tab.Home}">
-                <!-- Scene Group -->
-                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Scene}" IsLauncherButtonVisible="False">
+
+                <!-- 1. 素材・構成グループ: 教育コンテンツの骨格を作る -->
+                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Structure}" IsLauncherButtonVisible="False">
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.Add}"
+                            ToolTip="{DynamicResource Ribbon.Scene.Add.Tooltip}"
                             Command="{Binding AddSceneCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.Remove}"
+                            ToolTip="{DynamicResource Ribbon.Scene.Remove.Tooltip}"
                             Command="{Binding RemoveSceneCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.MoveUp}"
+                            ToolTip="{DynamicResource Ribbon.Scene.MoveUp.Tooltip}"
                             Command="{Binding MoveSceneUpCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE74A;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.MoveDown}"
+                            ToolTip="{DynamicResource Ribbon.Scene.MoveDown.Tooltip}"
                             Command="{Binding MoveSceneDownCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE74B;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
-                </syncfusion:RibbonBar>
-
-                <!-- Export Group -->
-                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Export}" IsLauncherButtonVisible="False">
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Export.Video}"
-                            Command="{Binding ExportVideoCommand}" SizeForm="Small">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.Capture}"
+                            ToolTip="{DynamicResource Tool.ScreenCapture.Tooltip}"
+                            Command="{Binding ScreenCaptureCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE714;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                            <DataTemplate><TextBlock Text="&#xE7AC;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
+                </syncfusion:RibbonBar>
+
+                <!-- 2. 制作グループ: ナレーション・字幕・BGM -->
+                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Production}" IsLauncherButtonVisible="False">
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Export.Preview}"
+                            ToolTip="{DynamicResource Ribbon.Export.Preview.Tooltip}"
                             Command="{Binding PreviewSceneCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.BGM}"
+                            ToolTip="{DynamicResource Ribbon.BGM.Tooltip}"
+                            Command="{Binding BgmSettingsCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xEC4F;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.CTA}"
+                            ToolTip="{DynamicResource Ribbon.CTA.Tooltip}"
+                            Command="{Binding AddCtaEndcardCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- Template Group -->
+                <!-- 3. 書き出しグループ -->
+                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Export}" IsLauncherButtonVisible="False">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Export.Video}"
+                            ToolTip="{DynamicResource Ribbon.Export.Video.Tooltip}"
+                            Command="{Binding ExportVideoCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE714;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Template.OpenOutput}"
+                            ToolTip="{DynamicResource Ribbon.Template.OpenOutput.Tooltip}"
+                            Command="{Binding OpenOutputFolderCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8DA;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                </syncfusion:RibbonBar>
+
+                <!-- 4. テンプレートグループ -->
                 <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Template}" IsLauncherButtonVisible="False">
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Template.Save}"
+                            ToolTip="{DynamicResource Ribbon.Template.Save.Tooltip}"
                             Command="{Binding SaveTemplateCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Template.Load}"
+                            ToolTip="{DynamicResource Ribbon.Template.Load.Tooltip}"
                             Command="{Binding LoadTemplateCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Template.OpenOutput}"
-                            Command="{Binding OpenOutputFolderCommand}" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8DA;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
@@ -329,9 +364,14 @@
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Export.Resolution}" FontSize="10"
                                        Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,4"/>
-                            <ComboBox SelectedIndex="{Binding SelectedResolutionIndex}" FontSize="11">
+                            <ComboBox SelectedIndex="{Binding SelectedResolutionIndex}" FontSize="11"
+                                     ToolTip="{DynamicResource Export.Resolution.Tooltip}">
                                 <ComboBoxItem Content="{DynamicResource Resolution.Landscape}" Tag="1920x1080"/>
                                 <ComboBoxItem Content="{DynamicResource Resolution.Portrait}" Tag="1080x1920"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.Square}" Tag="1080x1080"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.Shorts}" Tag="1080x1920"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.Reels}" Tag="1080x1920"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.TikTok}" Tag="1080x1920"/>
                             </ComboBox>
                         </StackPanel>
                     </Border>
@@ -529,17 +569,19 @@
 
                         <!-- Media info -->
                         <DockPanel Margin="0,0,0,4">
-                            <Button DockPanel.Dock="Right" Content="{DynamicResource Tool.Snipaste}" Padding="10,3" Margin="2"
-                                    ToolTip="{DynamicResource Tool.Snipaste.Tooltip}"
-                                    Command="{Binding LaunchSnipasteCommand}"/>
+                            <Button DockPanel.Dock="Right" Content="{DynamicResource Tool.ScreenCapture}" Padding="10,3" Margin="2"
+                                    ToolTip="{DynamicResource Tool.ScreenCapture.Tooltip}"
+                                    Command="{Binding ScreenCaptureCommand}"/>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center" Margin="0,0,6,0"/>
                                 <TextBlock Text="{Binding MediaName}" VerticalAlignment="Center"
                                            Foreground="{DynamicResource TextSecondary}" MinWidth="120" Margin="0,0,8,0"/>
                                 <Button Content="{DynamicResource Common.Select}" Padding="10,3" Margin="2"
-                                        Command="{Binding SelectMediaCommand}"/>
+                                        Command="{Binding SelectMediaCommand}"
+                                        ToolTip="{DynamicResource Scene.Media.Select.Tooltip}"/>
                                 <Button Content="{DynamicResource Common.Clear}" Padding="10,3" Margin="2"
-                                        Command="{Binding ClearMediaCommand}"/>
+                                        Command="{Binding ClearMediaCommand}"
+                                        ToolTip="{DynamicResource Scene.Media.Clear.Tooltip}"/>
                             </StackPanel>
                         </DockPanel>
 
@@ -601,7 +643,8 @@
                                 <TextBlock Text="{DynamicResource Scene.Narration.Placeholder}"
                                            Foreground="{DynamicResource TextPlaceholder}" FontStyle="Italic"
                                            IsHitTestVisible="False" Margin="8,6,0,0" VerticalAlignment="Top"
-                                           Visibility="{Binding NarrationPlaceholderVisible, Converter={StaticResource BoolToVis}}"/>
+                                           Visibility="{Binding NarrationPlaceholderVisible, Converter={StaticResource BoolToVis}}"
+                                           ToolTip="{DynamicResource Scene.Narration.Tooltip}"/>
                             </Grid>
                         </Grid>
 
@@ -611,10 +654,12 @@
                             <ComboBox MinWidth="180" Margin="0,0,12,0"
                                       ItemsSource="{Binding SceneSpeakers}"
                                       SelectedIndex="{Binding SelectedSceneSpeakerIndex}"
-                                      DisplayMemberPath="DisplayName"/>
+                                      DisplayMemberPath="DisplayName"
+                                      ToolTip="{DynamicResource Scene.Speaker.Tooltip}"/>
                             <CheckBox Content="{DynamicResource Scene.KeepAudio}"
                                       IsChecked="{Binding KeepOriginalAudio}"
-                                      VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                      VerticalAlignment="Center" Margin="0,0,12,0"
+                                      ToolTip="{DynamicResource Scene.KeepAudio.Tooltip}"/>
                             <Button Content="{DynamicResource Scene.PreviewAudio}" Padding="8,3" Margin="2"
                                     Command="{Binding PreviewAudioCommand}"
                                     ToolTip="{DynamicResource Scene.PreviewAudio.Tooltip}"
@@ -628,7 +673,8 @@
                                     ToolTip="{DynamicResource Scene.Stop.Tooltip}"/>
                             <TextBlock Text="{DynamicResource Scene.SpeechSpeed}" VerticalAlignment="Center" Margin="12,0,4,0"/>
                             <ComboBox Width="90" ItemsSource="{Binding SpeechSpeedOptions}"
-                                      SelectedIndex="{Binding SelectedSpeechSpeedIndex}"/>
+                                      SelectedIndex="{Binding SelectedSpeechSpeedIndex}"
+                                      ToolTip="{DynamicResource Scene.SpeechSpeed.Tooltip}"/>
                         </WrapPanel>
 
                         <!-- Subtitle -->
@@ -677,11 +723,14 @@
                                 <TextBlock Text="{DynamicResource Overlay.Title}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Content="{DynamicResource Common.Add}" Padding="6,2" Margin="2"
-                                            Command="{Binding AddOverlayCommand}"/>
+                                            Command="{Binding AddOverlayCommand}"
+                                            ToolTip="{DynamicResource Overlay.Add.Tooltip}"/>
                                     <Button Content="{DynamicResource Overlay.CoverTemplate}" Padding="6,2" Margin="2"
-                                            Command="{Binding AddCoverTemplateCommand}"/>
+                                            Command="{Binding AddCoverTemplateCommand}"
+                                            ToolTip="{DynamicResource Overlay.CoverTemplate.Tooltip}"/>
                                     <Button Content="{DynamicResource Common.Remove}" Padding="6,2" Margin="2"
-                                            Command="{Binding RemoveOverlayCommand}"/>
+                                            Command="{Binding RemoveOverlayCommand}"
+                                            ToolTip="{DynamicResource Overlay.Remove.Tooltip}"/>
                                 </StackPanel>
                             </DockPanel>
                             <!-- Overlay list with reorder buttons -->
@@ -775,9 +824,11 @@
                             <TextBlock Text="{DynamicResource Duration.Title}" Margin="0,0,0,4"/>
                             <StackPanel Orientation="Horizontal">
                                 <RadioButton Content="{DynamicResource Duration.Auto}" IsChecked="{Binding IsAutoDuration}"
-                                             VerticalAlignment="Center" Margin="0,0,16,0" GroupName="DurationMode"/>
+                                             VerticalAlignment="Center" Margin="0,0,16,0" GroupName="DurationMode"
+                                             ToolTip="{DynamicResource Duration.Auto.Tooltip}"/>
                                 <RadioButton Content="{DynamicResource Duration.Fixed}" IsChecked="{Binding IsFixedDuration}"
-                                             VerticalAlignment="Center" Margin="0,0,8,0" GroupName="DurationMode"/>
+                                             VerticalAlignment="Center" Margin="0,0,8,0" GroupName="DurationMode"
+                                             ToolTip="{DynamicResource Duration.Fixed.Tooltip}"/>
                                 <TextBox Text="{Binding DurationSeconds, UpdateSourceTrigger=PropertyChanged}"
                                          Width="60" TextAlignment="Center" Margin="0,0,4,0" IsEnabled="{Binding IsFixedDuration}"/>
                                 <TextBlock Text="{DynamicResource Duration.Range}" VerticalAlignment="Center"
@@ -815,12 +866,15 @@
                                        Foreground="{DynamicResource TextSecondary}" FontSize="11"
                                        MinWidth="80" MaxWidth="140" TextTrimming="CharacterEllipsis" Margin="0,0,4,0"/>
                             <Button Content="{DynamicResource Common.Select}" Padding="6,2" Margin="1"
-                                    Command="{Binding SelectWatermarkCommand}"/>
+                                    Command="{Binding SelectWatermarkCommand}"
+                                    ToolTip="{DynamicResource Watermark.Tooltip}"/>
                             <Button Content="✕" Padding="4,2" Margin="1"
-                                    Command="{Binding ClearWatermarkCommand}"/>
+                                    Command="{Binding ClearWatermarkCommand}"
+                                    ToolTip="{DynamicResource Watermark.Clear.Tooltip}"/>
                             <TextBlock Text="{DynamicResource Watermark.Position}" VerticalAlignment="Center" Margin="12,0,4,0"/>
                             <ComboBox Width="80" ItemsSource="{Binding WatermarkPositionOptions}"
-                                      SelectedIndex="{Binding SelectedWatermarkPosIndex}"/>
+                                      SelectedIndex="{Binding SelectedWatermarkPosIndex}"
+                                      ToolTip="{DynamicResource Watermark.Position.Tooltip}"/>
                         </StackPanel>
 
                         <!-- Template -->
@@ -858,7 +912,8 @@
                                 Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="FPS:" VerticalAlignment="Center" Margin="0,0,4,0"/>
                         <TextBox Text="{Binding FpsText, UpdateSourceTrigger=PropertyChanged}"
-                                 Width="60" TextAlignment="Center"/>
+                                 Width="60" TextAlignment="Center"
+                                 ToolTip="{DynamicResource Export.FPS.Tooltip}"/>
                     </StackPanel>
 
                     <!-- BGM: Detail mode only -->

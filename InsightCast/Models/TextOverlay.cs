@@ -114,5 +114,189 @@ namespace InsightCast.Models
                 ShadowOffset = new[] { 2, 2 }
             };
         }
+
+        /// <summary>
+        /// CTA endcard template: Subscribe / Follow prompt.
+        /// </summary>
+        public static TextOverlay CreateCtaSubscribe(string? text = null)
+        {
+            return new TextOverlay
+            {
+                Text = text ?? LocalizationService.GetString("CTA.Subscribe"),
+                XPercent = 50.0,
+                YPercent = 50.0,
+                FontSize = 56,
+                FontBold = true,
+                Alignment = TextAlignment.Center,
+                TextColor = new[] { 255, 255, 255 },
+                StrokeColor = new[] { 200, 30, 30 },
+                StrokeWidth = 4,
+                ShadowEnabled = true,
+                ShadowColor = new[] { 0, 0, 0 },
+                ShadowOffset = new[] { 3, 3 }
+            };
+        }
+
+        /// <summary>
+        /// CTA endcard template: URL / Link prompt.
+        /// </summary>
+        public static TextOverlay CreateCtaLink(string? text = null)
+        {
+            return new TextOverlay
+            {
+                Text = text ?? LocalizationService.GetString("CTA.LinkBelow"),
+                XPercent = 50.0,
+                YPercent = 72.0,
+                FontSize = 36,
+                FontBold = true,
+                Alignment = TextAlignment.Center,
+                TextColor = new[] { 100, 180, 255 },
+                StrokeColor = new[] { 0, 0, 0 },
+                StrokeWidth = 2,
+                ShadowEnabled = true,
+                ShadowColor = new[] { 0, 0, 0 },
+                ShadowOffset = new[] { 2, 2 },
+                Opacity = 0.95
+            };
+        }
+
+        /// <summary>
+        /// CTA endcard template: "Thank you" closing message.
+        /// </summary>
+        public static TextOverlay CreateCtaThankYou(string? text = null)
+        {
+            return new TextOverlay
+            {
+                Text = text ?? LocalizationService.GetString("CTA.ThankYou"),
+                XPercent = 50.0,
+                YPercent = 25.0,
+                FontSize = 64,
+                FontBold = true,
+                Alignment = TextAlignment.Center,
+                TextColor = new[] { 255, 215, 0 },
+                StrokeColor = new[] { 0, 0, 0 },
+                StrokeWidth = 3,
+                ShadowEnabled = true,
+                ShadowColor = new[] { 0, 0, 0 },
+                ShadowOffset = new[] { 3, 3 }
+            };
+        }
+
+        /// <summary>
+        /// CTA endcard template: Next episode / lecture preview.
+        /// </summary>
+        public static TextOverlay CreateCtaNextLesson(string? text = null)
+        {
+            return new TextOverlay
+            {
+                Text = text ?? LocalizationService.GetString("CTA.NextLesson"),
+                XPercent = 50.0,
+                YPercent = 40.0,
+                FontSize = 52,
+                FontBold = true,
+                Alignment = TextAlignment.Center,
+                TextColor = new[] { 255, 255, 255 },
+                StrokeColor = new[] { 30, 100, 180 },
+                StrokeWidth = 4,
+                ShadowEnabled = true,
+                ShadowColor = new[] { 0, 0, 0 },
+                ShadowOffset = new[] { 3, 3 }
+            };
+        }
+
+        /// <summary>
+        /// CTA endcard template: Consultation / inquiry prompt.
+        /// </summary>
+        public static TextOverlay CreateCtaConsultation(string? text = null)
+        {
+            return new TextOverlay
+            {
+                Text = text ?? LocalizationService.GetString("CTA.Consultation"),
+                XPercent = 50.0,
+                YPercent = 55.0,
+                FontSize = 44,
+                FontBold = true,
+                Alignment = TextAlignment.Center,
+                TextColor = new[] { 255, 255, 255 },
+                StrokeColor = new[] { 0, 150, 80 },
+                StrokeWidth = 3,
+                ShadowEnabled = true,
+                ShadowColor = new[] { 0, 0, 0 },
+                ShadowOffset = new[] { 2, 2 }
+            };
+        }
+
+        /// <summary>
+        /// CTA endcard template: Document / resource download prompt.
+        /// </summary>
+        public static TextOverlay CreateCtaDownload(string? text = null)
+        {
+            return new TextOverlay
+            {
+                Text = text ?? LocalizationService.GetString("CTA.Download"),
+                XPercent = 50.0,
+                YPercent = 65.0,
+                FontSize = 40,
+                FontBold = true,
+                Alignment = TextAlignment.Center,
+                TextColor = new[] { 100, 200, 255 },
+                StrokeColor = new[] { 0, 0, 0 },
+                StrokeWidth = 2,
+                ShadowEnabled = true,
+                ShadowColor = new[] { 0, 0, 0 },
+                ShadowOffset = new[] { 2, 2 },
+                Opacity = 0.95
+            };
+        }
+
+        /// <summary>
+        /// CTA endcard template: Course / series navigation prompt.
+        /// </summary>
+        public static TextOverlay CreateCtaCourseNav(string? text = null)
+        {
+            return new TextOverlay
+            {
+                Text = text ?? LocalizationService.GetString("CTA.CourseNav"),
+                XPercent = 50.0,
+                YPercent = 78.0,
+                FontSize = 36,
+                FontBold = true,
+                Alignment = TextAlignment.Center,
+                TextColor = new[] { 220, 220, 220 },
+                StrokeColor = new[] { 0, 0, 0 },
+                StrokeWidth = 2,
+                ShadowEnabled = true,
+                ShadowColor = new[] { 0, 0, 0 },
+                ShadowOffset = new[] { 2, 2 },
+                Opacity = 0.9
+            };
+        }
+
+        /// <summary>
+        /// Creates a complete CTA endcard scene with multiple overlays.
+        /// </summary>
+        public static List<TextOverlay> CreateEndcardSet(string? ctaText = null, string? linkText = null)
+        {
+            return new List<TextOverlay>
+            {
+                CreateCtaThankYou(),
+                CreateCtaSubscribe(ctaText),
+                CreateCtaLink(linkText)
+            };
+        }
+
+        /// <summary>
+        /// Creates a consulting/education CTA endcard with next lesson and consultation prompts.
+        /// </summary>
+        public static List<TextOverlay> CreateEducationEndcardSet(string? nextLessonText = null, string? consultText = null, string? downloadText = null)
+        {
+            return new List<TextOverlay>
+            {
+                CreateCtaThankYou(),
+                CreateCtaNextLesson(nextLessonText),
+                CreateCtaConsultation(consultText),
+                CreateCtaDownload(downloadText)
+            };
+        }
     }
 }
