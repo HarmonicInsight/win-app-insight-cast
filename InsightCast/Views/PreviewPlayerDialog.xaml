@@ -72,6 +72,7 @@
                             Minimum="0" Maximum="100" Value="0"
                             VerticalAlignment="Center"
                             Margin="8,0"
+                            ToolTip="{DynamicResource Preview.SeekSlider.Tooltip}"
                             PreviewMouseLeftButtonDown="SeekSlider_PreviewMouseDown"
                             PreviewMouseLeftButtonUp="SeekSlider_PreviewMouseUp"
                             ValueChanged="SeekSlider_ValueChanged"/>
@@ -131,7 +132,8 @@
                         <Slider x:Name="VolumeSlider" Width="80"
                                 Minimum="0" Maximum="1" Value="0.8"
                                 VerticalAlignment="Center"
-                                ValueChanged="VolumeSlider_ValueChanged"/>
+                                ValueChanged="VolumeSlider_ValueChanged"
+                                ToolTip="{DynamicResource Preview.Volume.Tooltip}"/>
 
                         <!-- Speed -->
                         <TextBlock Text="{DynamicResource Preview.Speed}" Foreground="{DynamicResource TextSecondary}"
@@ -139,7 +141,8 @@
                                    Margin="12,0,4,0"/>
                         <ComboBox x:Name="SpeedComboBox" Width="65" Height="28"
                                   VerticalContentAlignment="Center"
-                                  SelectionChanged="SpeedComboBox_SelectionChanged">
+                                  SelectionChanged="SpeedComboBox_SelectionChanged"
+                                  ToolTip="{DynamicResource Preview.Speed.Tooltip}">
                             <ComboBoxItem Content="0.5x" Tag="0.5"/>
                             <ComboBoxItem Content="1x" Tag="1" IsSelected="True"/>
                             <ComboBoxItem Content="1.5x" Tag="1.5"/>
@@ -150,7 +153,8 @@
                         <!-- Close -->
                         <Button Content="{DynamicResource Common.Close}" Style="{StaticResource DialogButton}"
                                 Margin="12,0,0,0"
-                                Click="CloseButton_Click"/>
+                                Click="CloseButton_Click"
+                                ToolTip="{DynamicResource Preview.Close.Tooltip}"/>
                     </StackPanel>
                 </Grid>
 

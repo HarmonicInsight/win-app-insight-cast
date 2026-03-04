@@ -71,10 +71,12 @@
                                        Margin="0,0,8,0"/>
                             <Button x:Name="BrowseButton" Grid.Column="1"
                                     Content="{DynamicResource BGM.Browse}" Style="{StaticResource DialogButton}"
-                                    MinWidth="70" Click="BrowseButton_Click"/>
+                                    MinWidth="70" Click="BrowseButton_Click"
+                                    ToolTip="{DynamicResource BGM.Browse.Tooltip}"/>
                             <Button x:Name="ClearFileButton" Grid.Column="2"
                                     Content="{DynamicResource Common.Clear}" Style="{StaticResource DialogButton}"
-                                    MinWidth="60" Click="ClearFileButton_Click"/>
+                                    MinWidth="60" Click="ClearFileButton_Click"
+                                    ToolTip="{DynamicResource BGM.Clear.Tooltip}"/>
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -94,7 +96,8 @@
                             <Slider x:Name="MainVolumeSlider" Grid.Column="1"
                                     Minimum="0" Maximum="100" Value="80"
                                     VerticalAlignment="Center"
-                                    ValueChanged="MainVolumeSlider_ValueChanged"/>
+                                    ValueChanged="MainVolumeSlider_ValueChanged"
+                                    ToolTip="{DynamicResource BGM.MainVolume.Tooltip}"/>
                             <TextBlock x:Name="MainVolumeLabel" Grid.Column="2"
                                        Text="80%"
                                        Foreground="{DynamicResource TextSecondary}"
@@ -106,7 +109,8 @@
                         <CheckBox x:Name="DuckingCheckBox" Content="{DynamicResource BGM.Ducking}"
                                   Margin="0,0,0,6"
                                   Checked="DuckingCheckBox_Changed"
-                                  Unchecked="DuckingCheckBox_Changed"/>
+                                  Unchecked="DuckingCheckBox_Changed"
+                                  ToolTip="{DynamicResource BGM.Ducking.Tooltip}"/>
 
                         <StackPanel x:Name="DuckingPanel" Margin="20,0,0,0" Visibility="Collapsed">
                             <!-- Ducking Volume -->
@@ -120,7 +124,8 @@
                                 <Slider x:Name="DuckingVolumeSlider" Grid.Column="1"
                                         Minimum="0" Maximum="100" Value="20"
                                         VerticalAlignment="Center"
-                                        ValueChanged="DuckingVolumeSlider_ValueChanged"/>
+                                        ValueChanged="DuckingVolumeSlider_ValueChanged"
+                                        ToolTip="{DynamicResource BGM.DuckingVolume.Tooltip}"/>
                                 <TextBlock x:Name="DuckingVolumeLabel" Grid.Column="2"
                                            Text="20%"
                                            Foreground="{DynamicResource TextSecondary}"
@@ -136,7 +141,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="{DynamicResource BGM.Attack}" Style="{StaticResource FieldLabel}"/>
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                            ToolTip="{DynamicResource BGM.Attack.Tooltip}">
                                     <Button Content="-" Style="{StaticResource SmallSpinButton}"
                                             Click="AttackDown_Click"/>
                                     <TextBox x:Name="AttackTextBox" Width="50" Height="24"
@@ -157,7 +163,8 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="{DynamicResource BGM.Release}" Style="{StaticResource FieldLabel}"/>
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                            ToolTip="{DynamicResource BGM.Release.Tooltip}">
                                     <Button Content="-" Style="{StaticResource SmallSpinButton}"
                                             Click="ReleaseDown_Click"/>
                                     <TextBox x:Name="ReleaseTextBox" Width="50" Height="24"
@@ -184,7 +191,8 @@
                             <CheckBox x:Name="FadeInCheckBox" Content="{DynamicResource Common.Enabled}"
                                       Margin="0,0,0,4"
                                       Checked="FadeInCheckBox_Changed"
-                                      Unchecked="FadeInCheckBox_Changed"/>
+                                      Unchecked="FadeInCheckBox_Changed"
+                                      ToolTip="{DynamicResource BGM.FadeIn.Tooltip}"/>
                             <StackPanel x:Name="FadeInPanel" Visibility="Collapsed">
                                 <Grid Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
@@ -199,7 +207,8 @@
                                                 Click="FadeInDurationDown_Click"/>
                                         <TextBox x:Name="FadeInDurationTextBox" Width="50" Height="24"
                                                  TextAlignment="Center" VerticalContentAlignment="Center"
-                                                 Text="2.0"/>
+                                                 Text="2.0"
+                                                 ToolTip="{DynamicResource BGM.FadeIn.Duration.Tooltip}"/>
                                         <Button Content="+" Style="{StaticResource SmallSpinButton}"
                                                 Click="FadeInDurationUp_Click"/>
                                         <TextBlock Text="{DynamicResource BGM.Sec}" Foreground="{DynamicResource TextSecondary}"
@@ -214,7 +223,8 @@
                                     <TextBlock Grid.Column="0" Text="{DynamicResource BGM.Type}" Style="{StaticResource FieldLabel}"
                                                MinWidth="60"/>
                                     <ComboBox x:Name="FadeInTypeCombo" Grid.Column="1"
-                                              Width="140" HorizontalAlignment="Left">
+                                              Width="140" HorizontalAlignment="Left"
+                                              ToolTip="{DynamicResource BGM.FadeIn.Type.Tooltip}">
                                         <ComboBoxItem Content="Linear" IsSelected="True"/>
                                         <ComboBoxItem Content="Exponential"/>
                                     </ComboBox>
@@ -229,7 +239,8 @@
                             <CheckBox x:Name="FadeOutCheckBox" Content="{DynamicResource Common.Enabled}"
                                       Margin="0,0,0,4"
                                       Checked="FadeOutCheckBox_Changed"
-                                      Unchecked="FadeOutCheckBox_Changed"/>
+                                      Unchecked="FadeOutCheckBox_Changed"
+                                      ToolTip="{DynamicResource BGM.FadeOut.Tooltip}"/>
                             <StackPanel x:Name="FadeOutPanel" Visibility="Collapsed">
                                 <Grid Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
@@ -244,7 +255,8 @@
                                                 Click="FadeOutDurationDown_Click"/>
                                         <TextBox x:Name="FadeOutDurationTextBox" Width="50" Height="24"
                                                  TextAlignment="Center" VerticalContentAlignment="Center"
-                                                 Text="3.0"/>
+                                                 Text="3.0"
+                                                 ToolTip="{DynamicResource BGM.FadeOut.Duration.Tooltip}"/>
                                         <Button Content="+" Style="{StaticResource SmallSpinButton}"
                                                 Click="FadeOutDurationUp_Click"/>
                                         <TextBlock Text="{DynamicResource BGM.Sec}" Foreground="{DynamicResource TextSecondary}"
@@ -259,7 +271,8 @@
                                     <TextBlock Grid.Column="0" Text="{DynamicResource BGM.Type}" Style="{StaticResource FieldLabel}"
                                                MinWidth="60"/>
                                     <ComboBox x:Name="FadeOutTypeCombo" Grid.Column="1"
-                                              Width="140" HorizontalAlignment="Left">
+                                              Width="140" HorizontalAlignment="Left"
+                                              ToolTip="{DynamicResource BGM.FadeOut.Type.Tooltip}">
                                         <ComboBoxItem Content="Linear" IsSelected="True"/>
                                         <ComboBoxItem Content="Exponential"/>
                                     </ComboBox>
@@ -272,7 +285,8 @@
                 <!-- Loop Setting -->
                 <Border Style="{StaticResource SectionBorder}">
                     <CheckBox x:Name="LoopCheckBox" Content="{DynamicResource BGM.Loop}"
-                              IsChecked="True"/>
+                              IsChecked="True"
+                              ToolTip="{DynamicResource BGM.Loop.Tooltip}"/>
                 </Border>
 
             </StackPanel>

@@ -1219,4 +1219,94 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Backstage.Legal.Terms">Terms of Service</sys:String>
     <sys:String x:Key="Backstage.Legal.Privacy">Privacy Policy</sys:String>
 
+    <!-- ================================================================ -->
+    <!-- Additional Tooltips                                               -->
+    <!-- ================================================================ -->
+
+    <!-- BGM Dialog -->
+    <sys:String x:Key="BGM.Browse.Tooltip">Select an audio file for background music</sys:String>
+    <sys:String x:Key="BGM.Clear.Tooltip">Remove the selected BGM file</sys:String>
+    <sys:String x:Key="BGM.MainVolume.Tooltip">Adjust the base volume of background music</sys:String>
+    <sys:String x:Key="BGM.Ducking.Tooltip">Automatically lower BGM volume during narration</sys:String>
+    <sys:String x:Key="BGM.DuckingVolume.Tooltip">BGM volume level during narration</sys:String>
+    <sys:String x:Key="BGM.Attack.Tooltip">Time to lower BGM volume (milliseconds)</sys:String>
+    <sys:String x:Key="BGM.Release.Tooltip">Time to restore BGM volume (milliseconds)</sys:String>
+    <sys:String x:Key="BGM.FadeIn.Tooltip">Gradually increase BGM volume at video start</sys:String>
+    <sys:String x:Key="BGM.FadeIn.Duration.Tooltip">Fade in duration (seconds)</sys:String>
+    <sys:String x:Key="BGM.FadeIn.Type.Tooltip">Linear: constant rate / Exponential: natural curve</sys:String>
+    <sys:String x:Key="BGM.FadeOut.Tooltip">Gradually decrease BGM volume at video end</sys:String>
+    <sys:String x:Key="BGM.FadeOut.Duration.Tooltip">Fade out duration (seconds)</sys:String>
+    <sys:String x:Key="BGM.FadeOut.Type.Tooltip">Linear: constant rate / Exponential: natural curve</sys:String>
+    <sys:String x:Key="BGM.Loop.Tooltip">Loop background music to match video length</sys:String>
+
+    <!-- Batch Export Dialog -->
+    <sys:String x:Key="BatchExport.AddProjects.Tooltip">Add project JSON files for batch processing</sys:String>
+    <sys:String x:Key="BatchExport.RemoveSelected.Tooltip">Remove selected projects from the list</sys:String>
+    <sys:String x:Key="BatchExport.OutputDir.Tooltip">Output folder for exported video files</sys:String>
+    <sys:String x:Key="BatchExport.BrowseDir.Tooltip">Browse for output folder</sys:String>
+    <sys:String x:Key="BatchExport.ContinueOnError.Tooltip">Continue processing remaining projects if one fails</sys:String>
+    <sys:String x:Key="BatchExport.Start.Tooltip">Start exporting all projects in the queue</sys:String>
+
+    <!-- OpenAI Settings Dialog -->
+    <sys:String x:Key="OpenAI.ApiKey.Tooltip">Enter your API key from platform.openai.com</sys:String>
+    <sys:String x:Key="OpenAI.TestConnection.Tooltip">Verify API key validity and connection</sys:String>
+    <sys:String x:Key="OpenAI.NarrationModel.Tooltip">AI model used for narration generation</sys:String>
+    <sys:String x:Key="OpenAI.ImageModel.Tooltip">AI model used for image generation</sys:String>
+
+    <!-- AI Project Generate Dialog -->
+    <sys:String x:Key="AIGenerate.Topic.Tooltip">Describe the topic or content for your video</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Tooltip">Select the narration tone and style</sys:String>
+    <sys:String x:Key="AIGenerate.SceneCount.Tooltip">Number of scenes to auto-generate</sys:String>
+    <sys:String x:Key="AIGenerate.GenerateImages.Tooltip">Also generate images for each scene using AI</sys:String>
+    <sys:String x:Key="AIGenerate.Generate.Tooltip">Start AI-powered project generation</sys:String>
+
+    <!-- Preview Player Dialog -->
+    <sys:String x:Key="Preview.SeekSlider.Tooltip">Drag to seek through the timeline</sys:String>
+    <sys:String x:Key="Preview.Volume.Tooltip">Adjust playback volume</sys:String>
+    <sys:String x:Key="Preview.Speed.Tooltip">Change playback speed</sys:String>
+    <sys:String x:Key="Preview.Close.Tooltip">Close the preview player</sys:String>
+
+    <!-- Video Wizard Dialog -->
+    <sys:String x:Key="Wizard.Browse.Tooltip">Browse and select media files to add</sys:String>
+    <sys:String x:Key="Wizard.RemoveMedia.Tooltip">Remove this media from the list</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Intro.Tooltip">Product or service introduction video</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Tutorial.Tooltip">Step-by-step tutorial content</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Explain.Tooltip">Educational or explanatory content</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Promo.Tooltip">Promotional or marketing video</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Custom.Tooltip">Define a custom purpose</sys:String>
+    <sys:String x:Key="Wizard.CustomPurpose.Tooltip">Describe the specific purpose of your video</sys:String>
+    <sys:String x:Key="Wizard.CustomDuration.Tooltip">Enter duration in seconds</sys:String>
+    <sys:String x:Key="Wizard.Back.Tooltip">Go back to the previous step</sys:String>
+    <sys:String x:Key="Wizard.Next.Tooltip">Proceed to the next step</sys:String>
+
+    <!-- Planning Tab -->
+    <sys:String x:Key="Planning.TotalLength.Tooltip">Select target duration for the video</sys:String>
+    <sys:String x:Key="Planning.SceneCount.Tooltip">Number of scenes in the video</sys:String>
+    <sys:String x:Key="Planning.Add.Tooltip">Add a new scene</sys:String>
+    <sys:String x:Key="Planning.Remove.Tooltip">Remove the selected scene</sys:String>
+    <sys:String x:Key="Planning.MoveUp.Tooltip">Move scene up in order</sys:String>
+    <sys:String x:Key="Planning.MoveDown.Tooltip">Move scene down in order</sys:String>
+    <sys:String x:Key="Planning.ClearScene.Tooltip">Clear this scene's content</sys:String>
+    <sys:String x:Key="Thumbnail.Pattern.Tooltip">Select thumbnail color pattern</sys:String>
+    <sys:String x:Key="Thumbnail.Style.Tooltip">Apply style preset with one click</sys:String>
+    <sys:String x:Key="Thumbnail.Font.Tooltip">Select text font</sys:String>
+    <sys:String x:Key="Thumbnail.FontSize.Tooltip">Select text size</sys:String>
+    <sys:String x:Key="Thumbnail.Color.Tooltip">Change text color</sys:String>
+    <sys:String x:Key="Thumbnail.BgBrowse.Tooltip">Select a background image for thumbnail</sys:String>
+    <sys:String x:Key="Thumbnail.BgClear.Tooltip">Remove the background image</sys:String>
+    <sys:String x:Key="Thumbnail.BgColor.Tooltip">Change background color</sys:String>
+    <sys:String x:Key="Thumbnail.SaveAs.Tooltip">Save the generated thumbnail to a file</sys:String>
+    <sys:String x:Key="Thumbnail.OpenFolder.Tooltip">Open the thumbnail output folder</sys:String>
+
+    <!-- Chat Panel -->
+    <sys:String x:Key="Chat.ApiKey.Claude.Tooltip">Enter your Claude API key (from anthropic.com)</sys:String>
+    <sys:String x:Key="Chat.ApiKey.OpenAI.Tooltip">Enter your OpenAI API key (from platform.openai.com)</sys:String>
+    <sys:String x:Key="Chat.Mode.Text.Tooltip">Switch to text generation mode</sys:String>
+    <sys:String x:Key="Chat.Mode.Image.Tooltip">Switch to image generation mode</sys:String>
+    <sys:String x:Key="Chat.MyPrompts.Tooltip">Show your saved prompts</sys:String>
+    <sys:String x:Key="Chat.PresetPrompts.Tooltip">Show preset prompt library</sys:String>
+    <sys:String x:Key="Chat.Execute.Tooltip">Execute prompt (Ctrl+Enter)</sys:String>
+    <sys:String x:Key="Chat.Cancel.Tooltip">Cancel the current AI operation</sys:String>
+    <sys:String x:Key="Chat.SaveThumbnail.Tooltip">Save the generated thumbnail image</sys:String>
+
 </ResourceDictionary>

@@ -1220,4 +1220,94 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Backstage.Legal.Terms">利用規約</sys:String>
     <sys:String x:Key="Backstage.Legal.Privacy">プライバシーポリシー</sys:String>
 
+    <!-- ================================================================ -->
+    <!-- Additional Tooltips                                               -->
+    <!-- ================================================================ -->
+
+    <!-- BGM Dialog -->
+    <sys:String x:Key="BGM.Browse.Tooltip">BGM用の音声ファイルを選択</sys:String>
+    <sys:String x:Key="BGM.Clear.Tooltip">選択中のBGMファイルを解除</sys:String>
+    <sys:String x:Key="BGM.MainVolume.Tooltip">BGMの基本音量を調整</sys:String>
+    <sys:String x:Key="BGM.Ducking.Tooltip">ナレーション中にBGM音量を自動で下げる</sys:String>
+    <sys:String x:Key="BGM.DuckingVolume.Tooltip">ナレーション中のBGM音量レベル</sys:String>
+    <sys:String x:Key="BGM.Attack.Tooltip">BGM音量が下がるまでの時間（ミリ秒）</sys:String>
+    <sys:String x:Key="BGM.Release.Tooltip">BGM音量が元に戻るまでの時間（ミリ秒）</sys:String>
+    <sys:String x:Key="BGM.FadeIn.Tooltip">動画の開始時にBGMを徐々に大きくする</sys:String>
+    <sys:String x:Key="BGM.FadeIn.Duration.Tooltip">フェードインの長さ（秒）</sys:String>
+    <sys:String x:Key="BGM.FadeIn.Type.Tooltip">Linear: 一定速度で変化 / Exponential: 自然な変化</sys:String>
+    <sys:String x:Key="BGM.FadeOut.Tooltip">動画の終了時にBGMを徐々に小さくする</sys:String>
+    <sys:String x:Key="BGM.FadeOut.Duration.Tooltip">フェードアウトの長さ（秒）</sys:String>
+    <sys:String x:Key="BGM.FadeOut.Type.Tooltip">Linear: 一定速度で変化 / Exponential: 自然な変化</sys:String>
+    <sys:String x:Key="BGM.Loop.Tooltip">動画の長さに合わせてBGMを繰り返し再生</sys:String>
+
+    <!-- Batch Export Dialog -->
+    <sys:String x:Key="BatchExport.AddProjects.Tooltip">バッチ処理するプロジェクトJSONを追加</sys:String>
+    <sys:String x:Key="BatchExport.RemoveSelected.Tooltip">選択中のプロジェクトをリストから削除</sys:String>
+    <sys:String x:Key="BatchExport.OutputDir.Tooltip">動画ファイルの出力先フォルダ</sys:String>
+    <sys:String x:Key="BatchExport.BrowseDir.Tooltip">出力先フォルダを選択</sys:String>
+    <sys:String x:Key="BatchExport.ContinueOnError.Tooltip">1つのプロジェクトが失敗しても残りを続行</sys:String>
+    <sys:String x:Key="BatchExport.Start.Tooltip">全プロジェクトの動画エクスポートを開始</sys:String>
+
+    <!-- OpenAI Settings Dialog -->
+    <sys:String x:Key="OpenAI.ApiKey.Tooltip">platform.openai.com で取得したAPIキーを入力</sys:String>
+    <sys:String x:Key="OpenAI.TestConnection.Tooltip">APIキーの有効性と接続を確認</sys:String>
+    <sys:String x:Key="OpenAI.NarrationModel.Tooltip">ナレーション生成に使用するAIモデル</sys:String>
+    <sys:String x:Key="OpenAI.ImageModel.Tooltip">画像生成に使用するAIモデル</sys:String>
+
+    <!-- AI Project Generate Dialog -->
+    <sys:String x:Key="AIGenerate.Topic.Tooltip">動画のテーマや内容を自由に記述</sys:String>
+    <sys:String x:Key="AIGenerate.Style.Tooltip">ナレーションの語り口を選択</sys:String>
+    <sys:String x:Key="AIGenerate.SceneCount.Tooltip">AIが自動生成するシーンの数</sys:String>
+    <sys:String x:Key="AIGenerate.GenerateImages.Tooltip">各シーンの画像もAIで自動生成</sys:String>
+    <sys:String x:Key="AIGenerate.Generate.Tooltip">AIによるプロジェクト自動生成を開始</sys:String>
+
+    <!-- Preview Player Dialog -->
+    <sys:String x:Key="Preview.SeekSlider.Tooltip">ドラッグして再生位置を移動</sys:String>
+    <sys:String x:Key="Preview.Volume.Tooltip">再生音量を調整</sys:String>
+    <sys:String x:Key="Preview.Speed.Tooltip">再生速度を変更</sys:String>
+    <sys:String x:Key="Preview.Close.Tooltip">プレビューを閉じる</sys:String>
+
+    <!-- Video Wizard Dialog -->
+    <sys:String x:Key="Wizard.Browse.Tooltip">素材ファイルを選択して追加</sys:String>
+    <sys:String x:Key="Wizard.RemoveMedia.Tooltip">この素材をリストから削除</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Intro.Tooltip">製品やサービスの紹介動画</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Tutorial.Tooltip">操作手順を説明するチュートリアル</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Explain.Tooltip">概念や仕組みを解説する教育コンテンツ</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Promo.Tooltip">販促・マーケティング向けの動画</sys:String>
+    <sys:String x:Key="Wizard.Purpose.Custom.Tooltip">目的を自由に記述</sys:String>
+    <sys:String x:Key="Wizard.CustomPurpose.Tooltip">動画の目的や用途を具体的に入力</sys:String>
+    <sys:String x:Key="Wizard.CustomDuration.Tooltip">秒数を直接入力</sys:String>
+    <sys:String x:Key="Wizard.Back.Tooltip">前のステップに戻る</sys:String>
+    <sys:String x:Key="Wizard.Next.Tooltip">次のステップに進む</sys:String>
+
+    <!-- Planning Tab -->
+    <sys:String x:Key="Planning.TotalLength.Tooltip">動画全体の目安時間を選択</sys:String>
+    <sys:String x:Key="Planning.SceneCount.Tooltip">動画を構成するシーンの数</sys:String>
+    <sys:String x:Key="Planning.Add.Tooltip">新しいシーンを追加</sys:String>
+    <sys:String x:Key="Planning.Remove.Tooltip">選択中のシーンを削除</sys:String>
+    <sys:String x:Key="Planning.MoveUp.Tooltip">シーンの順番を上に移動</sys:String>
+    <sys:String x:Key="Planning.MoveDown.Tooltip">シーンの順番を下に移動</sys:String>
+    <sys:String x:Key="Planning.ClearScene.Tooltip">このシーンの内容をクリア</sys:String>
+    <sys:String x:Key="Thumbnail.Pattern.Tooltip">サムネイルの配色パターンを選択</sys:String>
+    <sys:String x:Key="Thumbnail.Style.Tooltip">ワンクリックでスタイルを適用</sys:String>
+    <sys:String x:Key="Thumbnail.Font.Tooltip">テキストのフォントを選択</sys:String>
+    <sys:String x:Key="Thumbnail.FontSize.Tooltip">テキストの大きさを選択</sys:String>
+    <sys:String x:Key="Thumbnail.Color.Tooltip">テキストの色を変更</sys:String>
+    <sys:String x:Key="Thumbnail.BgBrowse.Tooltip">サムネイルの背景画像を選択</sys:String>
+    <sys:String x:Key="Thumbnail.BgClear.Tooltip">背景画像を削除</sys:String>
+    <sys:String x:Key="Thumbnail.BgColor.Tooltip">背景の色を変更</sys:String>
+    <sys:String x:Key="Thumbnail.SaveAs.Tooltip">生成したサムネイルを別名で保存</sys:String>
+    <sys:String x:Key="Thumbnail.OpenFolder.Tooltip">サムネイルの保存先フォルダを開く</sys:String>
+
+    <!-- Chat Panel -->
+    <sys:String x:Key="Chat.ApiKey.Claude.Tooltip">Claude APIキーを入力（anthropic.com で取得）</sys:String>
+    <sys:String x:Key="Chat.ApiKey.OpenAI.Tooltip">OpenAI APIキーを入力（platform.openai.com で取得）</sys:String>
+    <sys:String x:Key="Chat.Mode.Text.Tooltip">テキスト生成モードに切り替え</sys:String>
+    <sys:String x:Key="Chat.Mode.Image.Tooltip">画像生成モードに切り替え</sys:String>
+    <sys:String x:Key="Chat.MyPrompts.Tooltip">保存した自分のプロンプトを表示</sys:String>
+    <sys:String x:Key="Chat.PresetPrompts.Tooltip">用意されたプリセットプロンプトを表示</sys:String>
+    <sys:String x:Key="Chat.Execute.Tooltip">プロンプトを実行 (Ctrl+Enter)</sys:String>
+    <sys:String x:Key="Chat.Cancel.Tooltip">実行中のAI処理をキャンセル</sys:String>
+    <sys:String x:Key="Chat.SaveThumbnail.Tooltip">生成されたサムネイル画像を保存</sys:String>
+
 </ResourceDictionary>

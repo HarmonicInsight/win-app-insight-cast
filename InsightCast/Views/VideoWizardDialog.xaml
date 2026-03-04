@@ -110,7 +110,8 @@
                                        HorizontalAlignment="Center" Margin="0,8,0,0"/>
                             <Button Content="{DynamicResource Wizard.Step1.Browse}"
                                     Margin="0,16,0,0" Padding="16,8"
-                                    Click="OnBrowseMedia"/>
+                                    Click="OnBrowseMedia"
+                                    ToolTip="{DynamicResource Wizard.Browse.Tooltip}"/>
                         </StackPanel>
                         <ListBox x:Name="MediaList" Visibility="Collapsed"
                                  Background="Transparent" BorderThickness="0"
@@ -131,7 +132,8 @@
                                             <Button Content="✕" Width="20" Height="20"
                                                     HorizontalAlignment="Right" VerticalAlignment="Top"
                                                     Margin="2" Padding="0" FontSize="10"
-                                                    Click="OnRemoveMedia" Tag="{Binding}"/>
+                                                    Click="OnRemoveMedia" Tag="{Binding}"
+                                                    ToolTip="{DynamicResource Wizard.RemoveMedia.Tooltip}"/>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -155,19 +157,25 @@
                            Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,12"/>
                 <StackPanel Grid.Row="2">
                     <RadioButton x:Name="PurposeIntro" GroupName="Purpose" Margin="0,4"
-                                 Content="{DynamicResource Wizard.Purpose.Intro}" IsChecked="True"/>
+                                 Content="{DynamicResource Wizard.Purpose.Intro}" IsChecked="True"
+                                 ToolTip="{DynamicResource Wizard.Purpose.Intro.Tooltip}"/>
                     <RadioButton x:Name="PurposeTutorial" GroupName="Purpose" Margin="0,4"
-                                 Content="{DynamicResource Wizard.Purpose.Tutorial}"/>
+                                 Content="{DynamicResource Wizard.Purpose.Tutorial}"
+                                 ToolTip="{DynamicResource Wizard.Purpose.Tutorial.Tooltip}"/>
                     <RadioButton x:Name="PurposeExplain" GroupName="Purpose" Margin="0,4"
-                                 Content="{DynamicResource Wizard.Purpose.Explain}"/>
+                                 Content="{DynamicResource Wizard.Purpose.Explain}"
+                                 ToolTip="{DynamicResource Wizard.Purpose.Explain.Tooltip}"/>
                     <RadioButton x:Name="PurposePromo" GroupName="Purpose" Margin="0,4"
-                                 Content="{DynamicResource Wizard.Purpose.Promo}"/>
+                                 Content="{DynamicResource Wizard.Purpose.Promo}"
+                                 ToolTip="{DynamicResource Wizard.Purpose.Promo.Tooltip}"/>
                     <RadioButton x:Name="PurposeCustom" GroupName="Purpose" Margin="0,4"
-                                 Content="{DynamicResource Wizard.Purpose.Custom}"/>
+                                 Content="{DynamicResource Wizard.Purpose.Custom}"
+                                 ToolTip="{DynamicResource Wizard.Purpose.Custom.Tooltip}"/>
                     <TextBox x:Name="CustomPurposeText" Height="60" Margin="24,8,0,0"
                              AcceptsReturn="True" TextWrapping="Wrap"
                              IsEnabled="{Binding IsChecked, ElementName=PurposeCustom}"
-                             Text="" VerticalScrollBarVisibility="Auto"/>
+                             Text="" VerticalScrollBarVisibility="Auto"
+                             ToolTip="{DynamicResource Wizard.CustomPurpose.Tooltip}"/>
                 </StackPanel>
             </Grid>
 
@@ -199,7 +207,8 @@
                                      Content="{DynamicResource Wizard.Duration.Custom}" Margin="0,4,8,4"/>
                         <TextBox x:Name="CustomDurationText" Width="60" Height="24"
                                  IsEnabled="{Binding IsChecked, ElementName=DurationCustom}"
-                                 Text="45"/>
+                                 Text="45"
+                                 ToolTip="{DynamicResource Wizard.CustomDuration.Tooltip}"/>
                         <TextBlock Text="{DynamicResource Wizard.Duration.Seconds}"
                                    VerticalAlignment="Center" Margin="4,0,0,0"/>
                     </StackPanel>
@@ -280,14 +289,16 @@
             <Grid>
                 <Button x:Name="BackButton" Content="{DynamicResource Wizard.Back}"
                         Style="{StaticResource WizardButton}"
-                        HorizontalAlignment="Left" Click="OnBack" IsEnabled="False"/>
+                        HorizontalAlignment="Left" Click="OnBack" IsEnabled="False"
+                        ToolTip="{DynamicResource Wizard.Back.Tooltip}"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="{DynamicResource Common.Cancel}"
                             Style="{StaticResource WizardButton}"
                             Click="OnCancel"/>
                     <Button x:Name="NextButton" Content="{DynamicResource Wizard.Next}"
                             Style="{StaticResource WizardButton}"
-                            Click="OnNext"/>
+                            Click="OnNext"
+                            ToolTip="{DynamicResource Wizard.Next.Tooltip}"/>
                 </StackPanel>
             </Grid>
         </Border>

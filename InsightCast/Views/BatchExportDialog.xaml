@@ -46,9 +46,11 @@
         <!-- Project List Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
             <Button x:Name="AddButton" Content="{DynamicResource BatchExport.AddProjects}"
-                    Style="{StaticResource DialogButton}" Click="AddButton_Click"/>
+                    Style="{StaticResource DialogButton}" Click="AddButton_Click"
+                    ToolTip="{DynamicResource BatchExport.AddProjects.Tooltip}"/>
             <Button x:Name="RemoveButton" Content="{DynamicResource BatchExport.RemoveSelected}"
-                    Style="{StaticResource DialogButton}" Click="RemoveButton_Click"/>
+                    Style="{StaticResource DialogButton}" Click="RemoveButton_Click"
+                    ToolTip="{DynamicResource BatchExport.RemoveSelected.Tooltip}"/>
         </StackPanel>
 
         <!-- Project List -->
@@ -77,12 +79,15 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="{DynamicResource BatchExport.OutputDirectory}" Style="{StaticResource FieldLabel}"/>
-                    <TextBox x:Name="OutputDirTextBox" Grid.Column="1" Height="28" VerticalContentAlignment="Center"/>
+                    <TextBox x:Name="OutputDirTextBox" Grid.Column="1" Height="28" VerticalContentAlignment="Center"
+                             ToolTip="{DynamicResource BatchExport.OutputDir.Tooltip}"/>
                     <Button Grid.Column="2" Content="{DynamicResource BatchExport.Browse}"
-                            Style="{StaticResource DialogButton}" MinWidth="70" Click="BrowseOutputDir_Click"/>
+                            Style="{StaticResource DialogButton}" MinWidth="70" Click="BrowseOutputDir_Click"
+                            ToolTip="{DynamicResource BatchExport.BrowseDir.Tooltip}"/>
                 </Grid>
                 <CheckBox x:Name="ContinueOnErrorCheckBox" Content="{DynamicResource BatchExport.ContinueOnError}"
-                          IsChecked="True"/>
+                          IsChecked="True"
+                          ToolTip="{DynamicResource BatchExport.ContinueOnError.Tooltip}"/>
             </StackPanel>
         </Border>
 
@@ -102,7 +107,8 @@
         <!-- Buttons -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="StartButton" Content="{DynamicResource BatchExport.StartBatch}"
-                    Style="{StaticResource DialogButton}" Click="StartButton_Click"/>
+                    Style="{StaticResource DialogButton}" Click="StartButton_Click"
+                    ToolTip="{DynamicResource BatchExport.Start.Tooltip}"/>
             <Button x:Name="CancelButton" Content="{DynamicResource BatchExport.Cancel}"
                     Style="{StaticResource DialogButton}" IsCancel="True" Click="CancelButton_Click"/>
         </StackPanel>
