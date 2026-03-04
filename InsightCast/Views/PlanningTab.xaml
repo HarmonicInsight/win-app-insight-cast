@@ -179,6 +179,12 @@
                                 Command="{Binding ClearAllScenesCommand}"
                                 ToolTip="{DynamicResource Planning.ClearAll.Tooltip}"
                                 Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Separator Margin="8,0"
+                                   Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
+                        <Button Content="{DynamicResource CTA.AddEndcard}" Padding="8,4"
+                                Command="{Binding AddCtaEndcardCommand}"
+                                ToolTip="{DynamicResource CTA.AddEndcard.Tooltip}"
+                                Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>
                         <!-- AI機能一時非表示
                         <Separator Margin="8,0"
                                    Visibility="{Binding IsJsonMode, Converter={StaticResource InverseBoolToVis}}"/>

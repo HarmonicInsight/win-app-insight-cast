@@ -474,6 +474,8 @@
     <sys:String x:Key="Export.AddingBGM">BGMを追加中...</sys:String>
     <sys:String x:Key="Export.GeneratingThumbnail">サムネイルを生成中...</sys:String>
     <sys:String x:Key="Export.GeneratingChapters">チャプターファイルを生成中...</sys:String>
+    <sys:String x:Key="Export.Resolution.Tooltip">出力解像度を選択（SNSプラットフォーム別プリセット対応）</sys:String>
+    <sys:String x:Key="Export.GeneratingSubtitles">字幕ファイルを生成中...</sys:String>
     <sys:String x:Key="Export.GeneratingMetadata">メタデータを生成中...</sys:String>
     <sys:String x:Key="Export.Done">書き出し完了</sys:String>
     <sys:String x:Key="Export.Preview.Generating">プレビューを生成中...</sys:String>
@@ -496,6 +498,7 @@
     <sys:String x:Key="Meta.SceneCount">シーン数: {0}</sys:String>
     <sys:String x:Key="Meta.Resolution">解像度: {0}</sys:String>
     <sys:String x:Key="Meta.GeneratedAt">生成日時: {0}</sys:String>
+    <sys:String x:Key="Meta.Hashtags">【ハッシュタグ（SNS用）】</sys:String>
 
     <!-- Colors -->
     <sys:String x:Key="Color.White">白</sys:String>
@@ -944,6 +947,21 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="License.Key">ライセンスキー</sys:String>
     <sys:String x:Key="Resolution.Landscape">1920x1080 (横)</sys:String>
     <sys:String x:Key="Resolution.Portrait">1080x1920 (縦)</sys:String>
+    <sys:String x:Key="Resolution.Square">1080x1080 (Instagram)</sys:String>
+    <sys:String x:Key="Resolution.Shorts">1080x1920 (YouTube Shorts)</sys:String>
+    <sys:String x:Key="Resolution.Reels">1080x1920 (Instagram Reels)</sys:String>
+    <sys:String x:Key="Resolution.TikTok">1080x1920 (TikTok)</sys:String>
+
+    <!-- CTA Endcard Templates -->
+    <sys:String x:Key="CTA.Subscribe">チャンネル登録お願いします！</sys:String>
+    <sys:String x:Key="CTA.LinkBelow">詳細はリンクをご覧ください ↓</sys:String>
+    <sys:String x:Key="CTA.ThankYou">ご視聴ありがとうございました</sys:String>
+    <sys:String x:Key="CTA.AddEndcard">CTAエンドカードを追加</sys:String>
+    <sys:String x:Key="CTA.AddEndcard.Tooltip">動画の最後にチャンネル登録やリンク誘導のシーンを追加</sys:String>
+    <sys:String x:Key="CTA.Template.Subscribe">チャンネル登録</sys:String>
+    <sys:String x:Key="CTA.Template.Website">Webサイトへ誘導</sys:String>
+    <sys:String x:Key="CTA.Template.Download">ダウンロード誘導</sys:String>
+    <sys:String x:Key="CTA.Template.Contact">お問い合わせ誘導</sys:String>
 
     <!-- JSON Editor -->
     <sys:String x:Key="Planning.ApplyJson">JSONを適用</sys:String>

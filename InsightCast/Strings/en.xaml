@@ -474,6 +474,8 @@ Captured images can be pasted as scene media.</sys:String>
     <sys:String x:Key="Export.AddingBGM">Adding BGM...</sys:String>
     <sys:String x:Key="Export.GeneratingThumbnail">Generating thumbnail...</sys:String>
     <sys:String x:Key="Export.GeneratingChapters">Generating chapter file...</sys:String>
+    <sys:String x:Key="Export.Resolution.Tooltip">Select output resolution (includes SNS platform presets)</sys:String>
+    <sys:String x:Key="Export.GeneratingSubtitles">Generating subtitle files...</sys:String>
     <sys:String x:Key="Export.GeneratingMetadata">Generating metadata...</sys:String>
     <sys:String x:Key="Export.Done">Export complete</sys:String>
     <sys:String x:Key="Export.Preview.Generating">Generating preview...</sys:String>
@@ -496,6 +498,7 @@ Captured images can be pasted as scene media.</sys:String>
     <sys:String x:Key="Meta.SceneCount">Scenes: {0}</sys:String>
     <sys:String x:Key="Meta.Resolution">Resolution: {0}</sys:String>
     <sys:String x:Key="Meta.GeneratedAt">Generated: {0}</sys:String>
+    <sys:String x:Key="Meta.Hashtags">[Hashtags (for social media)]</sys:String>
 
     <!-- Colors -->
     <sys:String x:Key="Color.White">White</sys:String>
@@ -943,6 +946,21 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="License.Key">License Key</sys:String>
     <sys:String x:Key="Resolution.Landscape">1920x1080 (Landscape)</sys:String>
     <sys:String x:Key="Resolution.Portrait">1080x1920 (Portrait)</sys:String>
+    <sys:String x:Key="Resolution.Square">1080x1080 (Instagram)</sys:String>
+    <sys:String x:Key="Resolution.Shorts">1080x1920 (YouTube Shorts)</sys:String>
+    <sys:String x:Key="Resolution.Reels">1080x1920 (Instagram Reels)</sys:String>
+    <sys:String x:Key="Resolution.TikTok">1080x1920 (TikTok)</sys:String>
+
+    <!-- CTA Endcard Templates -->
+    <sys:String x:Key="CTA.Subscribe">Please subscribe!</sys:String>
+    <sys:String x:Key="CTA.LinkBelow">Check the link below for details ↓</sys:String>
+    <sys:String x:Key="CTA.ThankYou">Thank you for watching!</sys:String>
+    <sys:String x:Key="CTA.AddEndcard">Add CTA Endcard</sys:String>
+    <sys:String x:Key="CTA.AddEndcard.Tooltip">Add a subscribe or link prompt scene at the end of the video</sys:String>
+    <sys:String x:Key="CTA.Template.Subscribe">Subscribe</sys:String>
+    <sys:String x:Key="CTA.Template.Website">Visit Website</sys:String>
+    <sys:String x:Key="CTA.Template.Download">Download</sys:String>
+    <sys:String x:Key="CTA.Template.Contact">Contact Us</sys:String>
 
     <!-- JSON Editor -->
     <sys:String x:Key="Planning.ApplyJson">Apply JSON</sys:String>

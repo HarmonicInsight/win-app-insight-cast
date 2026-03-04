@@ -23,6 +23,8 @@ public static class VideoToolDefinitions
         MoveScene,
         SetSceneMedia,
         GenerateSceneImage,
+        GenerateAbThumbnails,
+        AddCtaEndcard,
     };
 
     public static readonly ToolDefinition GetScenes = new()
@@ -316,6 +318,58 @@ public static class VideoToolDefinitions
                 },
             },
             ["required"] = new JsonArray("scene_index", "prompt"),
+        },
+    };
+
+    public static readonly ToolDefinition GenerateAbThumbnails = new()
+    {
+        Name = "generate_ab_thumbnails",
+        Description = "A/Bテスト用に複数パターンのサムネイルを一括生成します。5種類のパターン×スタイルの組み合わせで高CTRサムネイルを比較できます。",
+        InputSchema = new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["main_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "サムネイルのメインテキスト",
+                },
+                ["sub_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "サブテキスト（省略可）",
+                },
+                ["sub_sub_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "補足テキスト（省略可）",
+                },
+            },
+            ["required"] = new JsonArray("main_text"),
+        },
+    };
+
+    public static readonly ToolDefinition AddCtaEndcard = new()
+    {
+        Name = "add_cta_endcard",
+        Description = "動画の最後にCTAエンドカードシーンを追加します。チャンネル登録やリンク誘導のテキストオーバーレイを含む5秒のシーンが追加されます。",
+        InputSchema = new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["cta_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "CTAメッセージ（例: チャンネル登録お願いします！）。省略時はデフォルト文言を使用。",
+                },
+                ["link_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "リンク誘導メッセージ（例: 詳細はリンクをご覧ください ↓）。省略時はデフォルト文言を使用。",
+                },
+            },
         },
     };
 }

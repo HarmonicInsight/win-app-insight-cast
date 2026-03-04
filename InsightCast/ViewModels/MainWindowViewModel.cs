@@ -251,6 +251,22 @@ namespace InsightCast.ViewModels
             set => SetProperty(ref _selectedResolutionIndex, value);
         }
 
+        private static readonly string[] ResolutionValues =
+        {
+            "1920x1080", // Landscape
+            "1080x1920", // Portrait
+            "1080x1080", // Square (Instagram)
+            "1080x1920", // YouTube Shorts
+            "1080x1920", // TikTok
+        };
+
+        private string GetSelectedResolution()
+        {
+            if (_selectedResolutionIndex >= 0 && _selectedResolutionIndex < ResolutionValues.Length)
+                return ResolutionValues[_selectedResolutionIndex];
+            return "1920x1080";
+        }
+
         public string FpsText
         {
             get => _fpsText;
@@ -1497,7 +1513,7 @@ namespace InsightCast.ViewModels
 
             var previewPath = Path.Combine(previewDir, $"preview_{Guid.NewGuid():N}.mp4");
 
-            string resolution = _selectedResolutionIndex == 0 ? "1920x1080" : "1080x1920";
+            string resolution = GetSelectedResolution();
             int exportSpeakerId = _defaultSpeakerId;
             if (_selectedExportSpeakerIndex >= 0 && _selectedExportSpeakerIndex < ExportSpeakers.Count)
                 exportSpeakerId = ExportSpeakers[_selectedExportSpeakerIndex].StyleId;
@@ -1693,7 +1709,7 @@ namespace InsightCast.ViewModels
             if (int.TryParse(_fpsText, out var parsedFps))
                 fps = Math.Clamp(parsedFps, 15, 60);
 
-            string resolution = _selectedResolutionIndex == 0 ? "1920x1080" : "1080x1920";
+            string resolution = GetSelectedResolution();
 
             int exportSpeakerId = _defaultSpeakerId;
             if (_selectedExportSpeakerIndex >= 0 && _selectedExportSpeakerIndex < ExportSpeakers.Count)

@@ -83,6 +83,8 @@ public class VideoToolExecutor : IToolExecutor
                 "move_scene" => ExecuteMoveScene(input),
                 "set_scene_media" => ExecuteSetSceneMedia(input),
                 "generate_scene_image" => await ExecuteGenerateSceneImageAsync(input, ct),
+                "generate_ab_thumbnails" => ExecuteGenerateAbThumbnails(input),
+                "add_cta_endcard" => ExecuteAddCtaEndcard(input),
                 _ => JsonSerializer.Serialize(new { error = $"Unknown tool: {toolName}" }),
             };
             return new ToolExecutionResult { Content = content };
@@ -434,6 +436,68 @@ public class VideoToolExecutor : IToolExecutor
                 media_path = imagePath,
                 prompt,
                 size,
+            });
+        });
+    }
+
+    private string ExecuteGenerateAbThumbnails(JsonElement input)
+    {
+        var mainText = input.GetProperty("main_text").GetString() ?? "";
+        var subText = input.TryGetProperty("sub_text", out var st) ? st.GetString() ?? "" : "";
+        var subSubText = input.TryGetProperty("sub_sub_text", out var sst) ? sst.GetString() ?? "" : "";
+
+        var settings = new ThumbnailSettings
+        {
+            MainText = mainText,
+            SubText = subText,
+            SubSubText = subSubText,
+        };
+
+        // Use scene 0 media as background if available
+        var scenes = _getScenes();
+        if (scenes.Count > 0 && scenes[0].HasMedia && scenes[0].MediaType == MediaType.Image)
+            settings.BackgroundImagePath = scenes[0].MediaPath;
+
+        var outputDir = Path.Combine(Path.GetTempPath(), "InsightCast", "ab_thumbnails", Guid.NewGuid().ToString("N")[..8]);
+        var results = _thumbnailService.GenerateQuickAbTest(settings, outputDir, "thumbnail");
+
+        // Set last generated for UI preview
+        if (results.Count > 0)
+            LastGeneratedThumbnailPath = results[0];
+
+        return JsonSerializer.Serialize(new
+        {
+            success = true,
+            count = results.Count,
+            output_directory = outputDir,
+            files = results,
+        });
+    }
+
+    private string ExecuteAddCtaEndcard(JsonElement input)
+    {
+        var ctaText = input.TryGetProperty("cta_text", out var ct2) ? ct2.GetString() : null;
+        var linkText = input.TryGetProperty("link_text", out var lt) ? lt.GetString() : null;
+
+        return _dispatcher.Invoke(() =>
+        {
+            _addScene(null); // Add at end
+            var scenes = _getScenes();
+            var lastIndex = scenes.Count - 1;
+
+            _updateScene(lastIndex, s =>
+            {
+                s.Title = LocalizationService.GetString("CTA.ThankYou");
+                s.DurationMode = DurationMode.Fixed;
+                s.FixedSeconds = 5.0;
+                s.TextOverlays = TextOverlay.CreateEndcardSet(ctaText, linkText);
+            });
+
+            return JsonSerializer.Serialize(new
+            {
+                success = true,
+                scene_index = lastIndex,
+                overlays = scenes[lastIndex].TextOverlays.Count,
             });
         });
     }

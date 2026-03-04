@@ -329,9 +329,13 @@
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Export.Resolution}" FontSize="10"
                                        Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,4"/>
-                            <ComboBox SelectedIndex="{Binding SelectedResolutionIndex}" FontSize="11">
+                            <ComboBox SelectedIndex="{Binding SelectedResolutionIndex}" FontSize="11"
+                                     ToolTip="{DynamicResource Export.Resolution.Tooltip}">
                                 <ComboBoxItem Content="{DynamicResource Resolution.Landscape}" Tag="1920x1080"/>
                                 <ComboBoxItem Content="{DynamicResource Resolution.Portrait}" Tag="1080x1920"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.Square}" Tag="1080x1080"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.Shorts}" Tag="1080x1920"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.TikTok}" Tag="1080x1920"/>
                             </ComboBox>
                         </StackPanel>
                     </Border>
