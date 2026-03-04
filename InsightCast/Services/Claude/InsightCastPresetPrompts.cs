@@ -65,6 +65,35 @@ public static class InsightCastPresetPrompts
             PromptEn = "Use get_scenes to get all narration text and translate to Japanese. Use clear, easy-to-understand Japanese appropriate for educational videos. Apply translated narration with set_multiple_scenes.",
         },
 
+        new PresetPrompt
+        {
+            Id = "translate_narration_zh",
+            CategoryJa = "字幕・翻訳",
+            CategoryEn = "Subtitles & Translation",
+            LabelJa = "ナレーションを中国語に翻訳",
+            LabelEn = "Translate narration to Chinese",
+            Icon = "🇨🇳",
+            RecommendedPersonaId = "megumi",
+            Mode = "check",
+            RequiresContextData = true,
+            PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、簡体字中国語に翻訳してください。教育動画にふさわしい自然な中国語表現にしてください。翻訳結果をset_multiple_scenesツールで字幕として設定してください（ナレーションは変更しない）。",
+            PromptEn = "Use get_scenes to get all narration text and translate to Simplified Chinese. Use natural Chinese expressions appropriate for educational videos. Apply translations as subtitles (not narration) with set_multiple_scenes.",
+        },
+        new PresetPrompt
+        {
+            Id = "translate_narration_ko",
+            CategoryJa = "字幕・翻訳",
+            CategoryEn = "Subtitles & Translation",
+            LabelJa = "ナレーションを韓国語に翻訳",
+            LabelEn = "Translate narration to Korean",
+            Icon = "🇰🇷",
+            RecommendedPersonaId = "megumi",
+            Mode = "check",
+            RequiresContextData = true,
+            PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、韓国語に翻訳してください。教育動画にふさわしい自然な韓国語表現にしてください。翻訳結果をset_multiple_scenesツールで字幕として設定してください（ナレーションは変更しない）。",
+            PromptEn = "Use get_scenes to get all narration text and translate to Korean. Use natural Korean expressions appropriate for educational videos. Apply translations as subtitles (not narration) with set_multiple_scenes.",
+        },
+
         // ========================================
         // カテゴリ2: ナレーション生成
         //   AI がスライドノート・シーンタイトルを読んでナレーション生成
@@ -276,7 +305,99 @@ public static class InsightCastPresetPrompts
         },
 
         // ========================================
-        // カテゴリ7: シーン操作
+        // カテゴリ7: サムネイル・CTR最適化
+        //   CTR予測・サムネイル改善提案 → Opus
+        // ========================================
+        new PresetPrompt
+        {
+            Id = "thumbnail_ctr_predict",
+            CategoryJa = "サムネイル・CTR最適化",
+            CategoryEn = "Thumbnail & CTR",
+            LabelJa = "サムネイルCTR予測スコア",
+            LabelEn = "Predict thumbnail CTR score",
+            Icon = "📊",
+            RecommendedPersonaId = "manabu",
+            Mode = "advice",
+            RequiresContextData = true,
+            PromptJa = @"get_scenesとget_project_summaryでプロジェクト情報を取得し、教育動画サムネイルの効果を分析してください。
+
+以下の観点でCTR（クリック率）予測スコアを100点満点で評価し、改善案を提示してください:
+
+1. **テキストの訴求力** (25点): メインテキストが「自分ごと化」できるか、具体的な数字・ベネフィットがあるか
+2. **視認性** (25点): 文字数は10文字以内か、フォントサイズは十分か、コントラストは明確か
+3. **パターン適合性** (25点): 選択されたパターン・スタイルがコンテンツに合っているか
+4. **教育動画としての信頼感** (25点): プロフェッショナルな印象か、クリックベイトになっていないか
+
+最後に改善したサムネイルを generate_thumbnail ツールで生成してください（メインテキストとサブテキストの改善案を反映）。",
+            PromptEn = @"Use get_scenes and get_project_summary to analyze the project, then evaluate the educational video thumbnail effectiveness.
+
+Score the predicted CTR (click-through rate) out of 100 points across these dimensions:
+
+1. **Text Appeal** (25pts): Does the main text create personal relevance? Are there specific numbers or benefits?
+2. **Visibility** (25pts): Is text under 10 chars? Is font size sufficient? Is contrast clear?
+3. **Pattern Fit** (25pts): Does the chosen pattern/style match the content?
+4. **Educational Trust** (25pts): Does it look professional? Is it not clickbait?
+
+Finally, generate an improved thumbnail using the generate_thumbnail tool with optimized main text and sub text.",
+        },
+
+        // ========================================
+        // カテゴリ8: 教育構成チェック
+        //   チャプター構造・学習効果分析 → Opus
+        // ========================================
+        new PresetPrompt
+        {
+            Id = "chapter_structure_review",
+            CategoryJa = "教育構成チェック",
+            CategoryEn = "Education Review",
+            LabelJa = "教育効果の構成レビュー",
+            LabelEn = "Review educational structure",
+            Icon = "🎓",
+            RecommendedPersonaId = "manabu",
+            Mode = "advice",
+            RequiresContextData = true,
+            PromptJa = @"get_scenesとget_project_summaryでプロジェクト全体を分析し、教育動画としての構成を詳細にレビューしてください。
+
+以下の観点で評価し、具体的な改善提案をしてください:
+
+## チャプター構造の評価
+1. **導入部**: 学習目標が明確に提示されているか、視聴者の動機づけがあるか
+2. **本論部**: 論理的な順序で進行しているか、各シーンの情報量は適切か
+3. **まとめ部**: 学習内容の要約があるか、次のアクションが示されているか
+4. **チャプター名**: YouTube のチャプター表示に適した名前になっているか
+
+## 学習効果の評価
+- 1つのシーンに詰め込みすぎていないか（認知負荷）
+- 具体例や事例が含まれているか
+- 視聴者への問いかけや考える時間があるか
+- 専門用語の説明が十分か
+
+## 改善が必要な場合
+- add_scene / remove_scene / move_scene で構造変更が可能であることを伝える
+- 具体的なシーン分割・統合・並べ替えの提案をする",
+            PromptEn = @"Analyze the full project with get_scenes and get_project_summary, then provide a detailed review of the educational video structure.
+
+Evaluate and provide specific improvement suggestions:
+
+## Chapter Structure
+1. **Introduction**: Are learning objectives clearly stated? Is there viewer motivation?
+2. **Main Content**: Is the progression logical? Is information density appropriate per scene?
+3. **Summary**: Is there a recap of key learnings? Are next actions indicated?
+4. **Chapter Names**: Are they suitable for YouTube chapter display?
+
+## Learning Effectiveness
+- Is any single scene overloaded with information (cognitive load)?
+- Are concrete examples or case studies included?
+- Are there questions or thinking pauses for viewers?
+- Are technical terms adequately explained?
+
+## If Changes Are Needed
+- Mention that add_scene / remove_scene / move_scene tools are available
+- Provide specific suggestions for scene splitting, merging, or reordering",
+        },
+
+        // ========================================
+        // カテゴリ9: シーン操作
         //   シーン追加・削除・並べ替え → Opus (複雑な構造変更)
         // ========================================
         new PresetPrompt

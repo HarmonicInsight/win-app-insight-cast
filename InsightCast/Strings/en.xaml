@@ -960,6 +960,12 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="CTA.Template.Website">Visit Website</sys:String>
     <sys:String x:Key="CTA.Template.Download">Download</sys:String>
     <sys:String x:Key="CTA.Template.Contact">Contact Us</sys:String>
+    <sys:String x:Key="CTA.Template.Education">Education / Consulting</sys:String>
+    <sys:String x:Key="CTA.Template.Education.Tooltip">CTA endcard with next lesson preview + consultation + resource download. For educational videos, training, and consulting</sys:String>
+    <sys:String x:Key="CTA.NextLesson">Stay tuned for the next lesson!</sys:String>
+    <sys:String x:Key="CTA.Consultation">Book a consultation ▶</sys:String>
+    <sys:String x:Key="CTA.Download">Download resources from the description ↓</sys:String>
+    <sys:String x:Key="CTA.CourseNav">See full course list in the description</sys:String>
 
     <!-- JSON Editor -->
     <sys:String x:Key="Planning.ApplyJson">Apply JSON</sys:String>
@@ -1035,13 +1041,38 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="VM.TransitionAppliedAll">Transition applied to all scenes</sys:String>
 
     <!-- C6: Tooltips -->
+    <sys:String x:Key="Scene.Narration.Tooltip">Enter the narration text for VOICEVOX to read aloud. For educational videos, 100-150 characters per scene is recommended</sys:String>
+    <sys:String x:Key="Scene.Media.Select.Tooltip">Select an image or video file for the scene background (PNG, JPG, MP4, etc.)</sys:String>
+    <sys:String x:Key="Scene.Media.Clear.Tooltip">Remove the current media file (scene will show black background)</sys:String>
+    <sys:String x:Key="Scene.Speaker.Tooltip">Select the VOICEVOX speaker for this scene. "Default" uses the project-level speaker setting</sys:String>
+    <sys:String x:Key="Scene.KeepAudio.Tooltip">When ON, the original audio from the video source will play together with the narration</sys:String>
+    <sys:String x:Key="Scene.SpeechSpeed.Tooltip">Adjust narration reading speed. For educational videos, 1.0x-1.2x is recommended</sys:String>
     <sys:String x:Key="Scene.PreviewAudio.Tooltip">Preview the narration text as audio</sys:String>
     <sys:String x:Key="Scene.PreviewScene.Tooltip">Preview the current scene as video (with narration and subtitles)</sys:String>
     <sys:String x:Key="Scene.Stop.Tooltip">Stop playing audio or preview</sys:String>
-    <sys:String x:Key="Scene.Subtitle.Tooltip">Enter subtitle text shown at the bottom of the video</sys:String>
+    <sys:String x:Key="Scene.Subtitle.Tooltip">Enter subtitle text shown at the bottom of the video. Improves accessibility and SEO</sys:String>
     <sys:String x:Key="Transition.Tooltip">Select scene transition effect (Fade, Wipe, etc.)</sys:String>
     <sys:String x:Key="Transition.Duration.Tooltip">Transition duration (0.2–2.0 seconds)</sys:String>
-    <sys:String x:Key="Export.Button.Tooltip">Combine all scenes and export as MP4 video</sys:String>
+    <sys:String x:Key="Duration.Auto.Tooltip">Scene duration is automatically determined by narration audio length</sys:String>
+    <sys:String x:Key="Duration.Fixed.Tooltip">Manually set scene duration in seconds. Auto-extends if narration is longer</sys:String>
+    <sys:String x:Key="Export.Button.Tooltip">Export all scenes as MP4 video. Thumbnail, chapters, subtitles, and metadata are also generated</sys:String>
+    <sys:String x:Key="Export.FPS.Tooltip">Video frame rate (frames per second). 30fps is standard for educational videos</sys:String>
+
+    <!-- Overlay Tooltips -->
+    <sys:String x:Key="Overlay.Add.Tooltip">Add a text overlay that can be freely positioned on the scene. Use for titles and annotations</sys:String>
+    <sys:String x:Key="Overlay.CoverTemplate.Tooltip">Add title and subtitle template overlays at once. Convenient for creating cover scenes</sys:String>
+    <sys:String x:Key="Overlay.Remove.Tooltip">Remove the selected text overlay</sys:String>
+
+    <!-- Watermark Tooltips -->
+    <sys:String x:Key="Watermark.Tooltip">Select a watermark (logo) image displayed across the entire video</sys:String>
+    <sys:String x:Key="Watermark.Clear.Tooltip">Remove the watermark image</sys:String>
+    <sys:String x:Key="Watermark.Position.Tooltip">Select watermark position (bottom-right is recommended for YouTube)</sys:String>
+
+    <!-- Tool Tooltips -->
+    <sys:String x:Key="Tool.ScreenCapture.Tooltip">Capture part of the screen, add annotations, and import into the scene. Ideal for tutorial videos</sys:String>
+
+    <!-- Export Resolution Tooltip -->
+    <sys:String x:Key="Export.Resolution.Tooltip">Select video output resolution. 1920x1080 (Landscape) is standard for educational videos</sys:String>
 
     <!-- D2: Post-export guidance -->
     <sys:String x:Key="VM.Export.CompleteDetail">Video export completed.
@@ -1176,6 +1207,8 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.Tab.Home">Home</sys:String>
     <sys:String x:Key="Ribbon.Tab.Help">Help</sys:String>
     <sys:String x:Key="Ribbon.Group.Scene">Scene</sys:String>
+    <sys:String x:Key="Ribbon.Group.Structure">Structure</sys:String>
+    <sys:String x:Key="Ribbon.Group.Production">Production</sys:String>
     <sys:String x:Key="Ribbon.Group.Export">Export</sys:String>
     <sys:String x:Key="Ribbon.Group.Template">Template</sys:String>
     <sys:String x:Key="Ribbon.Group.Support">Support</sys:String>
@@ -1200,6 +1233,20 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.Template.Save">Save</sys:String>
     <sys:String x:Key="Ribbon.Template.Load">Load</sys:String>
     <sys:String x:Key="Ribbon.Template.OpenOutput">Open Output</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Capture">Capture</sys:String>
+    <sys:String x:Key="Ribbon.BGM">BGM Settings</sys:String>
+    <sys:String x:Key="Ribbon.CTA">Add CTA</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Add.Tooltip">Add a new scene (slide) to your educational video</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Remove.Tooltip">Remove the selected scene</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveUp.Tooltip">Move scene up to adjust lecture flow</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveDown.Tooltip">Move scene down to adjust lecture flow</sys:String>
+    <sys:String x:Key="Ribbon.Export.Preview.Tooltip">Preview the current scene as video with narration and subtitles</sys:String>
+    <sys:String x:Key="Ribbon.BGM.Tooltip">Configure background music: file selection, volume, ducking settings</sys:String>
+    <sys:String x:Key="Ribbon.CTA.Tooltip">Add a CTA endcard at the end (next lesson preview, consultation, resource download)</sys:String>
+    <sys:String x:Key="Ribbon.Export.Video.Tooltip">Export all scenes as an MP4 video file. Thumbnail, chapters, subtitles, and metadata are also generated</sys:String>
+    <sys:String x:Key="Ribbon.Template.OpenOutput.Tooltip">Open the last export folder in Explorer</sys:String>
+    <sys:String x:Key="Ribbon.Template.Save.Tooltip">Save current BGM, speaker, resolution settings as a reusable template</sys:String>
+    <sys:String x:Key="Ribbon.Template.Load.Tooltip">Load a saved template and apply all settings at once</sys:String>
     <sys:String x:Key="Ribbon.Help.Tutorial">Tutorial</sys:String>
     <sys:String x:Key="Ribbon.Help.License">License Manager</sys:String>
     <sys:String x:Key="Ribbon.Help.LicenseInfo">License Info</sys:String>

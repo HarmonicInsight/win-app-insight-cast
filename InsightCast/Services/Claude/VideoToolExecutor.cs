@@ -476,8 +476,10 @@ public class VideoToolExecutor : IToolExecutor
 
     private string ExecuteAddCtaEndcard(JsonElement input)
     {
+        var template = input.TryGetProperty("template", out var tmpl) ? tmpl.GetString() ?? "subscribe" : "subscribe";
         var ctaText = input.TryGetProperty("cta_text", out var ct2) ? ct2.GetString() : null;
         var linkText = input.TryGetProperty("link_text", out var lt) ? lt.GetString() : null;
+        var consultText = input.TryGetProperty("consult_text", out var cst) ? cst.GetString() : null;
 
         return _dispatcher.Invoke(() =>
         {
@@ -490,12 +492,15 @@ public class VideoToolExecutor : IToolExecutor
                 s.Title = LocalizationService.GetString("CTA.ThankYou");
                 s.DurationMode = DurationMode.Fixed;
                 s.FixedSeconds = 5.0;
-                s.TextOverlays = TextOverlay.CreateEndcardSet(ctaText, linkText);
+                s.TextOverlays = template == "education"
+                    ? TextOverlay.CreateEducationEndcardSet(ctaText, consultText, linkText)
+                    : TextOverlay.CreateEndcardSet(ctaText, linkText);
             });
 
             return JsonSerializer.Serialize(new
             {
                 success = true,
+                template,
                 scene_index = lastIndex,
                 overlays = scenes[lastIndex].TextOverlays.Count,
             });

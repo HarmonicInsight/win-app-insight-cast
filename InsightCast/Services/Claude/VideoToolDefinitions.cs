@@ -353,21 +353,32 @@ public static class VideoToolDefinitions
     public static readonly ToolDefinition AddCtaEndcard = new()
     {
         Name = "add_cta_endcard",
-        Description = "動画の最後にCTAエンドカードシーンを追加します。チャンネル登録やリンク誘導のテキストオーバーレイを含む5秒のシーンが追加されます。",
+        Description = "動画の最後にCTAエンドカードシーンを追加します。templateで用途を選択できます: 'subscribe'（チャンネル登録）、'education'（教育・コンサル向け: 次回予告+個別相談+資料案内）。省略時はsubscribe。",
         InputSchema = new JsonObject
         {
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
+                ["template"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "CTAテンプレート種別。subscribe: チャンネル登録+リンク誘導。education: 次回予告+個別相談+資料案内（教育動画・コンサル向け）。",
+                    ["enum"] = new JsonArray("subscribe", "education"),
+                },
                 ["cta_text"] = new JsonObject
                 {
                     ["type"] = "string",
-                    ["description"] = "CTAメッセージ（例: チャンネル登録お願いします！）。省略時はデフォルト文言を使用。",
+                    ["description"] = "CTAメッセージ（subscribe時: 登録文言、education時: 次回予告文言）。省略時はデフォルト文言を使用。",
                 },
                 ["link_text"] = new JsonObject
                 {
                     ["type"] = "string",
-                    ["description"] = "リンク誘導メッセージ（例: 詳細はリンクをご覧ください ↓）。省略時はデフォルト文言を使用。",
+                    ["description"] = "リンク誘導メッセージ（subscribe時）またはダウンロード誘導（education時）。省略時はデフォルト文言を使用。",
+                },
+                ["consult_text"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "個別相談・問い合わせ誘導文言（education時のみ）。省略時はデフォルト文言を使用。",
                 },
             },
         },

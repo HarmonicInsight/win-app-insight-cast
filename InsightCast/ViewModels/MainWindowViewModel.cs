@@ -614,6 +614,7 @@ namespace InsightCast.ViewModels
         public ICommand OpenAISettingsCommand { get; }
         public ICommand AIGenerateProjectCommand { get; }
         public ICommand ScreenCaptureCommand { get; }
+        public ICommand AddCtaEndcardCommand { get; }
 
         #endregion
 
@@ -681,6 +682,7 @@ namespace InsightCast.ViewModels
             OpenAISettingsCommand = new RelayCommand(OpenAISettings);
             AIGenerateProjectCommand = new RelayCommand(OpenAIGenerateProject);
             ScreenCaptureCommand = new RelayCommand(StartScreenCapture);
+            AddCtaEndcardCommand = new RelayCommand(AddCtaEndcard);
 
             // Auto-save every 5 minutes
             _autoSaveTimer = new Timer(_ => AutoSave(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
@@ -865,6 +867,20 @@ namespace InsightCast.ViewModels
             RefreshSceneList();
             SelectedSceneIndex = _project.Scenes.Count - 1;
             _logger.Log(LocalizationService.GetString("VM.Scene.Added", _project.Scenes.Count));
+            ScenesChanged?.Invoke();
+        }
+
+        private void AddCtaEndcard()
+        {
+            _isDirty = true;
+            var ctaScene = _project.AddScene();
+            ctaScene.Title = LocalizationService.GetString("CTA.ThankYou");
+            ctaScene.DurationMode = DurationMode.Fixed;
+            ctaScene.FixedSeconds = 5.0;
+            ctaScene.TextOverlays = TextOverlay.CreateEducationEndcardSet();
+            RefreshSceneList();
+            SelectedSceneIndex = _project.Scenes.Count - 1;
+            _logger.Log("CTA endcard added");
             ScenesChanged?.Invoke();
         }
 

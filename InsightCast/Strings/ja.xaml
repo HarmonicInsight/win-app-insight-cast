@@ -961,6 +961,12 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="CTA.Template.Website">Webサイトへ誘導</sys:String>
     <sys:String x:Key="CTA.Template.Download">ダウンロード誘導</sys:String>
     <sys:String x:Key="CTA.Template.Contact">お問い合わせ誘導</sys:String>
+    <sys:String x:Key="CTA.Template.Education">教育・コンサル向け</sys:String>
+    <sys:String x:Key="CTA.Template.Education.Tooltip">次回予告＋個別相談＋資料案内のCTAエンドカード。教育動画・研修・コンサルティング向け</sys:String>
+    <sys:String x:Key="CTA.NextLesson">次回もお楽しみに！</sys:String>
+    <sys:String x:Key="CTA.Consultation">個別相談はこちらから ▶</sys:String>
+    <sys:String x:Key="CTA.Download">資料ダウンロードは概要欄から ↓</sys:String>
+    <sys:String x:Key="CTA.CourseNav">シリーズ一覧は概要欄をチェック</sys:String>
 
     <!-- JSON Editor -->
     <sys:String x:Key="Planning.ApplyJson">JSONを適用</sys:String>
@@ -1036,13 +1042,22 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="VM.TransitionAppliedAll">トランジションを全シーンに適用しました</sys:String>
 
     <!-- C6: Tooltips -->
+    <sys:String x:Key="Scene.Narration.Tooltip">VOICEVOXが読み上げるナレーションテキストを入力します。教育動画では1シーンあたり100〜150文字が目安です</sys:String>
+    <sys:String x:Key="Scene.Media.Select.Tooltip">シーンの背景に使用する画像・動画ファイルを選択します（PNG, JPG, MP4等）</sys:String>
+    <sys:String x:Key="Scene.Media.Clear.Tooltip">設定中の素材ファイルを解除します（黒背景になります）</sys:String>
+    <sys:String x:Key="Scene.Speaker.Tooltip">このシーンで使用するVOICEVOX話者を選択します。「デフォルト」はプロジェクト設定の話者を使用します</sys:String>
+    <sys:String x:Key="Scene.KeepAudio.Tooltip">ONにすると、動画素材の元の音声をナレーションと一緒に再生します</sys:String>
+    <sys:String x:Key="Scene.SpeechSpeed.Tooltip">ナレーションの読み上げ速度を調整します。教育動画では1.0x〜1.2xが推奨です</sys:String>
     <sys:String x:Key="Scene.PreviewAudio.Tooltip">入力したナレーションテキストを音声で試聴します</sys:String>
     <sys:String x:Key="Scene.PreviewScene.Tooltip">現在のシーンを動画としてプレビューします（ナレーション・字幕付き）</sys:String>
     <sys:String x:Key="Scene.Stop.Tooltip">再生中の音声・プレビューを停止します</sys:String>
-    <sys:String x:Key="Scene.Subtitle.Tooltip">動画の下部に表示される字幕テキストを入力します</sys:String>
+    <sys:String x:Key="Scene.Subtitle.Tooltip">動画の下部に表示される字幕テキストを入力します。アクセシビリティとSEO向上に効果的です</sys:String>
     <sys:String x:Key="Transition.Tooltip">シーン切り替え時のエフェクトを選択します（フェード、ワイプ等）</sys:String>
     <sys:String x:Key="Transition.Duration.Tooltip">トランジションの長さ（0.2〜2.0秒）</sys:String>
-    <sys:String x:Key="Export.Button.Tooltip">全シーンを結合して動画ファイル（MP4）を書き出します</sys:String>
+    <sys:String x:Key="Duration.Auto.Tooltip">ナレーション音声の長さに合わせてシーンの長さが自動的に決まります</sys:String>
+    <sys:String x:Key="Duration.Fixed.Tooltip">シーンの長さを秒数で手動指定します。ナレーションが長い場合は自動で延長されます</sys:String>
+    <sys:String x:Key="Export.Button.Tooltip">全シーンを結合して動画ファイル（MP4）を書き出します。サムネイル・チャプター・字幕・メタデータも同時に生成されます</sys:String>
+    <sys:String x:Key="Export.FPS.Tooltip">動画のフレームレート（1秒あたりのコマ数）。教育動画は30fpsが標準です</sys:String>
 
     <!-- D2: Post-export guidance -->
     <sys:String x:Key="VM.Export.CompleteDetail">動画の書き出しが完了しました。
@@ -1177,6 +1192,8 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.Tab.Home">ホーム</sys:String>
     <sys:String x:Key="Ribbon.Tab.Help">ヘルプ</sys:String>
     <sys:String x:Key="Ribbon.Group.Scene">シーン</sys:String>
+    <sys:String x:Key="Ribbon.Group.Structure">素材・構成</sys:String>
+    <sys:String x:Key="Ribbon.Group.Production">制作</sys:String>
     <sys:String x:Key="Ribbon.Group.Export">書き出し</sys:String>
     <sys:String x:Key="Ribbon.Group.Template">テンプレート</sys:String>
     <sys:String x:Key="Ribbon.Group.Support">サポート</sys:String>
@@ -1201,6 +1218,20 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.Template.Save">保存</sys:String>
     <sys:String x:Key="Ribbon.Template.Load">読込</sys:String>
     <sys:String x:Key="Ribbon.Template.OpenOutput">出力先を開く</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Capture">キャプチャ</sys:String>
+    <sys:String x:Key="Ribbon.BGM">BGM設定</sys:String>
+    <sys:String x:Key="Ribbon.CTA">CTA追加</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Add.Tooltip">教育動画に新しいシーン（スライド）を追加します</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Remove.Tooltip">選択中のシーンを削除します</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveUp.Tooltip">シーンの順番を1つ上に移動（講義の流れを調整）</sys:String>
+    <sys:String x:Key="Ribbon.Scene.MoveDown.Tooltip">シーンの順番を1つ下に移動（講義の流れを調整）</sys:String>
+    <sys:String x:Key="Ribbon.Export.Preview.Tooltip">現在のシーンを動画としてプレビュー再生します（ナレーション・字幕付き）</sys:String>
+    <sys:String x:Key="Ribbon.BGM.Tooltip">BGM（バックグラウンドミュージック）の選択・音量・ダッキング設定を行います</sys:String>
+    <sys:String x:Key="Ribbon.CTA.Tooltip">動画の最後にCTAエンドカード（次回予告・個別相談・資料案内）を追加します</sys:String>
+    <sys:String x:Key="Ribbon.Export.Video.Tooltip">全シーンを結合してMP4動画ファイルを書き出します。サムネイル・チャプター・字幕・メタデータも同時に生成されます</sys:String>
+    <sys:String x:Key="Ribbon.Template.OpenOutput.Tooltip">最後に書き出したフォルダをエクスプローラーで開きます</sys:String>
+    <sys:String x:Key="Ribbon.Template.Save.Tooltip">現在のBGM・話者・解像度などの設定をテンプレートとして保存し、次回のプロジェクトで再利用できます</sys:String>
+    <sys:String x:Key="Ribbon.Template.Load.Tooltip">保存済みテンプレートを読み込んで設定を一括適用します</sys:String>
     <sys:String x:Key="Ribbon.Help.Tutorial">チュートリアル</sys:String>
     <sys:String x:Key="Ribbon.Help.License">ライセンス管理</sys:String>
     <sys:String x:Key="Ribbon.Help.LicenseInfo">ライセンス情報</sys:String>
@@ -1305,6 +1336,22 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Planning.MoveUp.Tooltip">シーンの順番を上に移動</sys:String>
     <sys:String x:Key="Planning.MoveDown.Tooltip">シーンの順番を下に移動</sys:String>
     <sys:String x:Key="Planning.ClearScene.Tooltip">このシーンの内容をクリア</sys:String>
+    <!-- Overlay Tooltips -->
+    <sys:String x:Key="Overlay.Add.Tooltip">シーン上に自由に配置できるテキストオーバーレイを追加します。タイトルや補足説明に使用します</sys:String>
+    <sys:String x:Key="Overlay.CoverTemplate.Tooltip">タイトルとサブタイトルのテンプレートを一括追加します。表紙シーンの作成に便利です</sys:String>
+    <sys:String x:Key="Overlay.Remove.Tooltip">選択中のテキストオーバーレイを削除します</sys:String>
+
+    <!-- Watermark Tooltips -->
+    <sys:String x:Key="Watermark.Tooltip">動画全体に表示されるウォーターマーク（ロゴ）画像を選択します</sys:String>
+    <sys:String x:Key="Watermark.Clear.Tooltip">ウォーターマーク画像を解除します</sys:String>
+    <sys:String x:Key="Watermark.Position.Tooltip">ウォーターマークの表示位置を選択（右下がYouTubeでは推奨）</sys:String>
+
+    <!-- Tool Tooltips -->
+    <sys:String x:Key="Tool.ScreenCapture.Tooltip">画面の一部をキャプチャし、描画・注釈を追加してシーンに取り込みます。チュートリアル動画の作成に最適です</sys:String>
+
+    <!-- Export Resolution Tooltip -->
+    <sys:String x:Key="Export.Resolution.Tooltip">動画の出力解像度を選択します。教育動画は1920×1080（横）が標準です</sys:String>
+
     <sys:String x:Key="Thumbnail.Pattern.Tooltip">サムネイルの配色パターンを選択</sys:String>
     <sys:String x:Key="Thumbnail.Style.Tooltip">ワンクリックでスタイルを適用</sys:String>
     <sys:String x:Key="Thumbnail.Font.Tooltip">テキストのフォントを選択</sys:String>
