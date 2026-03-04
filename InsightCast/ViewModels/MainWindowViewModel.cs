@@ -257,6 +257,7 @@ namespace InsightCast.ViewModels
             "1080x1920", // Portrait
             "1080x1080", // Square (Instagram)
             "1080x1920", // YouTube Shorts
+            "1080x1920", // Instagram Reels
             "1080x1920", // TikTok
         };
 

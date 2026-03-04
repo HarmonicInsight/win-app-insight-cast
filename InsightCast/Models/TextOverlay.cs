@@ -124,7 +124,7 @@ namespace InsightCast.Models
             {
                 Text = text ?? LocalizationService.GetString("CTA.Subscribe"),
                 XPercent = 50.0,
-                YPercent = 35.0,
+                YPercent = 50.0,
                 FontSize = 56,
                 FontBold = true,
                 Alignment = TextAlignment.Center,
@@ -146,7 +146,7 @@ namespace InsightCast.Models
             {
                 Text = text ?? LocalizationService.GetString("CTA.LinkBelow"),
                 XPercent = 50.0,
-                YPercent = 55.0,
+                YPercent = 72.0,
                 FontSize = 36,
                 FontBold = true,
                 Alignment = TextAlignment.Center,
@@ -169,7 +169,7 @@ namespace InsightCast.Models
             {
                 Text = text ?? LocalizationService.GetString("CTA.ThankYou"),
                 XPercent = 50.0,
-                YPercent = 30.0,
+                YPercent = 25.0,
                 FontSize = 64,
                 FontBold = true,
                 Alignment = TextAlignment.Center,

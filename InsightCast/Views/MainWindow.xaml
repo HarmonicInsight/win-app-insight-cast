@@ -335,6 +335,7 @@
                                 <ComboBoxItem Content="{DynamicResource Resolution.Portrait}" Tag="1080x1920"/>
                                 <ComboBoxItem Content="{DynamicResource Resolution.Square}" Tag="1080x1080"/>
                                 <ComboBoxItem Content="{DynamicResource Resolution.Shorts}" Tag="1080x1920"/>
+                                <ComboBoxItem Content="{DynamicResource Resolution.Reels}" Tag="1080x1920"/>
                                 <ComboBoxItem Content="{DynamicResource Resolution.TikTok}" Tag="1080x1920"/>
                             </ComboBox>
                         </StackPanel>
