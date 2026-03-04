@@ -1,11 +1,15 @@
 namespace InsightCast;
 
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using InsightCast.Core;
+using InsightCast.Models;
 using InsightCast.Services;
+using InsightCast.Services.Batch;
 using InsightCast.Video;
 using InsightCast.Views;
 using InsightCast.VoiceVox;
@@ -22,6 +26,13 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // ── CLI バッチモード判定 ──
+        if (e.Args.Length >= 2 && e.Args[0] == "--batch")
+        {
+            RunBatchHeadless(e.Args);
+            return;
+        }
 
         // Syncfusion ライセンス設定（Essential Studio 32.x - Community License）
         Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(
@@ -189,6 +200,105 @@ public partial class App : Application
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// CLI ヘッドレスバッチモード。GUI を起動せず、バッチ設定 JSON に従って動画を一括エクスポート。
+    /// 使用法: InsightCast.exe --batch config.json [--speaker 13] [--output ./output]
+    /// </summary>
+    private void RunBatchHeadless(string[] args)
+    {
+        // コンソール出力を有効化（WPF アプリでも CLI 出力可能に）
+        NativeMethods.AttachConsole(NativeMethods.ATTACH_PARENT_PROCESS);
+
+        var config = new Config();
+        LocalizationService.Initialize(config.Language);
+
+        // 引数パース
+        var batchPath = args[1];
+        int speakerId = config.DefaultSpeakerId ?? 13;
+        string? outputOverride = null;
+
+        for (int i = 2; i < args.Length; i++)
+        {
+            switch (args[i])
+            {
+                case "--speaker" when i + 1 < args.Length:
+                    if (int.TryParse(args[++i], out var sid)) speakerId = sid;
+                    break;
+                case "--output" when i + 1 < args.Length:
+                    outputOverride = args[++i];
+                    break;
+            }
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("========================================");
+        Console.WriteLine(" InsightCast バッチモード (ヘッドレス)");
+        Console.WriteLine("========================================");
+        Console.WriteLine($"  設定ファイル: {batchPath}");
+        Console.WriteLine($"  話者ID: {speakerId}");
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                var client = new VoiceVoxClient(config.EngineUrl);
+                var ffmpeg = new FFmpegWrapper();
+                var audioCache = new AudioCache();
+                var batchService = new BatchExportService(ffmpeg, client, audioCache);
+
+                var batchConfig = batchService.LoadBatchConfig(batchPath);
+
+                if (!string.IsNullOrEmpty(outputOverride))
+                    batchConfig.GlobalSettings.OutputDirectory = outputOverride;
+
+                Console.WriteLine($"  プロジェクト数: {batchConfig.Projects.Count}");
+                Console.WriteLine("========================================");
+                Console.WriteLine();
+
+                // デフォルトスタイルを返す関数
+                TextStyle DefaultStyle(Scene _) => TextStyle.PRESET_STYLES.First(s => s.Id == "default");
+
+                var progress = new Progress<BatchProgress>(p =>
+                {
+                    Console.WriteLine($"  [{p.CurrentProjectIndex + 1}/{p.TotalProjects}] {p.CurrentProjectName} - {p.Phase}: {p.CurrentMessage}");
+                });
+
+                var result = await batchService.ExecuteBatchAsync(
+                    batchConfig, speakerId, DefaultStyle, progress, CancellationToken.None);
+
+                Console.WriteLine();
+                Console.WriteLine("========================================");
+                Console.WriteLine($" 完了: {result.SuccessCount}/{result.TotalProjects} 成功");
+                Console.WriteLine($" 所要時間: {result.Duration:hh\\:mm\\:ss}");
+
+                if (result.FailedProjects.Count > 0)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine(" 失敗:");
+                    foreach (var fail in result.FailedProjects)
+                        Console.WriteLine($"   - {fail.ProjectFile}: {fail.ErrorMessage}");
+                }
+                Console.WriteLine("========================================");
+
+                Dispatcher.Invoke(() => Shutdown(result.FailCount > 0 ? 1 : 0));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"エラー: {ex.Message}");
+                CrashReporter.WriteCrashReport(ex, "BatchHeadless");
+                Dispatcher.Invoke(() => Shutdown(2));
+            }
+        });
+    }
+
+    private static class NativeMethods
+    {
+        internal const int ATTACH_PARENT_PROCESS = -1;
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        internal static extern bool AttachConsole(int dwProcessId);
     }
 
     protected override void OnExit(ExitEventArgs e)
