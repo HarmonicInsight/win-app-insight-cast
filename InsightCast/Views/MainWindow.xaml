@@ -534,9 +534,9 @@
 
                         <!-- Media info -->
                         <DockPanel Margin="0,0,0,4">
-                            <Button DockPanel.Dock="Right" Content="{DynamicResource Tool.Snipaste}" Padding="10,3" Margin="2"
-                                    ToolTip="{DynamicResource Tool.Snipaste.Tooltip}"
-                                    Command="{Binding LaunchSnipasteCommand}"/>
+                            <Button DockPanel.Dock="Right" Content="{DynamicResource Tool.ScreenCapture}" Padding="10,3" Margin="2"
+                                    ToolTip="{DynamicResource Tool.ScreenCapture.Tooltip}"
+                                    Command="{Binding ScreenCaptureCommand}"/>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center" Margin="0,0,6,0"/>
                                 <TextBlock Text="{Binding MediaName}" VerticalAlignment="Center"

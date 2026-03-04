@@ -397,15 +397,14 @@
     <sys:String x:Key="VM.File.OpenError">ファイルを開けませんでした</sys:String>
     <sys:String x:Key="VM.Preview.OpenError">プレビュープレイヤーを開けませんでした</sys:String>
 
-    <!-- Snipaste -->
-    <sys:String x:Key="Tool.Snipaste">キャプチャtool</sys:String>
-    <sys:String x:Key="Tool.Snipaste.Tooltip">スクリーンキャプチャツール Snipaste を起動します。
-ボタンをクリックするか、Snipaste 起動後に F1 で画面をキャプチャできます。
-キャプチャした画像はシーンの素材として貼り付けできます。</sys:String>
-    <sys:String x:Key="VM.Snipaste.NotFound">Snipaste が見つかりません。\n\n以下のいずれかの方法で導入してください:\n• https://www.snipaste.com からダウンロード\n• PATH 環境変数に Snipaste.exe のあるフォルダを追加\n• アプリフォルダ内の snipaste\ に配置</sys:String>
-    <sys:String x:Key="VM.Snipaste.NotFound.Title">Snipaste が見つかりません</sys:String>
-    <sys:String x:Key="VM.Snipaste.LaunchError">Snipaste の起動に失敗しました:\n{0}</sys:String>
-    <sys:String x:Key="VM.Snipaste.LaunchError.Title">Snipaste 起動エラー</sys:String>
+    <!-- Screen Capture -->
+    <sys:String x:Key="Tool.ScreenCapture">画面キャプチャ</sys:String>
+    <sys:String x:Key="Tool.ScreenCapture.Tooltip">画面の一部を選択してキャプチャします (PrintScreen / Ctrl+F5)。
+矩形・円・矢印・テキスト・モザイクなどの編集ツール付き。
+キャプチャ後、クリップボードにコピー、ファイル保存、シーンに貼り付けが可能です。</sys:String>
+    <sys:String x:Key="VM.Capture.Applied">キャプチャ画像をシーンに適用しました: {0}</sys:String>
+    <sys:String x:Key="VM.Capture.Saved">キャプチャ画像を保存しました: {0}</sys:String>
+    <sys:String x:Key="VM.Capture.Copied">キャプチャ画像をクリップボードにコピーしました</sys:String>
 
     <!-- Alignment options -->
     <sys:String x:Key="Align.Center">中央</sys:String>

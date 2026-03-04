@@ -397,15 +397,14 @@
     <sys:String x:Key="VM.File.OpenError">Failed to open file</sys:String>
     <sys:String x:Key="VM.Preview.OpenError">Failed to open preview player</sys:String>
 
-    <!-- Snipaste -->
-    <sys:String x:Key="Tool.Snipaste">Capture tool</sys:String>
-    <sys:String x:Key="Tool.Snipaste.Tooltip">Launch Snipaste screen capture tool.
-Click the button or press F1 after Snipaste is running to capture the screen.
-Captured images can be pasted as scene media.</sys:String>
-    <sys:String x:Key="VM.Snipaste.NotFound">Snipaste was not found.\n\nPlease install it using one of these methods:\n• Download from https://www.snipaste.com\n• Add the folder containing Snipaste.exe to your PATH\n• Place it in the snipaste\ folder inside the app directory</sys:String>
-    <sys:String x:Key="VM.Snipaste.NotFound.Title">Snipaste Not Found</sys:String>
-    <sys:String x:Key="VM.Snipaste.LaunchError">Failed to launch Snipaste:\n{0}</sys:String>
-    <sys:String x:Key="VM.Snipaste.LaunchError.Title">Snipaste Launch Error</sys:String>
+    <!-- Screen Capture -->
+    <sys:String x:Key="Tool.ScreenCapture">Screen Capture</sys:String>
+    <sys:String x:Key="Tool.ScreenCapture.Tooltip">Select and capture a region of the screen (PrintScreen / Ctrl+F5).
+Includes annotation tools: rectangle, circle, arrow, text, mosaic.
+After capture, copy to clipboard, save to file, or pin to current scene.</sys:String>
+    <sys:String x:Key="VM.Capture.Applied">Captured image applied to scene: {0}</sys:String>
+    <sys:String x:Key="VM.Capture.Saved">Captured image saved: {0}</sys:String>
+    <sys:String x:Key="VM.Capture.Copied">Captured image copied to clipboard</sys:String>
 
     <!-- Alignment options -->
     <sys:String x:Key="Align.Center">Center</sys:String>
