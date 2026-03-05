@@ -1528,6 +1528,13 @@ namespace InsightCast.ViewModels
             }
         }
 
+        /// <summary>外部から背景画像パスを設定する（AI 画像生成等）</summary>
+        public void SetThumbnailBackground(string imagePath)
+        {
+            _thumbnailBgPath = imagePath;
+            OnPropertyChanged(nameof(ThumbnailBgFileName));
+        }
+
         private void ClearThumbnailBackground()
         {
             _thumbnailBgPath = null;
