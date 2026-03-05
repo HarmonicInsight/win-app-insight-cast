@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using InsightCast.Models;
+using InsightCast.Services.Claude;
 using InsightCommon.AI;
 
 namespace InsightCast.ViewModels;
@@ -75,7 +76,7 @@ public class PresetPromptVm
     public string Icon { get; set; } = string.Empty;
     public int RecommendedModelIndex { get; set; }
     public string ModelDisplay { get; set; } = string.Empty;
-    public PresetPrompt? Source { get; set; }
+    public InsightCastPresetPrompt? Source { get; set; }
 }
 
 /// <summary>
