@@ -59,12 +59,6 @@
                                 Command="{Binding OpenAiSettingsCommand}"
                                 ToolTip="{DynamicResource Ai.AiSettings}"
                                 FontSize="14" Padding="4,2" Margin="0,0,2,0">
-                            <TextBlock Text="&#xE912;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
-                        </Button>
-                        <Button Style="{StaticResource SmallButton}"
-                                Command="{Binding ToggleApiKeyPanelCommand}"
-                                ToolTip="{DynamicResource Ai.ApiKeySettings}"
-                                FontSize="14" Padding="4,2" Margin="0,0,2,0">
                             <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
                         </Button>
                         <Button Style="{StaticResource SmallButton}"
@@ -77,64 +71,7 @@
                 </DockPanel>
             </Border>
 
-            <!-- ═══ Row 1: API Key Panel (collapsible) ═══ -->
-            <Border Grid.Row="1"
-                    Background="{DynamicResource BgSecondary}"
-                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1"
-                    Padding="8,6"
-                    Visibility="{Binding IsApiKeyPanelOpen, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                    <!-- Claude API Key -->
-                    <TextBlock Text="{DynamicResource Ai.EnterApiKey}"
-                               FontSize="10"
-                               Foreground="{DynamicResource TextSecondary}"
-                               Visibility="{Binding IsApiKeySet, Converter={StaticResource InverseBoolToVis}}"
-                               Margin="0,0,0,4"/>
-                    <DockPanel>
-                        <Button DockPanel.Dock="Right"
-                                Content="{DynamicResource Ai.SetBtn}"
-                                Style="{StaticResource PrimaryButton}"
-                                Padding="10,4" Margin="4,0,0,0" FontSize="10"
-                                Command="{Binding SetApiKeyCommand}"/>
-                        <PasswordBox x:Name="ApiKeyBox" FontSize="10" Padding="6,4"
-                                     PasswordChanged="ApiKeyBox_PasswordChanged"
-                                     ToolTip="{DynamicResource Chat.ApiKey.Claude.Tooltip}"/>
-                    </DockPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0"
-                                Visibility="{Binding IsApiKeySet, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="✓ " FontSize="9" Foreground="{DynamicResource Success}"/>
-                        <TextBlock Text="{DynamicResource Chat.ApiKeyStatus}" FontSize="9"
-                                   Foreground="{DynamicResource TextTertiary}"/>
-                    </StackPanel>
-
-                    <!-- OpenAI API Key -->
-                    <Border BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,1,0,0"
-                            Margin="0,8,0,0" Padding="0,8,0,0">
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource Ai.OpenAIApiKey}"
-                                       FontSize="10" Foreground="{DynamicResource TextSecondary}"
-                                       Margin="0,0,0,4"/>
-                            <DockPanel>
-                                <Button DockPanel.Dock="Right"
-                                        Content="{DynamicResource Ai.SetOpenAIBtn}"
-                                        Style="{StaticResource PrimaryButton}"
-                                        Padding="10,4" Margin="4,0,0,0" FontSize="10"
-                                        Command="{Binding SetOpenAIApiKeyCommand}"/>
-                                <PasswordBox x:Name="OpenAIApiKeyBox" FontSize="10" Padding="6,4"
-                                             PasswordChanged="OpenAIApiKeyBox_PasswordChanged"
-                                             ToolTip="{DynamicResource Chat.ApiKey.OpenAI.Tooltip}"/>
-                            </DockPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0"
-                                        Visibility="{Binding IsOpenAIApiKeySet, Converter={StaticResource BoolToVis}}">
-                                <TextBlock Text="✓ " FontSize="9" Foreground="{DynamicResource Success}"/>
-                                <TextBlock Text="{DynamicResource Ai.OpenAIApiKeyStatus}" FontSize="9"
-                                           Foreground="{DynamicResource TextTertiary}"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                </StackPanel>
-            </Border>
+            <!-- Row 1: (removed — API key settings moved to AiSettingsDialog) -->
 
             <!-- ═══ Row 2: My Prompts + Preset Prompts ═══ -->
             <ScrollViewer Grid.Row="2"

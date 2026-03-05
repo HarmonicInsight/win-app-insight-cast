@@ -318,10 +318,22 @@ public class ChatPanelViewModel : ViewModelBase
         set { } // WPF binding compatibility
     }
 
-    /// <summary>
-    /// AI 設定ダイアログを開くときに View 側で設定するコールバック。
-    /// </summary>
-    public Action? OpenAiSettingsRequested { get; set; }
+    private void OpenAiSettings()
+    {
+        if (_claude is not ClaudeService concrete) return;
+
+        var owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+                    ?? Application.Current.MainWindow;
+        if (owner == null) return;
+
+        var theme = InsightCommon.Theme.InsightTheme.Create();
+        var locale = Services.LocalizationService.CurrentLanguage == "EN" ? "en" : "ja";
+
+        concrete.AiService.ShowSettingsDialog(owner, theme, "Insight Training Studio", locale);
+
+        // 設定変更後に UI を更新
+        OnPropertyChanged(nameof(IsApiKeySet));
+    }
 
     // ── Cancellation ──
     private CancellationTokenSource? _cts;
@@ -451,7 +463,7 @@ public class ChatPanelViewModel : ViewModelBase
 
         OpenPromptEditorCommand = new RelayCommand(_ => OpenPromptEditor());
 
-        OpenAiSettingsCommand = new RelayCommand(_ => OpenAiSettingsRequested?.Invoke());
+        OpenAiSettingsCommand = new RelayCommand(_ => OpenAiSettings());
 
         // Build prompt groups
         BuildPresetPromptGroups();

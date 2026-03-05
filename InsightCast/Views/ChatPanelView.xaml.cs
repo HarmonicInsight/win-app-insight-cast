@@ -4,10 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using InsightCast.Services;
-using InsightCast.Services.Claude;
 using InsightCast.ViewModels;
-using InsightCommon.Theme;
 
 namespace InsightCast.Views;
 
@@ -22,15 +19,9 @@ public partial class ChatPanelView : UserControl
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (e.OldValue is ChatPanelViewModel oldVm)
-        {
             oldVm.PropertyChanged -= OnViewModelPropertyChanged;
-            oldVm.OpenAiSettingsRequested = null;
-        }
         if (e.NewValue is ChatPanelViewModel newVm)
-        {
             newVm.PropertyChanged += OnViewModelPropertyChanged;
-            newVm.OpenAiSettingsRequested = OnOpenAiSettings;
-        }
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -144,25 +135,6 @@ public partial class ChatPanelView : UserControl
     /// </summary>
     public event System.Action? CloseRequested;
 
-    // ── AI Settings Dialog ──
-
-    private void OnOpenAiSettings()
-    {
-        if (DataContext is not ChatPanelViewModel vm) return;
-        if (vm.ClaudeService is not ClaudeService concrete) return;
-
-        var owner = Window.GetWindow(this);
-        if (owner == null) return;
-
-        var theme = InsightTheme.Create();
-        var locale = InsightCast.Services.LocalizationService.CurrentLanguage == "EN" ? "en" : "ja";
-
-        if (concrete.AiService.ShowSettingsDialog(owner, theme, "Insight Training Studio", locale))
-        {
-            // Refresh UI after settings change
-            vm.RefreshForLanguageChange();
-        }
-    }
 
     // ── Mode Toggle Handlers ──
 
