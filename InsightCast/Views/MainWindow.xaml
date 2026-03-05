@@ -48,6 +48,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <!-- ================================================================ -->
@@ -82,6 +83,52 @@
 
                     <!-- Right side: window controls -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Detail mode toggle -->
+                        <ToggleButton x:Name="DetailToggleButton"
+                                      IsChecked="{Binding IsDetailMode, Mode=OneWay}"
+                                      Click="DetailToggleButton_Click"
+                                      ToolTip="{DynamicResource UI.DetailMode.Tooltip}"
+                                      VerticalAlignment="Center" Margin="4,0">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border Background="{TemplateBinding Background}" Padding="6,3" CornerRadius="3">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock x:Name="Label" Text="{DynamicResource UI.SimpleMode}"
+                                                                   FontSize="11" VerticalAlignment="Center"
+                                                                   Foreground="{DynamicResource TextSecondary}"/>
+                                                        <Border x:Name="Track" Width="32" Height="16" CornerRadius="8"
+                                                                Background="#555" Margin="6,0,0,0" VerticalAlignment="Center">
+                                                            <Border x:Name="Thumb" Width="12" Height="12" CornerRadius="6"
+                                                                    Background="White" HorizontalAlignment="Left" Margin="2,0,0,0"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter TargetName="Label" Property="Text" Value="{DynamicResource UI.DetailMode}"/>
+                                                        <Setter TargetName="Track" Property="Background" Value="#B8942F"/>
+                                                        <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
+                                                        <Setter TargetName="Thumb" Property="Margin" Value="0,0,2,0"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#22FFFFFF"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+
+                        <Rectangle Width="1" Height="20" Fill="{DynamicResource BorderDefault}" Margin="4,0"/>
+
                         <!-- AI Assistant toggle -->
                         <Button x:Name="AiToggleButton" Click="AiToggleButton_Click"
                                 Style="{DynamicResource TitleBarButtonStyle}"
@@ -280,6 +327,13 @@
                             Command="{Binding AddCtaEndcardCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource AIPrompt.Execute}"
+                            ToolTip="{DynamicResource AIPrompt.DialogTitle}"
+                            Click="AIPromptExecute_Click" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8D4;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#9C27B0"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
@@ -569,9 +623,14 @@
 
                         <!-- Media info -->
                         <DockPanel Margin="0,0,0,4">
-                            <Button DockPanel.Dock="Right" Content="{DynamicResource Tool.ScreenCapture}" Padding="10,3" Margin="2"
-                                    ToolTip="{DynamicResource Tool.ScreenCapture.Tooltip}"
-                                    Command="{Binding ScreenCaptureCommand}"/>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <Button Content="{DynamicResource Tool.TitleCreator}" Padding="10,3" Margin="2"
+                                        ToolTip="{DynamicResource Tool.TitleCreator.Tooltip}"
+                                        Click="TitleCreatorButton_Click"/>
+                                <Button Content="{DynamicResource Tool.ScreenCapture}" Padding="10,3" Margin="2"
+                                        ToolTip="{DynamicResource Tool.ScreenCapture.Tooltip}"
+                                        Command="{Binding ScreenCaptureCommand}"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center" Margin="0,0,6,0"/>
                                 <TextBlock Text="{Binding MediaName}" VerticalAlignment="Center"
@@ -987,6 +1046,17 @@
             <MediaElement x:Name="AudioPlayer" Grid.Row="4"
                           LoadedBehavior="Manual" UnloadedBehavior="Stop"
                           Visibility="Collapsed" MediaEnded="AudioPlayer_MediaEnded"/>
+
+        <!-- ================================================================ -->
+        <!-- F) Status Bar                                                     -->
+        <!-- ================================================================ -->
+        <Border Grid.Row="5" Background="{DynamicResource BgSecondary}"
+                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,1,0,0"
+                Padding="8,4" CornerRadius="0,0,8,8">
+            <TextBlock Text="{Binding StatusText}" FontSize="11"
+                       Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"/>
+        </Border>
 
             </Grid>
         </Border>

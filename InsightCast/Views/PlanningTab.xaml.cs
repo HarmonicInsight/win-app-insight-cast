@@ -18,6 +18,9 @@ namespace InsightCast.Views
             InitializeComponent();
         }
 
+        /// <summary>Gets the PlanningViewModel for this tab.</summary>
+        public PlanningViewModel? ViewModel => _viewModel;
+
         public void Initialize(Config config, Project project)
         {
             _viewModel = new PlanningViewModel(config, project);
@@ -76,6 +79,14 @@ namespace InsightCast.Views
                 _viewModel.SelectedBgColorIndex = index;
                 BgColorToggle.IsChecked = false;
             }
+        }
+
+        /// <summary>Event raised when pop-out button is clicked for Title Creator.</summary>
+        public event Action? TitleCreatorPopOutRequested;
+
+        private void PopOutTitleCreator_Click(object sender, RoutedEventArgs e)
+        {
+            TitleCreatorPopOutRequested?.Invoke();
         }
     }
 }

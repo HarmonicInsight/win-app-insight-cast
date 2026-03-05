@@ -79,6 +79,7 @@ namespace InsightCast.Views
                     // Initialize Planning Tab
                     PlanningTabControl.Initialize(_config, _vm.Project);
                     PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
+                    PlanningTabControl.TitleCreatorPopOutRequested += OpenTitleCreatorDialog;
 
                     // Initialize AI Assistant panel (heavy)
                     InitializeChatPanel();
@@ -664,6 +665,64 @@ namespace InsightCast.Views
             var newLang = LocalizationService.ToggleLanguage();
             _config.Language = newLang;
             _chatVm?.RefreshForLanguageChange();
+            UpdateLanguageRadioButtons();
+        }
+
+        private void TitleCreatorButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenTitleCreatorDialog();
+        }
+
+        private void AIPromptExecute_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new AIPromptExecuteDialog { Owner = this };
+            if (dialog.ShowDialog() == true && dialog.SelectedPreset != null)
+            {
+                if (_chatVm != null)
+                {
+                    var preset = dialog.SelectedPreset;
+                    var lang = Services.LocalizationService.CurrentLanguage;
+
+                    // Set the tool-enabled prompt
+                    _chatVm.AiInput = preset.GetPrompt(lang);
+
+                    // Set recommended model for optimal results
+                    _chatVm.SelectedModelIndex = preset.RecommendedModelIndex;
+
+                    // Open AI panel if closed
+                    if (!_chatVm.IsChatOpen)
+                    {
+                        _chatVm.IsChatOpen = true;
+                        AiPanelColumn.MinWidth = 280;
+                        AiPanelColumn.Width = new GridLength(_lastAiPanelWidth, GridUnitType.Pixel);
+                    }
+
+                    // Execute the prompt via Claude API with tools
+                    if (_chatVm.ExecutePromptCommand.CanExecute(null))
+                    {
+                        _chatVm.ExecutePromptCommand.Execute(null);
+                    }
+                }
+            }
+        }
+
+        private void OpenTitleCreatorDialog()
+        {
+            var viewModel = PlanningTabControl.ViewModel;
+            if (viewModel == null)
+            {
+                MessageBox.Show("企画タブが初期化されていません。", "エラー", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var dialog = new TitleCreatorDialog { Owner = this };
+            dialog.SetViewModel(viewModel);
+            dialog.AddToSceneRequested += (imagePath) =>
+            {
+                _vm.ApplyCapturedImage(imagePath);
+                _vm.Logger.Log($"タイトル画像をシーンに追加しました: {imagePath}");
+            };
+            dialog.ShowDialog();
         }
 
         private AiAssistantWindow? _aiAssistantWindow;
@@ -713,6 +772,7 @@ namespace InsightCast.Views
 
             ChatPanel.DataContext = _chatVm;
             ChatPanel.PopOutRequested += OnPopOutAiAssistant;
+            ChatPanel.CloseRequested += OnCloseChatPanel;
 
             // Open AI panel by default
             _chatVm.IsChatOpen = true;
@@ -747,20 +807,40 @@ namespace InsightCast.Views
         {
             if (_chatVm == null) return;
 
-            _chatVm.IsChatOpen = !_chatVm.IsChatOpen;
-
-            if (_chatVm.IsChatOpen)
+            // Toggle button is now mainly for opening
+            if (!_chatVm.IsChatOpen)
             {
+                _chatVm.IsChatOpen = true;
                 AiPanelColumn.MinWidth = 280;
                 AiPanelColumn.Width = new GridLength(_lastAiPanelWidth, GridUnitType.Pixel);
             }
             else
             {
-                if (AiPanelColumn.ActualWidth > 0)
-                    _lastAiPanelWidth = AiPanelColumn.ActualWidth;
-                AiPanelColumn.MinWidth = 0;
-                AiPanelColumn.Width = new GridLength(0);
+                // Can also close by toggle button
+                CloseChatPanel();
             }
+        }
+
+        private void OnCloseChatPanel()
+        {
+            CloseChatPanel();
+        }
+
+        private void CloseChatPanel()
+        {
+            if (_chatVm == null) return;
+
+            if (AiPanelColumn.ActualWidth > 0)
+                _lastAiPanelWidth = AiPanelColumn.ActualWidth;
+
+            _chatVm.IsChatOpen = false;
+            AiPanelColumn.MinWidth = 0;
+            AiPanelColumn.Width = new GridLength(0);
+        }
+
+        private void DetailToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.IsSimpleMode = !_vm.IsSimpleMode;
         }
 
         private void Window_StateChanged(object? sender, EventArgs e)
@@ -837,7 +917,9 @@ namespace InsightCast.Views
             _vm.ScenesChanged -= OnMainViewModelScenesChanged;
             _vm.Logger.LogReceived -= OnLogReceived;
             PlanningTabControl.ScenesChanged -= OnPlanningTabScenesChanged;
+            PlanningTabControl.TitleCreatorPopOutRequested -= OpenTitleCreatorDialog;
             ChatPanel.PopOutRequested -= OnPopOutAiAssistant;
+            ChatPanel.CloseRequested -= OnCloseChatPanel;
 
             // Close popout window if open
             _aiAssistantWindow?.Close();

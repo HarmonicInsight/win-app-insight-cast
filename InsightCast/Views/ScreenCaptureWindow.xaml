@@ -9,18 +9,20 @@
         MouseLeftButtonDown="Canvas_MouseLeftButtonDown"
         MouseMove="Canvas_MouseMove"
         MouseLeftButtonUp="Canvas_MouseLeftButtonUp"
-        MouseRightButtonDown="Canvas_MouseRightButtonDown">
+        MouseRightButtonDown="Canvas_MouseRightButtonDown"
+        MouseDoubleClick="Canvas_MouseDoubleClick">
 
     <Window.Resources>
+        <!-- Drawing tool button style -->
         <Style x:Key="ToolBtn" TargetType="Button">
-            <Setter Property="Width" Value="36"/>
-            <Setter Property="Height" Value="36"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="2"/>
-            <Setter Property="Background" Value="#CC333333"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#555"/>
+            <Setter Property="Background" Value="#EEEEEE"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontSize" Value="18"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -28,17 +30,67 @@
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4" ToolTip="{TemplateBinding ToolTip}">
+                                CornerRadius="6" ToolTip="{TemplateBinding ToolTip}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#CC555555"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#D0D0D0"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#AAA"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#B0B0B0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+        <!-- Action button style (save, copy, etc) -->
+        <Style x:Key="ActionBtn" TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Background" Value="#0078D4"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#106EBE"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#005A9E"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ActionBtnGreen" TargetType="Button" BasedOn="{StaticResource ActionBtn}">
+            <Setter Property="Background" Value="#107C10"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#0E6E0E"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ActionBtnCancel" TargetType="Button" BasedOn="{StaticResource ActionBtn}">
+            <Setter Property="Background" Value="#666"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#555"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Window.Resources>
 
@@ -49,7 +101,8 @@
         <!-- Selection rectangle (drawn in code) -->
         <Rectangle x:Name="SelectionRect" Stroke="#00AEFF" StrokeThickness="2"
                    StrokeDashArray="4 2" Fill="Transparent" Visibility="Collapsed"
-                   IsHitTestVisible="False"/>
+                   IsHitTestVisible="False"
+                   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
         <!-- Dimension label -->
         <Border x:Name="DimensionLabel" Background="#CC000000" CornerRadius="3"
@@ -60,48 +113,139 @@
 
         <!-- Toolbar (appears after selection) -->
         <Border x:Name="Toolbar" Visibility="Collapsed"
-                Background="#DD222222" CornerRadius="6" Padding="4"
+                Background="#F5F5F5" CornerRadius="8" Padding="8"
                 HorizontalAlignment="Left" VerticalAlignment="Top"
-                BorderBrush="#555" BorderThickness="1">
-            <StackPanel Orientation="Horizontal">
-                <!-- Drawing tools -->
-                <Button Style="{StaticResource ToolBtn}" Content="▭" ToolTip="矩形 (R)" Click="Tool_Rect"/>
-                <Button Style="{StaticResource ToolBtn}" Content="○" ToolTip="円 (C)" Click="Tool_Circle"/>
-                <Button Style="{StaticResource ToolBtn}" Content="→" ToolTip="矢印 (A)" Click="Tool_Arrow"/>
-                <Button Style="{StaticResource ToolBtn}" Content="─" ToolTip="線 (L)" Click="Tool_Line"/>
-                <Button Style="{StaticResource ToolBtn}" Content="T" ToolTip="テキスト (T)" Click="Tool_Text"/>
-                <Button Style="{StaticResource ToolBtn}" Content="▓" ToolTip="モザイク (M)" Click="Tool_Mosaic"/>
-                <Button Style="{StaticResource ToolBtn}" Content="✎" ToolTip="ペン (P)" Click="Tool_Pen"/>
+                BorderBrush="#DDD" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.3"/>
+            </Border.Effect>
+            <StackPanel>
+                <!-- Drawing tools row -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <TextBlock Text="ツール:" FontSize="11" Foreground="#666" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <Button x:Name="BtnSelect" Style="{StaticResource ToolBtn}" ToolTip="選択・移動 (V)" Click="Tool_Select">
+                        <Path Data="M2,2 L10,18 L12,12 L18,14 L12,8 L18,6 Z" Fill="#333"/>
+                    </Button>
+                    <Button x:Name="BtnRect" Style="{StaticResource ToolBtn}" ToolTip="矩形を描画 (R)" Click="Tool_Rect">
+                        <Border Width="20" Height="14" BorderBrush="#333" BorderThickness="2" CornerRadius="2"/>
+                    </Button>
+                    <Button x:Name="BtnCircle" Style="{StaticResource ToolBtn}" ToolTip="円を描画 (C)" Click="Tool_Circle">
+                        <Ellipse Width="18" Height="18" Stroke="#333" StrokeThickness="2"/>
+                    </Button>
+                    <Button x:Name="BtnArrow" Style="{StaticResource ToolBtn}" ToolTip="矢印を描画 (A)" Click="Tool_Arrow">
+                        <Path Data="M0,8 L20,8 M14,2 L20,8 L14,14" Stroke="#333" StrokeThickness="2" StrokeLineJoin="Round"/>
+                    </Button>
+                    <Button x:Name="BtnLine" Style="{StaticResource ToolBtn}" ToolTip="線を描画 (L)" Click="Tool_Line">
+                        <Line X1="0" Y1="16" X2="20" Y2="0" Stroke="#333" StrokeThickness="2"/>
+                    </Button>
 
-                <Rectangle Width="1" Fill="#555" Margin="4,4"/>
+                    <!-- Stroke width (線ツールの横) -->
+                    <ComboBox x:Name="StrokeWidthCombo" Width="70" Margin="4,0" SelectedIndex="1"
+                              VerticalContentAlignment="Center" FontSize="11" ToolTip="線の太さ" Padding="6,0">
+                        <ComboBoxItem Content="  1px  "/>
+                        <ComboBoxItem Content="  2px  "/>
+                        <ComboBoxItem Content="  4px  "/>
+                        <ComboBoxItem Content="  6px  "/>
+                    </ComboBox>
 
-                <!-- Color picker -->
-                <Button x:Name="ColorBtn" Style="{StaticResource ToolBtn}" Width="28" Height="28"
-                        ToolTip="色" Click="Tool_ColorPick">
-                    <Rectangle x:Name="ColorIndicator" Width="18" Height="18" Fill="Red" RadiusX="2" RadiusY="2"/>
-                </Button>
-                <!-- Stroke width -->
-                <ComboBox x:Name="StrokeWidthCombo" Width="50" Margin="2" SelectedIndex="1"
-                          VerticalContentAlignment="Center" FontSize="11">
-                    <ComboBoxItem Content="1px"/>
-                    <ComboBoxItem Content="2px"/>
-                    <ComboBoxItem Content="4px"/>
-                    <ComboBoxItem Content="6px"/>
-                </ComboBox>
+                    <Rectangle Width="1" Fill="#DDD" Margin="4,4"/>
 
-                <Rectangle Width="1" Fill="#555" Margin="4,4"/>
+                    <Button x:Name="BtnText" Style="{StaticResource ToolBtn}" ToolTip="テキストを追加 (T) - クリックで入力" Click="Tool_Text">
+                        <TextBlock Text="T" FontSize="18" FontWeight="Bold" Foreground="#333"/>
+                    </Button>
 
-                <!-- Undo -->
-                <Button Style="{StaticResource ToolBtn}" Content="↩" ToolTip="元に戻す (Ctrl+Z)" Click="Tool_Undo"/>
+                    <!-- Text size -->
+                    <ComboBox x:Name="TextSizeCombo" Width="60" Margin="2,0" SelectedIndex="1"
+                              VerticalContentAlignment="Center" FontSize="11" ToolTip="文字サイズ">
+                        <ComboBoxItem Content="12pt"/>
+                        <ComboBoxItem Content="18pt"/>
+                        <ComboBoxItem Content="24pt"/>
+                        <ComboBoxItem Content="36pt"/>
+                        <ComboBoxItem Content="48pt"/>
+                    </ComboBox>
 
-                <Rectangle Width="1" Fill="#555" Margin="4,4"/>
+                    <Rectangle Width="1" Fill="#DDD" Margin="4,4"/>
 
-                <!-- Actions -->
-                <Button Style="{StaticResource ToolBtn}" Content="📋" ToolTip="クリップボードにコピー" Click="Action_Copy" Width="40"/>
-                <Button Style="{StaticResource ToolBtn}" Content="💾" ToolTip="ファイルに保存" Click="Action_Save" Width="40"/>
-                <Button Style="{StaticResource ToolBtn}" Content="📌" ToolTip="シーンに貼り付け" Click="Action_PinToScene" Width="40"/>
-                <Button Style="{StaticResource ToolBtn}" Content="✕" ToolTip="キャンセル (Esc)" Click="Action_Cancel" Width="40"/>
+                    <Button x:Name="BtnMosaic" Style="{StaticResource ToolBtn}" ToolTip="モザイク (M)" Click="Tool_Mosaic">
+                        <Grid Width="20" Height="20">
+                            <Rectangle Width="6" Height="6" Fill="#666" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <Rectangle Width="6" Height="6" Fill="#999" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                            <Rectangle Width="6" Height="6" Fill="#666" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                            <Rectangle Width="6" Height="6" Fill="#999" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <Rectangle Width="6" Height="6" Fill="#666" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Rectangle Width="6" Height="6" Fill="#999" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            <Rectangle Width="6" Height="6" Fill="#666" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                            <Rectangle Width="6" Height="6" Fill="#999" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                            <Rectangle Width="6" Height="6" Fill="#666" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                        </Grid>
+                    </Button>
+                    <Button x:Name="BtnPen" Style="{StaticResource ToolBtn}" ToolTip="フリーハンドで描画 (P)" Click="Tool_Pen">
+                        <Path Data="M2,18 Q8,2 18,6" Stroke="#333" StrokeThickness="2" Fill="Transparent"/>
+                    </Button>
+                    <Button x:Name="BtnHighlighter" Style="{StaticResource ToolBtn}" ToolTip="蛍光ペン (H)" Click="Tool_Highlighter">
+                        <Path Data="M2,18 Q8,2 18,6" Stroke="#FFD700" StrokeThickness="6" Opacity="0.6" Fill="Transparent"/>
+                    </Button>
+
+                    <Rectangle Width="1" Fill="#DDD" Margin="4,4"/>
+
+                    <Button x:Name="BtnNumber" Style="{StaticResource ToolBtn}" ToolTip="番号マーカー (N)" Click="Tool_Number">
+                        <Grid>
+                            <Ellipse x:Name="NumberPreviewCircle" Width="20" Height="20" Fill="#E74C3C"/>
+                            <TextBlock x:Name="NumberPreviewText" Text="1" FontSize="12" FontWeight="Bold" Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Button>
+                    <TextBox x:Name="NumberInput" Width="60" Height="36" Margin="2,0" Padding="2"
+                             Text="1" MaxLength="3"
+                             Background="#FFFFFF" Foreground="#000000" BorderBrush="#666" BorderThickness="2"
+                             VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                             FontSize="14"
+                             ToolTip="次の番号を入力（クリックで配置）" TextChanged="NumberInput_TextChanged"/>
+
+                    <Rectangle Width="1" Fill="#DDD" Margin="4,4"/>
+
+                    <!-- Color picker -->
+                    <Button x:Name="ColorBtn" Style="{StaticResource ToolBtn}" ToolTip="描画色を選択" Click="Tool_ColorPick">
+                        <Grid>
+                            <Ellipse Width="24" Height="24" Stroke="#999" StrokeThickness="1"/>
+                            <Ellipse x:Name="ColorIndicator" Width="20" Height="20" Fill="Red"/>
+                        </Grid>
+                    </Button>
+
+                    <Rectangle Width="1" Fill="#DDD" Margin="4,4"/>
+
+                    <!-- Undo/Redo -->
+                    <Button Style="{StaticResource ToolBtn}" ToolTip="元に戻す (Ctrl+Z)" Click="Tool_Undo">
+                        <TextBlock Text="↶" FontSize="20" FontWeight="Bold" Foreground="#333" Margin="0,-2,0,0"/>
+                    </Button>
+                    <Button Style="{StaticResource ToolBtn}" ToolTip="やり直す (Ctrl+Y)" Click="Tool_Redo">
+                        <TextBlock Text="↷" FontSize="20" FontWeight="Bold" Foreground="#333" Margin="0,-2,0,0"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- Action buttons row -->
+                <StackPanel Orientation="Horizontal">
+                    <Button Style="{StaticResource ActionBtn}" Content="📋 コピー" ToolTip="クリップボードにコピー (Ctrl+C)" Click="Action_Copy"/>
+                    <Button Style="{StaticResource ActionBtnGreen}" Content="💾 PNG保存" ToolTip="マイピクチャに保存 (Ctrl+S)" Click="Action_Save"/>
+                    <Button Style="{StaticResource ActionBtn}" Content="📌 シーンに追加" ToolTip="現在のシーンに画像を追加 (Enter)" Click="Action_PinToScene"/>
+                    <Button Style="{StaticResource ActionBtnCancel}" Content="✕ キャンセル" ToolTip="キャンセル (Esc)" Click="Action_Cancel"/>
+                </StackPanel>
             </StackPanel>
+        </Border>
+
+        <!-- Inline text input (Excel style) -->
+        <Border x:Name="InlineTextBorder" Visibility="Collapsed"
+                HorizontalAlignment="Left" VerticalAlignment="Top"
+                BorderBrush="#0078D4" BorderThickness="2"
+                Background="White">
+            <TextBox x:Name="InlineTextBox"
+                     MinWidth="60" Height="Auto"
+                     Background="Transparent" Foreground="#000000"
+                     BorderThickness="0"
+                     Padding="2,1" FontSize="18"
+                     AcceptsReturn="False" TextWrapping="NoWrap"
+                     KeyDown="InlineTextBox_KeyDown"
+                     LostFocus="InlineTextBox_LostFocus"/>
         </Border>
 
         <!-- Color picker popup -->
@@ -123,18 +267,5 @@
             </Border>
         </Popup>
 
-        <!-- Text input popup -->
-        <Border x:Name="TextInputPanel" Visibility="Collapsed"
-                Background="#DD222222" CornerRadius="4" Padding="6"
-                HorizontalAlignment="Left" VerticalAlignment="Top"
-                BorderBrush="#555" BorderThickness="1">
-            <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="TextInputBox" Width="200" FontSize="14" Padding="4"
-                         Background="#444" Foreground="White" BorderBrush="#666"
-                         KeyDown="TextInput_KeyDown"/>
-                <Button Content="OK" Margin="4,0,0,0" Padding="8,4" Click="TextInput_OK"
-                        Background="#0088FF" Foreground="White" BorderBrush="#006ACC"/>
-            </StackPanel>
-        </Border>
     </Grid>
 </Window>

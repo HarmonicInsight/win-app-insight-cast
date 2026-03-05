@@ -117,10 +117,24 @@ public partial class ChatPanelView : UserControl
     }
 
     /// <summary>
+    /// Close the chat panel.
+    /// </summary>
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        CloseRequested?.Invoke();
+    }
+
+    /// <summary>
     /// Event raised when the user clicks the pop-out button.
     /// Handled by MainWindow to open AiAssistantWindow.
     /// </summary>
     public event System.Action? PopOutRequested;
+
+    /// <summary>
+    /// Event raised when the user clicks the close button.
+    /// Handled by MainWindow to close the chat panel.
+    /// </summary>
+    public event System.Action? CloseRequested;
 
     // ── Mode Toggle Handlers ──
 

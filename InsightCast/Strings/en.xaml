@@ -111,10 +111,7 @@
 
     <!-- Text Overlay -->
     <sys:String x:Key="Overlay.Title">Text Overlay:</sys:String>
-    <sys:String x:Key="Overlay.Add.Tooltip">Add text overlay</sys:String>
     <sys:String x:Key="Overlay.CoverTemplate">Add Title</sys:String>
-    <sys:String x:Key="Overlay.CoverTemplate.Tooltip">Add title + subtitle for cover page</sys:String>
-    <sys:String x:Key="Overlay.Remove.Tooltip">Remove selected overlay</sys:String>
     <sys:String x:Key="Overlay.Text">Text:</sys:String>
     <sys:String x:Key="Overlay.XPosition">Horizontal:</sys:String>
     <sys:String x:Key="Overlay.YPosition">Vertical:</sys:String>
@@ -150,8 +147,6 @@
     <sys:String x:Key="Watermark.Title">Logo Watermark:</sys:String>
     <sys:String x:Key="Watermark.Short">Logo Watermark</sys:String>
     <sys:String x:Key="Watermark.Position">Position:</sys:String>
-    <sys:String x:Key="Watermark.Tooltip">Select logo image (PNG recommended)</sys:String>
-    <sys:String x:Key="Watermark.Clear.Tooltip">Remove BGM</sys:String>
 
     <!-- Template -->
     <sys:String x:Key="Template.Title">Template:</sys:String>
@@ -399,9 +394,6 @@
 
     <!-- Screen Capture -->
     <sys:String x:Key="Tool.ScreenCapture">Screen Capture</sys:String>
-    <sys:String x:Key="Tool.ScreenCapture.Tooltip">Select and capture a region of the screen (PrintScreen / Ctrl+F5).
-Includes annotation tools: rectangle, circle, arrow, text, mosaic.
-After capture, copy to clipboard, save to file, or pin to current scene.</sys:String>
     <sys:String x:Key="VM.Capture.Applied">Captured image applied to scene: {0}</sys:String>
     <sys:String x:Key="VM.Capture.Saved">Captured image saved: {0}</sys:String>
     <sys:String x:Key="VM.Capture.Copied">Captured image copied to clipboard</sys:String>
@@ -473,7 +465,6 @@ After capture, copy to clipboard, save to file, or pin to current scene.</sys:St
     <sys:String x:Key="Export.AddingBGM">Adding BGM...</sys:String>
     <sys:String x:Key="Export.GeneratingThumbnail">Generating thumbnail...</sys:String>
     <sys:String x:Key="Export.GeneratingChapters">Generating chapter file...</sys:String>
-    <sys:String x:Key="Export.Resolution.Tooltip">Select output resolution (includes SNS platform presets)</sys:String>
     <sys:String x:Key="Export.GeneratingSubtitles">Generating subtitle files...</sys:String>
     <sys:String x:Key="Export.GeneratingMetadata">Generating metadata...</sys:String>
     <sys:String x:Key="Export.Done">Export complete</sys:String>
@@ -902,8 +893,10 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Planning.Chat.AI">AI</sys:String>
     <sys:String x:Key="Planning.TransferToVideo">To Video Generation</sys:String>
 
-    <!-- Thumbnail Generator -->
-    <sys:String x:Key="Planning.ThumbnailGenerator">Thumbnail Generator</sys:String>
+    <!-- Title Creator (formerly: Thumbnail Generator) -->
+    <sys:String x:Key="Planning.ThumbnailGenerator">Title Creator</sys:String>
+    <sys:String x:Key="Tool.TitleCreator">Title Creator</sys:String>
+    <sys:String x:Key="Tool.TitleCreator.Tooltip">Open Title Creator</sys:String>
     <sys:String x:Key="Thumbnail.Pattern">Pattern</sys:String>
     <sys:String x:Key="Thumbnail.StylePreset">One-Click Style</sys:String>
     <sys:String x:Key="Thumbnail.MainText">Main Text (10 chars recommended)</sys:String>
@@ -1091,6 +1084,11 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Chat.Title">AI Assistant</sys:String>
     <sys:String x:Key="Chat.ToggleTooltip">Open/close AI assistant panel</sys:String>
     <sys:String x:Key="Chat.Clear">Clear chat</sys:String>
+
+    <!-- UI Mode -->
+    <sys:String x:Key="UI.SimpleMode">Simple</sys:String>
+    <sys:String x:Key="UI.DetailMode">Detail</sys:String>
+    <sys:String x:Key="UI.DetailMode.Tooltip">Toggle between simple and detail mode</sys:String>
     <sys:String x:Key="Chat.Send">Send</sys:String>
     <sys:String x:Key="Chat.Cancel">Cancel</sys:String>
     <sys:String x:Key="Chat.Thinking">Thinking...</sys:String>
@@ -1372,5 +1370,42 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Chat.Execute.Tooltip">Execute prompt (Ctrl+Enter)</sys:String>
     <sys:String x:Key="Chat.Cancel.Tooltip">Cancel the current AI operation</sys:String>
     <sys:String x:Key="Chat.SaveThumbnail.Tooltip">Save the generated thumbnail image</sys:String>
+
+    <!-- AI Prompt Execute Dialog -->
+    <sys:String x:Key="AIPrompt.DialogTitle">Execute AI Prompt</sys:String>
+    <sys:String x:Key="AIPrompt.DialogDesc">AI uses tools to automatically edit scenes</sys:String>
+    <sys:String x:Key="AIPrompt.SearchPlaceholder">Search prompts...</sys:String>
+    <sys:String x:Key="AIPrompt.RecentPrompts">Frequently Used</sys:String>
+    <sys:String x:Key="AIPrompt.ToolEnabledPrompts">Tool-Enabled AI Prompts</sys:String>
+    <sys:String x:Key="AIPrompt.NoPrompts">No prompts available</sys:String>
+    <sys:String x:Key="AIPrompt.ManagePrompts">Manage Prompts</sys:String>
+    <sys:String x:Key="AIPrompt.Execute">AI Execute</sys:String>
+    <sys:String x:Key="AIPrompt.SelectAndRun">Select Prompt</sys:String>
+
+    <!-- Prompt Preset Manager Dialog -->
+    <sys:String x:Key="AIPrompt.ManageTitle">Manage Prompts</sys:String>
+    <sys:String x:Key="AIPrompt.MyPrompts">My Prompts</sys:String>
+    <sys:String x:Key="AIPrompt.Presets">Presets</sys:String>
+    <sys:String x:Key="AIPrompt.AllCategories">All</sys:String>
+    <sys:String x:Key="AIPrompt.Export">Export</sys:String>
+    <sys:String x:Key="AIPrompt.Import">Import</sys:String>
+    <sys:String x:Key="AIPrompt.New">New</sys:String>
+    <sys:String x:Key="AIPrompt.Duplicate">Duplicate</sys:String>
+    <sys:String x:Key="AIPrompt.Pin">Pin</sys:String>
+    <sys:String x:Key="AIPrompt.Unpin">Unpin</sys:String>
+    <sys:String x:Key="AIPrompt.Edit">Edit</sys:String>
+    <sys:String x:Key="AIPrompt.Delete">Delete</sys:String>
+    <sys:String x:Key="AIPrompt.SetDefault">Set Default</sys:String>
+
+    <!-- Prompt Preset Edit Dialog -->
+    <sys:String x:Key="AIPrompt.PresetTitle">Edit Prompt</sys:String>
+    <sys:String x:Key="AIPrompt.PresetName">Name</sys:String>
+    <sys:String x:Key="AIPrompt.PresetDescription">Description</sys:String>
+    <sys:String x:Key="AIPrompt.PresetCategory">Category</sys:String>
+    <sys:String x:Key="AIPrompt.PresetAuthor">Author</sys:String>
+    <sys:String x:Key="AIPrompt.PresetPrompt">System Prompt</sys:String>
+    <sys:String x:Key="AIPrompt.PresetPromptHint">Enter instructions for the AI</sys:String>
+    <sys:String x:Key="AIPrompt.PresetDefault">Set as default</sys:String>
+    <sys:String x:Key="AIPrompt.EnterName">Please enter a name</sys:String>
 
 </ResourceDictionary>

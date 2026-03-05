@@ -1,0 +1,104 @@
+<Window x:Class="InsightCast.Views.PromptPresetDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource AIPrompt.PresetTitle}" Height="620" Width="560"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResizeWithGrip"
+        MinHeight="480" MinWidth="440"
+        Background="{DynamicResource BgPrimary}">
+
+    <Window.Resources>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        </Style>
+        <Style x:Key="DialogButton" TargetType="Button">
+            <Setter Property="Padding" Value="16,6"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Header -->
+        <TextBlock Grid.Row="0" Text="{DynamicResource AIPrompt.PresetTitle}"
+                   FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"
+                   Foreground="{DynamicResource TextPrimary}"/>
+
+        <!-- Row 1: Preset Name -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,12">
+            <TextBlock Style="{StaticResource FieldLabel}">
+                <Run Text="{DynamicResource AIPrompt.PresetName}"/><Run Text=" *"/>
+            </TextBlock>
+            <TextBox x:Name="PresetNameBox" FontSize="14" Padding="6,4"/>
+        </StackPanel>
+
+        <!-- Row 2: Description -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,12">
+            <Grid>
+                <TextBlock Style="{StaticResource FieldLabel}" Text="{DynamicResource AIPrompt.PresetDescription}"/>
+                <TextBlock x:Name="DescriptionCharCount" HorizontalAlignment="Right"
+                           FontSize="10" Foreground="{DynamicResource TextTertiary}"/>
+            </Grid>
+            <TextBox x:Name="DescriptionBox" FontSize="12" Padding="6,4" Margin="0,4,0,0"
+                     MaxLength="200" TextChanged="DescriptionBox_TextChanged"/>
+        </StackPanel>
+
+        <!-- Row 3: Category + Author -->
+        <Grid Grid.Row="3" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Style="{StaticResource FieldLabel}" Text="{DynamicResource AIPrompt.PresetCategory}"/>
+                <ComboBox x:Name="CategoryCombo" IsEditable="True" FontSize="12" Padding="4,3"/>
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+                <TextBlock Style="{StaticResource FieldLabel}" Text="{DynamicResource AIPrompt.PresetAuthor}"/>
+                <TextBox x:Name="AuthorBox" FontSize="12" Padding="6,4"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Row 4: System Prompt -->
+        <DockPanel Grid.Row="4" Margin="0,0,0,12">
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,4">
+                <TextBlock Style="{StaticResource FieldLabel}">
+                    <Run Text="{DynamicResource AIPrompt.PresetPrompt}"/><Run Text=" *"/>
+                </TextBlock>
+                <TextBlock x:Name="PromptCharCount" HorizontalAlignment="Right"
+                           FontSize="10" Foreground="{DynamicResource TextTertiary}"/>
+            </Grid>
+            <TextBlock DockPanel.Dock="Bottom" FontSize="10" Margin="0,4,0,0"
+                       Foreground="{DynamicResource TextTertiary}"
+                       Text="{DynamicResource AIPrompt.PresetPromptHint}"/>
+            <TextBox x:Name="SystemPromptBox" FontSize="12" Padding="6,4"
+                     FontFamily="Consolas" AcceptsReturn="True" TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto" SpellCheck.IsEnabled="True"
+                     TextChanged="SystemPromptBox_TextChanged"/>
+        </DockPanel>
+
+        <!-- Row 5: Default Checkbox -->
+        <CheckBox Grid.Row="5" x:Name="IsDefaultCheck" Margin="0,0,0,8"
+                  Content="{DynamicResource AIPrompt.PresetDefault}" FontSize="12"/>
+
+        <!-- Row 6: Buttons -->
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="{DynamicResource Common.Cancel}" Click="Cancel_Click"
+                    Style="{StaticResource DialogButton}" Margin="0,0,8,0"/>
+            <Button Content="{DynamicResource Common.Save}" Click="Save_Click"
+                    Style="{StaticResource DialogButton}"
+                    Background="#9C27B0" Foreground="White"/>
+        </StackPanel>
+    </Grid>
+</Window>

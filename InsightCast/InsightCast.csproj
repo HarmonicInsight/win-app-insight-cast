@@ -7,14 +7,15 @@
     <RootNamespace>InsightCast</RootNamespace>
     <AssemblyName>InsightCast</AssemblyName>
     <ApplicationIcon>Resources\app.ico</ApplicationIcon>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
     <Description>Insight Training Studio - 教育動画作成ツール</Description>
     <Company>HARMONIC insight</Company>
     <Product>Insight Training Studio</Product>
     <Copyright>Copyright (C) 2026 HARMONIC insight</Copyright>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 

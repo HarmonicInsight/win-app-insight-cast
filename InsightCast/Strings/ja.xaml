@@ -111,10 +111,7 @@
 
     <!-- Text Overlay -->
     <sys:String x:Key="Overlay.Title">テキストオーバーレイ:</sys:String>
-    <sys:String x:Key="Overlay.Add.Tooltip">テキストオーバーレイを追加</sys:String>
     <sys:String x:Key="Overlay.CoverTemplate">タイトル追加</sys:String>
-    <sys:String x:Key="Overlay.CoverTemplate.Tooltip">表紙用のタイトル＋サブタイトルを一括追加</sys:String>
-    <sys:String x:Key="Overlay.Remove.Tooltip">選択中のオーバーレイを削除</sys:String>
     <sys:String x:Key="Overlay.Text">テキスト:</sys:String>
     <sys:String x:Key="Overlay.XPosition">横位置:</sys:String>
     <sys:String x:Key="Overlay.YPosition">縦位置:</sys:String>
@@ -150,8 +147,6 @@
     <sys:String x:Key="Watermark.Title">ロゴ透かし:</sys:String>
     <sys:String x:Key="Watermark.Short">ロゴ透かし</sys:String>
     <sys:String x:Key="Watermark.Position">位置:</sys:String>
-    <sys:String x:Key="Watermark.Tooltip">ロゴ画像（PNG推奨）を選択</sys:String>
-    <sys:String x:Key="Watermark.Clear.Tooltip">BGMを解除</sys:String>
 
     <!-- Template -->
     <sys:String x:Key="Template.Title">テンプレート:</sys:String>
@@ -399,9 +394,6 @@
 
     <!-- Screen Capture -->
     <sys:String x:Key="Tool.ScreenCapture">画面キャプチャ</sys:String>
-    <sys:String x:Key="Tool.ScreenCapture.Tooltip">画面の一部を選択してキャプチャします (PrintScreen / Ctrl+F5)。
-矩形・円・矢印・テキスト・モザイクなどの編集ツール付き。
-キャプチャ後、クリップボードにコピー、ファイル保存、シーンに貼り付けが可能です。</sys:String>
     <sys:String x:Key="VM.Capture.Applied">キャプチャ画像をシーンに適用しました: {0}</sys:String>
     <sys:String x:Key="VM.Capture.Saved">キャプチャ画像を保存しました: {0}</sys:String>
     <sys:String x:Key="VM.Capture.Copied">キャプチャ画像をクリップボードにコピーしました</sys:String>
@@ -473,7 +465,6 @@
     <sys:String x:Key="Export.AddingBGM">BGMを追加中...</sys:String>
     <sys:String x:Key="Export.GeneratingThumbnail">サムネイルを生成中...</sys:String>
     <sys:String x:Key="Export.GeneratingChapters">チャプターファイルを生成中...</sys:String>
-    <sys:String x:Key="Export.Resolution.Tooltip">出力解像度を選択（SNSプラットフォーム別プリセット対応）</sys:String>
     <sys:String x:Key="Export.GeneratingSubtitles">字幕ファイルを生成中...</sys:String>
     <sys:String x:Key="Export.GeneratingMetadata">メタデータを生成中...</sys:String>
     <sys:String x:Key="Export.Done">書き出し完了</sys:String>
@@ -903,8 +894,10 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Planning.Chat.AI">AI</sys:String>
     <sys:String x:Key="Planning.TransferToVideo">動画生成へ</sys:String>
 
-    <!-- Thumbnail Generator -->
-    <sys:String x:Key="Planning.ThumbnailGenerator">サムネイルジェネレーター</sys:String>
+    <!-- Title Creator (旧: Thumbnail Generator) -->
+    <sys:String x:Key="Planning.ThumbnailGenerator">タイトルクリエーター</sys:String>
+    <sys:String x:Key="Tool.TitleCreator">タイトル作成</sys:String>
+    <sys:String x:Key="Tool.TitleCreator.Tooltip">タイトルクリエーターを開く</sys:String>
     <sys:String x:Key="Thumbnail.Pattern">パターン選択</sys:String>
     <sys:String x:Key="Thumbnail.StylePreset">ワンクリックスタイル</sys:String>
     <sys:String x:Key="Thumbnail.MainText">メインテキスト (10文字以内推奨)</sys:String>
@@ -1070,12 +1063,17 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="VM.VoiceVox.Guide">VOICEVOX: ✗未接続 — VOICEVOXエンジンを起動してからアプリを再起動してください</sys:String>
 
     <!-- Marketing subtitle -->
-    <sys:String x:Key="App.Subtitle">AIで、伝わる動画をもっと速く。</sys:String>
+    <sys:String x:Key="App.Subtitle">研修やマニュアルをすべて動画で</sys:String>
 
     <!-- AI Chat Panel -->
     <sys:String x:Key="Chat.Title">AI アシスタント</sys:String>
     <sys:String x:Key="Chat.ToggleTooltip">AIアシスタントパネルを開く/閉じる</sys:String>
     <sys:String x:Key="Chat.Clear">会話をクリア</sys:String>
+
+    <!-- UI Mode -->
+    <sys:String x:Key="UI.SimpleMode">シンプル</sys:String>
+    <sys:String x:Key="UI.DetailMode">詳細</sys:String>
+    <sys:String x:Key="UI.DetailMode.Tooltip">シンプルモードと詳細モードを切り替え</sys:String>
     <sys:String x:Key="Chat.Send">送信</sys:String>
     <sys:String x:Key="Chat.Cancel">キャンセル</sys:String>
     <sys:String x:Key="Chat.Thinking">考え中...</sys:String>
@@ -1373,5 +1371,42 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Chat.Execute.Tooltip">プロンプトを実行 (Ctrl+Enter)</sys:String>
     <sys:String x:Key="Chat.Cancel.Tooltip">実行中のAI処理をキャンセル</sys:String>
     <sys:String x:Key="Chat.SaveThumbnail.Tooltip">生成されたサムネイル画像を保存</sys:String>
+
+    <!-- AI Prompt Execute Dialog -->
+    <sys:String x:Key="AIPrompt.DialogTitle">AIプロンプト実行</sys:String>
+    <sys:String x:Key="AIPrompt.DialogDesc">AIがツールを使ってシーンを自動操作します</sys:String>
+    <sys:String x:Key="AIPrompt.SearchPlaceholder">プロンプトを検索...</sys:String>
+    <sys:String x:Key="AIPrompt.RecentPrompts">よく使うプロンプト</sys:String>
+    <sys:String x:Key="AIPrompt.ToolEnabledPrompts">ツール対応AIプロンプト</sys:String>
+    <sys:String x:Key="AIPrompt.NoPrompts">プロンプトがありません</sys:String>
+    <sys:String x:Key="AIPrompt.ManagePrompts">プロンプト管理</sys:String>
+    <sys:String x:Key="AIPrompt.Execute">AI実行</sys:String>
+    <sys:String x:Key="AIPrompt.SelectAndRun">プロンプト確認</sys:String>
+
+    <!-- Prompt Preset Manager Dialog -->
+    <sys:String x:Key="AIPrompt.ManageTitle">プロンプト管理</sys:String>
+    <sys:String x:Key="AIPrompt.MyPrompts">マイプロンプト</sys:String>
+    <sys:String x:Key="AIPrompt.Presets">プリセット</sys:String>
+    <sys:String x:Key="AIPrompt.AllCategories">すべて</sys:String>
+    <sys:String x:Key="AIPrompt.Export">エクスポート</sys:String>
+    <sys:String x:Key="AIPrompt.Import">インポート</sys:String>
+    <sys:String x:Key="AIPrompt.New">新規作成</sys:String>
+    <sys:String x:Key="AIPrompt.Duplicate">複製</sys:String>
+    <sys:String x:Key="AIPrompt.Pin">ピン留め</sys:String>
+    <sys:String x:Key="AIPrompt.Unpin">ピン解除</sys:String>
+    <sys:String x:Key="AIPrompt.Edit">編集</sys:String>
+    <sys:String x:Key="AIPrompt.Delete">削除</sys:String>
+    <sys:String x:Key="AIPrompt.SetDefault">デフォルト設定</sys:String>
+
+    <!-- Prompt Preset Edit Dialog -->
+    <sys:String x:Key="AIPrompt.PresetTitle">プロンプト編集</sys:String>
+    <sys:String x:Key="AIPrompt.PresetName">名前</sys:String>
+    <sys:String x:Key="AIPrompt.PresetDescription">説明</sys:String>
+    <sys:String x:Key="AIPrompt.PresetCategory">カテゴリ</sys:String>
+    <sys:String x:Key="AIPrompt.PresetAuthor">作成者</sys:String>
+    <sys:String x:Key="AIPrompt.PresetPrompt">システムプロンプト</sys:String>
+    <sys:String x:Key="AIPrompt.PresetPromptHint">AIに与える指示を入力してください</sys:String>
+    <sys:String x:Key="AIPrompt.PresetDefault">デフォルトとして設定</sys:String>
+    <sys:String x:Key="AIPrompt.EnterName">名前を入力してください</sys:String>
 
 </ResourceDictionary>
