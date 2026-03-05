@@ -163,6 +163,8 @@
     <sys:String x:Key="Export.Settings">書き出し設定</sys:String>
     <sys:String x:Key="Export.Speaker">話者:</sys:String>
     <sys:String x:Key="Export.Resolution">解像度:</sys:String>
+    <sys:String x:Key="Export.DefaultSpeaker">デフォルト話者:</sys:String>
+    <sys:String x:Key="Export.DefaultSpeaker.Tooltip">全シーンのデフォルト話者を選択します。個別シーンで上書き可能です。</sys:String>
     <sys:String x:Key="Export.Res.Portrait">1080x1920 (縦動画)</sys:String>
     <sys:String x:Key="Export.Res.Landscape">1920x1080 (横動画)</sys:String>
     <sys:String x:Key="Export.BGM.Settings">BGM設定...</sys:String>
@@ -583,6 +585,8 @@
     <sys:String x:Key="VM.Pptx.Result">取込結果</sys:String>
     <sys:String x:Key="VM.Pptx.Imported">PPTXからシーンを取り込みました ({0} スライド, {1} 画像): {2}</sys:String>
     <sys:String x:Key="VM.Pptx.NotesOnly">{0} 件のスライドのノートを取り込みました。\nスライド画像の取込にはPowerPointのインストールが必要です。</sys:String>
+    <sys:String x:Key="VM.Pptx.IncludeSubtitle">スライドのテキストを字幕に取り込みますか？&#x0a;（文字量が多い場合、字幕がずれることがあります）</sys:String>
+    <sys:String x:Key="VM.Pptx.IncludeSubtitle.Title">字幕取込オプション</sys:String>
     <sys:String x:Key="VM.Pptx.Error">PPTX取込に失敗しました:\n{0}</sys:String>
     <sys:String x:Key="VM.Pptx.Failed">取込エラー</sys:String>
 
@@ -1063,7 +1067,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="VM.VoiceVox.Guide">VOICEVOX: ✗未接続 — VOICEVOXエンジンを起動してからアプリを再起動してください</sys:String>
 
     <!-- Marketing subtitle -->
-    <sys:String x:Key="App.Subtitle">研修やマニュアルをすべて動画で</sys:String>
+    <sys:String x:Key="App.Subtitle">眠っている資料が教育動画に変わる</sys:String>
 
     <!-- AI Chat Panel -->
     <sys:String x:Key="Chat.Title">AI アシスタント</sys:String>
@@ -1144,6 +1148,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Ai.SaveAsPrompt">プロンプトとして保存</sys:String>
     <sys:String x:Key="Ai.Result">結果</sys:String>
     <sys:String x:Key="Ai.Processing">処理中...</sys:String>
+    <sys:String x:Key="Ai.AiSettings">AI設定</sys:String>
     <sys:String x:Key="Ai.ApiKeySettings">APIキー設定</sys:String>
     <sys:String x:Key="Ai.EnterApiKey">Claude APIキーを入力</sys:String>
     <sys:String x:Key="Ai.SetBtn">設定</sys:String>
@@ -1187,6 +1192,7 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Help.Section.AIAssistant">AIアシスタント</sys:String>
 
     <!-- Ribbon UI -->
+    <sys:String x:Key="Ribbon.Tab.File">ファイル</sys:String>
     <sys:String x:Key="Ribbon.Tab.Home">ホーム</sys:String>
     <sys:String x:Key="Ribbon.Tab.Help">ヘルプ</sys:String>
     <sys:String x:Key="Ribbon.Group.Scene">シーン</sys:String>
@@ -1207,6 +1213,17 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.File.ImportJson">JSONインポート</sys:String>
     <sys:String x:Key="Ribbon.File.BatchExport">JSONエクスポート</sys:String>
     <sys:String x:Key="Ribbon.File.Exit">終了</sys:String>
+    <sys:String x:Key="Ribbon.Group.File">ファイル</sys:String>
+    <sys:String x:Key="Ribbon.Script.Clear">スクリプトクリア</sys:String>
+    <sys:String x:Key="Ribbon.Script.Clear.Tooltip">全シーンのスクリプト（ナレーション）をクリアします</sys:String>
+    <sys:String x:Key="VM.Script.ClearConfirm">全シーンのスクリプトをクリアしますか？</sys:String>
+    <sys:String x:Key="VM.Script.ClearTitle">スクリプトクリア</sys:String>
+    <sys:String x:Key="VM.Script.Cleared">スクリプトをクリアしました ({0} シーン)</sys:String>
+    <sys:String x:Key="Ribbon.Subtitle.Clear">字幕クリア</sys:String>
+    <sys:String x:Key="Ribbon.Subtitle.Clear.Tooltip">全シーンの字幕テキストをクリアします</sys:String>
+    <sys:String x:Key="VM.Subtitle.ClearConfirm">全シーンの字幕をクリアしますか？</sys:String>
+    <sys:String x:Key="VM.Subtitle.ClearTitle">字幕クリア</sys:String>
+    <sys:String x:Key="VM.Subtitle.Cleared">字幕をクリアしました ({0} シーン)</sys:String>
     <sys:String x:Key="Ribbon.Scene.Add">シーン追加</sys:String>
     <sys:String x:Key="Ribbon.Scene.Remove">削除</sys:String>
     <sys:String x:Key="Ribbon.Scene.MoveUp">上へ</sys:String>

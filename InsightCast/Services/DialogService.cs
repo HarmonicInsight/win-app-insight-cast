@@ -6,6 +6,7 @@ using InsightCast.Core;
 using InsightCast.Models;
 using InsightCast.Views;
 using InsightCommon.License;
+using InsightCommon.TemplatePack;
 using InsightCommon.UI;
 using InsightCommon.Theme;
 
@@ -127,6 +128,10 @@ namespace InsightCast.Services
         {
             // InsightCommon 共通ライセンスダイアログを使用
             var licenseManager = new InsightLicenseManager("INMV", "Insight Training Studio");
+            using var contentPackManager = new ContentPackManager(
+                "INMV",
+                System.IO.Path.Combine(System.AppContext.BaseDirectory, "assets", "content-packs"),
+                "1.0.1");
             var dialog = new InsightLicenseDialog(new LicenseDialogOptions
             {
                 ProductCode = "INMV",
@@ -134,6 +139,7 @@ namespace InsightCast.Services
                 ThemeMode = InsightThemeMode.Light,
                 Locale = "ja",
                 LicenseManager = licenseManager,
+                ContentPackManager = contentPackManager,
                 Features = new[]
                 {
                     new FeatureDefinition("subtitle", LocalizationService.GetString("Dialog.Feature.Subtitle")),

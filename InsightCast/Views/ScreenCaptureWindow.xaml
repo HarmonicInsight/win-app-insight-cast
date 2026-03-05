@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         WindowStyle="None" AllowsTransparency="True" Topmost="True"
         ShowInTaskbar="False" Background="Transparent"
-        WindowState="Maximized" ResizeMode="NoResize"
+        WindowState="Normal" ResizeMode="NoResize"
         Cursor="Cross"
         KeyDown="Window_KeyDown"
         MouseLeftButtonDown="Canvas_MouseLeftButtonDown"
@@ -94,9 +94,9 @@
         </Style>
     </Window.Resources>
 
-    <Grid x:Name="RootGrid">
-        <!-- Dark overlay covering entire screen -->
-        <Canvas x:Name="OverlayCanvas" Background="#88000000"/>
+    <Grid x:Name="RootGrid" ClipToBounds="True">
+        <!-- Dark overlay covering entire screen (hidden until selection is made) -->
+        <Canvas x:Name="OverlayCanvas" Background="#88000000" Visibility="Collapsed"/>
 
         <!-- Selection rectangle (drawn in code) -->
         <Rectangle x:Name="SelectionRect" Stroke="#00AEFF" StrokeThickness="2"
@@ -115,7 +115,8 @@
         <Border x:Name="Toolbar" Visibility="Collapsed"
                 Background="#F5F5F5" CornerRadius="8" Padding="8"
                 HorizontalAlignment="Left" VerticalAlignment="Top"
-                BorderBrush="#DDD" BorderThickness="1">
+                BorderBrush="#DDD" BorderThickness="1"
+                MouseLeftButtonDown="Toolbar_MouseLeftButtonDown">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.3"/>
             </Border.Effect>
@@ -239,7 +240,7 @@
                 BorderBrush="#0078D4" BorderThickness="2"
                 Background="White">
             <TextBox x:Name="InlineTextBox"
-                     MinWidth="60" Height="Auto"
+                     MinWidth="60" MaxWidth="600" Height="Auto"
                      Background="Transparent" Foreground="#000000"
                      BorderThickness="0"
                      Padding="2,1" FontSize="18"

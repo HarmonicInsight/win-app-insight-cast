@@ -54,6 +54,9 @@ namespace InsightCast.Views
             if (version != null)
                 VersionLabel.Text = $"v{version.Major}.{version.Minor}.{version.Build}";
 
+            // Start hidden until theme is applied to avoid blue ribbon flash
+            Opacity = 0;
+
             Loaded += (_, _) =>
             {
                 // ── Phase 1: Essential UI setup (immediate) ────────────────
@@ -66,6 +69,9 @@ namespace InsightCast.Views
 
                 // Default to Video Generation tab
                 MainTabControl.SelectedIndex = 1;
+
+                // Show window after theme is fully applied
+                Opacity = 1;
 
                 // ── Phase 2: Deferred initialization (background/low priority) ──
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, async () =>
@@ -134,11 +140,11 @@ namespace InsightCast.Views
 
         private void OnScreenCaptureRequested()
         {
-            // Minimize the main window so it doesn't appear in the capture
-            var prevState = WindowState;
-            WindowState = WindowState.Minimized;
+            // Hide the main window so it doesn't appear in the capture.
+            // Using Hide/Show instead of Minimize to preserve other windows' Z-order.
+            Hide();
 
-            // Small delay to let the window minimize
+            // Small delay to let the window fully hide
             Dispatcher.InvokeAsync(async () =>
             {
                 await System.Threading.Tasks.Task.Delay(300);
@@ -147,7 +153,7 @@ namespace InsightCast.Views
                 captureWindow.ShowDialog();
 
                 // Restore main window
-                WindowState = prevState;
+                Show();
                 Activate();
 
                 // Handle result

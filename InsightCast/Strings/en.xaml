@@ -163,6 +163,8 @@
     <sys:String x:Key="Export.Settings">Export Settings</sys:String>
     <sys:String x:Key="Export.Speaker">Speaker:</sys:String>
     <sys:String x:Key="Export.Resolution">Resolution:</sys:String>
+    <sys:String x:Key="Export.DefaultSpeaker">Default Speaker:</sys:String>
+    <sys:String x:Key="Export.DefaultSpeaker.Tooltip">Select the default speaker for all scenes. Can be overridden per scene.</sys:String>
     <sys:String x:Key="Export.Res.Portrait">1080x1920 (Portrait)</sys:String>
     <sys:String x:Key="Export.Res.Landscape">1920x1080 (Landscape)</sys:String>
     <sys:String x:Key="Export.BGM.Settings">BGM Settings...</sys:String>
@@ -583,6 +585,8 @@
     <sys:String x:Key="VM.Pptx.Result">Import Result</sys:String>
     <sys:String x:Key="VM.Pptx.Imported">Imported from PPTX ({0} slides, {1} images): {2}</sys:String>
     <sys:String x:Key="VM.Pptx.NotesOnly">Imported notes from {0} slides.\nPowerPoint installation required for slide images.</sys:String>
+    <sys:String x:Key="VM.Pptx.IncludeSubtitle">Import slide text as subtitles?&#x0a;(May cause misalignment with long text)</sys:String>
+    <sys:String x:Key="VM.Pptx.IncludeSubtitle.Title">Subtitle Import Option</sys:String>
     <sys:String x:Key="VM.Pptx.Error">PPTX import failed:\n{0}</sys:String>
     <sys:String x:Key="VM.Pptx.Failed">Import Error</sys:String>
 
@@ -1078,7 +1082,7 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="VM.VoiceVox.Guide">VOICEVOX: ✗ Not connected — Please start VOICEVOX engine and restart the app</sys:String>
 
     <!-- Marketing subtitle -->
-    <sys:String x:Key="App.Subtitle">Create training videos faster with AI.</sys:String>
+    <sys:String x:Key="App.Subtitle">Turn dormant documents into training videos.</sys:String>
 
     <!-- AI Chat Panel -->
     <sys:String x:Key="Chat.Title">AI Assistant</sys:String>
@@ -1159,6 +1163,7 @@ To get started, try one of these:
     <sys:String x:Key="Ai.SaveAsPrompt">Save as Prompt</sys:String>
     <sys:String x:Key="Ai.Result">Result</sys:String>
     <sys:String x:Key="Ai.Processing">Processing...</sys:String>
+    <sys:String x:Key="Ai.AiSettings">AI Settings</sys:String>
     <sys:String x:Key="Ai.ApiKeySettings">API Key Settings</sys:String>
     <sys:String x:Key="Ai.EnterApiKey">Enter your Claude API key</sys:String>
     <sys:String x:Key="Ai.SetBtn">Set</sys:String>
@@ -1202,6 +1207,7 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Help.Section.AIAssistant">AI Assistant</sys:String>
 
     <!-- Ribbon UI -->
+    <sys:String x:Key="Ribbon.Tab.File">File</sys:String>
     <sys:String x:Key="Ribbon.Tab.Home">Home</sys:String>
     <sys:String x:Key="Ribbon.Tab.Help">Help</sys:String>
     <sys:String x:Key="Ribbon.Group.Scene">Scene</sys:String>
@@ -1222,6 +1228,17 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.File.ImportJson">Import JSON</sys:String>
     <sys:String x:Key="Ribbon.File.BatchExport">JSON Export</sys:String>
     <sys:String x:Key="Ribbon.File.Exit">Exit</sys:String>
+    <sys:String x:Key="Ribbon.Group.File">File</sys:String>
+    <sys:String x:Key="Ribbon.Script.Clear">Clear Scripts</sys:String>
+    <sys:String x:Key="Ribbon.Script.Clear.Tooltip">Clear narration scripts from all scenes</sys:String>
+    <sys:String x:Key="VM.Script.ClearConfirm">Clear scripts from all scenes?</sys:String>
+    <sys:String x:Key="VM.Script.ClearTitle">Clear Scripts</sys:String>
+    <sys:String x:Key="VM.Script.Cleared">Scripts cleared ({0} scenes)</sys:String>
+    <sys:String x:Key="Ribbon.Subtitle.Clear">Clear Subtitles</sys:String>
+    <sys:String x:Key="Ribbon.Subtitle.Clear.Tooltip">Clear subtitle text from all scenes</sys:String>
+    <sys:String x:Key="VM.Subtitle.ClearConfirm">Clear subtitles from all scenes?</sys:String>
+    <sys:String x:Key="VM.Subtitle.ClearTitle">Clear Subtitles</sys:String>
+    <sys:String x:Key="VM.Subtitle.Cleared">Subtitles cleared ({0} scenes)</sys:String>
     <sys:String x:Key="Ribbon.Scene.Add">Add Scene</sys:String>
     <sys:String x:Key="Ribbon.Scene.Remove">Remove</sys:String>
     <sys:String x:Key="Ribbon.Scene.MoveUp">Up</sys:String>

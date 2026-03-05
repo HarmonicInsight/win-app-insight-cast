@@ -236,8 +236,6 @@
                     </syncfusion:BackstageTabItem>
                     <syncfusion:BackStageSeparator/>
                     <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.ImportPptx}" Click="BackStageImportPptx_Click"/>
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.ImportJson}" Click="BackStageImportJson_Click"/>
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.BatchExport}" Click="BackStageBatchExport_Click"/>
                     <syncfusion:BackStageSeparator/>
                     <syncfusion:BackstageTabItem Header="{DynamicResource Backstage.Language}">
                         <Grid Margin="16,12">
@@ -266,6 +264,38 @@
 
             <!-- Home Tab — 教育動画ワークフロー順に再編成 -->
             <syncfusion:RibbonTab Caption="{DynamicResource Ribbon.Tab.Home}">
+
+                <!-- 0. ファイルグループ: プロジェクトの保存・読み込み -->
+                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.File}" IsLauncherButtonVisible="False">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.New}"
+                            ToolTip="{DynamicResource Ribbon.File.New}"
+                            Command="{Binding NewProjectCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.Open}"
+                            ToolTip="{DynamicResource Ribbon.File.Open}"
+                            Command="{Binding OpenProjectCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.Save}"
+                            ToolTip="{DynamicResource Ribbon.File.Save}"
+                            Command="{Binding SaveProjectCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.SaveAs}"
+                            ToolTip="{DynamicResource Ribbon.File.SaveAs}"
+                            Command="{Binding SaveProjectAsCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE792;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                </syncfusion:RibbonBar>
 
                 <!-- 1. 素材・構成グループ: 教育コンテンツの骨格を作る -->
                 <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Structure}" IsLauncherButtonVisible="False">
@@ -308,6 +338,13 @@
 
                 <!-- 2. 制作グループ: ナレーション・字幕・BGM -->
                 <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Production}" IsLauncherButtonVisible="False">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.ImportPptx}"
+                            ToolTip="{DynamicResource Ribbon.File.ImportPptx}"
+                            Command="{Binding ImportPptxCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#C04000"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Export.Preview}"
                             ToolTip="{DynamicResource Ribbon.Export.Preview.Tooltip}"
                             Command="{Binding PreviewSceneCommand}" SizeForm="Small">
@@ -334,6 +371,20 @@
                             Click="AIPromptExecute_Click" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE8D4;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#9C27B0"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Script.Clear}"
+                            ToolTip="{DynamicResource Ribbon.Script.Clear.Tooltip}"
+                            Command="{Binding ClearAllScriptsCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE894;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#CC0000"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Subtitle.Clear}"
+                            ToolTip="{DynamicResource Ribbon.Subtitle.Clear.Tooltip}"
+                            Command="{Binding ClearAllSubtitlesCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xED62;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#CC0000"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
@@ -427,6 +478,12 @@
                                 <ComboBoxItem Content="{DynamicResource Resolution.Reels}" Tag="1080x1920"/>
                                 <ComboBoxItem Content="{DynamicResource Resolution.TikTok}" Tag="1080x1920"/>
                             </ComboBox>
+                            <TextBlock Text="{DynamicResource Export.DefaultSpeaker}" FontSize="10"
+                                       Foreground="{DynamicResource TextTertiary}" Margin="0,8,0,4"/>
+                            <ComboBox ItemsSource="{Binding ExportSpeakers}"
+                                      SelectedIndex="{Binding SelectedExportSpeakerIndex}"
+                                      FontSize="11"
+                                      ToolTip="{DynamicResource Export.DefaultSpeaker.Tooltip}"/>
                         </StackPanel>
                     </Border>
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
@@ -444,6 +501,12 @@
                              ItemsSource="{Binding SceneItems}"
                              SelectedIndex="{Binding SelectedSceneIndex}"
                              HorizontalContentAlignment="Stretch">
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="{DynamicResource Ribbon.Scene.Remove}"
+                                          Command="{Binding RemoveSceneCommand}"/>
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0,1">

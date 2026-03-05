@@ -615,6 +615,8 @@ namespace InsightCast.ViewModels
         public ICommand AIGenerateProjectCommand { get; }
         public ICommand ScreenCaptureCommand { get; }
         public ICommand AddCtaEndcardCommand { get; }
+        public ICommand ClearAllScriptsCommand { get; }
+        public ICommand ClearAllSubtitlesCommand { get; }
 
         #endregion
 
@@ -683,6 +685,8 @@ namespace InsightCast.ViewModels
             AIGenerateProjectCommand = new RelayCommand(OpenAIGenerateProject);
             ScreenCaptureCommand = new RelayCommand(StartScreenCapture);
             AddCtaEndcardCommand = new RelayCommand(AddCtaEndcard);
+            ClearAllScriptsCommand = new RelayCommand(ClearAllScripts);
+            ClearAllSubtitlesCommand = new RelayCommand(ClearAllSubtitles);
 
             // Auto-save every 5 minutes
             _autoSaveTimer = new Timer(_ => AutoSave(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
@@ -1929,6 +1933,48 @@ namespace InsightCast.ViewModels
             _logger.Log(LocalizationService.GetString("VM.Project.Created"));
         }
 
+        private void ClearAllScripts()
+        {
+            if (_dialogService == null) return;
+            if (!_dialogService.ShowConfirmation(
+                LocalizationService.GetString("VM.Script.ClearConfirm"),
+                LocalizationService.GetString("VM.Script.ClearTitle")))
+                return;
+
+            int count = 0;
+            foreach (var scene in _project.Scenes)
+            {
+                if (!string.IsNullOrEmpty(scene.NarrationText))
+                {
+                    scene.NarrationText = string.Empty;
+                    count++;
+                }
+            }
+            RefreshSceneList();
+            _logger.Log(LocalizationService.GetString("VM.Script.Cleared", count));
+        }
+
+        private void ClearAllSubtitles()
+        {
+            if (_dialogService == null) return;
+            if (!_dialogService.ShowConfirmation(
+                LocalizationService.GetString("VM.Subtitle.ClearConfirm"),
+                LocalizationService.GetString("VM.Subtitle.ClearTitle")))
+                return;
+
+            int count = 0;
+            foreach (var scene in _project.Scenes)
+            {
+                if (!string.IsNullOrEmpty(scene.SubtitleText))
+                {
+                    scene.SubtitleText = null;
+                    count++;
+                }
+            }
+            RefreshSceneList();
+            _logger.Log(LocalizationService.GetString("VM.Subtitle.Cleared", count));
+        }
+
         private void OpenProject()
         {
             if (_dialogService == null) return;
@@ -2076,6 +2122,11 @@ namespace InsightCast.ViewModels
 
             if (path == null) return;
 
+            // Ask whether to include slide text as subtitles (default: No)
+            bool includeSubtitle = _dialogService.ShowConfirmation(
+                LocalizationService.GetString("VM.Pptx.IncludeSubtitle"),
+                LocalizationService.GetString("VM.Pptx.IncludeSubtitle.Title"));
+
             try
             {
                 _logger.Log(LocalizationService.GetString("VM.Pptx.Started", path));
@@ -2102,7 +2153,7 @@ namespace InsightCast.ViewModels
                     var scene = new Scene
                     {
                         NarrationText = slide.Notes,
-                        SubtitleText = string.IsNullOrWhiteSpace(slide.SlideText) ? null : slide.SlideText
+                        SubtitleText = includeSubtitle && !string.IsNullOrWhiteSpace(slide.SlideText) ? slide.SlideText : null
                     };
                     if (!string.IsNullOrEmpty(slide.ImagePath) && File.Exists(slide.ImagePath))
                     {

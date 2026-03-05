@@ -22,6 +22,7 @@ namespace InsightCast.ViewModels;
 public class ChatPanelViewModel : ViewModelBase
 {
     private readonly IClaudeService _claude;
+    internal IClaudeService ClaudeService => _claude;
     private readonly VideoToolExecutor _toolExecutor;
     private readonly Func<string> _getLang;
     private readonly Config _config;
@@ -317,6 +318,11 @@ public class ChatPanelViewModel : ViewModelBase
         set { } // WPF binding compatibility
     }
 
+    /// <summary>
+    /// AI 設定ダイアログを開くときに View 側で設定するコールバック。
+    /// </summary>
+    public Action? OpenAiSettingsRequested { get; set; }
+
     // ── Cancellation ──
     private CancellationTokenSource? _cts;
 
@@ -351,6 +357,9 @@ public class ChatPanelViewModel : ViewModelBase
 
     // ── Prompt Editor Dialog ──
     public ICommand OpenPromptEditorCommand { get; }
+
+    // ── AI Settings Dialog ──
+    public ICommand OpenAiSettingsCommand { get; }
 
     public ChatPanelViewModel(
         IClaudeService claude,
@@ -441,6 +450,8 @@ public class ChatPanelViewModel : ViewModelBase
         DuplicatePresetCommand = new RelayCommand(o => DuplicatePreset(o as PresetPromptVm));
 
         OpenPromptEditorCommand = new RelayCommand(_ => OpenPromptEditor());
+
+        OpenAiSettingsCommand = new RelayCommand(_ => OpenAiSettingsRequested?.Invoke());
 
         // Build prompt groups
         BuildPresetPromptGroups();

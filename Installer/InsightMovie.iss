@@ -4,11 +4,11 @@
 ; Build with:  ISCC.exe InsightMovie.iss
 ; Or use:      .\build.ps1
 
-#define MyAppName "InsightMovie"
+#define MyAppName "Insight Training Studio"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "InsightMovie"
-#define MyAppExeName "InsightMovie.exe"
-#define MyAppURL "https://github.com/HarmonicInsight/app-insight-movie-gen-win-C"
+#define MyAppPublisher "HARMONIC insight"
+#define MyAppExeName "InsightCast.exe"
+#define MyAppURL "https://github.com/HarmonicInsight/win-app-insight-cast"
 #define PublishDir "..\publish"
 
 [Setup]
@@ -21,7 +21,7 @@ AppSupportURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputDir=..\Output
-OutputBaseFilename=InsightMovie_Setup_{#MyAppVersion}
+OutputBaseFilename=InsightTrainingStudio_Setup_{#MyAppVersion}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
@@ -103,7 +103,7 @@ begin
   VoicevoxPage := CreateCustomPage(
     wpSelectDir,
     'VOICEVOX エンジンの確認',
-    'InsightMovie はナレーション音声の生成に VOICEVOX を使用します。');
+    'Insight Training Studio はナレーション音声の生成に VOICEVOX を使用します。');
 
   VoicevoxDescLabel := TNewStaticText.Create(VoicevoxPage);
   VoicevoxDescLabel.Parent := VoicevoxPage.Surface;
@@ -115,7 +115,7 @@ begin
   VoicevoxDescLabel.Height := 60;
   VoicevoxDescLabel.Caption :=
     'VOICEVOX はテキスト読み上げソフトウェアです。' + #13#10 +
-    'InsightMovie の音声生成機能を使うには VOICEVOX のインストールが必要です。' + #13#10 +
+    'Insight Training Studio の音声生成機能を使うには VOICEVOX のインストールが必要です。' + #13#10 +
     '（動画生成のみであれば VOICEVOX なしでも利用可能です）';
 
   VoicevoxStatusLabel := TNewStaticText.Create(VoicevoxPage);

@@ -109,40 +109,107 @@ namespace InsightCast.Views
         [DllImport("gdi32.dll")]
         private static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetThreadDpiAwarenessContext(IntPtr dpiContext);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromPoint(POINT pt, uint dwFlags);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
+        [DllImport("shcore.dll")]
+        private static extern int GetDpiForMonitor(IntPtr hMonitor, int dpiType, out uint dpiX, out uint dpiY);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT { public int X, Y; }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT { public int Left, Top, Right, Bottom; }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct MONITORINFO
+        {
+            public int cbSize;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public uint dwFlags;
+        }
+
+        private static readonly IntPtr DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = new(-2);
+        private static readonly IntPtr HWND_TOPMOST = new(-1);
+        private const uint SWP_SHOWWINDOW = 0x0040;
+        private const uint MONITOR_DEFAULTTONEAREST = 2;
+
         private const int LOGPIXELSX = 88;
         private const int LOGPIXELSY = 90;
 
+        private const int WM_DPICHANGED = 0x02E0;
+
+        // Virtual screen bounds in physical pixels
+        private int _vsLeft, _vsTop, _vsWidth, _vsHeight;
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            InitializeDpiScale();
-            CaptureFullScreen();
+            // Block WM_DPICHANGED to prevent WPF from rescaling when cursor crosses monitors
+            if (HwndSource.FromVisual(this) is HwndSource hwndSource)
+                hwndSource.AddHook(WndProc);
+
+            CaptureVirtualScreen();
+            PositionWindowOverVirtualScreen();
             SetOverlayBackground();
-        }
 
-        private void InitializeDpiScale()
-        {
-            var source = PresentationSource.FromVisual(this);
-            if (source?.CompositionTarget != null)
+            // Calculate scale from WPF DIPs to image pixels AFTER window is positioned
+            // This ensures all coordinate conversions work correctly with Stretch.Fill
+            Dispatcher.InvokeAsync(() =>
             {
-                _dpiScaleX = source.CompositionTarget.TransformToDevice.M11;
-                _dpiScaleY = source.CompositionTarget.TransformToDevice.M22;
-            }
+                if (ActualWidth > 0 && ActualHeight > 0)
+                {
+                    _dpiScaleX = _vsWidth / ActualWidth;
+                    _dpiScaleY = _vsHeight / ActualHeight;
+                }
+            }, System.Windows.Threading.DispatcherPriority.Loaded);
         }
 
-        private void CaptureFullScreen()
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_DPICHANGED)
+            {
+                handled = true;
+                return IntPtr.Zero;
+            }
+            return IntPtr.Zero;
+        }
+
+        private void PositionWindowOverVirtualScreen()
+        {
+            // Cover all monitors using SetWindowPos with physical pixel coordinates
+            // This avoids WindowState=Maximized which triggers DPI context changes
+            var hwnd = new WindowInteropHelper(this).Handle;
+            SetWindowPos(hwnd, HWND_TOPMOST, _vsLeft, _vsTop, _vsWidth, _vsHeight, SWP_SHOWWINDOW);
+        }
+
+        private void CaptureVirtualScreen()
         {
             try
             {
-                // DPIスケールを考慮した画面サイズを取得
-                int left = (int)(SystemParameters.VirtualScreenLeft * _dpiScaleX);
-                int top = (int)(SystemParameters.VirtualScreenTop * _dpiScaleY);
-                int width = (int)(SystemParameters.VirtualScreenWidth * _dpiScaleX);
-                int height = (int)(SystemParameters.VirtualScreenHeight * _dpiScaleY);
+                // Get virtual screen bounds via Win32 (physical pixels, DPI-independent)
+                GetCursorPos(out _); // ensure user32 is loaded
+                _vsLeft = GetSystemMetrics(SM_XVIRTUALSCREEN);
+                _vsTop = GetSystemMetrics(SM_YVIRTUALSCREEN);
+                _vsWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                _vsHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-                _screenBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                _screenBitmap = new Bitmap(_vsWidth, _vsHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 using (var g = Graphics.FromImage(_screenBitmap))
                 {
-                    g.CopyFromScreen(left, top, 0, 0, new Size(width, height));
+                    g.CopyFromScreen(_vsLeft, _vsTop, 0, 0, new Size(_vsWidth, _vsHeight));
                 }
 
                 _screenSource = BitmapToSource(_screenBitmap);
@@ -154,11 +221,19 @@ namespace InsightCast.Views
             }
         }
 
+        [DllImport("user32.dll")]
+        private static extern int GetSystemMetrics(int nIndex);
+        private const int SM_XVIRTUALSCREEN = 76;
+        private const int SM_YVIRTUALSCREEN = 77;
+        private const int SM_CXVIRTUALSCREEN = 78;
+        private const int SM_CYVIRTUALSCREEN = 79;
+
         private void SetOverlayBackground()
         {
             if (_screenSource == null) return;
 
-            var brush = new ImageBrush(_screenSource) { Stretch = Stretch.None };
+            // Use Stretch.Fill to fill the window regardless of DPI differences between monitors
+            var brush = new ImageBrush(_screenSource) { Stretch = Stretch.Fill };
             RootGrid.Background = brush;
         }
 
@@ -166,8 +241,17 @@ namespace InsightCast.Views
 
         #region Selection
 
+        private void Toolbar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Stop mouse events from propagating to the capture canvas
+            e.Handled = true;
+        }
+
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            // Ignore clicks on the toolbar (prevents selection restart when clicking tools)
+            if (Toolbar.IsVisible && Toolbar.IsMouseOver) return;
+
             var pos = e.GetPosition(RootGrid);
             var scaledPos = ScaleToScreen(pos);
 
@@ -383,6 +467,7 @@ namespace InsightCast.Views
                 DimensionLabel.Visibility = Visibility.Collapsed;
                 Toolbar.Visibility = Visibility.Collapsed;
                 OverlayCanvas.Clip = null;
+                OverlayCanvas.Visibility = Visibility.Collapsed;
                 SetOverlayBackground();
                 Cursor = Cursors.Cross;
             }
@@ -493,6 +578,7 @@ namespace InsightCast.Views
                 new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)),
                 new RectangleGeometry(rect));
 
+            OverlayCanvas.Visibility = Visibility.Visible;
             OverlayCanvas.Clip = geometry;
         }
 
@@ -1360,7 +1446,7 @@ namespace InsightCast.Views
             }
 
             var source = BitmapToSource(composed);
-            RootGrid.Background = new ImageBrush(source) { Stretch = Stretch.None };
+            RootGrid.Background = new ImageBrush(source) { Stretch = Stretch.Fill };
         }
 
         private static BitmapSource BitmapToSource(Bitmap bitmap)

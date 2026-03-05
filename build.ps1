@@ -29,12 +29,12 @@ $installerDir = "$PSScriptRoot\Installer"
 $toolsDir     = "$PSScriptRoot\_build_tools"
 
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  InsightCast Build Script" -ForegroundColor Cyan
+Write-Host "  Insight Training Studio Build Script" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 # ── Step 1: dotnet publish ────────────────────────────────────────────
 Write-Host ""
-Write-Host "[1/5] Publishing InsightCast..." -ForegroundColor Yellow
+Write-Host "[1/5] Publishing Insight Training Studio..." -ForegroundColor Yellow
 
 if (Test-Path $publishDir) {
     Remove-Item $publishDir -Recurse -Force

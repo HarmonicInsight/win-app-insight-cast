@@ -56,6 +56,12 @@
                             <TextBlock Text="&#xE8A7;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
                         </Button>
                         <Button Style="{StaticResource SmallButton}"
+                                Command="{Binding OpenAiSettingsCommand}"
+                                ToolTip="{DynamicResource Ai.AiSettings}"
+                                FontSize="14" Padding="4,2" Margin="0,0,2,0">
+                            <TextBlock Text="&#xE912;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                        </Button>
+                        <Button Style="{StaticResource SmallButton}"
                                 Command="{Binding ToggleApiKeyPanelCommand}"
                                 ToolTip="{DynamicResource Ai.ApiKeySettings}"
                                 FontSize="14" Padding="4,2" Margin="0,0,2,0">
