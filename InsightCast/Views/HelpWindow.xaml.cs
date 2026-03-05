@@ -537,12 +537,24 @@ public partial class HelpWindow : Window
                 <li><strong>ライセンス管理</strong> — ライセンスの確認・アクティベート</li>
             </ul>
 
-            <h2>メニューバー</h2>
+            <h2>リボンツールバー</h2>
+            <p>画面上部のリボンには、教育動画作成のワークフローに沿った4つのグループがあります。</p>
+            <table>
+                <tr><th>グループ</th><th>機能</th></tr>
+                <tr><td><strong>素材・構成</strong></td><td>シーンの追加・削除・並び替え、画面キャプチャ</td></tr>
+                <tr><td><strong>制作</strong></td><td>プレビュー、BGM、CTA（行動喚起）、AI実行</td></tr>
+                <tr><td><strong>書き出し</strong></td><td>動画書き出し、出力フォルダを開く</td></tr>
+                <tr><td><strong>テンプレート</strong></td><td>プロジェクトテンプレート（新規作成時に選択）</td></tr>
+            </table>
+
+            <h2>バックステージ（ファイルメニュー）</h2>
             <ul>
-                <li><strong>ファイル</strong> — 新規、開く、最近使ったファイル、保存、別名保存、PPTX取込、JSON入出力、終了</li>
-                <li><strong>編集</strong> — シーンの追加・削除・並び替え</li>
-                <li><strong>AI編集</strong> — AI によるプロジェクト自動生成、OpenAI 設定</li>
-                <li><strong>ヘルプ</strong> — ヘルプ、チュートリアル、ライセンス管理、利用規約、バージョン情報</li>
+                <li><strong>新規</strong> — 新しいプロジェクトを作成</li>
+                <li><strong>開く / 最近使ったファイル</strong> — 保存済みプロジェクト (.icproj) を開く</li>
+                <li><strong>保存 / 別名保存</strong> — プロジェクトを保存</li>
+                <li><strong>PPTX取込</strong> — PowerPoint ファイルを取り込み</li>
+                <li><strong>ライセンス管理</strong> — ライセンスの確認・アクティベート</li>
+                <li><strong>終了</strong> — アプリケーションを終了</li>
             </ul>
 
             <h2>「企画・制作」タブ</h2>
@@ -746,14 +758,23 @@ public partial class HelpWindow : Window
                 <li><strong>JSONモード</strong> — JSON 形式のシーン構成を貼り付けて一括適用</li>
             </ul>
 
-            <h2>AI プロジェクト生成</h2>
-            <p>メニュー「AI編集」→「プロジェクト生成」で、テーマや目的を入力するだけで AI がシーン構成・ナレーション原稿を自動生成します。
-            生成結果はそのまま動画制作に活用できます。</p>
+            <h2>AI によるプロジェクト生成</h2>
+            <p>AI アシスタント（画面右上の「AI」ボタン）を使って、テーマや目的を入力するだけでシーン構成・ナレーション原稿を自動生成できます。</p>
+
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                <strong>AI アシスタントを開く</strong> — 画面右上の「AI」ボタンをクリック
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                <strong>プリセットを選択</strong> — 「スライドから教育動画自動作成」などのプリセットを選択
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                <strong>実行</strong> — AI がシーン構成・ナレーションを自動生成
+            </div></div>
 
             <div class="note">
                 <span class="note-label">AI機能について:</span>
-                AI プロジェクト生成を使用するには、OpenAI の API キーが必要です。
-                メニュー「AI編集」→「OpenAI設定」から設定してください。
+                AI 機能を使用するには、Anthropic (Claude) の API キーが必要です。
+                AI パネル右上の 🔑 ボタンから設定してください。
             </div>
 
             <h2>サムネイルジェネレーター</h2>
@@ -1061,6 +1082,39 @@ public partial class HelpWindow : Window
                 <tr><td><strong>advice</strong>（アドバイス）</td><td>AI が分析結果やアドバイスをテキストで返します。データは変更されません</td><td>構成チェック、教育効果評価、タイトル提案など</td></tr>
             </table>
 
+            <h2>AI実行（ツール対応プロンプト）</h2>
+            <p>リボンの「制作」グループにある<strong>「AI実行」</strong>ボタンから、ツール対応のAIプロンプトを選択して実行できます。
+            この機能は、AIが14種類の専用ツールを使ってシーンを自動操作する強力な機能です。</p>
+
+            <h3>使い方</h3>
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                <strong>AI実行ボタン</strong> — リボンの「制作」グループにある「AI実行」をクリック
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                <strong>プロンプト選択</strong> — ダイアログから実行したいプロンプトを選択
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                <strong>プロンプト確認</strong> — 「プロンプト確認」ボタンでAIアシスタントパネルに反映され、自動実行開始
+            </div></div>
+
+            <h3>利用可能なツール</h3>
+            <p>AI はシーンを操作するために以下のツールを使用できます。</p>
+            <table>
+                <tr><th>ツール</th><th>機能</th></tr>
+                <tr><td>get_scenes</td><td>全シーンの情報を取得</td></tr>
+                <tr><td>set_multiple_scenes</td><td>複数シーンを一括更新（ナレーション・字幕）</td></tr>
+                <tr><td>add_scene</td><td>新しいシーンを追加</td></tr>
+                <tr><td>delete_scene</td><td>指定シーンを削除</td></tr>
+                <tr><td>reorder_scenes</td><td>シーンの順序を変更</td></tr>
+            </table>
+
+            <div class="tip">
+                <span class="tip-label">自動適用と提案:</span>
+                各プロンプトには「自動適用」または「提案」モードが設定されています。
+                自動適用モードのプロンプトは、AIが直接シーンを編集します。
+                提案モードでは、AIが推奨する内容をテキストで提示し、ユーザーが確認してから適用できます。
+            </div>
+
             <h2>サムネイル自動生成</h2>
             <p>AI が動画の内容を分析し、最適なサムネイル画像（1280×720px）を自動生成します。</p>
             <ol>
@@ -1228,12 +1282,24 @@ public partial class HelpWindow : Window
                 <li><strong>License Manager</strong> — View and activate license</li>
             </ul>
 
-            <h2>Menu Bar</h2>
+            <h2>Ribbon Toolbar</h2>
+            <p>The ribbon at the top of the window has four groups organized by training video workflow.</p>
+            <table>
+                <tr><th>Group</th><th>Features</th></tr>
+                <tr><td><strong>Structure</strong></td><td>Add/remove/reorder scenes, screen capture</td></tr>
+                <tr><td><strong>Production</strong></td><td>Preview, BGM, CTA (Call-to-Action), AI Execute</td></tr>
+                <tr><td><strong>Export</strong></td><td>Generate video, open output folder</td></tr>
+                <tr><td><strong>Templates</strong></td><td>Project templates (available on new project)</td></tr>
+            </table>
+
+            <h2>Backstage (File Menu)</h2>
             <ul>
-                <li><strong>File</strong> — New, Open, Recent Files, Save, Save As, PPTX Import, JSON Import/Export, Exit</li>
-                <li><strong>Edit</strong> — Add/Remove/Reorder Scenes</li>
-                <li><strong>AI Edit</strong> — AI project generation, OpenAI settings</li>
-                <li><strong>Help</strong> — Help, Tutorial, License Manager, Terms, About</li>
+                <li><strong>New</strong> — Create a new project</li>
+                <li><strong>Open / Recent Files</strong> — Open a saved project (.icproj)</li>
+                <li><strong>Save / Save As</strong> — Save the project</li>
+                <li><strong>Import PPTX</strong> — Import a PowerPoint file</li>
+                <li><strong>License Manager</strong> — View and activate license</li>
+                <li><strong>Exit</strong> — Close the application</li>
             </ul>
 
             <h2>Planning Tab</h2>
@@ -1366,8 +1432,23 @@ public partial class HelpWindow : Window
             <p>Edit scene titles and narration scripts. Use JSON mode for importing AI-generated structures.</p>
 
             <h2>AI Project Generation</h2>
-            <p>Go to "AI Edit" &gt; "Generate Project" to have AI automatically create scene structures and narration scripts from a theme or topic.
-            Requires an OpenAI API key. Set it via "AI Edit" &gt; "OpenAI Settings" in the menu.</p>
+            <p>Use the AI Assistant (click the "AI" button at top-right) to automatically create scene structures and narration scripts from a theme or topic.</p>
+
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                <strong>Open AI Assistant</strong> — Click the "AI" button at top-right
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                <strong>Select a preset</strong> — Choose "Auto-create training video from slides" or similar preset
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                <strong>Execute</strong> — AI automatically generates scene structure and narration
+            </div></div>
+
+            <div class="note">
+                <span class="note-label">Note:</span>
+                AI features require an Anthropic (Claude) API key.
+                Click the 🔑 button at the top-right of the AI panel to configure it.
+            </div>
 
             <h2>Thumbnail Generator</h2>
             <p>Create thumbnail images (1280x720px) with color patterns, text, and background images.</p>
@@ -1621,6 +1702,39 @@ public partial class HelpWindow : Window
                 <tr><td><strong>check</strong> (Auto-execute)</td><td>AI uses tools to directly modify scene narration, subtitles, thumbnails, etc.</td><td>Subtitle generation, narration setup, tone adjustment</td></tr>
                 <tr><td><strong>advice</strong> (Advisory)</td><td>AI returns analysis and suggestions as text. No data is modified.</td><td>Structure check, educational evaluation, title suggestions</td></tr>
             </table>
+
+            <h2>AI Execute (Tool-Enabled Prompts)</h2>
+            <p>The <strong>"AI Execute"</strong> button in the Production ribbon group lets you select and run tool-enabled AI prompts.
+            This feature enables AI to automatically control scenes using 14 specialized tools.</p>
+
+            <h3>How to Use</h3>
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                <strong>AI Execute Button</strong> — Click "AI Execute" in the Production ribbon group
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                <strong>Select Prompt</strong> — Choose the prompt you want to run from the dialog
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                <strong>Select Prompt</strong> — Click "Select Prompt" to load it into the AI Assistant panel and start execution
+            </div></div>
+
+            <h3>Available Tools</h3>
+            <p>AI can use the following tools to manipulate scenes:</p>
+            <table>
+                <tr><th>Tool</th><th>Function</th></tr>
+                <tr><td>get_scenes</td><td>Get information about all scenes</td></tr>
+                <tr><td>set_multiple_scenes</td><td>Update multiple scenes at once (narration, subtitles)</td></tr>
+                <tr><td>add_scene</td><td>Add a new scene</td></tr>
+                <tr><td>delete_scene</td><td>Delete a specific scene</td></tr>
+                <tr><td>reorder_scenes</td><td>Change scene order</td></tr>
+            </table>
+
+            <div class="tip">
+                <span class="tip-label">Auto-apply vs Advisory:</span>
+                Each prompt is marked as either "Auto-apply" or "Advisory" mode.
+                Auto-apply prompts directly edit scenes through AI tools.
+                Advisory prompts present recommendations as text, letting you review before applying.
+            </div>
 
             <h2>Thumbnail Auto-Generation</h2>
             <p>AI analyzes your video content and automatically generates optimal thumbnail images (1280×720px).</p>
