@@ -235,84 +235,83 @@
 
             <!-- Background Settings -->
             <Border Style="{StaticResource CardBorder}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="{DynamicResource Thumbnail.Background}" FontSize="11"
-                               Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="1" Text="{Binding ThumbnailBgFileName}"
-                               VerticalAlignment="Center" FontSize="10"
-                               Foreground="{DynamicResource TextSecondary}"/>
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Content="{DynamicResource Common.Browse.Short}" Padding="6,2" FontSize="10"
-                                Command="{Binding SelectThumbnailBgCommand}"
-                                ToolTip="{DynamicResource Thumbnail.BgBrowse.Tooltip}"/>
-                        <Button Content="×" Padding="4,2" Margin="2,0,0,0" FontSize="10"
-                                Command="{Binding ClearThumbnailBgCommand}"
-                                ToolTip="{DynamicResource Thumbnail.BgClear.Tooltip}"/>
-                    </StackPanel>
-                    <Button x:Name="AiImageBtn" Grid.Column="4" Content="AI" Padding="8,2" Margin="4,0,0,0"
-                            FontSize="10" FontWeight="Bold"
-                            ToolTip="AI で背景画像を生成"
-                            Click="AiImageBtn_Click"/>
-                    <ToggleButton x:Name="BgColorToggle" Grid.Column="3" Width="32" Height="32" Margin="8,0,0,0"
-                                  BorderThickness="1" BorderBrush="#666" Padding="0"
-                                  ToolTip="{DynamicResource Thumbnail.BgColor.Tooltip}">
-                        <Border Width="24" Height="24" CornerRadius="2"
-                                Background="{Binding SelectedBgColorBrush}"/>
-                    </ToggleButton>
-                    <Popup IsOpen="{Binding IsChecked, ElementName=BgColorToggle}" StaysOpen="False"
-                           PlacementTarget="{Binding ElementName=BgColorToggle}" Placement="Bottom">
-                        <Border Background="{DynamicResource BgCard}" BorderBrush="#555" BorderThickness="1"
-                                CornerRadius="4" Padding="4">
-                            <ItemsControl ItemsSource="{Binding ColorPalette}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate><UniformGrid Columns="10"/></ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Width="20" Height="20" Margin="1" CornerRadius="2" Cursor="Hand"
-                                                Background="{Binding Brush}" BorderThickness="1" BorderBrush="#444"
-                                                MouseLeftButtonDown="BgColorPalette_Click" Tag="{Binding Index}"
-                                                ToolTip="{Binding Name}"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Border>
-                    </Popup>
-                </Grid>
-            </Border>
-
-            <!-- AI Image Generation -->
-            <Border x:Name="AiImagePanel" Style="{StaticResource CardBorder}" Visibility="Collapsed">
                 <StackPanel>
-                    <TextBlock Text="AI 画像生成" Style="{StaticResource SectionHeader}"/>
-                    <TextBox x:Name="AiPromptBox" Height="60" AcceptsReturn="True" TextWrapping="Wrap"
-                             FontSize="12" Padding="6,4" Margin="0,0,0,6"
-                             VerticalScrollBarVisibility="Auto"
-                             Text="ビジネスプレゼンテーション用の背景画像、プロフェッショナルな雰囲気"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <ComboBox x:Name="AiModelCombo" Height="32" FontSize="11" Margin="0,0,4,0"/>
-                        <ComboBox x:Name="AiSizeCombo" Grid.Column="1" Height="32" FontSize="11" Width="110" Margin="0,0,4,0">
-                            <ComboBoxItem Content="1280x720 (16:9)" Tag="1280x720" IsSelected="True"/>
-                            <ComboBoxItem Content="1024x1024 (1:1)" Tag="1024x1024"/>
-                            <ComboBoxItem Content="1792x1024 (Wide)" Tag="1792x1024"/>
-                        </ComboBox>
-                        <Button x:Name="AiGenerateBtn" Grid.Column="2" Content="生成" Padding="12,4"
-                                Height="32" FontWeight="Bold" Click="AiGenerate_Click"/>
+                        <TextBlock Text="{DynamicResource Thumbnail.Background}" FontSize="11"
+                                   Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding ThumbnailBgFileName}"
+                                   VerticalAlignment="Center" FontSize="10"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="{DynamicResource Common.Browse.Short}" Padding="6,2" FontSize="10"
+                                    Command="{Binding SelectThumbnailBgCommand}"
+                                    ToolTip="{DynamicResource Thumbnail.BgBrowse.Tooltip}"/>
+                            <Button Content="×" Padding="4,2" Margin="2,0,0,0" FontSize="10"
+                                    Command="{Binding ClearThumbnailBgCommand}"
+                                    ToolTip="{DynamicResource Thumbnail.BgClear.Tooltip}"/>
+                        </StackPanel>
+                        <ToggleButton x:Name="BgColorToggle" Grid.Column="3" Width="32" Height="32" Margin="8,0,0,0"
+                                      BorderThickness="1" BorderBrush="#666" Padding="0"
+                                      ToolTip="{DynamicResource Thumbnail.BgColor.Tooltip}">
+                            <Border Width="24" Height="24" CornerRadius="2"
+                                    Background="{Binding SelectedBgColorBrush}"/>
+                        </ToggleButton>
+                        <Popup IsOpen="{Binding IsChecked, ElementName=BgColorToggle}" StaysOpen="False"
+                               PlacementTarget="{Binding ElementName=BgColorToggle}" Placement="Bottom">
+                            <Border Background="{DynamicResource BgCard}" BorderBrush="#555" BorderThickness="1"
+                                    CornerRadius="4" Padding="4">
+                                <ItemsControl ItemsSource="{Binding ColorPalette}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate><UniformGrid Columns="10"/></ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="20" Height="20" Margin="1" CornerRadius="2" Cursor="Hand"
+                                                    Background="{Binding Brush}" BorderThickness="1" BorderBrush="#444"
+                                                    MouseLeftButtonDown="BgColorPalette_Click" Tag="{Binding Index}"
+                                                    ToolTip="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </Popup>
+                        <Button x:Name="AiImageBtn" Grid.Column="4" Content="AI" Padding="8,2" Margin="4,0,0,0"
+                                FontSize="10" FontWeight="Bold"
+                                ToolTip="AI で背景画像を生成"
+                                Click="AiImageBtn_Click"/>
                     </Grid>
-                    <TextBlock x:Name="AiStatusText" Text="" FontSize="10" Margin="0,4,0,0"
-                               Foreground="{DynamicResource TextSecondary}"/>
+
+                    <!-- AI Image Generation (toggle) -->
+                    <StackPanel x:Name="AiImagePanel" Visibility="Collapsed" Margin="0,10,0,0">
+                        <TextBox x:Name="AiPromptBox" Height="60" AcceptsReturn="True" TextWrapping="Wrap"
+                                 FontSize="12" Padding="6,4" Margin="0,0,0,6"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Text="ビジネスプレゼンテーション用の背景画像、プロフェッショナルな雰囲気"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="AiModelCombo" Height="32" FontSize="11" Margin="0,0,4,0"/>
+                            <ComboBox x:Name="AiSizeCombo" Grid.Column="1" Height="32" FontSize="11" Width="110" Margin="0,0,4,0">
+                                <ComboBoxItem Content="1280x720 (16:9)" Tag="1280x720" IsSelected="True"/>
+                                <ComboBoxItem Content="1024x1024 (1:1)" Tag="1024x1024"/>
+                                <ComboBoxItem Content="1792x1024 (Wide)" Tag="1792x1024"/>
+                            </ComboBox>
+                            <Button x:Name="AiGenerateBtn" Grid.Column="2" Content="生成" Padding="12,4"
+                                    Height="32" FontWeight="Bold" Click="AiGenerate_Click"/>
+                        </Grid>
+                        <TextBlock x:Name="AiStatusText" Text="" FontSize="10" Margin="0,4,0,0"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
