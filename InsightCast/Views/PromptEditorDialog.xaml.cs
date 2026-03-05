@@ -191,7 +191,7 @@ public partial class PromptEditorDialog : Window
     {
         if (e.NewValue is not TreeViewItem tvi) return;
 
-        if (tvi.Tag is PresetPrompt preset)
+        if (tvi.Tag is InsightCastPresetPrompt preset)
         {
             _selectedCustom = null;
 

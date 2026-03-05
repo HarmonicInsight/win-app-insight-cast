@@ -27,10 +27,11 @@
                     <TextBlock Text="{DynamicResource Backstage.License}" FontSize="13" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextPrimary}"
                                VerticalAlignment="Center" Margin="16,0,0,0"/>
-                    <Button Content="&#xE106;" FontFamily="Segoe MDL2 Assets" FontSize="10"
-                            Click="CloseButton_Click"
+                    <Button Click="CloseButton_Click"
                             Style="{DynamicResource CloseButtonStyle}"
-                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,4,0">
+                        <TextBlock Text="&#xE106;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
+                    </Button>
                 </Grid>
             </Border>
 

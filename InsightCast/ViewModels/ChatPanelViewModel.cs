@@ -480,12 +480,12 @@ public class ChatPanelViewModel : ViewModelBase
         var lang = _getLang();
         // Filter presets by current mode (text vs image)
         var filtered = InsightCastPresetPrompts.All.Where(p => p.IsImageMode == _isImageMode).ToArray();
-        var categories = PresetPrompt.GetCategories(filtered, lang);
+        var categories = filtered.Select(p => p.GetCategory(lang)).Distinct().ToArray();
 
         foreach (var category in categories)
         {
             var group = new PresetPromptGroupVm { CategoryName = category };
-            var presets = PresetPrompt.GetByCategory(filtered, category, lang);
+            var presets = filtered.Where(p => p.GetCategory(lang) == category).ToArray();
             foreach (var p in presets)
             {
                 var promptText = p.GetPrompt(lang);

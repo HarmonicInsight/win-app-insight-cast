@@ -911,8 +911,10 @@ namespace InsightCast.Views
         private void BackStageLicense_Click(object sender, RoutedEventArgs e)
         {
             // Backstage を閉じずにライセンスダイアログを表示
-            var dialog = new LicenseDialog { Owner = this };
+            var dialog = new LicenseDialog(_config) { Owner = this };
             dialog.ShowDialog();
+            // ダイアログを閉じた後にライセンス情報を更新
+            _vm.LoadLicense();
         }
 
         private void BackStageExit_Click(object sender, RoutedEventArgs e)
