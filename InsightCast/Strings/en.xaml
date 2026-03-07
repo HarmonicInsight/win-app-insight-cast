@@ -16,19 +16,22 @@
     <sys:String x:Key="Common.Load">Load</sys:String>
     <sys:String x:Key="Common.Add">+ Add</sys:String>
     <sys:String x:Key="Common.Remove">- Remove</sys:String>
+    <sys:String x:Key="Common.Delete">Delete</sys:String>
     <sys:String x:Key="Common.Error">Error</sys:String>
+    <sys:String x:Key="Common.Info">Information</sys:String>
     <sys:String x:Key="Common.Enabled">Enabled</sys:String>
     <sys:String x:Key="Common.None">(None)</sys:String>
     <sys:String x:Key="Common.Unselected">(Not selected)</sys:String>
     <sys:String x:Key="Common.Unknown">Unknown</sys:String>
     <sys:String x:Key="Common.AllFiles">All Files</sys:String>
+    <sys:String x:Key="Common.Default">Default</sys:String>
 
     <!-- Window Chrome -->
     <sys:String x:Key="Window.Minimize">Minimize</sys:String>
     <sys:String x:Key="Window.Maximize">Maximize</sys:String>
     <sys:String x:Key="Window.Close">Close</sys:String>
     <sys:String x:Key="Window.Restore">Restore</sys:String>
-<!-- Mode Toggle -->    <sys:String x:Key="Mode.Simple">Simple</sys:String>    <sys:String x:Key="Mode.Detail">Detail</sys:String>
+<!-- Mode Toggle -->    <sys:String x:Key="Mode.Simple">Easy</sys:String>    <sys:String x:Key="Mode.Detail">Detail</sys:String>
 <!-- Preview -->    <sys:String x:Key="Preview.WindowTitle">Preview</sys:String>    <sys:String x:Key="Preview.ClickToEnlarge">Click to enlarge</sys:String>
 
     <!-- Language Switcher -->
@@ -54,7 +57,7 @@
     <sys:String x:Key="Header.OpenFile">Open File</sys:String>
     <sys:String x:Key="Header.Save">Save</sys:String>
     <sys:String x:Key="Header.SaveAs">Save As</sys:String>
-    <sys:String x:Key="Header.ImportPptx">Import PPTX</sys:String>
+    <sys:String x:Key="Header.ImportPptx">Import Document</sys:String>
 
     <!-- Menu Bar -->
     <sys:String x:Key="Menu.File">File(_F)</sys:String>
@@ -98,7 +101,7 @@
     <sys:String x:Key="Scene.Editor">Scene Editor</sys:String>
     <sys:String x:Key="Scene.Media">Media:</sys:String>
     <sys:String x:Key="Scene.Narration.Placeholder">Enter narration text here.</sys:String>
-    <sys:String x:Key="Scene.Speaker">Speaker:</sys:String>
+    <sys:String x:Key="Scene.Speaker">Narrator:</sys:String>
     <sys:String x:Key="Scene.KeepAudio">Keep original audio</sys:String>
     <sys:String x:Key="Scene.PreviewAudio">Play Audio</sys:String>
     <sys:String x:Key="Scene.PreviewScene">Preview Scene</sys:String>
@@ -119,6 +122,12 @@
     <sys:String x:Key="Overlay.Alignment">Align:</sys:String>
     <sys:String x:Key="Overlay.Color">Text Color:</sys:String>
     <sys:String x:Key="Overlay.Opacity">Opacity:</sys:String>
+    <sys:String x:Key="Overlay.Position">Position</sys:String>
+    <sys:String x:Key="Overlay.Appearance">Appearance</sys:String>
+    <sys:String x:Key="Overlay.Position.Fine">Fine Adjust</sys:String>
+    <sys:String x:Key="Overlay.Dialog.Title">Text Overlay Editor</sys:String>
+    <sys:String x:Key="Overlay.Dialog.Button">Text Overlay</sys:String>
+    <sys:String x:Key="Overlay.Dialog.Button.Tooltip">Open the text overlay editor to add titles, captions, and annotations to the scene</sys:String>
     <sys:String x:Key="Overlay.MoveUp.Tooltip">Move to front (higher layer)</sys:String>
     <sys:String x:Key="Overlay.MoveDown.Tooltip">Move to back (lower layer)</sys:String>
     <sys:String x:Key="Overlay.DefaultText">Text</sys:String>
@@ -143,6 +152,30 @@
     <sys:String x:Key="Transition.Type.SlideRight">Slide (Right)</sys:String>
     <sys:String x:Key="Transition.Type.ZoomIn">Zoom In</sys:String>
 
+    <!-- Motion (Ken Burns) -->
+    <sys:String x:Key="Motion.Title">Motion:</sys:String>
+    <sys:String x:Key="Motion.Tooltip">Camera motion effect during image display. Auto selects the best motion based on image aspect ratio.</sys:String>
+    <sys:String x:Key="Motion.Type.None">None</sys:String>
+    <sys:String x:Key="Motion.Type.Auto">Auto (Recommended)</sys:String>
+    <sys:String x:Key="Motion.Type.ZoomIn">Zoom In</sys:String>
+    <sys:String x:Key="Motion.Type.ZoomOut">Zoom Out</sys:String>
+    <sys:String x:Key="Motion.Type.PanLeft">Pan Right to Left</sys:String>
+    <sys:String x:Key="Motion.Type.PanRight">Pan Left to Right</sys:String>
+    <sys:String x:Key="Motion.Type.PanUp">Pan Bottom to Top</sys:String>
+    <sys:String x:Key="Motion.Type.PanDown">Pan Top to Bottom</sys:String>
+    <sys:String x:Key="Motion.Preset.Title">Motion Preset:</sys:String>
+    <sys:String x:Key="Motion.Preset.Apply">Apply Motion to All</sys:String>
+    <sys:String x:Key="Motion.Preset.Apply.Tooltip">Auto-assign motion to all scenes based on variation and intensity settings.</sys:String>
+    <sys:String x:Key="Motion.Variation.Calm">Calm</sys:String>
+    <sys:String x:Key="Motion.Variation.Normal">Normal</sys:String>
+    <sys:String x:Key="Motion.Variation.Random">Random+</sys:String>
+    <sys:String x:Key="Motion.Variation.Tooltip">Motion variety. Calm = mostly zoom, Random+ = more pans mixed in.</sys:String>
+    <sys:String x:Key="Motion.Intensity.Weak">Weak</sys:String>
+    <sys:String x:Key="Motion.Intensity.Medium">Medium</sys:String>
+    <sys:String x:Key="Motion.Intensity.Strong">Strong</sys:String>
+    <sys:String x:Key="Motion.Intensity.Tooltip">Movement strength. Weak = barely noticeable, Medium = natural, Strong = obvious.</sys:String>
+    <sys:String x:Key="VM.Motion.Applied">Applied motion to all {0} scenes.</sys:String>
+
     <!-- Watermark -->
     <sys:String x:Key="Watermark.Title">Logo Watermark:</sys:String>
     <sys:String x:Key="Watermark.Short">Logo Watermark</sys:String>
@@ -161,10 +194,12 @@
 
     <!-- Export Panel -->
     <sys:String x:Key="Export.Settings">Export Settings</sys:String>
-    <sys:String x:Key="Export.Speaker">Speaker:</sys:String>
+    <sys:String x:Key="Export.Speaker">Narrator:</sys:String>
     <sys:String x:Key="Export.Resolution">Resolution:</sys:String>
-    <sys:String x:Key="Export.DefaultSpeaker">Default Speaker:</sys:String>
-    <sys:String x:Key="Export.DefaultSpeaker.Tooltip">Select the default speaker for all scenes. Can be overridden per scene.</sys:String>
+    <sys:String x:Key="Export.DefaultSpeaker">Default Narrator:</sys:String>
+    <sys:String x:Key="Export.DefaultSpeaker.Tooltip">Select the default narrator for all scenes. Can be overridden per scene.</sys:String>
+    <sys:String x:Key="Export.DefaultSubtitleSize">Default Subtitle Size:</sys:String>
+    <sys:String x:Key="Export.DefaultSubtitleSize.Tooltip">Default subtitle font size for all scenes. Can be overridden per scene.</sys:String>
     <sys:String x:Key="Export.Res.Portrait">1080x1920 (Portrait)</sys:String>
     <sys:String x:Key="Export.Res.Landscape">1920x1080 (Landscape)</sys:String>
     <sys:String x:Key="Export.BGM.Settings">BGM Settings...</sys:String>
@@ -174,13 +209,17 @@
     <sys:String x:Key="Export.Log">Log:</sys:String>
 
     <!-- Quick Mode -->
-    <sys:String x:Key="Quick.DropZone.Title">Drop your files here</sys:String>
-    <sys:String x:Key="Quick.DropZone.Subtitle">Supports PowerPoint (.pptx), images, videos, and text files</sys:String>
-    <sys:String x:Key="Quick.DropZone.SelectFile">Or select a file</sys:String>
+    <sys:String x:Key="Quick.WindowTitle">Easy Mode</sys:String>
+    <sys:String x:Key="Quick.Tagline">Drop a PowerPoint, get a video</sys:String>
+    <sys:String x:Key="Quick.DropZone.Title">Drop PowerPoint here</sys:String>
+    <sys:String x:Key="Quick.DropZone.Subtitle">Auto-generate video from .pptx files</sys:String>
+    <sys:String x:Key="Quick.DropZone.SelectFile">Or click to select a file</sys:String>
     <sys:String x:Key="Quick.DropZone.BatchImport">Import multiple files</sys:String>
     <sys:String x:Key="Quick.DropZone.BatchImport.Tooltip">Import multiple files at once from file dialog</sys:String>
     <sys:String x:Key="Quick.DropReplace">Drop to replace</sys:String>
-    <sys:String x:Key="Quick.Speaker">Speaker</sys:String>
+    <sys:String x:Key="Quick.SelectPptx">Select PowerPoint file</sys:String>
+    <sys:String x:Key="Quick.SlideCount">{0} slides</sys:String>
+    <sys:String x:Key="Quick.Speaker">Narrator</sys:String>
     <sys:String x:Key="Quick.Speaker.Preview.Tooltip">Preview</sys:String>
     <sys:String x:Key="Quick.Orientation">Orientation</sys:String>
     <sys:String x:Key="Quick.Res.Portrait">Portrait (9:16)</sys:String>
@@ -189,6 +228,8 @@
     <sys:String x:Key="Quick.SpeechSpeed">Speech Speed</sys:String>
     <sys:String x:Key="Quick.Thumbnail">Generate Thumbnail</sys:String>
     <sys:String x:Key="Quick.Generate">Generate Video</sys:String>
+    <sys:String x:Key="Quick.Generating">Generating...</sys:String>
+    <sys:String x:Key="Quick.ExportDone">Video generation complete. Open the file?</sys:String>
     <sys:String x:Key="Quick.OpenEditor">Open in Editor</sys:String>
     <sys:String x:Key="Quick.CancelGenerate">Cancel Generation</sys:String>
     <sys:String x:Key="Quick.OpenVideo">Open Video</sys:String>
@@ -279,7 +320,7 @@
     <sys:String x:Key="Setup.Title">Insight Training Studio - Initial Setup</sys:String>
     <sys:String x:Key="Setup.Step1">1. Welcome</sys:String>
     <sys:String x:Key="Setup.Step2">2. Engine Detection</sys:String>
-    <sys:String x:Key="Setup.Step3">3. Speaker Setup</sys:String>
+    <sys:String x:Key="Setup.Step3">3. Narrator Setup</sys:String>
     <sys:String x:Key="Setup.Step4">4. Complete</sys:String>
     <sys:String x:Key="Setup.Welcome.Title">Welcome to Insight Training Studio</sys:String>
     <sys:String x:Key="Setup.Welcome.Subtitle">Let's get started with the initial setup</sys:String>
@@ -306,14 +347,14 @@
     <sys:String x:Key="Setup.Engine.ExeFilter">VOICEVOX Engine|run.exe|All Files|*.*</sys:String>
     <sys:String x:Key="Setup.Engine.Connecting">Attempting connection with selected engine...</sys:String>
     <sys:String x:Key="Setup.Engine.Path">Path: {0}</sys:String>
-    <sys:String x:Key="Setup.Speaker.Title">Default Speaker Setup</sys:String>
+    <sys:String x:Key="Setup.Speaker.Title">Default Narrator Setup</sys:String>
     <sys:String x:Key="Setup.Speaker.Subtitle">Detecting default voice for narration</sys:String>
-    <sys:String x:Key="Setup.Speaker.Loading">Loading speaker information...</sys:String>
-    <sys:String x:Key="Setup.Speaker.Detected">Detected speaker:</sys:String>
-    <sys:String x:Key="Setup.Speaker.Found">Default speaker found</sys:String>
+    <sys:String x:Key="Setup.Speaker.Loading">Loading narrator information...</sys:String>
+    <sys:String x:Key="Setup.Speaker.Detected">Detected narrator:</sys:String>
+    <sys:String x:Key="Setup.Speaker.Found">Default narrator found</sys:String>
     <sys:String x:Key="Setup.Speaker.StyleId">Style ID: {0}</sys:String>
-    <sys:String x:Key="Setup.Speaker.NotFound">No speakers found. There may be no speakers registered in the engine.</sys:String>
-    <sys:String x:Key="Setup.Speaker.Error">Speaker fetch error: {0}</sys:String>
+    <sys:String x:Key="Setup.Speaker.NotFound">No narrators found. There may be no narrators registered in the engine.</sys:String>
+    <sys:String x:Key="Setup.Speaker.Error">Narrator fetch error: {0}</sys:String>
     <sys:String x:Key="Setup.Speaker.NoConnection">Not connected to engine. Please go back to the previous step.</sys:String>
     <sys:String x:Key="Setup.Complete.Title">Setup Complete</sys:String>
     <sys:String x:Key="Setup.Complete.Desc">All settings have been configured</sys:String>
@@ -335,8 +376,8 @@
     <sys:String x:Key="VM.Media.Filter">Image/Video Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.mp4;*.avi;*.mov;*.wmv;*.mkv;*.webm|Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|Video Files|*.mp4;*.avi;*.mov;*.wmv;*.mkv;*.webm|All Files|*.*</sys:String>
     <sys:String x:Key="VM.Media.Set">Media set: {0}</sys:String>
     <sys:String x:Key="VM.Media.Cleared">Media cleared.</sys:String>
-    <sys:String x:Key="VM.Speaker.Loaded">Loaded speakers ({0} styles).</sys:String>
-    <sys:String x:Key="VM.Speaker.LoadFailed">Failed to load speakers</sys:String>
+    <sys:String x:Key="VM.Speaker.Loaded">Loaded narrators ({0} styles).</sys:String>
+    <sys:String x:Key="VM.Speaker.LoadFailed">Failed to load narrators</sys:String>
     <sys:String x:Key="VM.Speaker.Default">Default (use project settings)</sys:String>
     <sys:String x:Key="VM.Speaker.Normal">Normal</sys:String>
     <sys:String x:Key="VM.Style.Changed">Changed subtitle style to "{0}".</sys:String>
@@ -394,8 +435,10 @@
     <sys:String x:Key="VM.File.OpenError">Failed to open file</sys:String>
     <sys:String x:Key="VM.Preview.OpenError">Failed to open preview player</sys:String>
 
-    <!-- Screen Capture -->
+    <!-- Screen Capture / Record -->
+    <sys:String x:Key="Tool.ScreenRecord">Screen Record</sys:String>
     <sys:String x:Key="Tool.ScreenCapture">Screen Capture</sys:String>
+    <sys:String x:Key="Tool.ImageCapture">Image Capture</sys:String>
     <sys:String x:Key="VM.Capture.Applied">Captured image applied to scene: {0}</sys:String>
     <sys:String x:Key="VM.Capture.Saved">Captured image saved: {0}</sys:String>
     <sys:String x:Key="VM.Capture.Copied">Captured image copied to clipboard</sys:String>
@@ -579,7 +622,15 @@
     <sys:String x:Key="VM.Pptx.FeatureLimit">PPTX import is available with Trial/BIZ plan or above.\nPlease upgrade your license.</sys:String>
     <sys:String x:Key="VM.Pptx.PlanRequired">Feature Restricted</sys:String>
     <sys:String x:Key="VM.Pptx.Select">Select PowerPoint File</sys:String>
-    <sys:String x:Key="VM.Pptx.Filter">PowerPoint Files|*.pptx|All Files|*.*</sys:String>
+    <sys:String x:Key="VM.Pptx.Filter">All Documents|*.pptx;*.docx;*.xlsx;*.pdf|PowerPoint|*.pptx|Word|*.docx|Excel|*.xlsx|PDF|*.pdf</sys:String>
+    <sys:String x:Key="DocConvert.Filter">All Documents|*.pptx;*.docx;*.xlsx;*.pdf|PowerPoint|*.pptx|Word|*.docx|Excel|*.xlsx|PDF|*.pdf</sys:String>
+    <sys:String x:Key="DocConvert.Converting">Converting {0} to PPTX...</sys:String>
+    <sys:String x:Key="DocConvert.Fallback">PowerPoint not found. Using text extraction fallback.</sys:String>
+    <sys:String x:Key="DocConvert.Done">Created PPTX with {0} slides.</sys:String>
+    <sys:String x:Key="DocConvert.ComSuccess">Converted to {0} slides via PowerPoint.</sys:String>
+    <sys:String x:Key="DocConvert.PdfRequiresPpt">PDF conversion requires Microsoft PowerPoint.</sys:String>
+    <sys:String x:Key="DocConvert.Failed">Document conversion failed: {0}</sys:String>
+    <sys:String x:Key="DocConvert.Success">Document converted to PPTX and imported.</sys:String>
     <sys:String x:Key="VM.Pptx.Started">PPTX import started: {0}</sys:String>
     <sys:String x:Key="VM.Pptx.NoSlides">No slides found.</sys:String>
     <sys:String x:Key="VM.Pptx.Result">Import Result</sys:String>
@@ -589,6 +640,9 @@
     <sys:String x:Key="VM.Pptx.IncludeSubtitle.Title">Subtitle Import Option</sys:String>
     <sys:String x:Key="VM.Pptx.Error">PPTX import failed:\n{0}</sys:String>
     <sys:String x:Key="VM.Pptx.Failed">Import Error</sys:String>
+    <sys:String x:Key="VM.DragDrop.Added">Added {0} media file(s) as scenes</sys:String>
+    <sys:String x:Key="DragDrop.Overlay">Drop files here</sys:String>
+    <sys:String x:Key="DragDrop.Overlay.Sub">Supports PPTX, images, and videos</sys:String>
 
     <!-- VM Tutorial / FAQ / About / Shortcuts -->
     <sys:String x:Key="VM.Tutorial">Insight Training Studio Tutorial
@@ -684,7 +738,7 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="VM.Privacy.Title">Privacy Policy</sys:String>
 
     <!-- QVM Extended -->
-    <sys:String x:Key="QVM.Speaker.LoadFailed">Failed to load speakers</sys:String>
+    <sys:String x:Key="QVM.Speaker.LoadFailed">Failed to load narrators</sys:String>
     <sys:String x:Key="QVM.Speaker.Normal">Normal</sys:String>
     <sys:String x:Key="QVM.Watermark.Set">Logo set: {0}</sys:String>
     <sys:String x:Key="QVM.BGM.Select">Select BGM File</sys:String>
@@ -743,7 +797,7 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="QVM.Pptx.Error">PPTX Import Error</sys:String>
     <sys:String x:Key="QVM.Pptx.Loading">Loading PowerPoint... {0}</sys:String>
     <sys:String x:Key="QVM.Pptx.Reading">Loading PPTX: {0}</sys:String>
-    <sys:String x:Key="QVM.Template.SpeakerInfo">Speaker: {0}</sys:String>
+    <sys:String x:Key="QVM.Template.SpeakerInfo">Narrator: {0}</sys:String>
     <sys:String x:Key="QVM.Text.Imported">Text import: {0} paragraphs</sys:String>
     <sys:String x:Key="VM.Close.ExportRunning">Export is in progress. Cancel and exit?</sys:String>
     <sys:String x:Key="VM.Close.Confirm">Confirm Exit</sys:String>
@@ -840,7 +894,7 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="License.Error.Expired">License has expired ({0}).</sys:String>
 
     <!-- Planning Tab -->
-    <sys:String x:Key="Tab.Planning">Planning</sys:String>
+    <sys:String x:Key="Tab.Planning">PPTX Builder</sys:String>
     <sys:String x:Key="Tab.VideoGeneration">Video Generation</sys:String>
     <sys:String x:Key="Planning.AIChat">AI Chat</sys:String>
     <sys:String x:Key="Planning.SendChat">Send</sys:String>
@@ -1041,7 +1095,7 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Scene.Narration.Tooltip">Enter the narration text for VOICEVOX to read aloud. For educational videos, 100-150 characters per scene is recommended</sys:String>
     <sys:String x:Key="Scene.Media.Select.Tooltip">Select an image or video file for the scene background (PNG, JPG, MP4, etc.)</sys:String>
     <sys:String x:Key="Scene.Media.Clear.Tooltip">Remove the current media file (scene will show black background)</sys:String>
-    <sys:String x:Key="Scene.Speaker.Tooltip">Select the VOICEVOX speaker for this scene. "Default" uses the project-level speaker setting</sys:String>
+    <sys:String x:Key="Scene.Speaker.Tooltip">Select the narrator for this scene. "Default" uses the project-level narrator setting</sys:String>
     <sys:String x:Key="Scene.KeepAudio.Tooltip">When ON, the original audio from the video source will play together with the narration</sys:String>
     <sys:String x:Key="Scene.SpeechSpeed.Tooltip">Adjust narration reading speed. For educational videos, 1.0x-1.2x is recommended</sys:String>
     <sys:String x:Key="Scene.PreviewAudio.Tooltip">Preview the narration text as audio</sys:String>
@@ -1085,14 +1139,14 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="App.Subtitle">Turn dormant documents into training videos.</sys:String>
 
     <!-- AI Chat Panel -->
-    <sys:String x:Key="Chat.Title">AI Assistant</sys:String>
+    <sys:String x:Key="Chat.Title">AI Concierge</sys:String>
     <sys:String x:Key="Chat.ToggleTooltip">Open/close AI assistant panel</sys:String>
     <sys:String x:Key="Chat.Clear">Clear chat</sys:String>
 
     <!-- UI Mode -->
-    <sys:String x:Key="UI.SimpleMode">Simple</sys:String>
+    <sys:String x:Key="UI.SimpleMode">Easy</sys:String>
     <sys:String x:Key="UI.DetailMode">Detail</sys:String>
-    <sys:String x:Key="UI.DetailMode.Tooltip">Toggle between simple and detail mode</sys:String>
+    <sys:String x:Key="UI.DetailMode.Tooltip">Toggle between easy and detail mode</sys:String>
     <sys:String x:Key="Chat.Send">Send</sys:String>
     <sys:String x:Key="Chat.Cancel">Cancel</sys:String>
     <sys:String x:Key="Chat.Thinking">Thinking...</sys:String>
@@ -1168,7 +1222,7 @@ To get started, try one of these:
     <sys:String x:Key="Ai.EnterApiKey">Enter your Claude API key</sys:String>
     <sys:String x:Key="Ai.SetBtn">Set</sys:String>
     <sys:String x:Key="Ai.Popout">Pop Out</sys:String>
-    <sys:String x:Key="Ai.PromptEditor">Prompt Editor</sys:String>
+    <sys:String x:Key="Ai.PromptEditor">Prompt Library</sys:String>
     <sys:String x:Key="Ai.CopyMenu">Copy</sys:String>
     <sys:String x:Key="Ai.SaveThumbnail">Save Thumbnail</sys:String>
     <sys:String x:Key="Ai.Cancelled">Cancelled.</sys:String>
@@ -1213,6 +1267,7 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.Group.Scene">Scene</sys:String>
     <sys:String x:Key="Ribbon.Group.Structure">Structure</sys:String>
     <sys:String x:Key="Ribbon.Group.Production">Production</sys:String>
+    <sys:String x:Key="Ribbon.Group.Record">Screen Capture</sys:String>
     <sys:String x:Key="Ribbon.Group.Export">Export</sys:String>
     <sys:String x:Key="Ribbon.Group.Template">Template</sys:String>
     <sys:String x:Key="Ribbon.Group.Support">Support</sys:String>
@@ -1224,11 +1279,14 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.File.Recent">Recent Files</sys:String>
     <sys:String x:Key="Ribbon.File.Save">Save</sys:String>
     <sys:String x:Key="Ribbon.File.SaveAs">Save As</sys:String>
-    <sys:String x:Key="Ribbon.File.ImportPptx">Import PPTX</sys:String>
+    <sys:String x:Key="Ribbon.File.ImportPptx">Import Document</sys:String>
     <sys:String x:Key="Ribbon.File.ImportJson">Import JSON</sys:String>
     <sys:String x:Key="Ribbon.File.BatchExport">JSON Export</sys:String>
     <sys:String x:Key="Ribbon.File.Exit">Exit</sys:String>
     <sys:String x:Key="Ribbon.Group.File">File</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxExport">Export</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxData">Data</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxTools">Tools</sys:String>
     <sys:String x:Key="Ribbon.Script.Clear">Clear Scripts</sys:String>
     <sys:String x:Key="Ribbon.Script.Clear.Tooltip">Clear narration scripts from all scenes</sys:String>
     <sys:String x:Key="VM.Script.ClearConfirm">Clear scripts from all scenes?</sys:String>
@@ -1249,6 +1307,14 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.Template.Load">Load</sys:String>
     <sys:String x:Key="Ribbon.Template.OpenOutput">Open Output</sys:String>
     <sys:String x:Key="Ribbon.Scene.Capture">Capture</sys:String>
+    <sys:String x:Key="Ribbon.Scene.ImageCapture">Image Capture</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Record">Record</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Record.Tooltip">Select a screen region and record video (with 3-second countdown)</sys:String>
+    <sys:String x:Key="Ribbon.Scene.SnippingTool">Snipping</sys:String>
+    <sys:String x:Key="Ribbon.Scene.SnippingTool.Tooltip">Launch Windows Snipping Tool (screen recording / screenshot)</sys:String>
+    <sys:String x:Key="VM.SnippingTool.Failed">Failed to launch Snipping Tool</sys:String>
+    <sys:String x:Key="VM.Recording.Started">Screen recording started...</sys:String>
+    <sys:String x:Key="VM.Recording.Applied">Recorded video set as scene media: {0}</sys:String>
     <sys:String x:Key="Ribbon.BGM">BGM Settings</sys:String>
     <sys:String x:Key="Ribbon.CTA">Add CTA</sys:String>
     <sys:String x:Key="Ribbon.Scene.Add.Tooltip">Add a new scene (slide) to your educational video</sys:String>
@@ -1277,7 +1343,7 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Backstage.SaveAs">Save As</sys:String>
     <sys:String x:Key="Backstage.Import">Import</sys:String>
     <sys:String x:Key="Backstage.Export">Export</sys:String>
-    <sys:String x:Key="Backstage.ImportPptx">Import PPTX</sys:String>
+    <sys:String x:Key="Backstage.ImportPptx">Import Document</sys:String>
     <sys:String x:Key="Backstage.ImportJson">Import JSON</sys:String>
     <sys:String x:Key="Backstage.BatchExport">JSON Export</sys:String>
     <sys:String x:Key="Backstage.Recent">Recent Files</sys:String>
@@ -1424,5 +1490,104 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="AIPrompt.PresetPromptHint">Enter instructions for the AI</sys:String>
     <sys:String x:Key="AIPrompt.PresetDefault">Set as default</sys:String>
     <sys:String x:Key="AIPrompt.EnterName">Please enter a name</sys:String>
+
+    <!-- Working Folder -->
+    <sys:String x:Key="Scene.SubtitleSize">Size:</sys:String>
+    <sys:String x:Key="Scene.SubtitleSize.Tooltip">Subtitle display size (pt)</sys:String>
+
+    <sys:String x:Key="WorkFolder.Title">Working Folder</sys:String>
+    <sys:String x:Key="WorkFolder.NewFolder">New Folder</sys:String>
+    <sys:String x:Key="WorkFolder.AddFolder">Add Folder</sys:String>
+    <sys:String x:Key="WorkFolder.AddFile">Add File</sys:String>
+    <sys:String x:Key="WorkFolder.ExpandAll">Expand All</sys:String>
+    <sys:String x:Key="WorkFolder.CollapseAll">Collapse All</sys:String>
+    <sys:String x:Key="WorkFolder.DropHint">Drop files or folders here</sys:String>
+    <sys:String x:Key="WorkFolder.SupportedFormats">Word, Excel, PPTX, PDF, Images</sys:String>
+
+    <!-- Material Library (new naming) -->
+    <sys:String x:Key="Material.Title">Material Library</sys:String>
+    <sys:String x:Key="Material.DropHint">Drag and drop your materials</sys:String>
+    <sys:String x:Key="Material.DropSub">Or use the + button in the toolbar</sys:String>
+    <sys:String x:Key="Material.Formats">Word / Excel / PPTX / PDF / Images</sys:String>
+    <sys:String x:Key="WorkFolder.Parsing">Parsing...</sys:String>
+    <sys:String x:Key="WorkFolder.OpenFile">Open</sys:String>
+    <sys:String x:Key="WorkFolder.Rename">Rename</sys:String>
+    <sys:String x:Key="WorkFolder.Delete">Delete</sys:String>
+    <sys:String x:Key="WorkFolder.FolderName">Folder name:</sys:String>
+    <sys:String x:Key="WorkFolder.DefaultFolderName">New Folder</sys:String>
+    <sys:String x:Key="WorkFolder.NewName">New name:</sys:String>
+    <sys:String x:Key="WorkFolder.FileFilter">All Supported Files|*.docx;*.xlsx;*.xlsm;*.pptx;*.pdf;*.png;*.jpg;*.jpeg;*.bmp;*.gif|Word|*.docx|Excel|*.xlsx;*.xlsm|PowerPoint|*.pptx|PDF|*.pdf|Images|*.png;*.jpg;*.jpeg;*.bmp;*.gif|All Files|*.*</sys:String>
+    <sys:String x:Key="WorkFolder.AlreadyExists">Folder already exists</sys:String>
+    <sys:String x:Key="WorkFolder.Loading">Loading: {0}</sys:String>
+    <sys:String x:Key="WorkFolder.Added">Added: {0}</sys:String>
+    <sys:String x:Key="WorkFolder.Removed">Removed: {0}</sys:String>
+    <sys:String x:Key="WorkFolder.DeleteConfirm">Delete "{0}"?</sys:String>
+
+    <!-- AI Chapter -->
+    <sys:String x:Key="AiChapter.Title">AI Chapter Structure</sys:String>
+    <sys:String x:Key="AiChapter.Heading">Generate Video Structure</sys:String>
+    <sys:String x:Key="AiChapter.Button">AI Structure</sys:String>
+    <sys:String x:Key="AiChapter.Button.Tooltip">Generate chapter structure using AI</sys:String>
+    <sys:String x:Key="AiChapter.ChapterCount">Chapters:</sys:String>
+    <sys:String x:Key="AiChapter.MaterialCount">Materials:</sys:String>
+    <sys:String x:Key="AiChapter.Instructions">Additional instructions (optional):</sys:String>
+    <sys:String x:Key="AiChapter.Generate">Generate</sys:String>
+    <sys:String x:Key="AiChapter.Generating">Generating structure...</sys:String>
+    <sys:String x:Key="AiChapter.Generated">Generated {0} chapters</sys:String>
+    <sys:String x:Key="AiChapter.Cancelled">Generation cancelled</sys:String>
+    <sys:String x:Key="AiChapter.Apply">Apply to Scenes</sys:String>
+    <sys:String x:Key="AiChapter.NotConfigured">AI is not configured. Please set up API key in AI Settings.</sys:String>
+
+    <!-- AI Workspace -->
+    <sys:String x:Key="AiWorkspace.Title">AI Workspace</sys:String>
+    <sys:String x:Key="AiWorkspace.Step1">Step 1: Generate Structure from Materials</sys:String>
+    <sys:String x:Key="AiWorkspace.Step2">Generated Chapters</sys:String>
+    <sys:String x:Key="AiWorkspace.Step3">Tools</sys:String>
+    <sys:String x:Key="AiWorkspace.Scenes">Scenes</sys:String>
+    <sys:String x:Key="AiWorkspace.SceneCount">{0} scenes</sys:String>
+    <sys:String x:Key="AiWorkspace.ThumbnailButton">Thumbnail Creator</sys:String>
+    <sys:String x:Key="AiWorkspace.ThumbnailButton.Tooltip">Open the thumbnail image creator</sys:String>
+
+    <!-- AI Production Flow (redesigned) -->
+    <sys:String x:Key="AiFlow.Title">AI Production Assistant</sys:String>
+    <sys:String x:Key="AiFlow.Step1.Title">Auto-generate Structure</sys:String>
+    <sys:String x:Key="AiFlow.Step1.Desc">AI reads your materials and creates video chapter structure automatically</sys:String>
+    <sys:String x:Key="AiFlow.Step1.Hint">Additional instructions (e.g., for beginners, under 3 minutes...)</sys:String>
+    <sys:String x:Key="AiFlow.GenerateBtn">Create Structure from Materials</sys:String>
+    <sys:String x:Key="AiFlow.ExpandScenes">Expand to Scenes</sys:String>
+    <sys:String x:Key="AiFlow.CreatePptx">Create PPTX</sys:String>
+    <sys:String x:Key="AiFlow.ExportPptx">Create PPTX</sys:String>
+    <sys:String x:Key="AiFlow.PptxSaved">PPTX file saved</sys:String>
+    <sys:String x:Key="AiFlow.Step2.Title">Generated Structure</sys:String>
+    <sys:String x:Key="AiFlow.ApplyBtn">Apply to Scenes</sys:String>
+    <sys:String x:Key="AiFlow.Step3.Title">Finishing Tools</sys:String>
+    <sys:String x:Key="AiFlow.Tool.AiImage">AI Image Generation</sys:String>
+    <sys:String x:Key="AiFlow.Tool.AiImage.Sub">Auto-generate images for each scene</sys:String>
+    <sys:String x:Key="AiFlow.Tool.Thumbnail">Thumbnail Creator</sys:String>
+    <sys:String x:Key="AiFlow.Tool.Thumbnail.Sub">Design your video thumbnail</sys:String>
+    <sys:String x:Key="AiFlow.Scenes">Scenes</sys:String>
+    <sys:String x:Key="AiFlow.NarrationLabel">Narration</sys:String>
+    <sys:String x:Key="AiFlow.ImagePrompt">Image Prompt</sys:String>
+    <sys:String x:Key="AiFlow.CopyPrompt">Copy prompt</sys:String>
+    <sys:String x:Key="AiFlow.PromptCopied">Prompt copied to clipboard</sys:String>
+    <sys:String x:Key="AiFlow.JsonExport">Export JSON</sys:String>
+    <sys:String x:Key="AiFlow.JsonExport.Tooltip">Export scene narrations and image prompts as JSON (for external AI tools)</sys:String>
+    <sys:String x:Key="AiFlow.JsonExported">JSON file exported</sys:String>
+    <sys:String x:Key="AiFlow.JsonImport">Import JSON</sys:String>
+    <sys:String x:Key="AiFlow.JsonImport.Tooltip">Import JSON generated by external AI tools to update scenes</sys:String>
+    <sys:String x:Key="AiFlow.JsonImported">{0} scenes imported</sys:String>
+    <sys:String x:Key="AiFlow.EmptyTitle">Add materials and generate structure</sys:String>
+    <sys:String x:Key="AiFlow.EmptyDesc">Add files to the Material Library, then click "Generate AI Structure" to auto-create your video chapters</sys:String>
+
+    <!-- AI Image Generation -->
+    <sys:String x:Key="AiGenerate.Title">AI Image Generation</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesButton">AI Image Generation</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesButton.Tooltip">Generate images for scenes using AI (DALL-E)</sys:String>
+    <sys:String x:Key="AiGenerate.NoScenesNeedImages">No scenes require image generation. Use "Generate" first to create chapter structure.</sys:String>
+    <sys:String x:Key="AiGenerate.NotConfigured">OpenAI API key is not configured. Please set up the API key in settings.</sys:String>
+    <sys:String x:Key="AiGenerate.ConfirmImages">Generate AI images for {0} scene(s)? This will call the OpenAI DALL-E API.</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesComplete">Successfully generated {0} image(s).</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesPartial">Generated {0} image(s), {1} failed.</sys:String>
+    <sys:String x:Key="AiGenerate.Progress">Generating image {0}/{1}...</sys:String>
 
 </ResourceDictionary>

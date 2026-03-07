@@ -68,6 +68,9 @@ namespace InsightCast.Models
         [JsonPropertyName("defaultTransitionDuration")]
         public double DefaultTransitionDuration { get; set; } = 0.5;
 
+        [JsonPropertyName("motionIntensity")]
+        public MotionIntensity MotionIntensity { get; set; } = MotionIntensity.Medium;
+
         [JsonPropertyName("generateThumbnail")]
         public bool GenerateThumbnail { get; set; } = true;
 
@@ -76,6 +79,15 @@ namespace InsightCast.Models
 
         [JsonPropertyName("thumbnailGenerator")]
         public ThumbnailGeneratorSettings ThumbnailGenerator { get; set; } = new();
+
+        [JsonPropertyName("workingFolderPath")]
+        public string? WorkingFolderPath { get; set; }
+
+        [JsonPropertyName("checkedFiles")]
+        public List<string>? CheckedFiles { get; set; }
+
+        [JsonPropertyName("defaultSubtitleFontSize")]
+        public int DefaultSubtitleFontSize { get; set; } = 28;
 
         public Project()
         {
@@ -148,7 +160,8 @@ namespace InsightCast.Models
         public Project Clone()
         {
             var json = JsonSerializer.Serialize(this, SerializerOptions);
-            var clone = JsonSerializer.Deserialize<Project>(json, SerializerOptions)!;
+            var clone = JsonSerializer.Deserialize<Project>(json, SerializerOptions)
+                ?? throw new InvalidOperationException("Failed to clone project.");
             clone.ProjectPath = ProjectPath;
             return clone;
         }

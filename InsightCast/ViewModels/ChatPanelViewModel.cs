@@ -13,6 +13,8 @@ using InsightCast.Models;
 using InsightCast.Services;
 using InsightCast.Services.Claude;
 using InsightCommon.AI;
+using ChatMsg = InsightCommon.AI.ChatMessageVm;
+using PromptPresetSvc = InsightCast.Services.PromptPresetService;
 
 namespace InsightCast.ViewModels;
 
@@ -120,6 +122,29 @@ public class ChatPanelViewModel : ViewModelBase
 
     public bool IsApiKeySet => _claude.IsConfigured;
     public bool CanSetApiKey => !string.IsNullOrWhiteSpace(ApiKeyInput);
+
+    // ── AI Concierge ──
+    private string _panelTitle = "AI コンシェルジュ";
+    public string PanelTitle
+    {
+        get => _panelTitle;
+        private set => SetProperty(ref _panelTitle, value);
+    }
+
+    private string _welcomeMessage = string.Empty;
+    public string WelcomeMessage
+    {
+        get => _welcomeMessage;
+        private set => SetProperty(ref _welcomeMessage, value);
+    }
+
+    public bool HasWelcomeMessage => !string.IsNullOrEmpty(WelcomeMessage);
+
+    private string? _conciergeSystemPromptExtension;
+
+    // ── Chat Messages ──
+    public ObservableCollection<ChatMsg> ChatMessages { get; } = new();
+    public bool IsChatEmpty => ChatMessages.Count == 0;
 
     private bool _isApiKeyPanelOpen;
     public bool IsApiKeyPanelOpen
@@ -370,8 +395,14 @@ public class ChatPanelViewModel : ViewModelBase
     // ── Prompt Editor Dialog ──
     public ICommand OpenPromptEditorCommand { get; }
 
+    // ── Prompt Export / Import ──
+    public ICommand ExportPromptsCommand { get; }
+    public ICommand ImportPromptsCommand { get; }
+
     // ── AI Settings Dialog ──
     public ICommand OpenAiSettingsCommand { get; }
+
+    public ICommand ClearChatCommand { get; }
 
     public ChatPanelViewModel(
         IClaudeService claude,
@@ -385,6 +416,12 @@ public class ChatPanelViewModel : ViewModelBase
         _getLang = getLang;
         _config = config;
         _selectedModelIndex = initialModelIndex;
+
+        // AI コンシェルジュ初期化
+        var locale = getLang() == "EN" ? "en" : "ja";
+        PanelTitle = AiConciergeConfig.GetPanelTitle("INMV", locale);
+        WelcomeMessage = AiConciergeConfig.GetWelcomeMessage("INMV", locale);
+        _conciergeSystemPromptExtension = AiConciergeConfig.GetSystemPromptExtension("INMV", locale);
 
         ExecutePromptCommand = new AsyncRelayCommand(
             () => ExecutePromptAsync(),
@@ -419,7 +456,7 @@ public class ChatPanelViewModel : ViewModelBase
         {
             if (o is UserPromptVm userPrompt && userPrompt.Source != null)
             {
-                AiInput = userPrompt.Source.Prompt;
+                AiInput = userPrompt.Source.SystemPrompt;
                 _loadedUserPrompt = userPrompt;
                 _loadedPreset = null;
             }
@@ -463,7 +500,17 @@ public class ChatPanelViewModel : ViewModelBase
 
         OpenPromptEditorCommand = new RelayCommand(_ => OpenPromptEditor());
 
+        ExportPromptsCommand = new RelayCommand(_ => ExportPrompts());
+        ImportPromptsCommand = new RelayCommand(_ => ImportPrompts());
+
         OpenAiSettingsCommand = new RelayCommand(_ => OpenAiSettings());
+
+        ClearChatCommand = new RelayCommand(_ =>
+        {
+            ChatMessages.Clear();
+            LastAiResult = string.Empty;
+            OnPropertyChanged(nameof(IsChatEmpty));
+        });
 
         // Build prompt groups
         BuildPresetPromptGroups();
@@ -534,7 +581,7 @@ public class ChatPanelViewModel : ViewModelBase
     {
         UserPromptGroups.Clear();
         var lang = _getLang();
-        var all = PromptLibraryService.LoadAllPrompts();
+        var all = PromptPresetSvc.LoadAll();
 
         var grouped = all
             .GroupBy(p => string.IsNullOrWhiteSpace(p.Category) ? "General" : p.Category)
@@ -545,15 +592,15 @@ public class ChatPanelViewModel : ViewModelBase
             var group = new UserPromptGroupVm { CategoryName = g.Key };
             foreach (var u in g.OrderByDescending(p => p.LastUsedAt ?? DateTime.MinValue))
             {
-                var tooltip = u.Prompt.Length > 100 ? u.Prompt[..100] + "..." : u.Prompt;
+                var tooltip = u.SystemPrompt.Length > 100 ? u.SystemPrompt[..100] + "..." : u.SystemPrompt;
                 group.Prompts.Add(new UserPromptVm
                 {
                     Id = u.Id,
-                    Label = u.Label,
-                    Icon = u.Icon,
+                    Label = u.Name,
+                    Icon = u.Icon ?? "\U0001F4CC",
                     Tooltip = tooltip,
-                    IsFavorite = false,
-                    ModelDisplay = FormatModelDisplay(u.RecommendedPersonaId, lang),
+                    IsFavorite = u.IsPinned,
+                    ModelDisplay = "",
                     Source = u
                 });
             }
@@ -591,8 +638,12 @@ public class ChatPanelViewModel : ViewModelBase
         // Track usage for user prompts
         if (_loadedUserPrompt?.Source != null)
         {
-            PromptLibraryService.IncrementUseCount(_loadedUserPrompt.Source.Id);
+            PromptPresetSvc.IncrementUsage(_loadedUserPrompt.Source.Id);
         }
+
+        // チャットにユーザーメッセージを追加
+        ChatMessages.Add(new ChatMsg { Role = ChatRole.User, Content = prompt });
+        OnPropertyChanged(nameof(IsChatEmpty));
 
         IsAiProcessing = true;
         AiProcessingModelName = CurrentModelDisplay;
@@ -606,14 +657,23 @@ public class ChatPanelViewModel : ViewModelBase
         {
             await SendWithToolLoopAsync(prompt, cts.Token);
             LastGeneratedThumbnailPath = _toolExecutor.LastGeneratedThumbnailPath;
+
+            // チャットにアシスタント応答を追加
+            if (!string.IsNullOrEmpty(LastAiResult))
+            {
+                ChatMessages.Add(new ChatMsg { Role = ChatRole.Assistant, Content = LastAiResult });
+                OnPropertyChanged(nameof(IsChatEmpty));
+            }
         }
         catch (OperationCanceledException)
         {
             LastAiResult = Application.Current.TryFindResource("Ai.Cancelled") as string ?? "Cancelled.";
+            ChatMessages.Add(new ChatMsg { Role = ChatRole.System, Content = LastAiResult });
         }
         catch (Exception ex)
         {
             LastAiResult = $"Error: {ex.Message}";
+            ChatMessages.Add(new ChatMsg { Role = ChatRole.System, Content = LastAiResult });
         }
         finally
         {
@@ -775,6 +835,8 @@ public class ChatPanelViewModel : ViewModelBase
 
     private string BuildSystemContext(string lang)
     {
+        var concierge = _conciergeSystemPromptExtension ?? "";
+
         if (lang == "EN")
         {
             return "You are the AI co-producer for Insight Training Studio — you help users create professional training videos that captivate audiences and deliver measurable learning outcomes. " +
@@ -783,7 +845,8 @@ public class ChatPanelViewModel : ViewModelBase
                    "Always think from the viewer's perspective: Is the message clear? Does the flow keep attention? Will the thumbnail get clicked? " +
                    "Use set_multiple_scenes for batch updates to maximize efficiency. " +
                    "You can read text data (titles, narration, subtitles, media paths) but cannot see image/video content. " +
-                   "Respond in English.";
+                   "Respond in English." +
+                   (string.IsNullOrEmpty(concierge) ? "" : "\n\n" + concierge);
         }
 
         return "あなたは「Insight Training Studio」のAI共同プロデューサーです。" +
@@ -793,7 +856,8 @@ public class ChatPanelViewModel : ViewModelBase
                "提供されたツールでシーンの読み書き・追加・削除・並べ替え・画像生成が可能です。" +
                "参照できるのはテキスト情報（タイトル、ナレーション、字幕、メディアパス）のみで、画像・動画の内容は参照できません。" +
                "ナレーション・字幕の一括更新にはset_multiple_scenesを使い、効率を最大化してください。" +
-               "日本語で回答してください。";
+               "日本語で回答してください。" +
+               (string.IsNullOrEmpty(concierge) ? "" : "\n\n" + concierge);
     }
 
     // ── Save Prompt ──
@@ -822,14 +886,15 @@ public class ChatPanelViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(SavePromptLabel) || string.IsNullOrWhiteSpace(SavePromptText))
             return;
 
-        var prompt = new UserPrompt
+        var preset = new UserPromptPreset
         {
-            Label = SavePromptLabel.Trim(),
-            Prompt = SavePromptText.Trim(),
+            Id = PromptPresetSvc.GenerateId(),
+            Name = SavePromptLabel.Trim(),
+            SystemPrompt = SavePromptText.Trim(),
             Category = SavePromptCategory?.Trim() ?? string.Empty,
         };
 
-        PromptLibraryService.SavePrompt(prompt);
+        PromptPresetSvc.Add(preset);
         IsSavePromptPanelOpen = false;
         SavePromptLabel = string.Empty;
         SavePromptCategory = string.Empty;
@@ -851,10 +916,10 @@ public class ChatPanelViewModel : ViewModelBase
     {
         if (item?.Source == null) return;
         _editingUserPrompt = item;
-        EditLabel = item.Source.Label;
-        EditPrompt = item.Source.Prompt;
+        EditLabel = item.Source.Name;
+        EditPrompt = item.Source.SystemPrompt;
         EditCategory = item.Source.Category;
-        EditIcon = item.Source.Icon;
+        EditIcon = item.Source.Icon ?? "\U0001F4CC";
         IsEditingPrompt = true;
     }
 
@@ -863,13 +928,13 @@ public class ChatPanelViewModel : ViewModelBase
         if (_editingUserPrompt?.Source == null || string.IsNullOrWhiteSpace(EditLabel)) return;
 
         var source = _editingUserPrompt.Source;
-        source.Label = EditLabel.Trim();
-        source.Prompt = EditPrompt.Trim();
+        source.Name = EditLabel.Trim();
+        source.SystemPrompt = EditPrompt.Trim();
         source.Category = EditCategory?.Trim() ?? string.Empty;
         source.Icon = string.IsNullOrWhiteSpace(EditIcon) ? "\U0001F4CC" : EditIcon.Trim();
-        source.UpdatedAt = DateTime.Now;
+        source.ModifiedAt = DateTime.Now;
 
-        PromptLibraryService.SavePrompt(source);
+        PromptPresetSvc.Update(source.Id, source);
         IsEditingPrompt = false;
         _editingUserPrompt = null;
         RefreshUserPromptGroups();
@@ -884,7 +949,7 @@ public class ChatPanelViewModel : ViewModelBase
     private void DeleteUserPrompt(UserPromptVm? item)
     {
         if (item?.Source == null) return;
-        PromptLibraryService.DeletePrompt(item.Source.Id);
+        PromptPresetSvc.Remove(item.Source.Id);
         IsEditingPrompt = false;
         _editingUserPrompt = null;
         RefreshUserPromptGroups();
@@ -914,31 +979,24 @@ public class ChatPanelViewModel : ViewModelBase
 
     private void OpenPromptEditor()
     {
-        var userPrompts = PromptLibraryService.LoadAllPrompts();
+        // PromptEditorDialog は旧 UserPrompt 型を使用 → 変換して渡す
+        var presets = PromptPresetSvc.LoadAll();
+        var userPrompts = presets.Select(ToLegacyUserPrompt).ToList();
         var lang = _getLang();
         var dialog = new Views.PromptEditorDialog(userPrompts, lang);
 
-        // Try to set owner to current window
-        try
-        {
-            dialog.Owner = Application.Current.MainWindow;
-        }
-        catch
-        {
-            // Ignore if owner can't be set (e.g., popped out)
-        }
+        try { dialog.Owner = Application.Current.MainWindow; }
+        catch { /* popped out */ }
 
         dialog.ShowDialog();
 
-        // Persist changes to user prompts
+        // Persist changes — 旧 UserPrompt → UserPromptPreset に変換して保存
         if (dialog.HasChanges)
         {
-            // Delete all existing, then re-save the modified list
-            var existing = PromptLibraryService.LoadAllPrompts();
-            foreach (var old in existing)
-                PromptLibraryService.DeletePrompt(old.Id);
-            foreach (var prompt in userPrompts)
-                PromptLibraryService.SavePrompt(prompt);
+            foreach (var existing in PromptPresetSvc.LoadAll())
+                PromptPresetSvc.Remove(existing.Id);
+            foreach (var up in userPrompts)
+                PromptPresetSvc.Add(FromLegacyUserPrompt(up));
 
             RefreshUserPromptGroups();
         }
@@ -951,26 +1009,122 @@ public class ChatPanelViewModel : ViewModelBase
 
             if (dialog.ExecuteIsImageMode)
             {
-                // Image mode: set DALL-E size
                 SelectedDalleSize = dialog.ExecuteImageSize;
             }
-            else if (!string.IsNullOrEmpty(dialog.ExecutePersonaId))
+            else if (!string.IsNullOrEmpty(dialog.ExecuteModelId))
             {
-                // Text mode: set Claude model based on persona
-                var persona = InsightCommon.AI.AiPersona.FindById(dialog.ExecutePersonaId);
-                if (persona != null)
-                {
-                    var modelIndex = InsightCommon.AI.ClaudeModels.GetModelIndex(persona.ModelId);
-                    if (modelIndex >= 0)
-                        SelectedModelIndex = modelIndex;
-                }
+                var modelIndex = InsightCommon.AI.ClaudeModels.GetModelIndex(dialog.ExecuteModelId);
+                if (modelIndex >= 0)
+                    SelectedModelIndex = modelIndex;
             }
 
-            // Auto-execute
             if (ExecutePromptCommand.CanExecute(null))
                 ExecutePromptCommand.Execute(null);
         }
     }
+
+    // ── Export / Import ──
+
+    private void ExportPrompts()
+    {
+        var all = PromptPresetSvc.LoadAll();
+        if (all.Count == 0)
+        {
+            MessageBox.Show(
+                Application.Current.TryFindResource("PromptLib.Export.Empty") as string ?? "No prompts to export.",
+                "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var dlg = new Microsoft.Win32.SaveFileDialog
+        {
+            Filter = "JSON|*.json",
+            DefaultExt = ".json",
+            FileName = "prompts_export.json",
+        };
+
+        if (dlg.ShowDialog() == true)
+        {
+            PromptPresetSvc.Export(all, dlg.FileName);
+            MessageBox.Show(
+                string.Format(
+                    Application.Current.TryFindResource("PromptLib.Export.Success") as string ?? "Exported {0} prompts.",
+                    all.Count),
+                "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private void ImportPrompts()
+    {
+        var dlg = new Microsoft.Win32.OpenFileDialog
+        {
+            Filter = "JSON|*.json",
+            DefaultExt = ".json",
+        };
+
+        if (dlg.ShowDialog() != true) return;
+
+        var imported = PromptPresetSvc.Import(dlg.FileName);
+        if (imported.Count == 0)
+        {
+            MessageBox.Show(
+                Application.Current.TryFindResource("PromptLib.Import.Empty") as string ?? "No prompts found in file.",
+                "Import", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        // マージして保存
+        var existing = PromptPresetSvc.LoadAll();
+        var existingIds = new HashSet<string>(existing.Select(p => p.Id), StringComparer.Ordinal);
+        var added = 0;
+        foreach (var preset in imported)
+        {
+            if (existingIds.Contains(preset.Id))
+            {
+                PromptPresetSvc.Update(preset.Id, preset);
+            }
+            else
+            {
+                PromptPresetSvc.Add(preset);
+                added++;
+            }
+        }
+
+        RefreshUserPromptGroups();
+        MessageBox.Show(
+            string.Format(
+                Application.Current.TryFindResource("PromptLib.Import.Success") as string ?? "Imported {0} prompts ({1} new).",
+                imported.Count, added),
+            "Import", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    // ── 旧 UserPrompt ⇔ UserPromptPreset 変換（PromptEditorDialog 互換用）──
+
+    private static UserPrompt ToLegacyUserPrompt(UserPromptPreset p) => new()
+    {
+        Id = p.Id,
+        Label = p.Name,
+        Prompt = p.SystemPrompt,
+        Category = p.Category,
+        Icon = p.Icon ?? "\U0001F4CC",
+        UseCount = p.UsageCount,
+        LastUsedAt = p.LastUsedAt,
+        CreatedAt = p.CreatedAt,
+        UpdatedAt = p.ModifiedAt,
+    };
+
+    private static UserPromptPreset FromLegacyUserPrompt(UserPrompt u) => new()
+    {
+        Id = u.Id,
+        Name = u.Label,
+        SystemPrompt = u.Prompt,
+        Category = u.Category,
+        Icon = u.Icon,
+        UsageCount = u.UseCount,
+        LastUsedAt = u.LastUsedAt,
+        CreatedAt = u.CreatedAt,
+        ModifiedAt = u.UpdatedAt,
+    };
 
     // ── Cancel / API Key ──
 

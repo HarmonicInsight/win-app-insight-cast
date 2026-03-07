@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
@@ -5,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using InsightCast.ViewModels;
+using InsightCommon.AI;
 
 namespace InsightCast.Views;
 
@@ -19,9 +21,24 @@ public partial class ChatPanelView : UserControl
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (e.OldValue is ChatPanelViewModel oldVm)
+        {
             oldVm.PropertyChanged -= OnViewModelPropertyChanged;
+            oldVm.ChatMessages.CollectionChanged -= OnChatMessagesChanged;
+        }
         if (e.NewValue is ChatPanelViewModel newVm)
+        {
             newVm.PropertyChanged += OnViewModelPropertyChanged;
+            newVm.ChatMessages.CollectionChanged += OnChatMessagesChanged;
+        }
+    }
+
+    private void OnChatMessagesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.Action == NotifyCollectionChangedAction.Add)
+        {
+            Dispatcher.InvokeAsync(() => ChatScrollViewer.ScrollToEnd(),
+                System.Windows.Threading.DispatcherPriority.Background);
+        }
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -56,21 +73,6 @@ public partial class ChatPanelView : UserControl
         {
             ThumbnailPreview.Source = null;
         }
-    }
-
-    /// <summary>
-    /// PasswordBox doesn't support binding, so sync manually.
-    /// </summary>
-    private void ApiKeyBox_PasswordChanged(object sender, RoutedEventArgs e)
-    {
-        if (DataContext is ChatPanelViewModel vm && sender is PasswordBox pb)
-            vm.ApiKeyInput = pb.Password;
-    }
-
-    private void OpenAIApiKeyBox_PasswordChanged(object sender, RoutedEventArgs e)
-    {
-        if (DataContext is ChatPanelViewModel vm && sender is PasswordBox pb)
-            vm.OpenAIApiKeyInput = pb.Password;
     }
 
     /// <summary>
@@ -150,6 +152,18 @@ public partial class ChatPanelView : UserControl
             vm.IsImageMode = true;
     }
 
+    // ── Preset Chip Click ──
+
+    private void PresetChip_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (DataContext is ChatPanelViewModel vm &&
+            sender is FrameworkElement fe &&
+            fe.DataContext is PresetPromptVm preset)
+        {
+            vm.LoadPresetToEditorCommand.Execute(preset);
+        }
+    }
+
     // ── Context Menu Handlers for Preset Chips ──
 
     private void PresetDuplicate_Click(object sender, RoutedEventArgs e)
@@ -179,7 +193,7 @@ public partial class ChatPanelView : UserControl
             GetUserPromptFromMenuItem(sender) is UserPromptVm item && item.Source != null)
         {
             // Pre-fill save panel with the user prompt data
-            vm.AiInput = item.Source.Prompt;
+            vm.AiInput = item.Source.SystemPrompt;
             vm.SaveAsUserPromptCommand.Execute(null);
         }
     }

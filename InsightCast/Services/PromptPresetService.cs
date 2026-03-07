@@ -1,166 +1,86 @@
+// =============================================================================
+// PromptPresetService.cs — InsightCommon 共通基盤への静的ラッパー
+//
+// 旧 PromptPreset クラスは InsightCommon.AI.UserPromptPreset に統合。
+// =============================================================================
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text.Json;
-using InsightCast.Models;
+using InsightCommon.AI;
 
 namespace InsightCast.Services;
 
 /// <summary>
-/// プロンプトプリセットの CRUD 管理。
-/// %APPDATA%/InsightCast/prompt_presets.json に永続化。
+/// Cast 用プロンプトプリセット管理。InsightCommon 共通基盤の静的ラッパー。
 /// </summary>
 public static class PromptPresetService
 {
-    private static readonly string s_dirPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "InsightCast");
+    private static readonly InsightCommon.AI.PromptPresetService s_inner =
+        new("INMV", GetBuiltInPresets);
 
-    private static readonly string s_filePath = Path.Combine(s_dirPath, "prompt_presets.json");
-
-    private static readonly JsonSerializerOptions s_jsonOpts = new()
+    static PromptPresetService()
     {
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
-
-    // --- CRUD ---
-
-    public static List<PromptPreset> LoadAll()
-    {
-        try
-        {
-            var builtIn = GetBuiltInPresets();
-
-            if (!File.Exists(s_filePath))
-            {
-                SaveAll(builtIn);
-                return builtIn;
-            }
-
-            var json = File.ReadAllText(s_filePath);
-            var saved = JsonSerializer.Deserialize<List<PromptPreset>>(json, s_jsonOpts) ?? [];
-
-            // Merge: add any missing built-in presets
-            var savedIds = new HashSet<string>(saved.Select(p => p.Id), StringComparer.Ordinal);
-            var added = false;
-            foreach (var bp in builtIn)
-            {
-                if (!savedIds.Contains(bp.Id))
-                {
-                    saved.Add(bp);
-                    added = true;
-                }
-            }
-            if (added) SaveAll(saved);
-            return saved;
-        }
-        catch
-        {
-            return [];
-        }
+        MigrateOldDataOnce();
     }
 
-    public static void Add(PromptPreset preset)
-    {
-        var list = LoadAll();
-        list.Add(preset);
-        SaveAll(list);
-    }
+    // ── CRUD ──
 
-    public static void Update(string id, PromptPreset updated)
-    {
-        var list = LoadAll();
-        var idx = list.FindIndex(p => p.Id == id);
-        if (idx >= 0)
-            list[idx] = updated;
-        else
-            list.Add(updated);
-        SaveAll(list);
-    }
+    public static List<UserPromptPreset> LoadAll() => s_inner.LoadAll();
+    public static void Add(UserPromptPreset preset) => s_inner.Add(preset);
+    public static void Update(string id, UserPromptPreset updated) => s_inner.Update(id, updated);
+    public static void Remove(string id) => s_inner.Remove(id);
+    public static UserPromptPreset? GetDefault() => s_inner.GetDefault();
+    public static void SetDefault(string id) => s_inner.SetDefault(id);
+    public static void IncrementUsage(string id) => s_inner.IncrementUsage(id);
+    public static void TogglePin(string id) => s_inner.TogglePin(id);
 
-    public static void Remove(string id)
-    {
-        var list = LoadAll();
-        list.RemoveAll(p => p.Id == id);
-        SaveAll(list);
-    }
+    // ── Export / Import ──
 
-    public static PromptPreset? GetDefault()
-    {
-        var list = LoadAll();
-        return list.Find(p => p.IsDefault);
-    }
+    public static void Export(List<UserPromptPreset> presets, string filePath)
+        => InsightCommon.AI.PromptPresetService.Export(presets, filePath);
 
-    public static void SetDefault(string id)
-    {
-        var list = LoadAll();
-        foreach (var p in list)
-            p.IsDefault = p.Id == id;
-        SaveAll(list);
-    }
-
-    public static void IncrementUsage(string id)
-    {
-        var list = LoadAll();
-        var preset = list.Find(p => p.Id == id);
-        if (preset != null)
-        {
-            preset.UsageCount++;
-            preset.LastUsedAt = DateTime.Now;
-            SaveAll(list);
-        }
-    }
-
-    public static void TogglePin(string id)
-    {
-        var list = LoadAll();
-        var preset = list.Find(p => p.Id == id);
-        if (preset != null)
-        {
-            preset.IsPinned = !preset.IsPinned;
-            SaveAll(list);
-        }
-    }
-
-    public static void Export(List<PromptPreset> presets, string filePath)
-    {
-        var json = JsonSerializer.Serialize(presets, s_jsonOpts);
-        File.WriteAllText(filePath, json);
-    }
-
-    public static List<PromptPreset> Import(string filePath)
-    {
-        try
-        {
-            var json = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<List<PromptPreset>>(json, s_jsonOpts) ?? [];
-        }
-        catch
-        {
-            return [];
-        }
-    }
+    public static List<UserPromptPreset> Import(string filePath)
+        => InsightCommon.AI.PromptPresetService.Import(filePath);
 
     public static string GenerateId()
-        => $"preset_{DateTime.Now:yyyyMMddHHmmss}_{Random.Shared.Next(1000, 9999)}";
+        => InsightCommon.AI.PromptPresetService.GenerateId();
 
-    private static void SaveAll(List<PromptPreset> presets)
+    // ── 旧データマイグレーション ──
+
+    private static void MigrateOldDataOnce()
     {
-        Directory.CreateDirectory(s_dirPath);
-        var json = JsonSerializer.Serialize(presets, s_jsonOpts);
-        File.WriteAllText(s_filePath, json);
+        try
+        {
+            var oldPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "InsightCast", "prompt_presets.json");
+            var newDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "HarmonicInsight", "INMV");
+            var newPath = Path.Combine(newDir, "prompt_presets.json");
+
+            if (File.Exists(oldPath) && !File.Exists(newPath))
+            {
+                Directory.CreateDirectory(newDir);
+                File.Copy(oldPath, newPath);
+                Trace.WriteLine($"PromptPresetService: migrated {oldPath} → {newPath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.WriteLine($"PromptPresetService migration failed: {ex.Message}");
+        }
     }
 
-    // --- Built-in Presets for InsightCast (Video Creation) ---
+    // ── Built-in Presets for InsightCast (Video Creation) ──
 
-    internal static List<PromptPreset> GetBuiltInPresets()
+    private static List<UserPromptPreset> GetBuiltInPresets()
     {
         var now = new DateTime(2025, 1, 1);
         return
         [
-            // ── ナレーション作成 ──
             new()
             {
                 Id = "builtin_narration_basic",
@@ -195,8 +115,6 @@ public static class PromptPresetService
                 CreatedAt = now,
                 ModifiedAt = now,
             },
-
-            // ── 字幕・テキスト ──
             new()
             {
                 Id = "builtin_subtitle_optimize",
@@ -230,8 +148,6 @@ public static class PromptPresetService
                 CreatedAt = now,
                 ModifiedAt = now,
             },
-
-            // ── 構成・企画 ──
             new()
             {
                 Id = "builtin_structure_suggest",
@@ -254,8 +170,6 @@ public static class PromptPresetService
                 CreatedAt = now,
                 ModifiedAt = now,
             },
-
-            // ── 校正・改善 ──
             new()
             {
                 Id = "builtin_proofread",
@@ -278,8 +192,6 @@ public static class PromptPresetService
                 CreatedAt = now,
                 ModifiedAt = now,
             },
-
-            // ── 分析・要約 ──
             new()
             {
                 Id = "builtin_summary",

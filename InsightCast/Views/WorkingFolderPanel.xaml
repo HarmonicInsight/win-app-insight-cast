@@ -1,0 +1,206 @@
+<UserControl x:Class="InsightCast.Views.WorkingFolderPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:InsightCast.Models"
+             xmlns:conv="clr-namespace:InsightCast.Converters"
+             AllowDrop="True"
+             Drop="OnDrop"
+             DragOver="OnDragOver">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style x:Key="ToolbarIcon" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="Margin" Value="1,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#10000000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Border CornerRadius="8" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+            Background="{DynamicResource BgCard}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header (clean, no toolbar buttons) -->
+            <Border Grid.Row="0" Padding="12,10"
+                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="&#xE8F1;" FontFamily="Segoe MDL2 Assets" FontSize="15"
+                               Foreground="{DynamicResource AccentGold}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Text="{DynamicResource Material.Title}" FontWeight="SemiBold" FontSize="14"
+                               Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding MaterialCountText}" FontSize="10" Margin="10,0,0,0"
+                               Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Filter (shown only when files exist) -->
+            <Border Grid.Row="1" x:Name="FilterBar" Padding="8,6"
+                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1"
+                    Visibility="Collapsed">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="4,0,0,0">
+                        <Button Click="ExpandAll_Click" ToolTip="{DynamicResource WorkFolder.ExpandAll}"
+                                Style="{StaticResource ToolbarIcon}">
+                            <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                       Foreground="{DynamicResource TextTertiary}"/>
+                        </Button>
+                        <Button Click="CollapseAll_Click" ToolTip="{DynamicResource WorkFolder.CollapseAll}"
+                                Style="{StaticResource ToolbarIcon}">
+                            <TextBlock Text="&#xE70E;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                       Foreground="{DynamicResource TextTertiary}"/>
+                        </Button>
+                    </StackPanel>
+                    <Border BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                            CornerRadius="4" Background="White">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Left" Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                       Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center" Margin="8,0,4,0"/>
+                            <Button DockPanel.Dock="Right" Click="ClearFilter_Click" Style="{StaticResource ToolbarIcon}" Padding="4,2">
+                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="9"
+                                           Foreground="{DynamicResource TextTertiary}"/>
+                            </Button>
+                            <TextBox x:Name="FilterBox" BorderThickness="0" FontSize="11" Padding="2,4"
+                                     TextChanged="FilterBox_TextChanged" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Border>
+                </DockPanel>
+            </Border>
+
+            <!-- Tree + Empty State -->
+            <Grid Grid.Row="2">
+                <!-- Empty state (clickable to browse) -->
+                <Border x:Name="DropZone" Padding="20" Cursor="Hand"
+                        MouseLeftButtonUp="DropZone_Click">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Border Width="56" Height="56" CornerRadius="28" HorizontalAlignment="Center"
+                                Margin="0,0,0,12">
+                            <Border.Background>
+                                <SolidColorBrush Color="#B8942F" Opacity="0.1"/>
+                            </Border.Background>
+                            <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="22"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource AccentGold}"/>
+                        </Border>
+                        <TextBlock Text="{DynamicResource Material.DropHint}" FontSize="13" FontWeight="SemiBold"
+                                   TextAlignment="Center" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,4"/>
+                        <TextBlock Text="{DynamicResource Material.DropSub}" FontSize="11"
+                                   TextAlignment="Center" Foreground="{DynamicResource TextTertiary}" TextWrapping="Wrap"/>
+                        <TextBlock Text="{DynamicResource Material.Formats}" FontSize="10"
+                                   TextAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,8,0,0"
+                                   Opacity="0.7"/>
+                    </StackPanel>
+                </Border>
+
+                <TreeView x:Name="MaterialTreeView" ItemsSource="{Binding RootNodes}"
+                          Background="Transparent" BorderThickness="0" Padding="6,4"
+                          MouseDoubleClick="Tree_MouseDoubleClick">
+                    <TreeView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{DynamicResource WorkFolder.AddFile}" Click="AddFile_Click"/>
+                            <MenuItem Header="{DynamicResource WorkFolder.AddFolder}" Click="AddFolder_Click"/>
+                            <Separator/>
+                            <MenuItem Header="{DynamicResource WorkFolder.NewFolder}" Click="NewFolder_Click"/>
+                        </ContextMenu>
+                    </TreeView.ContextMenu>
+                    <TreeView.Resources>
+                        <ContextMenu x:Key="FolderMenu" x:Shared="False">
+                            <MenuItem Header="{DynamicResource WorkFolder.AddFile}" Click="ContextAddFile_Click"/>
+                            <MenuItem Header="{DynamicResource WorkFolder.AddFolder}" Click="ContextAddFolder_Click"/>
+                            <Separator/>
+                            <MenuItem Header="{DynamicResource WorkFolder.NewFolder}" Click="ContextNewFolder_Click"/>
+                            <MenuItem Header="{DynamicResource WorkFolder.Rename}" Click="ContextRename_Click"/>
+                            <MenuItem Header="{DynamicResource WorkFolder.Delete}" Click="ContextDelete_Click"/>
+                        </ContextMenu>
+                        <ContextMenu x:Key="FileMenu" x:Shared="False">
+                            <MenuItem Header="{DynamicResource WorkFolder.OpenFile}" Click="ContextOpen_Click"/>
+                            <Separator/>
+                            <MenuItem Header="{DynamicResource WorkFolder.Rename}" Click="ContextRename_Click"/>
+                            <MenuItem Header="{DynamicResource WorkFolder.Delete}" Click="ContextDelete_Click"/>
+                        </ContextMenu>
+                    </TreeView.Resources>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type models:WorkingFolderTreeNode}" ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal" Margin="1,2">
+                                <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                          IsThreeState="{Binding IsFolder}"
+                                          VerticalAlignment="Center" Margin="0,0,5,0"
+                                          Checked="CheckBox_Changed" Unchecked="CheckBox_Changed" Indeterminate="CheckBox_Changed"/>
+                                <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                           Foreground="{Binding IconBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="{Binding Name}" FontSize="12"
+                                           Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <Button VerticalAlignment="Center"
+                                        Click="InlineDelete_Click"
+                                        Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                        Padding="4,2" ToolTip="{DynamicResource WorkFolder.Delete}"
+                                        Opacity="0" Margin="8,0,0,0">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=TreeViewItem}}" Value="True">
+                                                    <Setter Property="Opacity" Value="1"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                               Foreground="{DynamicResource TextTertiary}"/>
+                                </Button>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="True"/>
+                            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVis}}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsFolder}" Value="True">
+                                    <Setter Property="ContextMenu" Value="{StaticResource FolderMenu}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsFolder}" Value="False">
+                                    <Setter Property="ContextMenu" Value="{StaticResource FileMenu}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                </TreeView>
+            </Grid>
+
+            <!-- Status bar -->
+            <Border Grid.Row="3" Padding="10,6"
+                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,1,0,0">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" Text="{DynamicResource WorkFolder.Parsing}" FontSize="10" FontStyle="Italic"
+                               Foreground="{DynamicResource AccentGold}" Margin="0,0,8,0"
+                               Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+                    <TextBlock Text="{Binding StatusText}" FontSize="10"
+                               Foreground="{DynamicResource TextTertiary}" TextTrimming="CharacterEllipsis"/>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

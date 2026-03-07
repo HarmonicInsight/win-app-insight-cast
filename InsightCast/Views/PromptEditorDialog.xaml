@@ -176,19 +176,64 @@
                           VerticalAlignment="Center" Margin="0,0,0,8"/>
 
                 <!-- Prompt Text -->
-                <TextBlock Grid.Row="11" x:Name="PromptLabel" Text="プロンプト"
-                           FontSize="11" FontWeight="SemiBold" Margin="0,0,0,3"
-                           Foreground="{DynamicResource TextSecondary}"
-                           FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                <DockPanel Grid.Row="11" Margin="0,0,0,3">
+                    <TextBlock x:Name="PromptLabel" Text="プロンプト"
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextSecondary}"
+                               FontFamily="Yu Gothic UI, Meiryo, Segoe UI"
+                               VerticalAlignment="Center"/>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="A&#x2212;" Click="FontSizeDown_Click" Padding="4,1" MinWidth="24" MinHeight="0"
+                                FontSize="10" Background="Transparent" BorderBrush="{DynamicResource BorderDefault}"
+                                BorderThickness="1" Cursor="Hand" Margin="0,0,2,0" ToolTip="フォントサイズ縮小"/>
+                        <TextBlock x:Name="FontSizeLabel" Text="12" FontSize="10" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextSecondary}" MinWidth="16" TextAlignment="Center"/>
+                        <Button Content="A+" Click="FontSizeUp_Click" Padding="4,1" MinWidth="24" MinHeight="0"
+                                FontSize="10" Background="Transparent" BorderBrush="{DynamicResource BorderDefault}"
+                                BorderThickness="1" Cursor="Hand" Margin="2,0,0,0" ToolTip="フォントサイズ拡大"/>
+                    </StackPanel>
+                </DockPanel>
                 <TextBox Grid.Row="12" x:Name="PromptBox" FontSize="12" Padding="6,4"
                          AcceptsReturn="True" TextWrapping="Wrap"
                          VerticalScrollBarVisibility="Auto"
                          BorderBrush="{DynamicResource BorderDefault}"
                          FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
 
-                <!-- Save + Execute buttons -->
+                <!-- Save + Customize + Execute buttons -->
                 <DockPanel Grid.Row="13" Margin="0,8,0,0">
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                        <Button x:Name="ExportButton"
+                                Click="Export_Click" Padding="10,6" Cursor="Hand"
+                                Background="Transparent"
+                                BorderBrush="{DynamicResource BorderDefault}"
+                                BorderThickness="1" FontSize="11"
+                                Margin="0,0,4,0"
+                                ToolTip="プロンプトをJSONファイルにエクスポート">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE898;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,4,0"/>
+                                <TextBlock Text="Export" FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="ImportButton"
+                                Click="Import_Click" Padding="10,6" Cursor="Hand"
+                                Background="Transparent"
+                                BorderBrush="{DynamicResource BorderDefault}"
+                                BorderThickness="1" FontSize="11"
+                                ToolTip="JSONファイルからプロンプトをインポート">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,4,0"/>
+                                <TextBlock Text="Import" FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                        <Button x:Name="CustomizeButton" Content="カスタム登録"
+                                Click="Customize_Click" Padding="16,6" Cursor="Hand"
+                                Background="#7C3AED" Foreground="White"
+                                BorderThickness="0" FontSize="12" FontWeight="SemiBold"
+                                Margin="0,0,6,0" IsEnabled="False"
+                                ToolTip="プリセットを修正してカスタムプロンプトとして登録"
+                                FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
                         <Button x:Name="SaveButton" Content="保存"
                                 Click="Save_Click" Padding="16,6" Cursor="Hand"
                                 Background="{DynamicResource BrandPrimary}" Foreground="White"

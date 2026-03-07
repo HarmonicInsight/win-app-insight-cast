@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using InsightCast.Models;
 using InsightCast.Services.Claude;
 using InsightCommon.AI;
+using Microsoft.Win32;
 
 namespace InsightCast.Views;
 
@@ -13,6 +16,7 @@ public partial class PromptEditorDialog : Window
 {
     private readonly List<UserPrompt> _userPrompts;
     private readonly string _lang;
+    private readonly HashSet<AiProviderType> _configuredProviders;
     private UserPrompt? _selectedCustom;
     private bool _suppressOutputToggle = true; // suppress during InitializeComponent
 
@@ -24,8 +28,8 @@ public partial class PromptEditorDialog : Window
     /// <summary>実行リクエスト: モード (check/advice)</summary>
     public string? ExecuteMode { get; private set; }
 
-    /// <summary>実行リクエスト: ペルソナID</summary>
-    public string? ExecutePersonaId { get; private set; }
+    /// <summary>実行リクエスト: モデルID</summary>
+    public string? ExecuteModelId { get; private set; }
 
     /// <summary>実行リクエスト: 画像生成モードか</summary>
     public bool ExecuteIsImageMode { get; private set; }
@@ -33,33 +37,27 @@ public partial class PromptEditorDialog : Window
     /// <summary>実行リクエスト: 画像サイズ</summary>
     public string ExecuteImageSize { get; private set; } = "1024x1024";
 
-    public PromptEditorDialog(List<UserPrompt> userPrompts, string lang)
+    public PromptEditorDialog(List<UserPrompt> userPrompts, string lang,
+        AiProviderConfig? providerConfig = null)
     {
         InitializeComponent();
         _suppressOutputToggle = false;
         _userPrompts = userPrompts;
         _lang = lang;
 
-        // モデルComboBox構築 (strip "Claude" prefix: 俊、恵、学 + model name)
-        var models = ClaudeModels.Registry
-            .Where(m => m.IsActive)
-            .Select(m =>
-            {
-                var persona = AiPersona.FindByModelId(m.Id);
-                var name = persona?.GetName(lang)?.Replace("Claude", "").Trim() ?? m.Family;
-                return new ModelItem(
-                    persona?.Id ?? m.Family,
-                    $"{name} ({m.Label} {m.CostIndicator})");
-            })
-            .ToList();
+        // 設定済みプロバイダーを判定
+        _configuredProviders = BuildConfiguredProviders(providerConfig);
 
-        // OpenAI models
-        models.Add(new ModelItem("dalle3", "DALL-E 3 (OpenAI $$$)"));
-        models.Add(new ModelItem("gpt-image-1", "GPT Image 1 (OpenAI $$)"));
+        // モデルComboBox構築（Chat + ImageGeneration 対応モデル、プロバイダー別 API キー状態付き）
+        var chatModels = AiModelRegistry.GetModelsWithCapability(AiCapability.Chat)
+            .Select(m => new ModelItem(m.Id, m.DisplayName, _configuredProviders.Contains(m.Provider)));
+        var imageModels = AiModelRegistry.GetModelsWithCapability(AiCapability.ImageGeneration)
+            .Select(m => new ModelItem(m.Id, m.DisplayName + " [IMG]", _configuredProviders.Contains(m.Provider)));
+        var models = chatModels.Concat(imageModels).ToList();
 
         ModelComboBox.ItemsSource = models;
         ModelComboBox.DisplayMemberPath = "DisplayName";
-        ModelComboBox.SelectedValuePath = "PersonaId";
+        ModelComboBox.SelectedValuePath = "ModelId";
 
         // 画像サイズComboBox
         ImageSizeComboBox.ItemsSource = new[]
@@ -77,6 +75,18 @@ public partial class PromptEditorDialog : Window
 
         ApplyLanguage();
         BuildTree();
+    }
+
+    private static HashSet<AiProviderType> BuildConfiguredProviders(AiProviderConfig? config)
+    {
+        var set = new HashSet<AiProviderType>();
+        if (config == null) return set;
+        foreach (var provider in AiModelRegistry.GetAvailableProviders())
+        {
+            if (!string.IsNullOrEmpty(config.GetApiKey(provider)))
+                set.Add(provider);
+        }
+        return set;
     }
 
     private string Res(string key, string fallback)
@@ -104,6 +114,10 @@ public partial class PromptEditorDialog : Window
         ImageSizeLabel.Text = Res("PE.ImageSize", "画像サイズ") + ":";
         AddButton.ToolTip = Res("PE.Add", "新規追加");
         DeleteButton.ToolTip = Res("PE.Delete", "削除");
+        ExportButton.Content = "\uE898 " + Res("PE.Export", "エクスポート");
+        ExportButton.ToolTip = Res("PE.Export.Tooltip", "プロンプトをJSONファイルにエクスポート");
+        ImportButton.Content = "\uE896 " + Res("PE.Import", "インポート");
+        ImportButton.ToolTip = Res("PE.Import.Tooltip", "JSONファイルからプロンプトをインポート");
     }
 
     private void RefreshCategoryComboBox()
@@ -201,9 +215,9 @@ public partial class PromptEditorDialog : Window
             CategoryComboBox.Text = preset.GetCategory(_lang);
             CategoryComboBox.IsEnabled = false;
 
-            // モデル
+            // モデル（ペルソナ → モデルID解決）
             var persona = AiPersona.FindById(preset.RecommendedPersonaId);
-            ModelComboBox.SelectedValue = persona?.Id ?? "megumi";
+            ModelComboBox.SelectedValue = persona?.ModelId ?? ClaudeModels.DefaultModel;
             ModelComboBox.IsEnabled = false;
 
             ModeCheck.IsChecked = preset.Mode == "check";
@@ -226,6 +240,7 @@ public partial class PromptEditorDialog : Window
             SaveButton.IsEnabled = false;
             DeleteButton.IsEnabled = false;
             ExecuteButton.IsEnabled = true;
+            CustomizeButton.IsEnabled = true;
         }
         else if (tvi.Tag is UserPrompt custom)
         {
@@ -237,9 +252,16 @@ public partial class PromptEditorDialog : Window
             CategoryComboBox.Text = custom.Category;
             CategoryComboBox.IsEnabled = true;
 
-            ModelComboBox.SelectedValue = custom.RecommendedPersonaId;
+            // モデル（ModelId 優先、なければペルソナ → モデルID解決でフォールバック）
+            var customModelId = custom.RecommendedModelId;
+            if (string.IsNullOrEmpty(customModelId))
+            {
+                var p = AiPersona.FindById(custom.RecommendedPersonaId);
+                customModelId = p?.ModelId ?? ClaudeModels.DefaultModel;
+            }
+            ModelComboBox.SelectedValue = customModelId;
             if (ModelComboBox.SelectedItem == null)
-                ModelComboBox.SelectedValue = "megumi";
+                ModelComboBox.SelectedValue = ClaudeModels.DefaultModel;
             ModelComboBox.IsEnabled = true;
 
             ModeCheck.IsChecked = custom.Mode == "check";
@@ -262,14 +284,44 @@ public partial class PromptEditorDialog : Window
             SaveButton.IsEnabled = true;
             DeleteButton.IsEnabled = true;
             ExecuteButton.IsEnabled = true;
+            CustomizeButton.IsEnabled = false;
         }
         else
         {
             _selectedCustom = null;
             EditorPanel.IsEnabled = false;
+            CustomizeButton.IsEnabled = false;
             DeleteButton.IsEnabled = false;
             ExecuteButton.IsEnabled = false;
         }
+    }
+
+    private void Customize_Click(object sender, RoutedEventArgs e)
+    {
+        // プリセットのプロンプトを修正してカスタム登録
+        var promptText = PromptBox.Text?.Trim() ?? "";
+        var name = NameBox.Text?.Trim() ?? "";
+        var category = (CategoryComboBox.Text ?? "").Trim();
+        var suffix = _lang == "ja" ? "カスタム" : "Custom";
+
+        var selectedModelId = ModelComboBox.SelectedValue as string ?? ClaudeModels.DefaultModel;
+        var entry = new UserPrompt
+        {
+            Label = name + " (" + suffix + ")",
+            Category = category,
+            Prompt = promptText,
+            RecommendedModelId = selectedModelId,
+            RecommendedPersonaId = AiPersona.FindByModelId(selectedModelId)?.Id ?? "megumi",
+            Mode = ModeCheck.IsChecked == true ? "check" : "advice",
+            IsImageMode = OutputImage.IsChecked == true,
+            ImageSize = ImageSizeComboBox.SelectedValue as string ?? "1024x1024",
+            RequiresContextData = RequiresContextDataCheckBox.IsChecked == true,
+        };
+        _userPrompts.Add(entry);
+        HasChanges = true;
+        RefreshCategoryComboBox();
+        BuildTree();
+        SelectCustomEntry(entry);
     }
 
     private void Add_Click(object sender, RoutedEventArgs e)
@@ -310,9 +362,11 @@ public partial class PromptEditorDialog : Window
     {
         if (_selectedCustom == null) return;
 
+        var savedModelId = ModelComboBox.SelectedValue as string ?? ClaudeModels.DefaultModel;
         _selectedCustom.Label = NameBox.Text.Trim();
         _selectedCustom.Category = (CategoryComboBox.Text ?? string.Empty).Trim();
-        _selectedCustom.RecommendedPersonaId = ModelComboBox.SelectedValue as string ?? "megumi";
+        _selectedCustom.RecommendedModelId = savedModelId;
+        _selectedCustom.RecommendedPersonaId = AiPersona.FindByModelId(savedModelId)?.Id ?? "megumi";
         _selectedCustom.Mode = ModeCheck.IsChecked == true ? "check" : "advice";
         _selectedCustom.IsImageMode = OutputImage.IsChecked == true;
         _selectedCustom.ImageSize = ImageSizeComboBox.SelectedValue as string ?? "1024x1024";
@@ -348,10 +402,112 @@ public partial class PromptEditorDialog : Window
     {
         ExecutePromptText = PromptBox.Text.Trim();
         ExecuteMode = ModeCheck.IsChecked == true ? "check" : "advice";
-        ExecutePersonaId = ModelComboBox.SelectedValue as string ?? "megumi";
+        ExecuteModelId = ModelComboBox.SelectedValue as string ?? ClaudeModels.DefaultModel;
         ExecuteIsImageMode = OutputImage.IsChecked == true;
         ExecuteImageSize = ImageSizeComboBox.SelectedValue as string ?? "1024x1024";
         Close();
+    }
+
+    // ── Export / Import ──
+
+    private void Export_Click(object sender, RoutedEventArgs e)
+    {
+        if (_userPrompts.Count == 0)
+        {
+            MessageBox.Show(
+                Res("PE.Export.Empty", "エクスポートするプロンプトがありません。"),
+                Res("PE.Export", "エクスポート"),
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var dlg = new SaveFileDialog
+        {
+            Filter = "JSON|*.json",
+            FileName = $"prompts_{DateTime.Now:yyyyMMdd_HHmmss}.json",
+            Title = Res("PE.Export", "エクスポート"),
+        };
+        if (dlg.ShowDialog(this) != true) return;
+
+        try
+        {
+            var json = JsonSerializer.Serialize(_userPrompts, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            });
+            File.WriteAllText(dlg.FileName, json);
+            MessageBox.Show(
+                string.Format(Res("PE.Export.Success", "{0} 件のプロンプトをエクスポートしました。"), _userPrompts.Count),
+                Res("PE.Export", "エクスポート"),
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, Res("PE.Export", "エクスポート"),
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void Import_Click(object sender, RoutedEventArgs e)
+    {
+        var dlg = new OpenFileDialog
+        {
+            Filter = "JSON|*.json",
+            Title = Res("PE.Import", "インポート"),
+        };
+        if (dlg.ShowDialog(this) != true) return;
+
+        try
+        {
+            var json = File.ReadAllText(dlg.FileName);
+            var imported = JsonSerializer.Deserialize<List<UserPrompt>>(json, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
+            });
+            if (imported == null || imported.Count == 0)
+            {
+                MessageBox.Show(
+                    Res("PE.Import.Empty", "インポートできるプロンプトがありませんでした。"),
+                    Res("PE.Import", "インポート"),
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Merge: skip duplicates by Id
+            var existingIds = new HashSet<string>(_userPrompts.Select(p => p.Id));
+            int added = 0;
+            foreach (var item in imported)
+            {
+                if (string.IsNullOrEmpty(item.Id))
+                    item.Id = Guid.NewGuid().ToString("N");
+                if (!existingIds.Contains(item.Id))
+                {
+                    _userPrompts.Add(item);
+                    existingIds.Add(item.Id);
+                    added++;
+                }
+            }
+
+            if (added > 0)
+            {
+                HasChanges = true;
+                RefreshCategoryComboBox();
+                BuildTree();
+            }
+
+            MessageBox.Show(
+                string.Format(Res("PE.Import.Success", "{0} 件のプロンプトをインポートしました。（{1} 件は重複スキップ）"),
+                    added, imported.Count - added),
+                Res("PE.Import", "インポート"),
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, Res("PE.Import", "インポート"),
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     // ── Output Type Toggle ──
@@ -361,10 +517,17 @@ public partial class PromptEditorDialog : Window
         if (_suppressOutputToggle) return;
         ApplyImageModeUI(true);
 
-        // Auto-fill image defaults for custom prompts
+        // Auto-select an image model for custom prompts
         if (_selectedCustom != null)
         {
-            ModelComboBox.SelectedValue = "dalle3";
+            // Pick first available image generation model
+            var imageModels = AiModelRegistry.GetModelsWithCapability(AiCapability.ImageGeneration);
+            var firstAvailable = imageModels.FirstOrDefault(m => _configuredProviders.Contains(m.Provider));
+            if (firstAvailable != null)
+                ModelComboBox.SelectedValue = firstAvailable.Id;
+            else if (imageModels.Count > 0)
+                ModelComboBox.SelectedValue = imageModels[0].Id;
+
             RequiresContextDataCheckBox.IsChecked = false;
             ModeAdvice.IsChecked = true;
             ImageSizeComboBox.SelectedValue = "1024x1024";
@@ -383,7 +546,7 @@ public partial class PromptEditorDialog : Window
         // Restore text defaults for custom prompts
         if (_selectedCustom != null)
         {
-            ModelComboBox.SelectedValue = "megumi";
+            ModelComboBox.SelectedValue = ClaudeModels.DefaultModel;
             RequiresContextDataCheckBox.IsChecked = true;
             ModeCheck.IsChecked = true;
 
@@ -399,6 +562,22 @@ public partial class PromptEditorDialog : Window
         ModeDescriptionText.Visibility = isImage ? Visibility.Collapsed : Visibility.Visible;
     }
 
-    private sealed record ModelItem(string PersonaId, string DisplayName);
+    // ── Font Size Control ──
+
+    private void FontSizeUp_Click(object sender, RoutedEventArgs e)
+    {
+        var size = Math.Min(PromptBox.FontSize + 1, 24);
+        PromptBox.FontSize = size;
+        FontSizeLabel.Text = size.ToString();
+    }
+
+    private void FontSizeDown_Click(object sender, RoutedEventArgs e)
+    {
+        var size = Math.Max(PromptBox.FontSize - 1, 9);
+        PromptBox.FontSize = size;
+        FontSizeLabel.Text = size.ToString();
+    }
+
+    private sealed record ModelItem(string ModelId, string DisplayName, bool IsProviderConfigured);
     private sealed record ImageSizeItem(string Size, string DisplayName);
 }

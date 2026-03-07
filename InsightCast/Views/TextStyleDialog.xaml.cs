@@ -232,7 +232,9 @@ namespace InsightCast.Views
             if (sender is Border border && border.Tag is int index)
             {
                 _selectedPresetIndex = index;
+                var currentFontSize = _currentStyle.FontSize;
                 _currentStyle = CloneStyle(TextStyle.PRESET_STYLES[index]);
+                _currentStyle.FontSize = currentFontSize;
 
                 // Highlight selected preset
                 foreach (var item in PresetGrid.Items)

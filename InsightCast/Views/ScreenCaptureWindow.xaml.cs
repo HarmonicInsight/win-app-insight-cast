@@ -85,6 +85,8 @@ namespace InsightCast.Views
         public string? CapturedImagePath { get; private set; }
         public bool CopiedToClipboard { get; private set; }
         public bool PinnedToScene { get; private set; }
+        public bool RecordingRequested { get; private set; }
+        public System.Drawing.Rectangle RecordingRegion { get; private set; }
 
         #endregion
 
@@ -1564,6 +1566,30 @@ namespace InsightCast.Views
                 ShowError("シーンへの追加に失敗しました", ex);
                 return;
             }
+            Close();
+        }
+
+        private void Action_Record(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selRect = GetSelectionRect();
+                // Convert WPF DIPs to physical pixels
+                int x = _vsLeft + Math.Max(0, (int)(selRect.X * _dpiScaleX));
+                int y = _vsTop + Math.Max(0, (int)(selRect.Y * _dpiScaleY));
+                int w = (int)(selRect.Width * _dpiScaleX);
+                int h = (int)(selRect.Height * _dpiScaleY);
+
+                // Ensure even dimensions (required by libx264)
+                w = w / 2 * 2;
+                h = h / 2 * 2;
+
+                if (w < 10 || h < 10) return;
+
+                RecordingRegion = new System.Drawing.Rectangle(x, y, w, h);
+                RecordingRequested = true;
+            }
+            catch { return; }
             Close();
         }
 

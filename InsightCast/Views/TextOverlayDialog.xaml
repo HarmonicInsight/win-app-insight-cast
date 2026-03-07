@@ -1,0 +1,190 @@
+<Window x:Class="InsightCast.Views.TextOverlayDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Overlay.Dialog.Title}"
+        Width="520" Height="560"
+        MinWidth="460" MinHeight="480"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip">
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>   <!-- Preview -->
+            <RowDefinition Height="Auto"/>   <!-- Overlay list -->
+            <RowDefinition Height="*"/>      <!-- Editor -->
+            <RowDefinition Height="Auto"/>   <!-- Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- ═══ Preview (miniature scene) ═══ -->
+        <Border Grid.Row="0" Height="160" CornerRadius="6" Margin="0,0,0,8" ClipToBounds="True">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF1A1A2E" Offset="0"/>
+                    <GradientStop Color="#FF16213E" Offset="0.5"/>
+                    <GradientStop Color="#FF0F3460" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid>
+                <Image x:Name="PreviewImage" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Canvas x:Name="PreviewCanvas"/>
+            </Grid>
+        </Border>
+
+        <!-- ═══ Overlay list + Add/Remove ═══ -->
+        <DockPanel Grid.Row="1" Margin="0,0,0,6">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top" Margin="8,0,0,0">
+                <Button Content="＋" Width="28" Height="28" FontWeight="Bold" Margin="0,0,2,0"
+                        Click="AddOverlay_Click" ToolTip="{DynamicResource Overlay.Add.Tooltip}"/>
+                <Button Content="{DynamicResource Overlay.CoverTemplate}" Padding="6,3" Height="28" Margin="0,0,2,0"
+                        Click="AddCoverTemplate_Click" ToolTip="{DynamicResource Overlay.CoverTemplate.Tooltip}"/>
+                <Button Content="✕" Width="28" Height="28" Margin="0,0,2,0"
+                        Click="RemoveOverlay_Click" ToolTip="{DynamicResource Overlay.Remove.Tooltip}"/>
+                <Button Content="▲" Width="24" Height="28" FontSize="10" Margin="4,0,2,0"
+                        Click="MoveUp_Click" ToolTip="{DynamicResource Overlay.MoveUp.Tooltip}"/>
+                <Button Content="▼" Width="24" Height="28" FontSize="10"
+                        Click="MoveDown_Click" ToolTip="{DynamicResource Overlay.MoveDown.Tooltip}"/>
+            </StackPanel>
+            <ListBox x:Name="OverlayList" Height="72" SelectionChanged="OverlayList_SelectionChanged"
+                     HorizontalContentAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="6" Height="14" CornerRadius="1" Margin="0,0,6,0" VerticalAlignment="Center">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{Binding ColorValue}"/>
+                                </Border.Background>
+                            </Border>
+                            <TextBlock Text="{Binding Label}" FontSize="11" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <!-- ═══ Editor ═══ -->
+        <Border Grid.Row="2" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                CornerRadius="6" Padding="12,10" Background="{DynamicResource BgCard}"
+                Visibility="{Binding ElementName=OverlayList, Path=SelectedItem, Converter={StaticResource NullToCollapsedConverter}}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <!-- ① テキスト入力 -->
+                    <TextBlock Text="{DynamicResource Overlay.Text}" FontSize="11" Margin="0,0,0,3"
+                               Foreground="{DynamicResource TextSecondary}"/>
+                    <TextBox x:Name="OverlayTextBox" Padding="6" MinHeight="36" MaxHeight="80"
+                             TextWrapping="Wrap" AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Auto"
+                             VerticalContentAlignment="Top" FontSize="13"
+                             TextChanged="OverlayText_Changed"/>
+
+                    <!-- ② 配置 -->
+                    <TextBlock Text="{DynamicResource Overlay.Position}" FontSize="11" Margin="0,10,0,4"
+                               Foreground="{DynamicResource TextSecondary}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ミニ画面風 3x3 配置グリッド -->
+                        <Border Grid.Column="0" Background="#1a1a2e" CornerRadius="6"
+                                Width="128" Height="72" ClipToBounds="True">
+                            <UniformGrid Rows="3" Columns="3" x:Name="PositionGrid"/>
+                        </Border>
+
+                        <!-- X/Y スライダー -->
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="38"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Overlay.XPosition}" FontSize="11"
+                                           Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"/>
+                                <Slider x:Name="XSlider" Grid.Column="1" Minimum="0" Maximum="100"
+                                        VerticalAlignment="Center" ValueChanged="XSlider_Changed"/>
+                                <TextBlock x:Name="XLabel" Grid.Column="2" FontSize="11" TextAlignment="Right"
+                                           Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="38"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Overlay.YPosition}" FontSize="11"
+                                           Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"/>
+                                <Slider x:Name="YSlider" Grid.Column="1" Minimum="0" Maximum="100"
+                                        VerticalAlignment="Center" ValueChanged="YSlider_Changed"/>
+                                <TextBlock x:Name="YLabel" Grid.Column="2" FontSize="11" TextAlignment="Right"
+                                           Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- ③ 外観 -->
+                    <TextBlock Text="{DynamicResource Overlay.Appearance}" FontSize="11" Margin="0,10,0,4"
+                               Foreground="{DynamicResource TextSecondary}"/>
+
+                    <!-- サイズプリセット + スライダー -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                            <Button Content="S" Width="28" Height="26" FontSize="11" Padding="0" Margin="0,0,3,0"
+                                    Click="SizePreset_Click" Tag="28" ToolTip="28pt"/>
+                            <Button Content="M" Width="28" Height="26" FontSize="11" Padding="0" Margin="0,0,3,0"
+                                    Click="SizePreset_Click" Tag="48" ToolTip="48pt"/>
+                            <Button Content="L" Width="28" Height="26" FontSize="11" Padding="0" Margin="0,0,3,0"
+                                    Click="SizePreset_Click" Tag="72" ToolTip="72pt"/>
+                            <Button Content="XL" Width="32" Height="26" FontSize="11" Padding="0"
+                                    Click="SizePreset_Click" Tag="96" ToolTip="96pt"/>
+                        </StackPanel>
+                        <Slider x:Name="FontSizeSlider" Grid.Column="1" Minimum="16" Maximum="120"
+                                TickFrequency="4" IsSnapToTickEnabled="True"
+                                VerticalAlignment="Center" ValueChanged="FontSize_Changed"/>
+                        <TextBlock x:Name="FontSizeLabel" Grid.Column="2" FontSize="11" Width="38" TextAlignment="Right"
+                                   Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                    </Grid>
+
+                    <!-- 色 + 揃え + 透明度 -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel x:Name="ColorSwatchPanel" Orientation="Horizontal" VerticalAlignment="Center"/>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <ComboBox x:Name="AlignmentCombo" Width="70" FontSize="11" Height="26" Margin="8,0,6,0"
+                                      SelectionChanged="Alignment_Changed"/>
+                            <Slider x:Name="OpacitySlider" Width="60" Minimum="0" Maximum="100"
+                                    TickFrequency="5" IsSnapToTickEnabled="True"
+                                    VerticalAlignment="Center" ValueChanged="Opacity_Changed"/>
+                            <TextBlock x:Name="OpacityLabel" FontSize="11" Width="30" Margin="4,0,0,0"
+                                       Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- ═══ OK / Cancel ═══ -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="{DynamicResource Common.OK}" MinWidth="90" Height="32" Padding="16,4"
+                    IsDefault="True" Click="OkButton_Click"/>
+            <Button Content="{DynamicResource Common.Cancel}" MinWidth="90" Height="32" Padding="16,4"
+                    Margin="8,0,0,0" IsCancel="True" Click="CancelButton_Click"/>
+        </StackPanel>
+    </Grid>
+
+    <Window.Resources>
+        <local:NullToCollapsedConverter x:Key="NullToCollapsedConverter"
+                                        xmlns:local="clr-namespace:InsightCast.Views"/>
+    </Window.Resources>
+</Window>

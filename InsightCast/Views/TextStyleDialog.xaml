@@ -127,20 +127,20 @@
                         <Grid Margin="0,0,0,8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="90"/>
-                                <ColumnDefinition Width="120"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="{DynamicResource Style.Size}" Style="{StaticResource FieldLabel}"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button x:Name="SizeDownBtn" Content="-" Width="28" Height="28"
+                                <Button x:Name="SizeDownBtn" Content="-" Width="32" Height="32" FontSize="16" FontWeight="Bold"
                                         Click="SizeDown_Click"/>
-                                <TextBox x:Name="SizeTextBox" Width="50" Height="28"
+                                <TextBox x:Name="SizeTextBox" Width="70" Height="32" Margin="4,0"
                                          TextAlignment="Center" VerticalContentAlignment="Center"
+                                         FontSize="14"
                                          TextChanged="SizeTextBox_TextChanged"/>
-                                <Button x:Name="SizeUpBtn" Content="+" Width="28" Height="28"
+                                <Button x:Name="SizeUpBtn" Content="+" Width="32" Height="32" FontSize="16" FontWeight="Bold"
                                         Click="SizeUp_Click"/>
+                                <TextBlock Text="pt" Style="{StaticResource FieldLabel}" Margin="6,0,0,0"/>
                             </StackPanel>
-                            <TextBlock Grid.Column="2" Text="pt" Style="{StaticResource FieldLabel}" Margin="4,0,0,0"/>
                         </Grid>
 
                         <!-- Text Color -->

@@ -84,7 +84,7 @@ namespace InsightCast.Models
                 Id = "default",
                 Name = LocalizationService.GetString("Style.Preset.Default"),
                 FontFamily = "Yu Gothic UI",
-                FontSize = 48,
+                FontSize = 28,
                 FontBold = true,
                 TextColor = new[] { 255, 255, 255 },
                 StrokeColor = new[] { 0, 0, 0 },

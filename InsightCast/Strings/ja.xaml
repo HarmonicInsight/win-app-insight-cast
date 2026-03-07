@@ -16,19 +16,22 @@
     <sys:String x:Key="Common.Load">読込</sys:String>
     <sys:String x:Key="Common.Add">＋追加</sys:String>
     <sys:String x:Key="Common.Remove">－削除</sys:String>
+    <sys:String x:Key="Common.Delete">削除</sys:String>
     <sys:String x:Key="Common.Error">エラー</sys:String>
+    <sys:String x:Key="Common.Info">情報</sys:String>
     <sys:String x:Key="Common.Enabled">有効</sys:String>
     <sys:String x:Key="Common.None">（なし）</sys:String>
     <sys:String x:Key="Common.Unselected">（未選択）</sys:String>
     <sys:String x:Key="Common.Unknown">不明</sys:String>
     <sys:String x:Key="Common.AllFiles">すべてのファイル</sys:String>
+    <sys:String x:Key="Common.Default">デフォルト</sys:String>
 
     <!-- Window Chrome -->
     <sys:String x:Key="Window.Minimize">最小化</sys:String>
     <sys:String x:Key="Window.Maximize">最大化</sys:String>
     <sys:String x:Key="Window.Close">閉じる</sys:String>
     <sys:String x:Key="Window.Restore">元に戻す</sys:String>
-<!-- Mode Toggle -->    <sys:String x:Key="Mode.Simple">シンプル</sys:String>    <sys:String x:Key="Mode.Detail">詳細</sys:String>
+<!-- Mode Toggle -->    <sys:String x:Key="Mode.Simple">簡単</sys:String>    <sys:String x:Key="Mode.Detail">詳細</sys:String>
 <!-- Preview -->    <sys:String x:Key="Preview.WindowTitle">プレビュー</sys:String>    <sys:String x:Key="Preview.ClickToEnlarge">クリックで拡大</sys:String>
 
     <!-- Language Switcher -->
@@ -41,7 +44,7 @@
     <sys:String x:Key="App.Error.Fatal.Title">Insight Training Studio - 致命的エラー</sys:String>
     <sys:String x:Key="App.Error.Startup">起動中にエラーが発生しました。\n\n{0}</sys:String>
     <sys:String x:Key="App.Error.Startup.Title">Insight Training Studio - 起動エラー</sys:String>
-    <sys:String x:Key="App.Config.Corrupted">設定ファイルが破損していたため、デフォルト設定で起動します。\nエンジンURL、話者ID、ライセンス情報の再設定が必要な場合があります。</sys:String>
+    <sys:String x:Key="App.Config.Corrupted">設定ファイルが破損していたため、デフォルト設定で起動します。\nエンジンURL、ナレーターID、ライセンス情報の再設定が必要な場合があります。</sys:String>
     <sys:String x:Key="App.Config.Corrupted.Title">Insight Training Studio - 設定ファイル警告</sys:String>
     <sys:String x:Key="App.FFmpeg.Error">FFmpeg の初期化に失敗しました。\n動画生成機能は使用できません。\n\n{0}\n\n以下のいずれかの方法でFFmpegを配置してください:\n• PATH環境変数にffmpeg.exeのあるフォルダを追加\n• アプリフォルダ内に tools\ffmpeg\bin\ffmpeg.exe を配置\n• build.ps1 を実行して自動ダウンロード</sys:String>
     <sys:String x:Key="App.FFmpeg.NotFound">ffmpegが検出されていません。\n動画の書き出しにはffmpegが必要です。</sys:String>
@@ -54,7 +57,7 @@
     <sys:String x:Key="Header.OpenFile">ファイルを開く</sys:String>
     <sys:String x:Key="Header.Save">上書き保存</sys:String>
     <sys:String x:Key="Header.SaveAs">別名で保存</sys:String>
-    <sys:String x:Key="Header.ImportPptx">PPTX取込</sys:String>
+    <sys:String x:Key="Header.ImportPptx">ドキュメント取込</sys:String>
 
     <!-- Menu Bar -->
     <sys:String x:Key="Menu.File">ファイル(_F)</sys:String>
@@ -98,7 +101,7 @@
     <sys:String x:Key="Scene.Editor">シーン編集</sys:String>
     <sys:String x:Key="Scene.Media">素材:</sys:String>
     <sys:String x:Key="Scene.Narration.Placeholder">ここに話をさせる内容を入力してください。</sys:String>
-    <sys:String x:Key="Scene.Speaker">話者:</sys:String>
+    <sys:String x:Key="Scene.Speaker">ナレーター:</sys:String>
     <sys:String x:Key="Scene.KeepAudio">動画音声を残す</sys:String>
     <sys:String x:Key="Scene.PreviewAudio">▶試聴</sys:String>
     <sys:String x:Key="Scene.PreviewScene">▶シーンプレビュー</sys:String>
@@ -119,6 +122,12 @@
     <sys:String x:Key="Overlay.Alignment">揃え:</sys:String>
     <sys:String x:Key="Overlay.Color">文字色:</sys:String>
     <sys:String x:Key="Overlay.Opacity">不透明度:</sys:String>
+    <sys:String x:Key="Overlay.Position">配置</sys:String>
+    <sys:String x:Key="Overlay.Appearance">外観</sys:String>
+    <sys:String x:Key="Overlay.Position.Fine">微調整</sys:String>
+    <sys:String x:Key="Overlay.Dialog.Title">テキスト配置エディタ</sys:String>
+    <sys:String x:Key="Overlay.Dialog.Button">テキスト配置</sys:String>
+    <sys:String x:Key="Overlay.Dialog.Button.Tooltip">タイトル・キャプション・注釈を画面上に配置するエディタを開きます</sys:String>
     <sys:String x:Key="Overlay.MoveUp.Tooltip">表示順を上に移動（前面へ）</sys:String>
     <sys:String x:Key="Overlay.MoveDown.Tooltip">表示順を下に移動（背面へ）</sys:String>
     <sys:String x:Key="Overlay.DefaultText">テキスト</sys:String>
@@ -143,6 +152,30 @@
     <sys:String x:Key="Transition.Type.SlideRight">スライド（右）</sys:String>
     <sys:String x:Key="Transition.Type.ZoomIn">ズームイン</sys:String>
 
+    <!-- Motion (Ken Burns) -->
+    <sys:String x:Key="Motion.Title">モーション:</sys:String>
+    <sys:String x:Key="Motion.Tooltip">画像表示中のカメラモーション効果。自動は画像の縦横比に応じて最適なモーションを選択します。</sys:String>
+    <sys:String x:Key="Motion.Type.None">なし</sys:String>
+    <sys:String x:Key="Motion.Type.Auto">自動（おすすめ）</sys:String>
+    <sys:String x:Key="Motion.Type.ZoomIn">ズームイン</sys:String>
+    <sys:String x:Key="Motion.Type.ZoomOut">ズームアウト</sys:String>
+    <sys:String x:Key="Motion.Type.PanLeft">右→左パン</sys:String>
+    <sys:String x:Key="Motion.Type.PanRight">左→右パン</sys:String>
+    <sys:String x:Key="Motion.Type.PanUp">下→上パン</sys:String>
+    <sys:String x:Key="Motion.Type.PanDown">上→下パン</sys:String>
+    <sys:String x:Key="Motion.Preset.Title">モーション一括設定:</sys:String>
+    <sys:String x:Key="Motion.Preset.Apply">モーション一括適用</sys:String>
+    <sys:String x:Key="Motion.Preset.Apply.Tooltip">変化量と強さの設定に基づいて、全シーンにモーションを自動割り当てします。</sys:String>
+    <sys:String x:Key="Motion.Variation.Calm">穏やか</sys:String>
+    <sys:String x:Key="Motion.Variation.Normal">ふつう</sys:String>
+    <sys:String x:Key="Motion.Variation.Random">ランダム強め</sys:String>
+    <sys:String x:Key="Motion.Variation.Tooltip">モーションの変化量。穏やかはズーム中心、ランダム強めはパンも多めに。</sys:String>
+    <sys:String x:Key="Motion.Intensity.Weak">弱</sys:String>
+    <sys:String x:Key="Motion.Intensity.Medium">中</sys:String>
+    <sys:String x:Key="Motion.Intensity.Strong">強</sys:String>
+    <sys:String x:Key="Motion.Intensity.Tooltip">動きの強さ。弱=ほぼ気づかない、中=自然、強=はっきり動く。</sys:String>
+    <sys:String x:Key="VM.Motion.Applied">全 {0} シーンにモーションを適用しました。</sys:String>
+
     <!-- Watermark -->
     <sys:String x:Key="Watermark.Title">ロゴ透かし:</sys:String>
     <sys:String x:Key="Watermark.Short">ロゴ透かし</sys:String>
@@ -161,10 +194,12 @@
 
     <!-- Export Panel -->
     <sys:String x:Key="Export.Settings">書き出し設定</sys:String>
-    <sys:String x:Key="Export.Speaker">話者:</sys:String>
+    <sys:String x:Key="Export.Speaker">ナレーター:</sys:String>
     <sys:String x:Key="Export.Resolution">解像度:</sys:String>
-    <sys:String x:Key="Export.DefaultSpeaker">デフォルト話者:</sys:String>
-    <sys:String x:Key="Export.DefaultSpeaker.Tooltip">全シーンのデフォルト話者を選択します。個別シーンで上書き可能です。</sys:String>
+    <sys:String x:Key="Export.DefaultSpeaker">デフォルトナレーター:</sys:String>
+    <sys:String x:Key="Export.DefaultSpeaker.Tooltip">全シーンのデフォルトナレーターを選択します。個別シーンで上書き可能です。</sys:String>
+    <sys:String x:Key="Export.DefaultSubtitleSize">デフォルト字幕サイズ:</sys:String>
+    <sys:String x:Key="Export.DefaultSubtitleSize.Tooltip">全シーンのデフォルト字幕サイズを選択します。個別シーンで上書き可能です。</sys:String>
     <sys:String x:Key="Export.Res.Portrait">1080x1920 (縦動画)</sys:String>
     <sys:String x:Key="Export.Res.Landscape">1920x1080 (横動画)</sys:String>
     <sys:String x:Key="Export.BGM.Settings">BGM設定...</sys:String>
@@ -174,26 +209,32 @@
     <sys:String x:Key="Export.Log">ログ:</sys:String>
 
     <!-- Quick Mode -->
-    <sys:String x:Key="Quick.DropZone.Title">ここに資料をドロップ</sys:String>
-    <sys:String x:Key="Quick.DropZone.Subtitle">PowerPoint (.pptx)・画像・動画・テキストに対応</sys:String>
-    <sys:String x:Key="Quick.DropZone.SelectFile">またはファイルを選択</sys:String>
+    <sys:String x:Key="Quick.WindowTitle">簡単モード</sys:String>
+    <sys:String x:Key="Quick.Tagline">パワポを入れるだけで動画ができる</sys:String>
+    <sys:String x:Key="Quick.DropZone.Title">ここにPowerPointをドロップ</sys:String>
+    <sys:String x:Key="Quick.DropZone.Subtitle">.pptx ファイルから動画を自動生成</sys:String>
+    <sys:String x:Key="Quick.DropZone.SelectFile">またはクリックしてファイルを選択</sys:String>
     <sys:String x:Key="Quick.DropZone.BatchImport">複数ファイルを一括取込</sys:String>
     <sys:String x:Key="Quick.DropZone.BatchImport.Tooltip">ファイルダイアログから複数ファイルをまとめて取り込みます</sys:String>
     <sys:String x:Key="Quick.DropReplace">ドロップして差し替え</sys:String>
-    <sys:String x:Key="Quick.Speaker">話者</sys:String>
+    <sys:String x:Key="Quick.SelectPptx">PowerPointファイルを選択</sys:String>
+    <sys:String x:Key="Quick.SlideCount">{0} スライド</sys:String>
+    <sys:String x:Key="Quick.Speaker">ナレーター</sys:String>
     <sys:String x:Key="Quick.Speaker.Preview.Tooltip">試聴</sys:String>
-    <sys:String x:Key="Quick.Orientation">向き</sys:String>
+    <sys:String x:Key="Quick.Orientation">動画の向き</sys:String>
     <sys:String x:Key="Quick.Res.Portrait">縦動画 (9:16)</sys:String>
     <sys:String x:Key="Quick.Res.Landscape">横動画 (16:9)</sys:String>
     <sys:String x:Key="Quick.Transition">切り替え効果</sys:String>
     <sys:String x:Key="Quick.SpeechSpeed">話す速さ</sys:String>
     <sys:String x:Key="Quick.Thumbnail">サムネイル生成</sys:String>
     <sys:String x:Key="Quick.Generate">動画を生成</sys:String>
+    <sys:String x:Key="Quick.Generating">生成中...</sys:String>
+    <sys:String x:Key="Quick.ExportDone">動画の生成が完了しました。ファイルを開きますか？</sys:String>
     <sys:String x:Key="Quick.OpenEditor">詳細エディタで開く</sys:String>
     <sys:String x:Key="Quick.CancelGenerate">生成をキャンセル</sys:String>
     <sys:String x:Key="Quick.OpenVideo">動画を開く</sys:String>
     <sys:String x:Key="Quick.Regenerate">設定変えて再生成</sys:String>
-    <sys:String x:Key="Quick.Regenerate.Tooltip">話者や向きを変えてもう一度生成</sys:String>
+    <sys:String x:Key="Quick.Regenerate.Tooltip">ナレーターや向きを変えてもう一度生成</sys:String>
     <sys:String x:Key="Quick.NewMaterial">別の資料で作る</sys:String>
     <sys:String x:Key="Quick.OpenOutputFolder">出力フォルダを開く（サムネイル・チャプター・メタデータ）</sys:String>
     <sys:String x:Key="Quick.OpenOutputFolder.Tooltip">サムネイル(.jpg)、チャプター(.chapters.txt)、メタデータ(.metadata.txt)が同フォルダに出力されています</sys:String>
@@ -279,14 +320,14 @@
     <sys:String x:Key="Setup.Title">Insight Training Studio - 初回セットアップ</sys:String>
     <sys:String x:Key="Setup.Step1">1. ようこそ</sys:String>
     <sys:String x:Key="Setup.Step2">2. エンジン検出</sys:String>
-    <sys:String x:Key="Setup.Step3">3. 話者設定</sys:String>
+    <sys:String x:Key="Setup.Step3">3. ナレーター設定</sys:String>
     <sys:String x:Key="Setup.Step4">4. 完了</sys:String>
     <sys:String x:Key="Setup.Welcome.Title">Insight Training Studio へようこそ</sys:String>
     <sys:String x:Key="Setup.Welcome.Subtitle">初回セットアップを開始します</sys:String>
     <sys:String x:Key="Setup.Welcome.Desc">Insight Training Studio は、VOICEVOX エンジンを使用してナレーション付き動画を自動生成するツールです。</sys:String>
     <sys:String x:Key="Setup.Welcome.Steps">このセットアップでは以下の設定を行います:</sys:String>
     <sys:String x:Key="Setup.Welcome.Step1">1. VOICEVOX エンジンの検出と接続</sys:String>
-    <sys:String x:Key="Setup.Welcome.Step2">2. デフォルト話者（ボイス）の選択</sys:String>
+    <sys:String x:Key="Setup.Welcome.Step2">2. デフォルトナレーター（ボイス）の選択</sys:String>
     <sys:String x:Key="Setup.Welcome.Note">※ VOICEVOX エンジンがインストール済みであることを確認してください。</sys:String>
     <sys:String x:Key="Setup.Engine.Title">VOICEVOXエンジンの検出</sys:String>
     <sys:String x:Key="Setup.Engine.Subtitle">ローカルで実行中のエンジンを検索しています</sys:String>
@@ -306,14 +347,14 @@
     <sys:String x:Key="Setup.Engine.ExeFilter">VOICEVOX Engine|run.exe|すべてのファイル|*.*</sys:String>
     <sys:String x:Key="Setup.Engine.Connecting">選択されたエンジンで接続を試行中...</sys:String>
     <sys:String x:Key="Setup.Engine.Path">パス: {0}</sys:String>
-    <sys:String x:Key="Setup.Speaker.Title">デフォルト話者の設定</sys:String>
+    <sys:String x:Key="Setup.Speaker.Title">デフォルトナレーターの設定</sys:String>
     <sys:String x:Key="Setup.Speaker.Subtitle">ナレーションに使用するデフォルトのボイスを検出します</sys:String>
-    <sys:String x:Key="Setup.Speaker.Loading">話者情報を取得中...</sys:String>
-    <sys:String x:Key="Setup.Speaker.Detected">検出された話者:</sys:String>
-    <sys:String x:Key="Setup.Speaker.Found">デフォルト話者が見つかりました</sys:String>
+    <sys:String x:Key="Setup.Speaker.Loading">ナレーター情報を取得中...</sys:String>
+    <sys:String x:Key="Setup.Speaker.Detected">検出されたナレーター:</sys:String>
+    <sys:String x:Key="Setup.Speaker.Found">デフォルトナレーターが見つかりました</sys:String>
     <sys:String x:Key="Setup.Speaker.StyleId">スタイルID: {0}</sys:String>
-    <sys:String x:Key="Setup.Speaker.NotFound">話者が見つかりませんでした。エンジンに話者が登録されていない可能性があります。</sys:String>
-    <sys:String x:Key="Setup.Speaker.Error">話者取得エラー: {0}</sys:String>
+    <sys:String x:Key="Setup.Speaker.NotFound">ナレーターが見つかりませんでした。エンジンにナレーターが登録されていない可能性があります。</sys:String>
+    <sys:String x:Key="Setup.Speaker.Error">ナレーター取得エラー: {0}</sys:String>
     <sys:String x:Key="Setup.Speaker.NoConnection">エンジンに接続されていません。前のステップに戻ってください。</sys:String>
     <sys:String x:Key="Setup.Complete.Title">セットアップ完了</sys:String>
     <sys:String x:Key="Setup.Complete.Desc">すべての設定が完了しました</sys:String>
@@ -335,8 +376,8 @@
     <sys:String x:Key="VM.Media.Filter">画像/動画ファイル|*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.mp4;*.avi;*.mov;*.wmv;*.mkv;*.webm|画像ファイル|*.jpg;*.jpeg;*.png;*.bmp;*.gif|動画ファイル|*.mp4;*.avi;*.mov;*.wmv;*.mkv;*.webm|すべてのファイル|*.*</sys:String>
     <sys:String x:Key="VM.Media.Set">素材を設定: {0}</sys:String>
     <sys:String x:Key="VM.Media.Cleared">素材をクリアしました。</sys:String>
-    <sys:String x:Key="VM.Speaker.Loaded">話者一覧を読み込みました ({0} スタイル)。</sys:String>
-    <sys:String x:Key="VM.Speaker.LoadFailed">話者一覧の読み込みに失敗</sys:String>
+    <sys:String x:Key="VM.Speaker.Loaded">ナレーター一覧を読み込みました ({0} スタイル)。</sys:String>
+    <sys:String x:Key="VM.Speaker.LoadFailed">ナレーター一覧の読み込みに失敗</sys:String>
     <sys:String x:Key="VM.Speaker.Default">デフォルト（プロジェクト設定を使用）</sys:String>
     <sys:String x:Key="VM.Speaker.Normal">ノーマル</sys:String>
     <sys:String x:Key="VM.Style.Changed">字幕スタイルを「{0}」に変更しました。</sys:String>
@@ -394,8 +435,10 @@
     <sys:String x:Key="VM.File.OpenError">ファイルを開けませんでした</sys:String>
     <sys:String x:Key="VM.Preview.OpenError">プレビュープレイヤーを開けませんでした</sys:String>
 
-    <!-- Screen Capture -->
+    <!-- Screen Capture / Record -->
+    <sys:String x:Key="Tool.ScreenRecord">画面録画</sys:String>
     <sys:String x:Key="Tool.ScreenCapture">画面キャプチャ</sys:String>
+    <sys:String x:Key="Tool.ImageCapture">画像キャプチャ</sys:String>
     <sys:String x:Key="VM.Capture.Applied">キャプチャ画像をシーンに適用しました: {0}</sys:String>
     <sys:String x:Key="VM.Capture.Saved">キャプチャ画像を保存しました: {0}</sys:String>
     <sys:String x:Key="VM.Capture.Copied">キャプチャ画像をクリップボードにコピーしました</sys:String>
@@ -579,7 +622,15 @@
     <sys:String x:Key="VM.Pptx.FeatureLimit">PPTX取込機能はTrial・BIZプラン以上でご利用いただけます。\nライセンスをアップグレードしてください。</sys:String>
     <sys:String x:Key="VM.Pptx.PlanRequired">機能制限</sys:String>
     <sys:String x:Key="VM.Pptx.Select">PowerPointファイルを選択</sys:String>
-    <sys:String x:Key="VM.Pptx.Filter">PowerPointファイル|*.pptx|すべてのファイル|*.*</sys:String>
+    <sys:String x:Key="VM.Pptx.Filter">対応ドキュメント|*.pptx;*.docx;*.xlsx;*.pdf|PowerPoint|*.pptx|Word|*.docx|Excel|*.xlsx|PDF|*.pdf</sys:String>
+    <sys:String x:Key="DocConvert.Filter">対応ドキュメント|*.pptx;*.docx;*.xlsx;*.pdf|PowerPoint|*.pptx|Word|*.docx|Excel|*.xlsx|PDF|*.pdf</sys:String>
+    <sys:String x:Key="DocConvert.Converting">{0}をPPTXに変換中...</sys:String>
+    <sys:String x:Key="DocConvert.Fallback">PowerPointが見つかりません。テキスト抽出で変換します。</sys:String>
+    <sys:String x:Key="DocConvert.Done">{0}スライドのPPTXを作成しました。</sys:String>
+    <sys:String x:Key="DocConvert.ComSuccess">PowerPoint経由で{0}スライドに変換しました。</sys:String>
+    <sys:String x:Key="DocConvert.PdfRequiresPpt">PDFの変換にはMicrosoft PowerPointが必要です。</sys:String>
+    <sys:String x:Key="DocConvert.Failed">ドキュメントの変換に失敗しました: {0}</sys:String>
+    <sys:String x:Key="DocConvert.Success">ドキュメントをPPTXに変換して取り込みました。</sys:String>
     <sys:String x:Key="VM.Pptx.Started">PPTX取込を開始: {0}</sys:String>
     <sys:String x:Key="VM.Pptx.NoSlides">スライドが見つかりませんでした。</sys:String>
     <sys:String x:Key="VM.Pptx.Result">取込結果</sys:String>
@@ -589,14 +640,17 @@
     <sys:String x:Key="VM.Pptx.IncludeSubtitle.Title">字幕取込オプション</sys:String>
     <sys:String x:Key="VM.Pptx.Error">PPTX取込に失敗しました:\n{0}</sys:String>
     <sys:String x:Key="VM.Pptx.Failed">取込エラー</sys:String>
+    <sys:String x:Key="VM.DragDrop.Added">{0} 件のメディアファイルをシーンに追加しました</sys:String>
+    <sys:String x:Key="DragDrop.Overlay">ここにファイルをドロップ</sys:String>
+    <sys:String x:Key="DragDrop.Overlay.Sub">PPTX・画像・動画に対応</sys:String>
 
     <!-- VM Tutorial / FAQ / About / Shortcuts -->
     <sys:String x:Key="VM.Tutorial">Insight Training Studio チュートリアル
 ─────────────────────
 
-■ かんたんモード（QuickMode）
+■ 簡単モード（QuickMode）
   1. ファイルをドラッグ＆ドロップ、またはファイル選択ボタンで素材を取り込み
-  2. 話者・解像度・速度などを設定
+  2. ナレーター・解像度・速度などを設定
   3.「生成」ボタンで動画を自動生成
 
 ■ 詳細エディタ（MainWindow）
@@ -685,7 +739,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="VM.Privacy.Title">プライバシーポリシー</sys:String>
 
     <!-- QVM Extended -->
-    <sys:String x:Key="QVM.Speaker.LoadFailed">話者一覧の読み込みに失敗</sys:String>
+    <sys:String x:Key="QVM.Speaker.LoadFailed">ナレーター一覧の読み込みに失敗</sys:String>
     <sys:String x:Key="QVM.Speaker.Normal">ノーマル</sys:String>
     <sys:String x:Key="QVM.Watermark.Set">ロゴ設定: {0}</sys:String>
     <sys:String x:Key="QVM.BGM.Select">BGMファイルを選択</sys:String>
@@ -744,7 +798,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="QVM.Pptx.Error">PPTX取込エラー</sys:String>
     <sys:String x:Key="QVM.Pptx.Loading">PowerPointを読み込んでいます... {0}</sys:String>
     <sys:String x:Key="QVM.Pptx.Reading">PPTX読込中: {0}</sys:String>
-    <sys:String x:Key="QVM.Template.SpeakerInfo">話者: {0}</sys:String>
+    <sys:String x:Key="QVM.Template.SpeakerInfo">ナレーター: {0}</sys:String>
     <sys:String x:Key="QVM.Text.Imported">テキスト取込: {0} 段落</sys:String>
     <sys:String x:Key="VM.Close.ExportRunning">書き出し処理が実行中です。中断して終了しますか？</sys:String>
     <sys:String x:Key="VM.Close.Confirm">終了確認</sys:String>
@@ -841,7 +895,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="License.Error.Expired">ライセンスの有効期限が切れています（{0}）。</sys:String>
 
     <!-- Planning Tab -->
-    <sys:String x:Key="Tab.Planning">企画・制作</sys:String>
+    <sys:String x:Key="Tab.Planning">PPTX作成</sys:String>
     <sys:String x:Key="Tab.VideoGeneration">動画生成</sys:String>
     <sys:String x:Key="Planning.AIChat">AI相談</sys:String>
     <sys:String x:Key="Planning.SendChat">送信</sys:String>
@@ -1042,7 +1096,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Scene.Narration.Tooltip">VOICEVOXが読み上げるナレーションテキストを入力します。教育動画では1シーンあたり100〜150文字が目安です</sys:String>
     <sys:String x:Key="Scene.Media.Select.Tooltip">シーンの背景に使用する画像・動画ファイルを選択します（PNG, JPG, MP4等）</sys:String>
     <sys:String x:Key="Scene.Media.Clear.Tooltip">設定中の素材ファイルを解除します（黒背景になります）</sys:String>
-    <sys:String x:Key="Scene.Speaker.Tooltip">このシーンで使用するVOICEVOX話者を選択します。「デフォルト」はプロジェクト設定の話者を使用します</sys:String>
+    <sys:String x:Key="Scene.Speaker.Tooltip">このシーンで使用するナレーターを選択します。「デフォルト」はプロジェクト設定のナレーターを使用します</sys:String>
     <sys:String x:Key="Scene.KeepAudio.Tooltip">ONにすると、動画素材の元の音声をナレーションと一緒に再生します</sys:String>
     <sys:String x:Key="Scene.SpeechSpeed.Tooltip">ナレーションの読み上げ速度を調整します。教育動画では1.0x〜1.2xが推奨です</sys:String>
     <sys:String x:Key="Scene.PreviewAudio.Tooltip">入力したナレーションテキストを音声で試聴します</sys:String>
@@ -1070,18 +1124,18 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="App.Subtitle">眠っている資料が教育動画に変わる</sys:String>
 
     <!-- AI Chat Panel -->
-    <sys:String x:Key="Chat.Title">AI アシスタント</sys:String>
+    <sys:String x:Key="Chat.Title">AI コンシェルジュ</sys:String>
     <sys:String x:Key="Chat.ToggleTooltip">AIアシスタントパネルを開く/閉じる</sys:String>
     <sys:String x:Key="Chat.Clear">会話をクリア</sys:String>
 
     <!-- UI Mode -->
-    <sys:String x:Key="UI.SimpleMode">シンプル</sys:String>
+    <sys:String x:Key="UI.SimpleMode">簡単</sys:String>
     <sys:String x:Key="UI.DetailMode">詳細</sys:String>
-    <sys:String x:Key="UI.DetailMode.Tooltip">シンプルモードと詳細モードを切り替え</sys:String>
+    <sys:String x:Key="UI.DetailMode.Tooltip">簡単モードと詳細モードを切り替え</sys:String>
     <sys:String x:Key="Chat.Send">送信</sys:String>
     <sys:String x:Key="Chat.Cancel">キャンセル</sys:String>
     <sys:String x:Key="Chat.Thinking">考え中...</sys:String>
-    <sys:String x:Key="Chat.Presets">プリセット</sys:String>
+    <sys:String x:Key="Chat.Presets">プロンプト集</sys:String>
     <sys:String x:Key="Chat.ApiKeyToggle">APIキー設定</sys:String>
     <sys:String x:Key="Chat.ApiKeyLabel">Claude API キー</sys:String>
     <sys:String x:Key="Chat.ApiKeySet">設定</sys:String>
@@ -1153,7 +1207,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Ai.EnterApiKey">Claude APIキーを入力</sys:String>
     <sys:String x:Key="Ai.SetBtn">設定</sys:String>
     <sys:String x:Key="Ai.Popout">ポップアウト</sys:String>
-    <sys:String x:Key="Ai.PromptEditor">プロンプトエディタ</sys:String>
+    <sys:String x:Key="Ai.PromptEditor">プロンプト集</sys:String>
     <sys:String x:Key="Ai.CopyMenu">コピー</sys:String>
     <sys:String x:Key="Ai.SaveThumbnail">サムネイルを保存</sys:String>
     <sys:String x:Key="Ai.Cancelled">キャンセルしました。</sys:String>
@@ -1198,6 +1252,7 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.Group.Scene">シーン</sys:String>
     <sys:String x:Key="Ribbon.Group.Structure">素材・構成</sys:String>
     <sys:String x:Key="Ribbon.Group.Production">制作</sys:String>
+    <sys:String x:Key="Ribbon.Group.Record">画面取込</sys:String>
     <sys:String x:Key="Ribbon.Group.Export">書き出し</sys:String>
     <sys:String x:Key="Ribbon.Group.Template">テンプレート</sys:String>
     <sys:String x:Key="Ribbon.Group.Support">サポート</sys:String>
@@ -1209,11 +1264,14 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.File.Recent">最近使ったファイル</sys:String>
     <sys:String x:Key="Ribbon.File.Save">上書き保存</sys:String>
     <sys:String x:Key="Ribbon.File.SaveAs">別名保存</sys:String>
-    <sys:String x:Key="Ribbon.File.ImportPptx">PPTX取込</sys:String>
+    <sys:String x:Key="Ribbon.File.ImportPptx">ドキュメント取込</sys:String>
     <sys:String x:Key="Ribbon.File.ImportJson">JSONインポート</sys:String>
     <sys:String x:Key="Ribbon.File.BatchExport">JSONエクスポート</sys:String>
     <sys:String x:Key="Ribbon.File.Exit">終了</sys:String>
     <sys:String x:Key="Ribbon.Group.File">ファイル</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxExport">出力</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxData">データ連携</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxTools">ツール</sys:String>
     <sys:String x:Key="Ribbon.Script.Clear">スクリプトクリア</sys:String>
     <sys:String x:Key="Ribbon.Script.Clear.Tooltip">全シーンのスクリプト（ナレーション）をクリアします</sys:String>
     <sys:String x:Key="VM.Script.ClearConfirm">全シーンのスクリプトをクリアしますか？</sys:String>
@@ -1234,6 +1292,14 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.Template.Load">読込</sys:String>
     <sys:String x:Key="Ribbon.Template.OpenOutput">出力先を開く</sys:String>
     <sys:String x:Key="Ribbon.Scene.Capture">キャプチャ</sys:String>
+    <sys:String x:Key="Ribbon.Scene.ImageCapture">画像キャプチャ</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Record">画面録画</sys:String>
+    <sys:String x:Key="Ribbon.Scene.Record.Tooltip">画面の領域を選択して動画を録画します（3秒カウントダウン付き）</sys:String>
+    <sys:String x:Key="Ribbon.Scene.SnippingTool">録画ツール</sys:String>
+    <sys:String x:Key="Ribbon.Scene.SnippingTool.Tooltip">Windows Snipping Toolを起動します（画面録画・スクリーンショット）</sys:String>
+    <sys:String x:Key="VM.SnippingTool.Failed">Snipping Toolの起動に失敗しました</sys:String>
+    <sys:String x:Key="VM.Recording.Started">画面録画を開始しました...</sys:String>
+    <sys:String x:Key="VM.Recording.Applied">録画動画をシーンに設定しました: {0}</sys:String>
     <sys:String x:Key="Ribbon.BGM">BGM設定</sys:String>
     <sys:String x:Key="Ribbon.CTA">CTA追加</sys:String>
     <sys:String x:Key="Ribbon.Scene.Add.Tooltip">教育動画に新しいシーン（スライド）を追加します</sys:String>
@@ -1245,7 +1311,7 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.CTA.Tooltip">動画の最後にCTAエンドカード（次回予告・個別相談・資料案内）を追加します</sys:String>
     <sys:String x:Key="Ribbon.Export.Video.Tooltip">全シーンを結合してMP4動画ファイルを書き出します。サムネイル・チャプター・字幕・メタデータも同時に生成されます</sys:String>
     <sys:String x:Key="Ribbon.Template.OpenOutput.Tooltip">最後に書き出したフォルダをエクスプローラーで開きます</sys:String>
-    <sys:String x:Key="Ribbon.Template.Save.Tooltip">現在のBGM・話者・解像度などの設定をテンプレートとして保存し、次回のプロジェクトで再利用できます</sys:String>
+    <sys:String x:Key="Ribbon.Template.Save.Tooltip">現在のBGM・ナレーター・解像度などの設定をテンプレートとして保存し、次回のプロジェクトで再利用できます</sys:String>
     <sys:String x:Key="Ribbon.Template.Load.Tooltip">保存済みテンプレートを読み込んで設定を一括適用します</sys:String>
     <sys:String x:Key="Ribbon.Help.Tutorial">チュートリアル</sys:String>
     <sys:String x:Key="Ribbon.Help.License">ライセンス管理</sys:String>
@@ -1262,7 +1328,7 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Backstage.SaveAs">名前を付けて保存</sys:String>
     <sys:String x:Key="Backstage.Import">インポート</sys:String>
     <sys:String x:Key="Backstage.Export">エクスポート</sys:String>
-    <sys:String x:Key="Backstage.ImportPptx">PPTX取込</sys:String>
+    <sys:String x:Key="Backstage.ImportPptx">ドキュメント取込</sys:String>
     <sys:String x:Key="Backstage.ImportJson">JSONインポート</sys:String>
     <sys:String x:Key="Backstage.BatchExport">JSONエクスポート</sys:String>
     <sys:String x:Key="Backstage.Recent">最近使ったファイル</sys:String>
@@ -1425,5 +1491,104 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="AIPrompt.PresetPromptHint">AIに与える指示を入力してください</sys:String>
     <sys:String x:Key="AIPrompt.PresetDefault">デフォルトとして設定</sys:String>
     <sys:String x:Key="AIPrompt.EnterName">名前を入力してください</sys:String>
+
+    <!-- Working Folder -->
+    <sys:String x:Key="Scene.SubtitleSize">サイズ:</sys:String>
+    <sys:String x:Key="Scene.SubtitleSize.Tooltip">字幕の表示サイズ（pt）</sys:String>
+
+    <sys:String x:Key="WorkFolder.Title">作業フォルダ</sys:String>
+    <sys:String x:Key="WorkFolder.NewFolder">新規フォルダ</sys:String>
+    <sys:String x:Key="WorkFolder.AddFolder">フォルダ追加</sys:String>
+    <sys:String x:Key="WorkFolder.AddFile">ファイル追加</sys:String>
+    <sys:String x:Key="WorkFolder.ExpandAll">すべて展開</sys:String>
+    <sys:String x:Key="WorkFolder.CollapseAll">すべて折りたたむ</sys:String>
+    <sys:String x:Key="WorkFolder.DropHint">ファイルやフォルダをここにドロップ</sys:String>
+    <sys:String x:Key="WorkFolder.SupportedFormats">Word, Excel, PPTX, PDF, 画像</sys:String>
+
+    <!-- Material Library (new naming) -->
+    <sys:String x:Key="Material.Title">素材ライブラリー</sys:String>
+    <sys:String x:Key="Material.DropHint">素材をドラッグ＆ドロップ</sys:String>
+    <sys:String x:Key="Material.DropSub">またはツールバーの＋ボタンで追加</sys:String>
+    <sys:String x:Key="Material.Formats">Word / Excel / PPTX / PDF / 画像</sys:String>
+    <sys:String x:Key="WorkFolder.Parsing">解析中...</sys:String>
+    <sys:String x:Key="WorkFolder.OpenFile">開く</sys:String>
+    <sys:String x:Key="WorkFolder.Rename">名前変更</sys:String>
+    <sys:String x:Key="WorkFolder.Delete">削除</sys:String>
+    <sys:String x:Key="WorkFolder.FolderName">フォルダ名:</sys:String>
+    <sys:String x:Key="WorkFolder.DefaultFolderName">新規フォルダ</sys:String>
+    <sys:String x:Key="WorkFolder.NewName">新しい名前:</sys:String>
+    <sys:String x:Key="WorkFolder.FileFilter">対応ファイル|*.docx;*.xlsx;*.xlsm;*.pptx;*.pdf;*.png;*.jpg;*.jpeg;*.bmp;*.gif|Word|*.docx|Excel|*.xlsx;*.xlsm|PowerPoint|*.pptx|PDF|*.pdf|画像|*.png;*.jpg;*.jpeg;*.bmp;*.gif|すべてのファイル|*.*</sys:String>
+    <sys:String x:Key="WorkFolder.AlreadyExists">フォルダが既に存在します</sys:String>
+    <sys:String x:Key="WorkFolder.Loading">読み込み中: {0}</sys:String>
+    <sys:String x:Key="WorkFolder.Added">追加: {0}</sys:String>
+    <sys:String x:Key="WorkFolder.Removed">削除: {0}</sys:String>
+    <sys:String x:Key="WorkFolder.DeleteConfirm">「{0}」を削除しますか？</sys:String>
+
+    <!-- AI Chapter -->
+    <sys:String x:Key="AiChapter.Title">AI章立て構成</sys:String>
+    <sys:String x:Key="AiChapter.Heading">動画構成を生成</sys:String>
+    <sys:String x:Key="AiChapter.Button">AI構成</sys:String>
+    <sys:String x:Key="AiChapter.Button.Tooltip">AIで章立て構成を生成</sys:String>
+    <sys:String x:Key="AiChapter.ChapterCount">チャプター数:</sys:String>
+    <sys:String x:Key="AiChapter.MaterialCount">参考資料:</sys:String>
+    <sys:String x:Key="AiChapter.Instructions">追加指示（任意）:</sys:String>
+    <sys:String x:Key="AiChapter.Generate">生成</sys:String>
+    <sys:String x:Key="AiChapter.Generating">構成を生成中...</sys:String>
+    <sys:String x:Key="AiChapter.Generated">{0}チャプターを生成しました</sys:String>
+    <sys:String x:Key="AiChapter.Cancelled">生成がキャンセルされました</sys:String>
+    <sys:String x:Key="AiChapter.Apply">シーンに反映</sys:String>
+    <sys:String x:Key="AiChapter.NotConfigured">AIが設定されていません。AI設定でAPIキーを設定してください。</sys:String>
+
+    <!-- AI制作フロー -->
+    <sys:String x:Key="AiWorkspace.Title">AIワークスペース</sys:String>
+    <sys:String x:Key="AiWorkspace.Step1">Step 1: 資料からAI構成を生成</sys:String>
+    <sys:String x:Key="AiWorkspace.Step2">生成結果</sys:String>
+    <sys:String x:Key="AiWorkspace.Step3">ツール</sys:String>
+    <sys:String x:Key="AiWorkspace.Scenes">シーン一覧</sys:String>
+    <sys:String x:Key="AiWorkspace.SceneCount">{0} シーン</sys:String>
+    <sys:String x:Key="AiWorkspace.ThumbnailButton">サムネイル作成</sys:String>
+    <sys:String x:Key="AiWorkspace.ThumbnailButton.Tooltip">サムネイル画像クリエーターを開く</sys:String>
+
+    <!-- AI制作フロー (redesigned) -->
+    <sys:String x:Key="AiFlow.Title">AI制作アシスタント</sys:String>
+    <sys:String x:Key="AiFlow.Step1.Title">構成を自動生成</sys:String>
+    <sys:String x:Key="AiFlow.Step1.Desc">素材をAIが読み取り、動画の章立てを自動で作成します</sys:String>
+    <sys:String x:Key="AiFlow.Step1.Hint">追加の指示があればここに入力（例: 初心者向けに、3分以内で…）</sys:String>
+    <sys:String x:Key="AiFlow.GenerateBtn">素材から構成を作成</sys:String>
+    <sys:String x:Key="AiFlow.ExpandScenes">シーンに展開</sys:String>
+    <sys:String x:Key="AiFlow.CreatePptx">PPTXを作成</sys:String>
+    <sys:String x:Key="AiFlow.ExportPptx">PPTXを作成</sys:String>
+    <sys:String x:Key="AiFlow.PptxSaved">PPTXファイルを保存しました</sys:String>
+    <sys:String x:Key="AiFlow.Step2.Title">生成された構成</sys:String>
+    <sys:String x:Key="AiFlow.ApplyBtn">シーンに反映</sys:String>
+    <sys:String x:Key="AiFlow.Step3.Title">仕上げツール</sys:String>
+    <sys:String x:Key="AiFlow.Tool.AiImage">AI画像生成</sys:String>
+    <sys:String x:Key="AiFlow.Tool.AiImage.Sub">各シーンの画像を自動生成</sys:String>
+    <sys:String x:Key="AiFlow.Tool.Thumbnail">サムネイル作成</sys:String>
+    <sys:String x:Key="AiFlow.Tool.Thumbnail.Sub">動画サムネイルをデザイン</sys:String>
+    <sys:String x:Key="AiFlow.Scenes">シーン一覧</sys:String>
+    <sys:String x:Key="AiFlow.NarrationLabel">ナレーション</sys:String>
+    <sys:String x:Key="AiFlow.ImagePrompt">画像プロンプト</sys:String>
+    <sys:String x:Key="AiFlow.CopyPrompt">プロンプトをコピー</sys:String>
+    <sys:String x:Key="AiFlow.PromptCopied">プロンプトをクリップボードにコピーしました</sys:String>
+    <sys:String x:Key="AiFlow.JsonExport">JSONエクスポート</sys:String>
+    <sys:String x:Key="AiFlow.JsonExport.Tooltip">シーンのナレーションと画像プロンプトをJSON形式でエクスポート（外部AI連携用）</sys:String>
+    <sys:String x:Key="AiFlow.JsonExported">JSONファイルをエクスポートしました</sys:String>
+    <sys:String x:Key="AiFlow.JsonImport">JSONインポート</sys:String>
+    <sys:String x:Key="AiFlow.JsonImport.Tooltip">外部AIで生成したJSONをインポートしてシーンに反映</sys:String>
+    <sys:String x:Key="AiFlow.JsonImported">{0} シーンをインポートしました</sys:String>
+    <sys:String x:Key="AiFlow.EmptyTitle">素材を追加して構成を生成</sys:String>
+    <sys:String x:Key="AiFlow.EmptyDesc">左の素材ライブラリーにファイルを追加し、「AI構成を生成」ボタンで動画の章立てを自動作成できます</sys:String>
+
+    <!-- AI画像生成 -->
+    <sys:String x:Key="AiGenerate.Title">AI画像生成</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesButton">AI画像生成</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesButton.Tooltip">AIで各シーンの画像を自動生成（DALL-E）</sys:String>
+    <sys:String x:Key="AiGenerate.NoScenesNeedImages">画像生成が必要なシーンがありません。先に「生成」で章立てを作成してください。</sys:String>
+    <sys:String x:Key="AiGenerate.NotConfigured">OpenAI APIキーが設定されていません。設定でAPIキーを設定してください。</sys:String>
+    <sys:String x:Key="AiGenerate.ConfirmImages">{0}シーンのAI画像を生成しますか？OpenAI DALL-E APIを呼び出します。</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesComplete">{0}枚の画像を生成しました。</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesPartial">{0}枚生成、{1}枚失敗しました。</sys:String>
+    <sys:String x:Key="AiGenerate.Progress">画像生成中 {0}/{1}...</sys:String>
 
 </ResourceDictionary>

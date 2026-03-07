@@ -145,7 +145,9 @@ public class SceneGenerator
         int fps = 30,
         string? audioPath = null,
         TextStyle? textStyle = null,
-        WatermarkSettings? watermark = null)
+        WatermarkSettings? watermark = null,
+        int sceneIndex = 0,
+        MotionIntensity motionIntensity = MotionIntensity.Medium)
     {
         try
         {
@@ -159,6 +161,8 @@ public class SceneGenerator
             }
 
             // Step 1: Generate base video (from image, video, or blank)
+            Console.Error.WriteLine($"[SceneGen] HasMedia={scene.HasMedia}, MediaType={scene.MediaType}, MediaPath={scene.MediaPath}");
+
             string tempBase = Path.Combine(
                 Path.GetTempPath(),
                 $"scene_base_{Guid.NewGuid():N}.mp4");
@@ -166,23 +170,31 @@ public class SceneGenerator
             bool baseSuccess;
             if (scene.HasMedia && scene.MediaType == MediaType.Image)
             {
+                Console.Error.WriteLine("[SceneGen] Path: Image");
+                var motion = scene.MotionType;
+                if (motion == MotionType.Auto)
+                    motion = ResolveAutoMotion(scene.MediaPath!, sceneIndex);
                 baseSuccess = GenerateFromImage(
-                    scene.MediaPath!, tempBase, duration, width, height, fps);
+                    scene.MediaPath!, tempBase, duration, width, height, fps, motion, motionIntensity);
             }
             else if (scene.HasMedia && scene.MediaType == MediaType.Video)
             {
+                Console.Error.WriteLine($"[SceneGen] Path: Video, file exists={File.Exists(scene.MediaPath!)}, loop={scene.KeepOriginalAudio == false}");
                 baseSuccess = GenerateFromVideo(
                     scene.MediaPath!, tempBase, duration, width, height, fps,
                     loop: scene.KeepOriginalAudio == false);
+                Console.Error.WriteLine($"[SceneGen] GenerateFromVideo result={baseSuccess}, output exists={File.Exists(tempBase)}, size={( File.Exists(tempBase) ? new FileInfo(tempBase).Length : 0 )}");
             }
             else
             {
+                Console.Error.WriteLine("[SceneGen] Path: Blank");
                 baseSuccess = GenerateBlankVideo(
                     tempBase, duration, width, height, fps, "black");
             }
 
             if (!baseSuccess)
             {
+                Console.Error.WriteLine("[SceneGen] Base video FAILED");
                 CleanupTempFile(tempBase);
                 return false;
             }
@@ -261,7 +273,7 @@ public class SceneGenerator
                 }
             }
 
-            // Step 4: Add audio if provided
+            // Step 4: Add audio (narration or silent track for concat compatibility)
             string? tempAudio = null;
 
             if (!string.IsNullOrEmpty(audioPath) && File.Exists(audioPath))
@@ -273,6 +285,25 @@ public class SceneGenerator
                 bool audioSuccess = AddAudio(currentFile, tempAudio, audioPath, duration);
 
                 if (audioSuccess)
+                {
+                    CleanupTempFile(currentFile);
+                    currentFile = tempAudio;
+                }
+                else
+                {
+                    CleanupTempFile(tempAudio);
+                    tempAudio = null;
+                }
+            }
+            else
+            {
+                // No narration: add silent audio track so concat/xfade works
+                tempAudio = Path.Combine(
+                    Path.GetTempPath(),
+                    $"scene_silent_{Guid.NewGuid():N}.mp4");
+
+                bool silentSuccess = AddSilentAudio(currentFile, tempAudio, duration);
+                if (silentSuccess)
                 {
                     CleanupTempFile(currentFile);
                     currentFile = tempAudio;
@@ -308,21 +339,47 @@ public class SceneGenerator
     // -----------------------------------------------------------------------
 
     /// <summary>
-    /// Generates a video from a static image with the given duration.
+    /// Generates a video from a static image with the given duration,
+    /// optionally applying Ken Burns motion (zoom/pan) with ease-in-out.
     /// </summary>
     private bool GenerateFromImage(
         string imagePath, string outputPath, double duration,
-        int width, int height, int fps)
+        int width, int height, int fps,
+        MotionType motion = MotionType.None,
+        MotionIntensity intensity = MotionIntensity.Medium)
     {
         string durationStr = duration.ToString("F2", CultureInfo.InvariantCulture);
 
-        var args = new List<string>
+        if (motion == MotionType.None)
+        {
+            // Static: simple scale+pad
+            var args = new List<string>
+            {
+                "-y",
+                "-loop", "1",
+                "-i", $"\"{imagePath}\"",
+                "-vf", $"\"scale={width}:{height}:force_original_aspect_ratio=decrease," +
+                       $"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:black\"",
+                "-c:v", "libx264",
+                "-t", durationStr,
+                "-pix_fmt", "yuv420p",
+                "-r", fps.ToString(),
+                "-an",
+                $"\"{outputPath}\""
+            };
+            return _ffmpeg.RunCommand(args);
+        }
+
+        // Motion: use zoompan filter with ease-in-out
+        int totalFrames = (int)(duration * fps);
+        string zoompanFilter = BuildZoompanFilter(motion, width, height, totalFrames, fps, intensity);
+
+        var motionArgs = new List<string>
         {
             "-y",
             "-loop", "1",
             "-i", $"\"{imagePath}\"",
-            "-vf", $"\"scale={width}:{height}:force_original_aspect_ratio=decrease," +
-                   $"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:black\"",
+            "-vf", $"\"{zoompanFilter}\"",
             "-c:v", "libx264",
             "-t", durationStr,
             "-pix_fmt", "yuv420p",
@@ -330,8 +387,107 @@ public class SceneGenerator
             "-an",
             $"\"{outputPath}\""
         };
+        return _ffmpeg.RunCommand(motionArgs);
+    }
 
-        return _ffmpeg.RunCommand(args);
+    /// <summary>
+    /// Resolves Auto motion by reading image dimensions.
+    /// </summary>
+    private MotionType ResolveAutoMotion(string imagePath, int sceneIndex)
+    {
+        try
+        {
+            var info = _ffmpeg.GetVideoInfo(imagePath);
+            if (info != null
+                && info.TryGetValue("width", out var ws) && int.TryParse(ws?.ToString(), out int w)
+                && info.TryGetValue("height", out var hs) && int.TryParse(hs?.ToString(), out int h)
+                && w > 0 && h > 0)
+            {
+                return MotionResolver.Resolve(w, h, sceneIndex);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[SceneGen] ResolveAutoMotion failed: {ex.Message}");
+        }
+        // Fallback: alternate zoom in/out
+        return sceneIndex % 2 == 0 ? MotionType.ZoomIn : MotionType.ZoomOut;
+    }
+
+    /// <summary>
+    /// Builds FFmpeg zoompan filter string with ease-in-out easing.
+    /// Zoom and pan values controlled by MotionIntensity.
+    /// Pan also includes subtle micro-zoom (1.02→1.06) to reduce "sliding" feel.
+    /// </summary>
+    private static string BuildZoompanFilter(
+        MotionType motion, int width, int height, int totalFrames, int fps = 30,
+        MotionIntensity intensity = MotionIntensity.Medium)
+    {
+        // Ease-in-out function: smoothstep = 3*t^2 - 2*t^3
+        string t = $"(on/{totalFrames})";
+        string ease = $"(3*{t}*{t}-2*{t}*{t}*{t})";
+
+        var (zoomMax, panPercent) = MotionIntensityParams.Get(intensity);
+        string zoomRange = (zoomMax - 1.0).ToString("F4", CultureInfo.InvariantCulture);
+
+        string panX = (width * panPercent).ToString("F1", CultureInfo.InvariantCulture);
+        string panY = (height * panPercent).ToString("F1", CultureInfo.InvariantCulture);
+
+        // Micro-zoom for pan: subtle zoom during pan to reduce "sliding" feel
+        string microZoomStart = "1.02";
+        string microZoomRange = "0.04";
+        string panZoom = $"{microZoomStart}+{microZoomRange}*{ease}";
+
+        string z, x, y;
+
+        switch (motion)
+        {
+            case MotionType.ZoomIn:
+                // Zoom 1.0 -> 1.08, centered
+                z = $"1+{zoomRange}*{ease}";
+                x = $"iw/2-(iw/zoom/2)";
+                y = $"ih/2-(ih/zoom/2)";
+                break;
+            case MotionType.ZoomOut:
+                // Zoom 1.08 -> 1.0, centered
+                z = $"{zoomMax.ToString("F4", CultureInfo.InvariantCulture)}-{zoomRange}*{ease}";
+                x = $"iw/2-(iw/zoom/2)";
+                y = $"ih/2-(ih/zoom/2)";
+                break;
+            case MotionType.PanRight:
+                // Pan left-to-right with micro-zoom
+                z = panZoom;
+                x = $"(iw/2-(iw/zoom/2))-{panX}/2+{panX}*{ease}";
+                y = $"ih/2-(ih/zoom/2)";
+                break;
+            case MotionType.PanLeft:
+                // Pan right-to-left with micro-zoom
+                z = panZoom;
+                x = $"(iw/2-(iw/zoom/2))+{panX}/2-{panX}*{ease}";
+                y = $"ih/2-(ih/zoom/2)";
+                break;
+            case MotionType.PanDown:
+                // Pan top-to-bottom with micro-zoom
+                z = panZoom;
+                x = $"iw/2-(iw/zoom/2)";
+                y = $"(ih/2-(ih/zoom/2))-{panY}/2+{panY}*{ease}";
+                break;
+            case MotionType.PanUp:
+                // Pan bottom-to-top with micro-zoom
+                z = panZoom;
+                x = $"iw/2-(iw/zoom/2)";
+                y = $"(ih/2-(ih/zoom/2))+{panY}/2-{panY}*{ease}";
+                break;
+            default:
+                z = "1";
+                x = $"iw/2-(iw/zoom/2)";
+                y = $"ih/2-(ih/zoom/2)";
+                break;
+        }
+
+        return $"scale=8000:-1," +
+               $"zoompan=z='{z}':x='{x}':y='{y}':" +
+               $"d={totalFrames}:s={width}x{height}:fps={fps}";
     }
 
     /// <summary>
@@ -603,6 +759,7 @@ public class SceneGenerator
                 "-map", "0:v:0",
                 "-map", "1:a:0",
                 "-shortest",
+                "-movflags", "+faststart",
                 $"\"{outputPath}\""
             };
 
@@ -616,6 +773,33 @@ public class SceneGenerator
                 CleanupTempFile(tempAudioPadded);
             }
         }
+    }
+
+    /// <summary>
+    /// Adds a silent audio track to a video so that concat/xfade works
+    /// even when no narration is present.
+    /// </summary>
+    private bool AddSilentAudio(string videoPath, string outputPath, double duration)
+    {
+        string durationStr = duration.ToString("F2", CultureInfo.InvariantCulture);
+
+        var args = new List<string>
+        {
+            "-y",
+            "-i", $"\"{videoPath}\"",
+            "-f", "lavfi", "-i", $"\"anullsrc=r=44100:cl=stereo\"",
+            "-c:v", "copy",
+            "-c:a", "aac",
+            "-b:a", "192k",
+            "-t", durationStr,
+            "-map", "0:v:0",
+            "-map", "1:a:0",
+            "-shortest",
+            "-movflags", "+faststart",
+            $"\"{outputPath}\""
+        };
+
+        return _ffmpeg.RunCommand(args);
     }
 
     /// <summary>

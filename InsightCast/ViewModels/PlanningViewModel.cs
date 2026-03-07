@@ -108,6 +108,21 @@ namespace InsightCast.ViewModels
             ? new SolidColorBrush(Colors.LightGreen)
             : new SolidColorBrush(Colors.Gray);
 
+        public string ImagePrompt
+        {
+            get => _scene.AIGeneration?.ImageDescription ?? string.Empty;
+            set
+            {
+                _scene.AIGeneration ??= new AIGenerationSettings();
+                _scene.AIGeneration.ImageDescription = value;
+                _scene.AIGeneration.GenerateImage = !string.IsNullOrWhiteSpace(value);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasImagePrompt));
+            }
+        }
+
+        public bool HasImagePrompt => !string.IsNullOrWhiteSpace(_scene.AIGeneration?.ImageDescription);
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -118,6 +133,8 @@ namespace InsightCast.ViewModels
         private readonly Config _config;
         private readonly Project _project;
         private IOpenAIService? _openAIService;
+
+        public Project Project => _project;
 
         /// <summary>Raised when scenes are added, removed, or modified.</summary>
         public event Action? ScenesChanged;

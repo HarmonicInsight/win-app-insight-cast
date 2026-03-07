@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using InsightCast.Models;
 using InsightCast.Video;
 using InsightCast.VoiceVox;
@@ -114,8 +115,8 @@ namespace InsightCast.Services
 
                     if (!_audioCache.Exists(cacheKey, sid))
                     {
-                        var audioData = _voiceVoxClient
-                            .GenerateAudioAsync(scene.NarrationText!, sid, speed)
+                        var audioData = Task.Run(() =>
+                            _voiceVoxClient.GenerateAudioAsync(scene.NarrationText!, sid, speed))
                             .GetAwaiter().GetResult();
                         audioPath = _audioCache.Save(cacheKey, sid, audioData);
                     }
@@ -150,7 +151,8 @@ namespace InsightCast.Services
                 var style = getStyleForScene(scene);
 
                 var success = sceneGen.GenerateScene(scene, scenePath, duration,
-                    resolution, fps, audioPath, style, project.Watermark);
+                    resolution, fps, audioPath, style, project.Watermark, i,
+                    project.MotionIntensity);
 
                 if (!success)
                 {
@@ -256,7 +258,7 @@ namespace InsightCast.Services
                 if (Directory.Exists(tempDir))
                     Directory.Delete(tempDir, true);
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Temp cleanup failed: {ex.Message}"); }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Temp cleanup failed: {ex}"); }
 
             progress.Report(LocalizationService.GetString("Export.Done"));
             return result;
@@ -286,6 +288,8 @@ namespace InsightCast.Services
             var sceneGen = new SceneGenerator(_ffmpeg);
             string? audioPath = null;
 
+            progress.Report($"[Preview] MediaType={scene.MediaType}, HasMedia={scene.HasMedia}, Path={scene.MediaPath}, FileExists={(!string.IsNullOrEmpty(scene.MediaPath) && File.Exists(scene.MediaPath))}");
+
             if (scene.HasNarration && !scene.KeepOriginalAudio)
             {
                 var sid = scene.SpeakerId ?? defaultSpeakerId;
@@ -297,8 +301,8 @@ namespace InsightCast.Services
                 if (!_audioCache.Exists(cacheKey, sid))
                 {
                     progress.Report(LocalizationService.GetString("Export.Preview.Audio"));
-                    var audioData = _voiceVoxClient
-                        .GenerateAudioAsync(scene.NarrationText!, sid, speed)
+                    var audioData = Task.Run(() =>
+                        _voiceVoxClient.GenerateAudioAsync(scene.NarrationText!, sid, speed))
                         .GetAwaiter().GetResult();
                     audioPath = _audioCache.Save(cacheKey, sid, audioData);
                 }
@@ -318,14 +322,21 @@ namespace InsightCast.Services
                            scene.SpeakerId ?? defaultSpeakerId) ?? 1.0) + 2.0
                     : 3.0);
 
-            progress.Report(LocalizationService.GetString("Export.Preview.Scene"));
+            progress.Report($"[Preview] Duration={duration:F2}s, Resolution={resolution}, Audio={audioPath ?? "none"}");
             var success = sceneGen.GenerateScene(scene, outputPath, duration,
-                resolution, fps, audioPath, textStyle);
+                resolution, fps, audioPath, textStyle, sceneIndex: 0);
 
             if (success)
+            {
+                var outSize = File.Exists(outputPath) ? new FileInfo(outputPath).Length : 0;
+                progress.Report($"[Preview] Success, output={outSize} bytes");
                 progress.Report(LocalizationService.GetString("Export.Preview.Done"));
+            }
             else
+            {
+                progress.Report("[Preview] GenerateScene FAILED");
                 progress.Report(LocalizationService.GetString("Export.Preview.Failed"));
+            }
 
             return success;
         }

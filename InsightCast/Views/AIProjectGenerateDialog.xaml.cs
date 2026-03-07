@@ -23,6 +23,7 @@ namespace InsightCast.Views
             InitializeComponent();
             _config = config;
             _openAIService = openAIService;
+            RestoreLastSettings();
         }
 
         private async void GenerateButton_Click(object sender, RoutedEventArgs e)
@@ -59,6 +60,7 @@ namespace InsightCast.Views
                 if (project != null)
                 {
                     GeneratedProject = project;
+                    SaveCurrentSettings();
                     DialogResult = true;
                     Close();
                 }
@@ -196,6 +198,18 @@ namespace InsightCast.Views
         {
             ErrorPanel.Visibility = Visibility.Collapsed;
             ErrorLabel.Text = string.Empty;
+        }
+
+        // ── 前回設定の保存・復元 ──
+
+        private void RestoreLastSettings()
+        {
+            // TODO: implement settings persistence
+        }
+
+        private void SaveCurrentSettings()
+        {
+            // TODO: implement settings persistence
         }
     }
 }

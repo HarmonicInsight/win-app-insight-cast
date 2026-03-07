@@ -135,6 +135,9 @@ namespace InsightCast.Views
 
             SeekSlider.Value = 0;
             CurrentTimeLabel.Text = "00:00";
+
+            // Auto-play when media is loaded
+            Play();
         }
 
         private void MediaPlayer_MediaEnded(object sender, RoutedEventArgs e)

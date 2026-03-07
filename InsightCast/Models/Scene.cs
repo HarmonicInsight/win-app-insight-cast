@@ -40,6 +40,9 @@ namespace InsightCast.Models
         [JsonPropertyName("speakerId")]
         public int? SpeakerId { get; set; }
 
+        [JsonPropertyName("subtitleFontSize")]
+        public int? SubtitleFontSize { get; set; }
+
         [JsonPropertyName("keepOriginalAudio")]
         public bool KeepOriginalAudio { get; set; } = false;
 
@@ -65,7 +68,10 @@ namespace InsightCast.Models
         public List<TextOverlay> TextOverlays { get; set; } = new();
 
         [JsonPropertyName("speechSpeed")]
-        public double SpeechSpeed { get; set; } = 1.0;
+        public double SpeechSpeed { get; set; } = 1.2;
+
+        [JsonPropertyName("motionType")]
+        public MotionType MotionType { get; set; } = MotionType.None;
 
         /// <summary>
         /// シーンのタイトル（企画段階での見出し）。

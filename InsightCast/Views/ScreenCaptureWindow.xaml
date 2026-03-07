@@ -229,6 +229,8 @@
                     <Button Style="{StaticResource ActionBtn}" Content="📋 コピー" ToolTip="クリップボードにコピー (Ctrl+C)" Click="Action_Copy"/>
                     <Button Style="{StaticResource ActionBtnGreen}" Content="💾 PNG保存" ToolTip="マイピクチャに保存 (Ctrl+S)" Click="Action_Save"/>
                     <Button Style="{StaticResource ActionBtn}" Content="📌 シーンに追加" ToolTip="現在のシーンに画像を追加 (Enter)" Click="Action_PinToScene"/>
+                    <Button Style="{StaticResource ActionBtn}" Content="⏺ 録画" ToolTip="選択領域を動画で録画する (R)" Click="Action_Record"
+                            Background="#CC4444" Foreground="White"/>
                     <Button Style="{StaticResource ActionBtnCancel}" Content="✕ キャンセル" ToolTip="キャンセル (Esc)" Click="Action_Cancel"/>
                 </StackPanel>
             </StackPanel>

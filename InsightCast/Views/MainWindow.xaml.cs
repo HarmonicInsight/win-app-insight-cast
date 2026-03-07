@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -23,13 +24,23 @@ namespace InsightCast.Views
         private readonly MainWindowViewModel _vm;
         private readonly Config _config;
         private ChatPanelViewModel? _chatVm;
+        private ClaudeService? _claudeService;
         private double _lastAiPanelWidth = 420;
+        private readonly VoiceVoxClient _voiceVoxClient;
+        private readonly int _speakerId;
+        private readonly FFmpegWrapper? _ffmpegWrapper;
 
         public MainWindow(VoiceVoxClient voiceVoxClient, int speakerId,
                           FFmpegWrapper? ffmpegWrapper, Config config)
         {
             _config = config;
+            _voiceVoxClient = voiceVoxClient;
+            _speakerId = speakerId;
+            _ffmpegWrapper = ffmpegWrapper;
             InitializeComponent();
+
+            // Hide until theme is applied in Loaded to prevent blue ribbon flash
+            Opacity = 0;
 
             _vm = new MainWindowViewModel(voiceVoxClient, speakerId, ffmpegWrapper, config);
             DataContext = _vm;
@@ -43,6 +54,7 @@ namespace InsightCast.Views
             _vm.PreviewVideoReady += OnPreviewVideoReady;
             _vm.ExitRequested += OnExitRequested;
             _vm.ScreenCaptureRequested += OnScreenCaptureRequested;
+            _vm.ScreenRecordRequested += OnScreenRecordRequested;
             _vm.ScenesChanged += OnMainViewModelScenesChanged;
             _vm.TemplateApplied += OnTemplateApplied;
 
@@ -54,13 +66,9 @@ namespace InsightCast.Views
             if (version != null)
                 VersionLabel.Text = $"v{version.Major}.{version.Minor}.{version.Build}";
 
-            // Start hidden until theme is applied to avoid blue ribbon flash
-            Opacity = 0;
-
             Loaded += (_, _) =>
             {
                 // ── Phase 1: Essential UI setup (immediate) ────────────────
-                // Apply Syncfusion theme and hide backstage
                 SfSkinManager.SetTheme(MainRibbon, new Theme("Office2019White"));
                 MainRibbon.HideBackStage();
 
@@ -70,8 +78,11 @@ namespace InsightCast.Views
                 // Default to Video Generation tab
                 MainTabControl.SelectedIndex = 1;
 
-                // Show window after theme is fully applied
-                Opacity = 1;
+                // Show window after theme rendering is complete
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
+                {
+                    Opacity = 1;
+                });
 
                 // ── Phase 2: Deferred initialization (background/low priority) ──
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, async () =>
@@ -82,8 +93,14 @@ namespace InsightCast.Views
                     // UI updates after speaker load
                     PopulateRecentFiles();
 
+                    // Initialize subtitle size combos
+                    InitializeSubtitleSizeCombo();
+
+                    // Create shared ClaudeService (used by Planning Tab and Chat Panel)
+                    _claudeService = new ClaudeService(_config);
+
                     // Initialize Planning Tab
-                    PlanningTabControl.Initialize(_config, _vm.Project);
+                    PlanningTabControl.Initialize(_config, _vm.Project, _claudeService);
                     PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
                     PlanningTabControl.TitleCreatorPopOutRequested += OpenTitleCreatorDialog;
 
@@ -113,17 +130,38 @@ namespace InsightCast.Views
             // Only handle top-level tab changes
             if (e.Source != MainTabControl) return;
 
-            // Refresh both scene lists when switching tabs to ensure they're in sync
-            if (MainTabControl.SelectedIndex == 0)
-            {
-                // Switching to Planning tab - refresh planning scenes
+            var isPptxTab = MainTabControl.SelectedIndex == 0;
+            var isVideoTab = MainTabControl.SelectedIndex == 1;
+
+            // Refresh scene lists
+            if (isPptxTab)
                 PlanningTabControl.RefreshScenes();
-            }
-            else if (MainTabControl.SelectedIndex == 1)
-            {
-                // Switching to Video Generation tab - refresh scene list
+            else if (isVideoTab)
                 _vm.RefreshSceneList();
-            }
+
+            // Switch ribbon groups visibility
+            UpdateRibbonForTab(isPptxTab, isVideoTab);
+        }
+
+        private void UpdateRibbonForTab(bool isPptxTab, bool isVideoTab)
+        {
+            // PPTX tab groups
+            if (RibbonPptxExport != null)
+                RibbonPptxExport.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonPptxData != null)
+                RibbonPptxData.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonPptxTools != null)
+                RibbonPptxTools.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
+
+            // Video tab groups
+            if (RibbonVideoScene != null)
+                RibbonVideoScene.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonVideoProduction != null)
+                RibbonVideoProduction.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonVideoExport != null)
+                RibbonVideoExport.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonVideoTemplate != null)
+                RibbonVideoTemplate.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
         }
 
         /// <summary>
@@ -157,7 +195,11 @@ namespace InsightCast.Views
                 Activate();
 
                 // Handle result
-                if (captureWindow.PinnedToScene && captureWindow.CapturedImagePath != null)
+                if (captureWindow.RecordingRequested && _vm.FfmpegWrapper != null)
+                {
+                    HandleScreenRecording(captureWindow.RecordingRegion);
+                }
+                else if (captureWindow.PinnedToScene && captureWindow.CapturedImagePath != null)
                 {
                     _vm.ApplyCapturedImage(captureWindow.CapturedImagePath);
                 }
@@ -183,6 +225,60 @@ namespace InsightCast.Views
             });
         }
 
+        private void OnScreenRecordRequested()
+        {
+            Hide();
+
+            Dispatcher.InvokeAsync(async () =>
+            {
+                await System.Threading.Tasks.Task.Delay(300);
+
+                // Use ScreenCaptureWindow for region selection only
+                var captureWindow = new ScreenCaptureWindow();
+                captureWindow.ShowDialog();
+
+                Show();
+                Activate();
+
+                if (captureWindow.RecordingRequested && _vm.FfmpegWrapper != null)
+                {
+                    HandleScreenRecording(captureWindow.RecordingRegion);
+                }
+                else if (captureWindow.PinnedToScene && captureWindow.CapturedImagePath != null)
+                {
+                    // User chose pin instead - still honor it
+                    _vm.ApplyCapturedImage(captureWindow.CapturedImagePath);
+                }
+            });
+        }
+
+        private void HandleScreenRecording(System.Drawing.Rectangle region)
+        {
+            while (true)
+            {
+                _vm.Logger.Log(Services.LocalizationService.GetString("VM.Recording.Started"));
+                var recordWindow = new ScreenRecordingWindow(_vm.FfmpegWrapper!, region);
+                recordWindow.ShowDialog();
+
+                if (recordWindow.RecordedVideoPath != null)
+                {
+                    _vm.Logger.Log($"[Recording] Video path: {recordWindow.RecordedVideoPath}");
+                    _vm.Logger.Log($"[Recording] Current scene: {(_vm.CurrentScene != null ? _vm.CurrentScene.Id : "null")}");
+                    _vm.ApplyCapturedVideo(recordWindow.RecordedVideoPath);
+                    _vm.Logger.Log($"[Recording] After apply - MediaType: {_vm.CurrentScene?.MediaType}, MediaPath: {_vm.CurrentScene?.MediaPath}");
+                    break;
+                }
+
+                if (recordWindow.RetakeRequested)
+                {
+                    continue;
+                }
+
+                _vm.Logger.Log("[Recording] Cancelled - RecordedVideoPath is null");
+                break;
+            }
+        }
+
         private void OnStopAudioRequested()
         {
             Dispatcher.Invoke(() =>
@@ -202,11 +298,25 @@ namespace InsightCast.Views
                     PreviewImage.Source = null;
                     return;
                 }
+
+                // For video files, extract a thumbnail frame via FFmpeg
+                string displayPath = imagePath;
+                if (IsVideoFile(imagePath))
+                {
+                    var thumbPath = ExtractVideoThumbnail(imagePath);
+                    if (thumbPath == null)
+                    {
+                        PreviewImage.Source = null;
+                        return;
+                    }
+                    displayPath = thumbPath;
+                }
+
                 try
                 {
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();
-                    bitmap.UriSource = new Uri(imagePath, UriKind.Absolute);
+                    bitmap.UriSource = new Uri(displayPath, UriKind.Absolute);
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.DecodePixelWidth = 240;
                     bitmap.EndInit();
@@ -220,6 +330,71 @@ namespace InsightCast.Views
             });
         }
 
+        private static bool IsVideoFile(string path)
+        {
+            var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+            return ext is ".mp4" or ".avi" or ".mov" or ".wmv" or ".mkv";
+        }
+
+        private string? ExtractVideoThumbnail(string videoPath)
+        {
+            if (_vm.FfmpegWrapper == null) return null;
+            try
+            {
+                var thumbPath = System.IO.Path.Combine(
+                    System.IO.Path.GetTempPath(),
+                    $"ic_thumb_{videoPath.GetHashCode():X8}.jpg");
+                var sceneGen = new Video.SceneGenerator(_vm.FfmpegWrapper);
+                if (sceneGen.ExtractThumbnail(videoPath, thumbPath, 0.5))
+                    return thumbPath;
+            }
+            catch { }
+            return null;
+        }
+
+        private static readonly int[] SubtitleFontSizes = { 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 72 };
+        private readonly string _defaultLabel = LocalizationService.GetString("Common.Default");
+
+        private void InitializeSubtitleSizeCombo()
+        {
+            // Scene-level combo: "デフォルト" + size list
+            var items = new List<object> { _defaultLabel };
+            items.AddRange(SubtitleFontSizes.Cast<object>());
+            SubtitleSizeCombo.ItemsSource = items;
+            SubtitleSizeCombo.SelectedIndex = 0; // Default
+        }
+
+
+        private void SubtitleSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_suppressSubtitleSizeChange) return;
+            if (SubtitleSizeCombo.SelectedItem is string) // "デフォルト"
+                _vm.SubtitleFontSize = null;
+            else if (SubtitleSizeCombo.SelectedItem is int size)
+                _vm.SubtitleFontSize = size;
+        }
+
+
+        private void SyncSubtitleSizeCombo(int? sceneFontSize)
+        {
+            _suppressSubtitleSizeChange = true;
+            if (sceneFontSize == null)
+            {
+                SubtitleSizeCombo.SelectedIndex = 0; // "デフォルト"
+            }
+            else
+            {
+                var size = sceneFontSize.Value;
+                if (Array.IndexOf(SubtitleFontSizes, size) >= 0)
+                    SubtitleSizeCombo.SelectedItem = size;
+                else
+                    SubtitleSizeCombo.SelectedItem = SubtitleFontSizes.OrderBy(s => Math.Abs(s - size)).First();
+            }
+            _suppressSubtitleSizeChange = false;
+        }
+
+        private bool _suppressSubtitleSizeChange;
+
         private void OnStylePreviewUpdateRequested(TextStyle style)
         {
             Dispatcher.Invoke(() =>
@@ -232,6 +407,9 @@ namespace InsightCast.Views
                         (byte)style.TextColor[2]);
                     StylePreviewLabel.Foreground = new SolidColorBrush(textColor);
                     StylePreviewLabel.FontWeight = style.FontBold ? FontWeights.Bold : FontWeights.Normal;
+
+                    // Sync subtitle size combo with per-scene override
+                    SyncSubtitleSizeCombo(_vm.SubtitleFontSize);
                 }
                 catch
                 {
@@ -679,6 +857,27 @@ namespace InsightCast.Views
             OpenTitleCreatorDialog();
         }
 
+        private void TextOverlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm.CurrentScene == null) return;
+
+            var mediaPath = _vm.CurrentScene.MediaPath;
+            var dlg = new TextOverlayDialog(_vm.CurrentScene.TextOverlays, mediaPath) { Owner = this };
+            if (dlg.ShowDialog() == true)
+            {
+                _vm.CurrentScene.TextOverlays.Clear();
+                _vm.CurrentScene.TextOverlays.AddRange(dlg.ResultOverlays);
+                _vm.RefreshOverlayList();
+            }
+        }
+
+        // ── PPTX tab ribbon relay handlers ──
+        private void RibbonExportPptx_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteExportPptx();
+        private void RibbonExportJson_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteExportJson();
+        private void RibbonImportJson_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteImportJson();
+        private void RibbonAiImages_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteAiGenerateImages();
+        private void RibbonThumbnail_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteOpenThumbnailCreator();
+
         private void AIPromptExecute_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new AIPromptExecuteDialog { Owner = this };
@@ -691,9 +890,6 @@ namespace InsightCast.Views
 
                     // Set the tool-enabled prompt
                     _chatVm.AiInput = preset.GetPrompt(lang);
-
-                    // Set recommended model for optimal results
-                    _chatVm.SelectedModelIndex = preset.RecommendedModelIndex;
 
                     // Open AI panel if closed
                     if (!_chatVm.IsChatOpen)
@@ -735,10 +931,6 @@ namespace InsightCast.Views
 
         private void InitializeChatPanel()
         {
-            // 初回起動時にデフォルトのマイプロンプトを登録
-            PromptLibraryService.SeedDefaultPrompts();
-
-            var claudeService = new ClaudeService(_config);
             var thumbnailService = new ThumbnailService();
             var toolExecutor = new VideoToolExecutor(
                 () => _vm.Project.Scenes,
@@ -770,11 +962,10 @@ namespace InsightCast.Views
                 getOpenAIApiKey: () => _config.OpenAIApiKey ?? "");
 
             _chatVm = new ChatPanelViewModel(
-                claudeService,
+                _claudeService!,
                 toolExecutor,
                 () => LocalizationService.CurrentLanguage,
-                _config,
-                _config.ClaudeModelIndex);
+                _config);
 
             ChatPanel.DataContext = _chatVm;
             ChatPanel.PopOutRequested += OnPopOutAiAssistant;
@@ -900,6 +1091,63 @@ namespace InsightCast.Views
 
         #endregion
 
+        #region Drag & Drop
+
+        private void Window_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+                e.Handled = true;
+                DropOverlay.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+                e.Handled = true;
+            }
+        }
+
+        protected override void OnDragLeave(DragEventArgs e)
+        {
+            base.OnDragLeave(e);
+            // Only hide if the mouse has left the window entirely
+            var pos = e.GetPosition(this);
+            if (pos.X <= 0 || pos.Y <= 0 || pos.X >= ActualWidth || pos.Y >= ActualHeight)
+                DropOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private async void Window_Drop(object sender, DragEventArgs e)
+        {
+            DropOverlay.Visibility = Visibility.Collapsed;
+
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+
+            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files == null || files.Length == 0) return;
+
+            var docExtensions = new[] { ".pptx", ".docx", ".xlsx", ".pdf" };
+            var pptxFiles = files.Where(f => docExtensions.Contains(Path.GetExtension(f).ToLowerInvariant())).ToArray();
+            var mediaFiles = files.Where(f =>
+            {
+                var ext = Path.GetExtension(f).ToLowerInvariant();
+                return ext is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".gif"
+                    or ".mp4" or ".avi" or ".mov" or ".wmv" or ".mkv";
+            }).ToArray();
+
+            foreach (var pptx in pptxFiles)
+            {
+                await _vm.ImportPptxFromPathAsync(pptx);
+            }
+
+            if (mediaFiles.Length > 0)
+            {
+                _vm.AddMediaFilesAsScenes(mediaFiles);
+            }
+        }
+
+        #endregion
+
         #region Window Lifecycle
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -920,6 +1168,7 @@ namespace InsightCast.Views
             _vm.PreviewVideoReady -= OnPreviewVideoReady;
             _vm.ExitRequested -= OnExitRequested;
             _vm.ScreenCaptureRequested -= OnScreenCaptureRequested;
+            _vm.ScreenRecordRequested -= OnScreenRecordRequested;
             _vm.ScenesChanged -= OnMainViewModelScenesChanged;
             _vm.Logger.LogReceived -= OnLogReceived;
             PlanningTabControl.ScenesChanged -= OnPlanningTabScenesChanged;
@@ -994,6 +1243,16 @@ namespace InsightCast.Views
                 _config.Language = lang;
                 _chatVm?.RefreshForLanguageChange();
             }
+        }
+
+        private void BackStageQuickMode_Click(object sender, RoutedEventArgs e)
+        {
+            MainRibbon.HideBackStage();
+            var quickWindow = new QuickModeWindow(_voiceVoxClient, _speakerId, _ffmpegWrapper, _config)
+            {
+                Owner = this
+            };
+            quickWindow.ShowDialog();
         }
 
         private void BackStageLicense_Click(object sender, RoutedEventArgs e)

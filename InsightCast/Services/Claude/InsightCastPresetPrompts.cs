@@ -428,5 +428,345 @@ Evaluate and provide specific improvement suggestions:
             PromptJa = "シーンの整理を行ってください:\n\n1. get_scenesで全シーンを確認\n2. ナレーション・字幕・メディアがすべて空のシーンを特定し、一覧を報告\n3. 空シーンをremove_sceneで削除（インデックスが大きい方から順に削除すること。最低1シーンは残す）\n4. 削除後、get_scenesで最新状態を取得し、残ったシーンの順序を分析\n5. 論理的な流れになるようmove_sceneで並べ替えを実行\n6. 最終構成を報告\n\n重要: シーン削除時はインデックスのずれを防ぐため、必ず末尾側（大きいインデックス）から順に削除してください。",
             PromptEn = "Clean up the scene structure:\n\n1. Use get_scenes to review all scenes\n2. Identify scenes where narration, subtitles, and media are all empty, and report the list\n3. Remove empty scenes with remove_scene (delete from highest index first to avoid index shifting; keep at least 1 scene)\n4. After deletion, use get_scenes to get the updated state and analyze remaining scene order\n5. Reorder scenes with move_scene for logical flow\n6. Report the final structure\n\nImportant: Always delete scenes from highest index to lowest to prevent index shifting issues.",
         },
+        // ========================================
+        // カテゴリ10: 研修コンテンツ設計
+        //   教育設計・学習目標整理 → Opus
+        //   クイズ生成 → Sonnet
+        // ========================================
+        new InsightCastPresetPrompt
+        {
+            Id = "training_learning_objectives",
+            CategoryJa = "研修コンテンツ設計",
+            CategoryEn = "Training Design",
+            LabelJa = "学習目標を自動設定＆導入シーン生成",
+            LabelEn = "Auto-set learning objectives & intro scene",
+            Icon = "🎯",
+            RecommendedPersonaId = "manabu",
+            Mode = "check",
+            RequiresContextData = true,
+            PromptJa = "get_scenesとget_pptx_notesでプロジェクト内容を把握し、研修動画としての学習目標を設計してください:\n\n1. コンテンツ全体から3〜5個の学習目標を抽出\n2. 先頭に「学習目標」シーンをadd_sceneで追加し、目標を箇条書きナレーションとして設定\n3. 末尾に「まとめ・振り返り」シーンをadd_sceneで追加し、学習目標の達成を確認するナレーションを設定\n4. set_multiple_scenesでナレーションを一括設定\n\n学習目標は「〜できるようになる」の形式で、具体的・測定可能な表現にしてください。",
+            PromptEn = "Analyze the project with get_scenes and get_pptx_notes, then design learning objectives for a training video:\n\n1. Extract 3-5 learning objectives from the content\n2. Add a 'Learning Objectives' scene at the beginning with add_scene, set objectives as bullet-point narration\n3. Add a 'Summary & Review' scene at the end with add_scene, set narration confirming objective achievement\n4. Apply all narration with set_multiple_scenes\n\nLearning objectives should be specific and measurable ('By the end, you will be able to...').",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "training_quiz_scenes",
+            CategoryJa = "研修コンテンツ設計",
+            CategoryEn = "Training Design",
+            LabelJa = "理解度チェッククイズを自動挿入",
+            LabelEn = "Auto-insert comprehension quiz scenes",
+            Icon = "❓",
+            RecommendedPersonaId = "megumi",
+            Mode = "check",
+            RequiresContextData = true,
+            PromptJa = "get_scenesで全シーンのナレーションを読み取り、内容に基づいた理解度チェッククイズを作成してください:\n\n1. 主要な学習ポイントを3〜5個特定\n2. 各ポイントの直後にadd_sceneでクイズシーンを挿入\n3. クイズのナレーション形式: 「ここで確認クイズです。[質問]　答えは…[回答と解説]」\n4. set_multiple_scenesで全クイズシーンのナレーションを一括設定\n\nクイズは選択式（A/B/C）または○×形式で、正解と簡潔な解説を含めてください。",
+            PromptEn = "Read all scene narration with get_scenes and create comprehension quiz questions:\n\n1. Identify 3-5 key learning points\n2. Insert quiz scenes after each key point with add_scene\n3. Quiz narration format: 'Quick check: [question] The answer is... [answer and explanation]'\n4. Apply all quiz narration with set_multiple_scenes\n\nUse multiple choice (A/B/C) or true/false format with correct answers and brief explanations.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "training_time_estimate",
+            CategoryJa = "研修コンテンツ設計",
+            CategoryEn = "Training Design",
+            LabelJa = "研修時間の見積もり＆最適化提案",
+            LabelEn = "Estimate training duration & optimize",
+            Icon = "⏱️",
+            RecommendedPersonaId = "manabu",
+            Mode = "advice",
+            RequiresContextData = true,
+            PromptJa = "get_scenesとget_project_summaryでプロジェクト全体を分析し、研修動画としての時間配分を評価してください:\n\n1. 各シーンのナレーション文字数から読み上げ時間を推定（日本語: 約300文字/分）\n2. シーンごとの推定時間を表形式で一覧化\n3. 動画全体の合計時間を算出\n4. 研修動画の推奨時間（5〜15分）に対する過不足を指摘\n5. 長すぎる場合は分割案、短すぎる場合は補足すべき内容を提案\n\n視聴者の集中力維持の観点からもアドバイスしてください。",
+            PromptEn = "Analyze the full project with get_scenes and get_project_summary to evaluate time allocation:\n\n1. Estimate reading time per scene from narration character count (English: ~150 words/min)\n2. List estimated time per scene in table format\n3. Calculate total video duration\n4. Flag if duration falls outside recommended training range (5-15 min)\n5. Suggest splitting if too long, or additional content if too short\n\nAlso advise from a viewer attention/retention perspective.",
+        },
+
+        // ========================================
+        // カテゴリ11: アクセシビリティ
+        //   読みやすさ改善 → Sonnet
+        //   多言語字幕 → Sonnet
+        // ========================================
+        new InsightCastPresetPrompt
+        {
+            Id = "accessibility_plain_language",
+            CategoryJa = "アクセシビリティ",
+            CategoryEn = "Accessibility",
+            LabelJa = "誰でもわかる平易な表現に書き換え",
+            LabelEn = "Rewrite in plain language for all audiences",
+            Icon = "📖",
+            RecommendedPersonaId = "megumi",
+            Mode = "check",
+            RequiresContextData = true,
+            PromptJa = "get_scenesで全シーンのナレーションを取得し、より平易でわかりやすい表現に書き換えてください:\n\n- 専門用語は初出時に「（＝○○のこと）」と補足説明を追加\n- 長い文は短い文に分割（1文40文字以内を目標）\n- カタカナ語は必要最低限にし、日本語で言い換え可能なものは置き換え\n- 抽象的な説明には具体例を追加\n- 新入社員や非専門家が理解できるレベルを目標\n\nset_multiple_scenesで設定してください。",
+            PromptEn = "Use get_scenes to get all narration and rewrite for maximum accessibility:\n\n- Add brief explanations for technical terms on first use\n- Split long sentences (target: under 20 words per sentence)\n- Minimize jargon; use plain equivalents where possible\n- Add concrete examples for abstract explanations\n- Target comprehension level: new employees or non-specialists\n\nApply with set_multiple_scenes.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "accessibility_audio_description",
+            CategoryJa = "アクセシビリティ",
+            CategoryEn = "Accessibility",
+            LabelJa = "画面の説明をナレーションに追加",
+            LabelEn = "Add visual descriptions to narration",
+            Icon = "👁️",
+            RecommendedPersonaId = "megumi",
+            Mode = "check",
+            RequiresContextData = true,
+            PromptJa = "get_scenesで全シーンを確認し、音声だけで内容が伝わるようナレーションを補強してください:\n\n- 「この画面では」「ここに表示されている」等の指示語を具体的な説明に置き換え\n- グラフや図表を参照する場面では、数値や傾向を口頭で説明するテキストを追加\n- 「ご覧のように」→ 具体的に何が表示されているかを説明\n- 画面を見なくても内容が理解できるレベルを目標\n\nset_multiple_scenesで設定してください。",
+            PromptEn = "Use get_scenes to review all scenes and enhance narration so content is understandable by audio alone:\n\n- Replace vague references ('as shown here') with specific descriptions\n- Add verbal descriptions of data, trends, and visuals\n- Ensure charts/graphs are described with key numbers and patterns\n- Target: full comprehension without viewing the screen\n\nApply with set_multiple_scenes.",
+        },
+
+        // ========================================
+        // カテゴリ12: AIガイド
+        //   AIにできることを提案 → Haiku (軽量)
+        // ========================================
+        new InsightCastPresetPrompt
+        {
+            Id = "ai_capabilities_guide",
+            CategoryJa = "AIガイド",
+            CategoryEn = "AI Guide",
+            LabelJa = "この動画でAIにできることを提案",
+            LabelEn = "Suggest what AI can do for this video",
+            Icon = "💡",
+            RecommendedPersonaId = "shunsuke",
+            Mode = "advice",
+            RequiresContextData = true,
+            PromptJa = @"あなたはInsight Training StudioのAIアシスタントです。
+get_scenesとget_project_summaryでこのプロジェクトの現状を確認した上で、
+ユーザーが「〜してください」と指示すればすぐ実行できるアクションを具体的に提案してください。
+
+あなたが使えるツール:
+- get_scenes: 全シーンのタイトル・ナレーション・字幕・メディアパスを取得
+- set_multiple_scenes: 複数シーンのナレーション・字幕を一括設定
+- set_scene_narration / set_scene_subtitle: 個別シーンのナレーション・字幕を設定
+- get_pptx_notes: スライドのスピーカーノートを取得
+- get_project_summary: プロジェクト全体の概要（シーン数、動画長等）を取得
+- add_scene / remove_scene / move_scene: シーンの追加・削除・並べ替え
+- set_scene_media: シーンの画像・動画を設定
+- generate_thumbnail: サムネイル画像を生成
+- generate_scene_image: AIでシーン用イラストを生成
+- generate_ab_thumbnails: A/Bテスト用サムネイル2枚を生成
+- add_cta_endcard: 最終シーンにCTA（行動喚起）を追加
+
+プロジェクトの現状を踏まえて、以下の観点で「今すぐできること」を5〜10個提案してください:
+- ナレーション・字幕の生成・改善・翻訳
+- 構成の改善（シーン追加・削除・並べ替え）
+- 品質チェック（トーン統一、長さ均一化、VOICEVOX最適化）
+- サムネイル・CTR最適化
+- 多言語展開（英語・中国語・韓国語字幕）
+
+各提案には「なぜそれが有用か」を1行で添えてください。",
+            PromptEn = @"You are the Insight Training Studio AI assistant.
+Use get_scenes and get_project_summary to review the current project state,
+then suggest specific actions the user can request immediately.
+
+Your available tools:
+- get_scenes: Get all scene titles, narration, subtitles, and media paths
+- set_multiple_scenes: Batch-set narration and subtitles for multiple scenes
+- set_scene_narration / set_scene_subtitle: Set individual scene narration/subtitles
+- get_pptx_notes: Get slide speaker notes
+- get_project_summary: Get project overview (scene count, video length, etc.)
+- add_scene / remove_scene / move_scene: Add, remove, or reorder scenes
+- set_scene_media: Set scene image/video
+- generate_thumbnail: Generate a thumbnail image
+- generate_scene_image: Generate AI illustration for a scene
+- generate_ab_thumbnails: Generate 2 A/B test thumbnails
+- add_cta_endcard: Add a call-to-action end card
+
+Based on the current project state, suggest 5-10 actionable items across:
+- Narration/subtitle generation, improvement, or translation
+- Structure improvements (add/remove/reorder scenes)
+- Quality checks (tone consistency, length normalization, TTS optimization)
+- Thumbnail & CTR optimization
+- Multi-language expansion (EN/ZH/KO subtitles)
+
+Add a one-line reason why each suggestion would be valuable.",
+        },
+
+        // ========================================
+        // カテゴリ13: マーケティング・YouTube
+        //   動画の集客力・視聴維持率を最大化するためのプロンプト
+        //   SEO/構成分析 → Opus (深い分析)
+        //   テキスト生成 → Sonnet (創作力)
+        // ========================================
+        new InsightCastPresetPrompt
+        {
+            Id = "youtube_seo_optimize",
+            CategoryJa = "マーケティング・YouTube",
+            CategoryEn = "Marketing & YouTube",
+            LabelJa = "YouTube SEO最適化（タイトル・説明・タグ）",
+            LabelEn = "YouTube SEO optimization (title/desc/tags)",
+            Icon = "🔍",
+            RecommendedPersonaId = "manabu",
+            Mode = "advice",
+            RequiresContextData = true,
+            PromptJa = @"get_project_summary と get_scenes でプロジェクト内容を確認し、YouTube向けに以下を生成してください:
+
+1. タイトル案（3パターン）
+   - 検索キーワードを含む（60文字以内）
+   - クリックしたくなる表現（数字・疑問形・ベネフィット訴求）
+2. 説明文（5,000文字以内）
+   - 冒頭3行にキーワードと要約（折りたたみ前に表示される部分）
+   - タイムスタンプ付き目次
+   - 関連キーワードを自然に含める
+   - CTA（チャンネル登録・関連動画リンク用プレースホルダー）
+3. タグ（15〜30個）
+   - メインキーワード + ロングテール + 関連語
+4. ハッシュタグ（3個）
+   - タイトル上に表示される#タグ
+
+業界・ターゲット層に適した検索ボリュームの高いキーワードを意識してください。",
+            PromptEn = @"Use get_project_summary and get_scenes to review the project, then generate YouTube SEO elements:
+
+1. Title options (3 patterns, under 60 chars each)
+   - Include search keywords, use numbers/questions/benefit-driven copy
+2. Description (under 5,000 chars)
+   - First 3 lines: keywords + summary (visible before 'Show more')
+   - Timestamped table of contents
+   - Natural keyword integration
+   - CTAs (subscribe, related video placeholders)
+3. Tags (15-30)
+   - Main keywords + long-tail + related terms
+4. Hashtags (3)
+
+Focus on high-volume keywords relevant to the industry and target audience.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "shorts_repurpose",
+            CategoryJa = "マーケティング・YouTube",
+            CategoryEn = "Marketing & YouTube",
+            LabelJa = "Shorts用に切り出しポイントを提案",
+            LabelEn = "Suggest Shorts clip points",
+            Icon = "📱",
+            RecommendedPersonaId = "megumi",
+            Mode = "advice",
+            RequiresContextData = true,
+            PromptJa = @"get_scenes でシーン構成を確認し、YouTube Shorts（60秒以内の縦型動画）に切り出せるポイントを提案してください。
+
+各提案について:
+- 対象シーン番号と時間範囲
+- Shorts用タイトル（衝撃的・好奇心を煽る短いコピー）
+- 冒頭フック（最初の3秒で視聴者を掴む一言）
+- 縦型動画に適したテロップテキスト案
+- 期待されるエンゲージメント（コメント誘発要素）
+
+最低3本分のShorts案を出してください。バイラル性の高い順に並べてください。",
+            PromptEn = @"Use get_scenes to review the structure and suggest YouTube Shorts (under 60 sec, vertical) extraction points.
+
+For each suggestion:
+- Target scene numbers and time range
+- Shorts title (attention-grabbing short copy)
+- Opening hook (first 3 seconds to capture viewers)
+- Vertical video caption text
+- Expected engagement (comment-provoking elements)
+
+Suggest at least 3 Shorts ideas, ordered by viral potential.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "engagement_hook",
+            CategoryJa = "マーケティング・YouTube",
+            CategoryEn = "Marketing & YouTube",
+            LabelJa = "視聴維持率を上げるフック挿入",
+            LabelEn = "Add retention hooks",
+            Icon = "🎯",
+            RecommendedPersonaId = "megumi",
+            Mode = "check",
+            RequiresContextData = true,
+            PromptJa = @"get_scenes で全シーンのナレーションを確認し、視聴維持率を向上させるフックを各シーンに追加してください。
+
+フックの種類:
+- オープンループ（「この後、驚くべき結果が...」）
+- 予告（「3つ目のポイントが最も重要です」）
+- 疑問提起（「なぜこれが効果的なのでしょうか？」）
+- データ引用（「実は〇〇%の企業が...」）
+
+set_multiple_scenes でナレーションを更新し、各シーン冒頭または末尾にフックを自然に織り込んでください。
+フックは視聴者が「続きが気になる」と感じるものにしてください。",
+            PromptEn = @"Use get_scenes to review all narration and add retention hooks to each scene using set_multiple_scenes.
+
+Hook types:
+- Open loops ('What happens next will surprise you...')
+- Preview ('The third point is the most important')
+- Questions ('Why is this so effective?')
+- Data citations ('Actually, X% of companies...')
+
+Weave hooks naturally into the start or end of each scene's narration to keep viewers watching.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "video_series_plan",
+            CategoryJa = "マーケティング・YouTube",
+            CategoryEn = "Marketing & YouTube",
+            LabelJa = "シリーズ動画の企画立案",
+            LabelEn = "Plan a video series",
+            Icon = "📋",
+            RecommendedPersonaId = "manabu",
+            Mode = "advice",
+            RequiresContextData = true,
+            PromptJa = @"get_project_summary でこの動画の内容を確認し、これを起点としたシリーズ動画（5〜10本）の企画を立案してください。
+
+各回について:
+1. タイトル案
+2. 主要テーマ・学習目標
+3. 推奨尺（分数）
+4. 前回との関連性・伏線
+5. CTA（次の動画への誘導文）
+
+全体構成:
+- シリーズ全体のコンセプト・タイトル
+- ターゲット視聴者ペルソナ
+- 配信スケジュール案（週1回推奨）
+- 再生リストの説明文
+- シリーズ終了後のネクストアクション（上位コース・コンサル誘導等）
+
+マーケティングファネルとして機能するよう設計してください。",
+            PromptEn = @"Use get_project_summary to understand this video's content, then plan a series (5-10 videos) building on it.
+
+For each episode:
+1. Title idea
+2. Key theme / learning objectives
+3. Recommended duration (minutes)
+4. Connection to previous episode
+5. CTA (teaser for next video)
+
+Overall plan:
+- Series concept and title
+- Target viewer persona
+- Publishing schedule (recommend weekly)
+- Playlist description
+- Post-series next action (advanced course, consultation, etc.)
+
+Design it to function as a marketing funnel.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "change_mgmt_video",
+            CategoryJa = "マーケティング・YouTube",
+            CategoryEn = "Marketing & YouTube",
+            LabelJa = "社内向けチェンジマネジメント動画化",
+            LabelEn = "Internal change management video",
+            Icon = "🏢",
+            RecommendedPersonaId = "manabu",
+            Mode = "check",
+            RequiresContextData = true,
+            PromptJa = @"get_scenes で現在の内容を確認し、社内向けチェンジマネジメント動画として最適化してください。
+
+set_multiple_scenes で以下の構成にナレーションを再構成:
+1. Why（なぜ変わる必要があるのか — 危機感の醸成）
+2. What（何が変わるのか — 具体的な変更点）
+3. How（どう変わるのか — ステップと支援体制）
+4. Benefits（変わることで何が良くなるのか — 個人レベルのメリット）
+5. FAQ（よくある不安への回答）
+6. Next Steps（明日からできる第一歩）
+
+経営層の意思決定を現場に浸透させる、共感と行動を促すトーンにしてください。",
+            PromptEn = @"Use get_scenes to review content and restructure as an internal change management video.
+
+Use set_multiple_scenes to reorganize narration into:
+1. Why (create urgency for change)
+2. What (specific changes)
+3. How (steps and support structure)
+4. Benefits (individual-level advantages)
+5. FAQ (address common concerns)
+6. Next Steps (actionable first step)
+
+Use a tone that builds empathy and drives action, translating leadership decisions into frontline understanding.",
+        },
     };
 }

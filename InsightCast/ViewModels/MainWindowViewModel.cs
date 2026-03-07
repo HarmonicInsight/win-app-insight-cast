@@ -32,6 +32,7 @@ namespace InsightCast.ViewModels
         private readonly VoiceVoxClient _voiceVoxClient;
         private readonly int _defaultSpeakerId;
         private readonly FFmpegWrapper? _ffmpegWrapper;
+        public FFmpegWrapper? FfmpegWrapper => _ffmpegWrapper;
         private readonly Config _config;
         private readonly AudioCache _audioCache;
         private readonly IAppLogger _logger;
@@ -60,6 +61,7 @@ namespace InsightCast.ViewModels
         private bool _isFixedDuration;
         private string _durationSeconds = "3.0";
         private int _selectedTransitionIndex;
+        private int _selectedMotionIndex;
         private string _transitionDuration = "0.5";
         private int _selectedSceneSpeakerIndex;
         private string _bgmStatusText = LocalizationService.GetString("BGM.NotSet");
@@ -67,6 +69,8 @@ namespace InsightCast.ViewModels
         private string _fpsText = "30";
         private int _selectedResolutionIndex = 0; // Default: 1920x1080 (横動画)
         private int _selectedExportSpeakerIndex;
+        private int _selectedMotionVariationIndex = 1; // Normal
+        private int _selectedMotionIntensityIndex = 1; // Medium
         private bool _exportProgressVisible;
         private double _exportProgressValue;
 
@@ -84,6 +88,7 @@ namespace InsightCast.ViewModels
         private TextStyle _defaultSubtitleStyle;
         private readonly Dictionary<string, TextStyle> _sceneSubtitleStyles = new();
         private Dictionary<int, string> _speakerStyles = new();
+        private int _defaultSubtitleFontSize = 28;
 
         // Watermark
         private string _watermarkFilePath = string.Empty;
@@ -229,6 +234,16 @@ namespace InsightCast.ViewModels
             }
         }
 
+        public int SelectedMotionIndex
+        {
+            get => _selectedMotionIndex;
+            set
+            {
+                if (SetProperty(ref _selectedMotionIndex, value))
+                    OnMotionChanged();
+            }
+        }
+
         public int SelectedSceneSpeakerIndex
         {
             get => _selectedSceneSpeakerIndex;
@@ -244,6 +259,44 @@ namespace InsightCast.ViewModels
             get => _selectedExportSpeakerIndex;
             set => SetProperty(ref _selectedExportSpeakerIndex, value);
         }
+
+        public int SelectedMotionVariationIndex
+        {
+            get => _selectedMotionVariationIndex;
+            set => SetProperty(ref _selectedMotionVariationIndex, value);
+        }
+
+        public int SelectedMotionIntensityIndex
+        {
+            get => _selectedMotionIntensityIndex;
+            set
+            {
+                if (SetProperty(ref _selectedMotionIntensityIndex, value))
+                {
+                    _project.MotionIntensity = value switch
+                    {
+                        0 => MotionIntensity.Weak,
+                        2 => MotionIntensity.Strong,
+                        _ => MotionIntensity.Medium
+                    };
+                    _isDirty = true;
+                }
+            }
+        }
+
+        public List<string> MotionVariationNames { get; } = new()
+        {
+            LocalizationService.GetString("Motion.Variation.Calm"),
+            LocalizationService.GetString("Motion.Variation.Normal"),
+            LocalizationService.GetString("Motion.Variation.Random"),
+        };
+
+        public List<string> MotionIntensityNames { get; } = new()
+        {
+            LocalizationService.GetString("Motion.Intensity.Weak"),
+            LocalizationService.GetString("Motion.Intensity.Medium"),
+            LocalizationService.GetString("Motion.Intensity.Strong"),
+        };
 
         public int SelectedResolutionIndex
         {
@@ -379,7 +432,14 @@ namespace InsightCast.ViewModels
             set
             {
                 if (SetProperty(ref _overlayXPercent, value))
+                {
                     OnOverlayPositionChanged();
+                    if (!_isUpdatingSlider && double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var v))
+                    {
+                        _overlayXSlider = v;
+                        OnPropertyChanged(nameof(OverlayXSlider));
+                    }
+                }
             }
         }
 
@@ -389,7 +449,45 @@ namespace InsightCast.ViewModels
             set
             {
                 if (SetProperty(ref _overlayYPercent, value))
+                {
                     OnOverlayPositionChanged();
+                    if (!_isUpdatingSlider && double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var v))
+                    {
+                        _overlayYSlider = v;
+                        OnPropertyChanged(nameof(OverlayYSlider));
+                    }
+                }
+            }
+        }
+
+        private bool _isUpdatingSlider;
+        private double _overlayXSlider;
+        public double OverlayXSlider
+        {
+            get => _overlayXSlider;
+            set
+            {
+                if (SetProperty(ref _overlayXSlider, value))
+                {
+                    _isUpdatingSlider = true;
+                    OverlayXPercent = value.ToString("F1", CultureInfo.InvariantCulture);
+                    _isUpdatingSlider = false;
+                }
+            }
+        }
+
+        private double _overlayYSlider;
+        public double OverlayYSlider
+        {
+            get => _overlayYSlider;
+            set
+            {
+                if (SetProperty(ref _overlayYSlider, value))
+                {
+                    _isUpdatingSlider = true;
+                    OverlayYPercent = value.ToString("F1", CultureInfo.InvariantCulture);
+                    _isUpdatingSlider = false;
+                }
             }
         }
 
@@ -452,6 +550,10 @@ namespace InsightCast.ViewModels
 
         public bool OverlayListVisible => OverlayItems.Count > 0;
         public bool OverlayEditorVisible => _selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count;
+        public string OverlayCountDisplay => _currentScene == null ? ""
+            : _currentScene.TextOverlays.Count == 0 ? LocalizationService.GetString("Common.None")
+            : $"{_currentScene.TextOverlays.Count}";
+
 
         public List<string> AlignmentOptions { get; } = new() { LocalizationService.GetString("Align.Center"), LocalizationService.GetString("Align.Left"), LocalizationService.GetString("Align.Right") };
 
@@ -505,7 +607,7 @@ namespace InsightCast.ViewModels
 
         private static readonly double[] SpeechSpeedValues = { 0.8, 1.0, 1.2, 1.5 };
 
-        private int _selectedSpeechSpeedIndex = 1;
+        private int _selectedSpeechSpeedIndex = 2;
         public int SelectedSpeechSpeedIndex
         {
             get => _selectedSpeechSpeedIndex;
@@ -589,6 +691,7 @@ namespace InsightCast.ViewModels
         public ICommand MoveOverlayUpCommand { get; }
         public ICommand MoveOverlayDownCommand { get; }
         public ICommand SetOverlayPositionCommand { get; }
+        public ICommand SetOverlayFontSizeCommand { get; }
         public ICommand SelectWatermarkCommand { get; }
         public ICommand ClearWatermarkCommand { get; }
         public ICommand SaveTemplateCommand { get; }
@@ -617,6 +720,9 @@ namespace InsightCast.ViewModels
         public ICommand AddCtaEndcardCommand { get; }
         public ICommand ClearAllScriptsCommand { get; }
         public ICommand ClearAllSubtitlesCommand { get; }
+        public ICommand ApplyMotionPresetCommand { get; }
+        public ICommand LaunchSnippingToolCommand { get; }
+        public ICommand ScreenRecordCommand { get; }
 
         #endregion
 
@@ -659,6 +765,15 @@ namespace InsightCast.ViewModels
             MoveOverlayUpCommand = new RelayCommand(MoveOverlayUp);
             MoveOverlayDownCommand = new RelayCommand(MoveOverlayDown);
             SetOverlayPositionCommand = new RelayCommand(p => SetOverlayPosition(p as string));
+            SetOverlayFontSizeCommand = new RelayCommand(p =>
+            {
+                if (p is string s && int.TryParse(s, out var size))
+                {
+                    OverlayFontSize = size.ToString();
+                    _overlayFontSizeSlider = size;
+                    OnPropertyChanged(nameof(OverlayFontSizeSlider));
+                }
+            });
             SelectWatermarkCommand = new RelayCommand(SelectWatermark);
             ClearWatermarkCommand = new RelayCommand(ClearWatermark);
             SaveTemplateCommand = new RelayCommand(SaveTemplate);
@@ -687,6 +802,9 @@ namespace InsightCast.ViewModels
             AddCtaEndcardCommand = new RelayCommand(AddCtaEndcard);
             ClearAllScriptsCommand = new RelayCommand(ClearAllScripts);
             ClearAllSubtitlesCommand = new RelayCommand(ClearAllSubtitles);
+            ApplyMotionPresetCommand = new RelayCommand(ApplyMotionPreset);
+            LaunchSnippingToolCommand = new RelayCommand(LaunchSnippingTool);
+            ScreenRecordCommand = new RelayCommand(StartScreenRecord);
 
             // Auto-save every 5 minutes
             _autoSaveTimer = new Timer(_ => AutoSave(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
@@ -710,6 +828,9 @@ namespace InsightCast.ViewModels
 
         /// <summary>Raised when the user clicks the screen capture button.</summary>
         public event Action? ScreenCaptureRequested;
+
+        /// <summary>Raised when the user clicks the screen record button.</summary>
+        public event Action? ScreenRecordRequested;
 
         public IAppLogger Logger => _logger;
 
@@ -833,6 +954,8 @@ namespace InsightCast.ViewModels
 
             SubtitleText = _currentScene.SubtitleText ?? string.Empty;
             OnPropertyChanged(nameof(SubtitlePlaceholderVisible));
+            OnPropertyChanged(nameof(SubtitleFontSize));
+            OnPropertyChanged(nameof(EffectiveSubtitleFontSize));
 
             UpdateStylePreview();
 
@@ -850,6 +973,7 @@ namespace InsightCast.ViewModels
 
             SelectTransition(_currentScene.TransitionType);
             TransitionDuration = _currentScene.TransitionDuration.ToString("F1", CultureInfo.InvariantCulture);
+            SelectMotion(_currentScene.MotionType);
 
             RefreshOverlayList();
             if (_currentScene.TextOverlays.Count > 0)
@@ -1154,6 +1278,60 @@ namespace InsightCast.ViewModels
 
         #endregion
 
+        #region Motion
+
+        public List<string> MotionDisplayNames { get; } =
+            MotionNames.DisplayNames.Values.ToList();
+
+        private void SelectMotion(MotionType type)
+        {
+            var types = MotionNames.DisplayNames.Keys.ToList();
+            var idx = types.IndexOf(type);
+            SelectedMotionIndex = idx >= 0 ? idx : 0;
+        }
+
+        private void OnMotionChanged()
+        {
+            if (_isLoadingScene || _currentScene == null) return;
+            var types = MotionNames.DisplayNames.Keys.ToList();
+            if (_selectedMotionIndex >= 0 && _selectedMotionIndex < types.Count)
+            {
+                _currentScene.MotionType = types[_selectedMotionIndex];
+                _isDirty = true;
+            }
+        }
+
+        private void ApplyMotionPreset()
+        {
+            if (_project.Scenes.Count == 0) return;
+
+            var variation = _selectedMotionVariationIndex switch
+            {
+                0 => MotionVariation.Calm,
+                2 => MotionVariation.Random,
+                _ => MotionVariation.Normal
+            };
+
+            int seed = Environment.TickCount;
+            var assignments = MotionAssigner.Generate(_project.Scenes.Count, variation, seed);
+
+            for (int i = 0; i < _project.Scenes.Count && i < assignments.Count; i++)
+            {
+                _project.Scenes[i].MotionType = assignments[i];
+            }
+
+            _isDirty = true;
+
+            // Refresh current scene display
+            if (_currentScene != null)
+                SelectMotion(_currentScene.MotionType);
+
+            RefreshSceneList();
+            _logger.Log(LocalizationService.GetString("VM.Motion.Applied", _project.Scenes.Count));
+        }
+
+        #endregion
+
         #region Style
 
         private void OpenStyleDialog()
@@ -1174,16 +1352,41 @@ namespace InsightCast.ViewModels
 
         public TextStyle GetStyleForScene(Scene scene)
         {
+            TextStyle style;
             if (scene.SubtitleStyleId != null &&
-                _sceneSubtitleStyles.TryGetValue(scene.Id, out var style))
-                return style;
-
-            if (scene.SubtitleStyleId != null)
+                _sceneSubtitleStyles.TryGetValue(scene.Id, out var s))
+                style = s;
+            else if (scene.SubtitleStyleId != null)
             {
-                var preset = TextStyle.PRESET_STYLES.FirstOrDefault(s => s.Id == scene.SubtitleStyleId);
-                if (preset != null) return preset;
+                var preset = TextStyle.PRESET_STYLES.FirstOrDefault(p => p.Id == scene.SubtitleStyleId);
+                style = preset ?? _defaultSubtitleStyle;
             }
-            return _defaultSubtitleStyle;
+            else
+                style = _defaultSubtitleStyle;
+
+            // Apply effective font size (per-scene override or default)
+            var effectiveSize = scene.SubtitleFontSize ?? _defaultSubtitleFontSize;
+            if (style.FontSize != effectiveSize)
+            {
+                // Return a clone with the effective size to avoid mutating shared styles
+                return new TextStyle
+                {
+                    Id = style.Id,
+                    Name = style.Name,
+                    FontFamily = style.FontFamily,
+                    FontSize = effectiveSize,
+                    FontBold = style.FontBold,
+                    TextColor = (int[])style.TextColor.Clone(),
+                    StrokeColor = (int[])style.StrokeColor.Clone(),
+                    StrokeWidth = style.StrokeWidth,
+                    BackgroundColor = (int[])style.BackgroundColor.Clone(),
+                    BackgroundOpacity = style.BackgroundOpacity,
+                    ShadowEnabled = style.ShadowEnabled,
+                    ShadowColor = (int[])style.ShadowColor.Clone(),
+                    ShadowOffset = (int[])style.ShadowOffset.Clone()
+                };
+            }
+            return style;
         }
 
         private void UpdateStylePreview()
@@ -1191,13 +1394,67 @@ namespace InsightCast.ViewModels
             if (_currentScene == null) return;
             var style = GetStyleForScene(_currentScene);
             StylePreviewUpdateRequested?.Invoke(style);
+            OnPropertyChanged(nameof(SubtitleFontSize));
+            OnPropertyChanged(nameof(EffectiveSubtitleFontSize));
+        }
+
+        /// <summary>Default subtitle font size for all scenes (used when scene has no override).</summary>
+        public int DefaultSubtitleFontSize
+        {
+            get => _defaultSubtitleFontSize;
+            set
+            {
+                if (SetProperty(ref _defaultSubtitleFontSize, value))
+                {
+                    _project.DefaultSubtitleFontSize = value;
+                    // Update current scene preview if it uses default
+                    if (_currentScene != null && _currentScene.SubtitleFontSize == null)
+                    {
+                        OnPropertyChanged(nameof(EffectiveSubtitleFontSize));
+                        UpdateStylePreview();
+                    }
+                }
+            }
+        }
+
+        /// <summary>The effective font size for current scene (considering default).</summary>
+        public int EffectiveSubtitleFontSize
+        {
+            get
+            {
+                if (_currentScene == null) return _defaultSubtitleFontSize;
+                return _currentScene.SubtitleFontSize ?? _defaultSubtitleFontSize;
+            }
+            set
+            {
+                if (_currentScene == null) return;
+                _currentScene.SubtitleFontSize = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SubtitleFontSize));
+                UpdateStylePreview();
+            }
+        }
+
+        /// <summary>Per-scene subtitle font size override. Null = use default.</summary>
+        public int? SubtitleFontSize
+        {
+            get => _currentScene?.SubtitleFontSize;
+            set
+            {
+                if (_currentScene == null) return;
+                if (_currentScene.SubtitleFontSize == value) return;
+                _currentScene.SubtitleFontSize = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(EffectiveSubtitleFontSize));
+                UpdateStylePreview();
+            }
         }
 
         #endregion
 
         #region Text Overlays
 
-        private void RefreshOverlayList()
+        public void RefreshOverlayList()
         {
             OverlayItems.Clear();
             if (_currentScene == null) return;
@@ -1209,6 +1466,7 @@ namespace InsightCast.ViewModels
 
             OnPropertyChanged(nameof(OverlayListVisible));
             OnPropertyChanged(nameof(OverlayEditorVisible));
+            OnPropertyChanged(nameof(OverlayCountDisplay));
             RefreshOverlayPreview();
         }
 
@@ -1344,6 +1602,10 @@ namespace InsightCast.ViewModels
             OverlayText = overlay.Text;
             OverlayXPercent = overlay.XPercent.ToString("F1", CultureInfo.InvariantCulture);
             OverlayYPercent = overlay.YPercent.ToString("F1", CultureInfo.InvariantCulture);
+            _overlayXSlider = overlay.XPercent;
+            _overlayYSlider = overlay.YPercent;
+            OnPropertyChanged(nameof(OverlayXSlider));
+            OnPropertyChanged(nameof(OverlayYSlider));
             OverlayFontSize = overlay.FontSize.ToString();
             _overlayFontSizeSlider = overlay.FontSize;
             OnPropertyChanged(nameof(OverlayFontSizeSlider));
@@ -1560,6 +1822,7 @@ namespace InsightCast.ViewModels
 
                 if (success && File.Exists(previewPath))
                 {
+                    _logger.Log($"[Preview] File: {previewPath}");
                     _logger.Log(LocalizationService.GetString("VM.ScenePreview.Complete"));
                     PreviewVideoReady?.Invoke(previewPath);
                 }
@@ -1777,17 +2040,39 @@ namespace InsightCast.ViewModels
             var styleSnapshot = new Dictionary<string, TextStyle>(_sceneSubtitleStyles);
             var defaultStyle = _defaultSubtitleStyle;
 
+            var defaultFontSize = _defaultSubtitleFontSize;
             TextStyle GetStyleSnapshot(Scene scene)
             {
+                TextStyle style;
                 if (scene.SubtitleStyleId != null &&
-                    styleSnapshot.TryGetValue(scene.Id, out var style))
-                    return style;
-                if (scene.SubtitleStyleId != null)
+                    styleSnapshot.TryGetValue(scene.Id, out var s))
+                    style = s;
+                else if (scene.SubtitleStyleId != null)
                 {
-                    var preset = TextStyle.PRESET_STYLES.FirstOrDefault(s => s.Id == scene.SubtitleStyleId);
-                    if (preset != null) return preset;
+                    var preset = TextStyle.PRESET_STYLES.FirstOrDefault(p => p.Id == scene.SubtitleStyleId);
+                    style = preset ?? defaultStyle;
                 }
-                return defaultStyle;
+                else
+                    style = defaultStyle;
+
+                var effectiveSize = scene.SubtitleFontSize ?? defaultFontSize;
+                if (style.FontSize != effectiveSize)
+                {
+                    return new TextStyle
+                    {
+                        Id = style.Id, Name = style.Name, FontFamily = style.FontFamily,
+                        FontSize = effectiveSize, FontBold = style.FontBold,
+                        TextColor = (int[])style.TextColor.Clone(),
+                        StrokeColor = (int[])style.StrokeColor.Clone(),
+                        StrokeWidth = style.StrokeWidth,
+                        BackgroundColor = (int[])style.BackgroundColor.Clone(),
+                        BackgroundOpacity = style.BackgroundOpacity,
+                        ShadowEnabled = style.ShadowEnabled,
+                        ShadowColor = (int[])style.ShadowColor.Clone(),
+                        ShadowOffset = (int[])style.ShadowOffset.Clone()
+                    };
+                }
+                return style;
             }
 
             try
@@ -1911,6 +2196,8 @@ namespace InsightCast.ViewModels
                 OnPropertyChanged(nameof(HasWatermark));
                 OnPropertyChanged(nameof(WatermarkFileName));
             }
+            _defaultSubtitleFontSize = _project.DefaultSubtitleFontSize;
+            OnPropertyChanged(nameof(DefaultSubtitleFontSize));
         }
 
         private void NewProject()
@@ -1925,6 +2212,8 @@ namespace InsightCast.ViewModels
             _project = new Project();
             _project.InitializeDefaultScenes();
             _sceneSubtitleStyles.Clear();
+            _defaultSubtitleFontSize = 28;
+            OnPropertyChanged(nameof(DefaultSubtitleFontSize));
             WatermarkFilePath = string.Empty;
             OnPropertyChanged(nameof(HasWatermark));
             OnPropertyChanged(nameof(WatermarkFileName));
@@ -2122,6 +2411,22 @@ namespace InsightCast.ViewModels
 
             if (path == null) return;
 
+            // Convert non-PPTX documents to PPTX first
+            if (DocumentConverterService.NeedsConversion(path))
+            {
+                var converter = new DocumentConverterService(msg => _logger.Log(msg));
+                var converted = converter.ConvertToPptx(path);
+                if (converted == null)
+                {
+                    _dialogService.ShowError(
+                        LocalizationService.GetString("DocConvert.Failed", Path.GetExtension(path)),
+                        LocalizationService.GetString("VM.Pptx.Failed"));
+                    return;
+                }
+                _logger.Log(LocalizationService.GetString("DocConvert.Success"));
+                path = converted;
+            }
+
             // Ask whether to include slide text as subtitles (default: No)
             bool includeSubtitle = _dialogService.ShowConfirmation(
                 LocalizationService.GetString("VM.Pptx.IncludeSubtitle"),
@@ -2178,6 +2483,124 @@ namespace InsightCast.ViewModels
             catch (Exception ex)
             {
                 _dialogService.ShowError(LocalizationService.GetString("VM.Pptx.Error", ex.Message), LocalizationService.GetString("VM.Pptx.Failed"));
+            }
+        }
+
+        /// <summary>Import document from a specific file path (used by drag &amp; drop). Supports PPTX, DOCX, XLSX, PDF.</summary>
+        public async Task ImportPptxFromPathAsync(string path)
+        {
+            if (_dialogService == null || !File.Exists(path)) return;
+
+            if (!License.CanUseFeature(_currentPlan, "pptx_import"))
+            {
+                _dialogService.ShowInfo(
+                    LocalizationService.GetString("VM.Pptx.FeatureLimit"),
+                    LocalizationService.GetString("VM.Pptx.PlanRequired"));
+                return;
+            }
+
+            // Convert non-PPTX documents to PPTX first
+            if (DocumentConverterService.NeedsConversion(path))
+            {
+                var converter = new DocumentConverterService(msg => _logger.Log(msg));
+                var converted = await Task.Run(() => converter.ConvertToPptx(path));
+                if (converted == null)
+                {
+                    _dialogService.ShowError(
+                        LocalizationService.GetString("DocConvert.Failed", Path.GetExtension(path)),
+                        LocalizationService.GetString("VM.Pptx.Failed"));
+                    return;
+                }
+                _logger.Log(LocalizationService.GetString("DocConvert.Success"));
+                path = converted;
+            }
+
+            bool includeSubtitle = _dialogService.ShowConfirmation(
+                LocalizationService.GetString("VM.Pptx.IncludeSubtitle"),
+                LocalizationService.GetString("VM.Pptx.IncludeSubtitle.Title"));
+
+            try
+            {
+                _logger.Log(LocalizationService.GetString("VM.Pptx.Started", path));
+
+                var outputDir = Path.Combine(
+                    Path.GetTempPath(),
+                    "insightcast_cache",
+                    "pptx_slides",
+                    $"import_{Guid.NewGuid():N}");
+
+                var importer = new Utils.PptxImporter(
+                    (current, total, msg) => _logger.Log(msg));
+
+                var slides = await Task.Run(() => importer.ImportPptx(path, outputDir));
+
+                if (slides.Count == 0)
+                {
+                    _dialogService.ShowInfo(LocalizationService.GetString("VM.Pptx.NoSlides"), LocalizationService.GetString("VM.Pptx.Result"));
+                    return;
+                }
+
+                foreach (var slide in slides)
+                {
+                    var scene = new Scene
+                    {
+                        NarrationText = slide.Notes,
+                        SubtitleText = includeSubtitle && !string.IsNullOrWhiteSpace(slide.SlideText) ? slide.SlideText : null
+                    };
+                    if (!string.IsNullOrEmpty(slide.ImagePath) && File.Exists(slide.ImagePath))
+                    {
+                        scene.MediaPath = slide.ImagePath;
+                        scene.MediaType = MediaType.Image;
+                    }
+                    _project.Scenes.Add(scene);
+                }
+
+                RefreshSceneList();
+
+                int imageCount = slides.Count(s => !string.IsNullOrEmpty(s.ImagePath) && File.Exists(s.ImagePath));
+                _logger.Log(LocalizationService.GetString("VM.Pptx.Imported", slides.Count, imageCount, path));
+
+                if (imageCount == 0)
+                {
+                    _dialogService.ShowInfo(
+                        LocalizationService.GetString("VM.Pptx.NotesOnly", slides.Count),
+                        LocalizationService.GetString("VM.Pptx.Result"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowError(LocalizationService.GetString("VM.Pptx.Error", ex.Message), LocalizationService.GetString("VM.Pptx.Failed"));
+            }
+        }
+
+        /// <summary>Add dropped media files (images/videos) as new scenes.</summary>
+        public void AddMediaFilesAsScenes(string[] paths)
+        {
+            var imageExts = new HashSet<string> { ".png", ".jpg", ".jpeg", ".bmp", ".gif" };
+            var videoExts = new HashSet<string> { ".mp4", ".avi", ".mov", ".wmv", ".mkv" };
+
+            int added = 0;
+            foreach (var path in paths)
+            {
+                var ext = Path.GetExtension(path).ToLowerInvariant();
+                if (!imageExts.Contains(ext) && !videoExts.Contains(ext)) continue;
+
+                var scene = new Scene
+                {
+                    MediaPath = path,
+                    MediaType = imageExts.Contains(ext) ? MediaType.Image : MediaType.Video
+                };
+                _project.Scenes.Add(scene);
+                added++;
+            }
+
+            if (added > 0)
+            {
+                var firstNewIndex = _project.Scenes.Count - added;
+                RefreshSceneList();
+                SelectedSceneIndex = firstNewIndex;
+                _isDirty = true;
+                _logger.Log(LocalizationService.GetString("VM.DragDrop.Added", added));
             }
         }
 
@@ -2489,6 +2912,23 @@ namespace InsightCast.ViewModels
             ScreenCaptureRequested?.Invoke();
         }
 
+        private void StartScreenRecord()
+        {
+            ScreenRecordRequested?.Invoke();
+        }
+
+        private void LaunchSnippingTool()
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("snippingtool.exe") { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(LocalizationService.GetString("VM.SnippingTool.Failed"), ex);
+            }
+        }
+
         /// <summary>
         /// Called by the View after a screen capture completes.
         /// Sets the captured image as the current scene's media.
@@ -2505,6 +2945,41 @@ namespace InsightCast.ViewModels
             _logger.Log(LocalizationService.GetString("VM.Capture.Applied", Path.GetFileName(imagePath)));
 
             var idx = _selectedSceneIndex;
+            if (idx >= 0 && idx < SceneItems.Count)
+                SceneItems[idx].RefreshProgress();
+        }
+
+        public void ApplyCapturedVideo(string videoPath)
+        {
+            if (_currentScene == null)
+            {
+                _logger.Log("[Recording] No scene selected - cannot apply video");
+                return;
+            }
+            if (!File.Exists(videoPath))
+            {
+                _logger.Log($"[Recording] File not found: {videoPath}");
+                return;
+            }
+
+            _currentScene.MediaPath = videoPath;
+            _currentScene.MediaType = Models.MediaType.Video;
+            _currentScene.KeepOriginalAudio = false;
+            MediaName = Path.GetFileName(videoPath);
+            _isDirty = true;
+
+            // Also update the project scene list to keep in sync
+            var idx = _selectedSceneIndex;
+            if (idx >= 0 && idx < _project.Scenes.Count)
+            {
+                _project.Scenes[idx].MediaPath = videoPath;
+                _project.Scenes[idx].MediaType = Models.MediaType.Video;
+                _project.Scenes[idx].KeepOriginalAudio = false;
+            }
+
+            ThumbnailUpdateRequested?.Invoke(videoPath);
+            _logger.Log(LocalizationService.GetString("VM.Recording.Applied", Path.GetFileName(videoPath)));
+
             if (idx >= 0 && idx < SceneItems.Count)
                 SceneItems[idx].RefreshProgress();
         }

@@ -1,0 +1,46 @@
+<Window x:Class="InsightCast.Views.ScreenRecordingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Recording" Width="280" Height="80"
+        WindowStyle="ToolWindow" Topmost="True" ResizeMode="NoResize"
+        WindowStartupLocation="Manual" Left="20" Top="20"
+        Background="#222">
+
+    <Grid Margin="8">
+        <!-- Countdown overlay -->
+        <TextBlock x:Name="CountdownText" Text="3" Foreground="#FF4444"
+                   FontSize="36" FontWeight="Bold" FontFamily="Consolas"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Visibility="Visible"/>
+
+        <!-- Recording controls -->
+        <Grid x:Name="RecordingPanel" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Ellipse Grid.Column="0" Width="12" Height="12" Fill="#FF4444" Margin="0,0,8,0"
+                     x:Name="RecordIndicator"/>
+            <TextBlock Grid.Column="1" x:Name="TimerText" Text="00:00" Foreground="White"
+                       FontSize="20" FontFamily="Consolas" VerticalAlignment="Center"/>
+            <Button Grid.Column="2" Content="■ 停止" Click="StopButton_Click"
+                    Background="#CC4444" Foreground="White" FontSize="13" FontWeight="Bold"
+                    Padding="12,4" BorderBrush="#AA3333" Cursor="Hand"/>
+        </Grid>
+
+        <!-- Preview controls (after recording) -->
+        <StackPanel x:Name="PreviewPanel" Visibility="Collapsed"
+                    Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Content="▶ プレビュー" Click="PreviewButton_Click"
+                    Foreground="White" Background="#555" FontSize="12"
+                    Padding="10,4" Margin="0,0,6,0" Cursor="Hand" BorderBrush="#666"/>
+            <Button Content="✓ 使う" Click="UseButton_Click"
+                    Foreground="White" Background="#2E7D32" FontSize="12" FontWeight="Bold"
+                    Padding="10,4" Margin="0,0,6,0" Cursor="Hand" BorderBrush="#1B5E20"/>
+            <Button Content="↺ 撮り直す" Click="RetakeButton_Click"
+                    Foreground="White" Background="#E65100" FontSize="12"
+                    Padding="10,4" Cursor="Hand" BorderBrush="#BF360C"/>
+        </StackPanel>
+    </Grid>
+</Window>

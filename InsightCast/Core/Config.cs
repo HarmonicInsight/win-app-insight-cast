@@ -281,6 +281,32 @@ public class Config
         set => Set("claude_model_index", value);
     }
 
+    // ── Quick Mode preferences ──
+
+    public int QuickSubtitleFontSize
+    {
+        get => Get<int>("quick_subtitle_font_size", 28);
+        set => Set("quick_subtitle_font_size", value);
+    }
+
+    public double QuickSpeechSpeed
+    {
+        get => Get<double>("quick_speech_speed", 1.2);
+        set => Set("quick_speech_speed", value);
+    }
+
+    public int QuickSpeakerIndex
+    {
+        get => Get<int>("quick_speaker_index", 0);
+        set => Set("quick_speaker_index", value);
+    }
+
+    public int QuickResolutionIndex
+    {
+        get => Get<int>("quick_resolution_index", 0);
+        set => Set("quick_resolution_index", value);
+    }
+
     public void AddRecentFile(string path)
     {
         var files = RecentFiles;

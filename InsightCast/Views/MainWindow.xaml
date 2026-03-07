@@ -14,7 +14,10 @@
         ResizeMode="CanResize"
         PreviewKeyDown="Window_PreviewKeyDown"
         Closing="Window_Closing"
-        StateChanged="Window_StateChanged">
+        StateChanged="Window_StateChanged"
+        AllowDrop="True"
+        PreviewDragOver="Window_PreviewDragOver"
+        Drop="Window_Drop">
 
     <Window.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
@@ -256,16 +259,18 @@
                         </Grid>
                     </syncfusion:BackstageTabItem>
                     <syncfusion:BackStageSeparator/>
+                    <syncfusion:BackStageCommandButton Header="{DynamicResource Quick.WindowTitle}" Click="BackStageQuickMode_Click"/>
+                    <syncfusion:BackStageSeparator/>
                     <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.License}" Click="BackStageLicense_Click"/>
                     <syncfusion:BackStageSeparator/>
                     <syncfusion:BackStageCommandButton Header="{DynamicResource Common.Close}" Click="BackStageExit_Click"/>
                 </syncfusion:Backstage>
             </syncfusion:Ribbon.BackStage>
 
-            <!-- Home Tab — 教育動画ワークフロー順に再編成 -->
+            <!-- Home Tab — タブに応じてグループの表示/非表示を切り替え -->
             <syncfusion:RibbonTab Caption="{DynamicResource Ribbon.Tab.Home}">
 
-                <!-- 0. ファイルグループ: プロジェクトの保存・読み込み -->
+                <!-- 共通: ファイルグループ -->
                 <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.File}" IsLauncherButtonVisible="False">
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.New}"
                             ToolTip="{DynamicResource Ribbon.File.New}"
@@ -297,8 +302,74 @@
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- 1. 素材・構成グループ: 教育コンテンツの骨格を作る -->
-                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Structure}" IsLauncherButtonVisible="False">
+                <!-- ═══ PPTX作成タブ専用 ═══ -->
+
+                <!-- PPTX: 出力 -->
+                <syncfusion:RibbonBar x:Name="RibbonPptxExport" Header="{DynamicResource Ribbon.Group.PptxExport}" IsLauncherButtonVisible="False">
+                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.ExportPptx}"
+                            ToolTip="{DynamicResource AiFlow.ExportPptx}"
+                            Click="RibbonExportPptx_Click" SizeForm="Large">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="#B8942F"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                </syncfusion:RibbonBar>
+
+                <!-- PPTX: データ連携 -->
+                <syncfusion:RibbonBar x:Name="RibbonPptxData" Header="{DynamicResource Ribbon.Group.PptxData}" IsLauncherButtonVisible="False">
+                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.JsonExport}"
+                            ToolTip="{DynamicResource AiFlow.JsonExport.Tooltip}"
+                            Click="RibbonExportJson_Click" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xEDE1;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.JsonImport}"
+                            ToolTip="{DynamicResource AiFlow.JsonImport.Tooltip}"
+                            Click="RibbonImportJson_Click" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.ImportPptx}"
+                            ToolTip="{DynamicResource Ribbon.File.ImportPptx}"
+                            Command="{Binding ImportPptxCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#C04000"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                </syncfusion:RibbonBar>
+
+                <!-- PPTX: ツール -->
+                <syncfusion:RibbonBar x:Name="RibbonPptxTools" Header="{DynamicResource Ribbon.Group.PptxTools}" IsLauncherButtonVisible="False">
+                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.Tool.AiImage}"
+                            ToolTip="{DynamicResource AiGenerate.ImagesButton.Tooltip}"
+                            Click="RibbonAiImages_Click" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE91B;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#B8942F"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.Tool.Thumbnail}"
+                            ToolTip="{DynamicResource AiWorkspace.ThumbnailButton.Tooltip}"
+                            Click="RibbonThumbnail_Click" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8B9;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource AIPrompt.Execute}"
+                            ToolTip="{DynamicResource AIPrompt.DialogTitle}"
+                            Click="AIPromptExecute_Click" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8D4;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#9C27B0"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                </syncfusion:RibbonBar>
+
+                <!-- ═══ 動画生成タブ専用 ═══ -->
+
+                <!-- 動画: シーン操作 -->
+                <syncfusion:RibbonBar x:Name="RibbonVideoScene" Header="{DynamicResource Ribbon.Group.Structure}" IsLauncherButtonVisible="False"
+                                      Visibility="Collapsed">
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.Add}"
                             ToolTip="{DynamicResource Ribbon.Scene.Add.Tooltip}"
                             Command="{Binding AddSceneCommand}" SizeForm="Small">
@@ -327,7 +398,14 @@
                             <DataTemplate><TextBlock Text="&#xE74B;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.Capture}"
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.Record}"
+                            ToolTip="{DynamicResource Ribbon.Scene.Record.Tooltip}"
+                            Command="{Binding ScreenRecordCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE714;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#DD4444"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.ImageCapture}"
                             ToolTip="{DynamicResource Tool.ScreenCapture.Tooltip}"
                             Command="{Binding ScreenCaptureCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
@@ -336,34 +414,21 @@
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- 2. 制作グループ: ナレーション・字幕・BGM -->
-                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Production}" IsLauncherButtonVisible="False">
+                <!-- 動画: 制作 -->
+                <syncfusion:RibbonBar x:Name="RibbonVideoProduction" Header="{DynamicResource Ribbon.Group.Production}" IsLauncherButtonVisible="False"
+                                      Visibility="Collapsed">
+                    <syncfusion:RibbonButton Label="{DynamicResource Quick.WindowTitle}"
+                            ToolTip="{DynamicResource Quick.Tagline}"
+                            Click="BackStageQuickMode_Click" SizeForm="Large">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="#B8942F"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.ImportPptx}"
                             ToolTip="{DynamicResource Ribbon.File.ImportPptx}"
                             Command="{Binding ImportPptxCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#C04000"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Export.Preview}"
-                            ToolTip="{DynamicResource Ribbon.Export.Preview.Tooltip}"
-                            Command="{Binding PreviewSceneCommand}" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.BGM}"
-                            ToolTip="{DynamicResource Ribbon.BGM.Tooltip}"
-                            Command="{Binding BgmSettingsCommand}" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xEC4F;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.CTA}"
-                            ToolTip="{DynamicResource Ribbon.CTA.Tooltip}"
-                            Command="{Binding AddCtaEndcardCommand}" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource AIPrompt.Execute}"
@@ -389,8 +454,9 @@
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- 3. 書き出しグループ -->
-                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Export}" IsLauncherButtonVisible="False">
+                <!-- 動画: 書き出し -->
+                <syncfusion:RibbonBar x:Name="RibbonVideoExport" Header="{DynamicResource Ribbon.Group.Export}" IsLauncherButtonVisible="False"
+                                      Visibility="Collapsed">
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Export.Video}"
                             ToolTip="{DynamicResource Ribbon.Export.Video.Tooltip}"
                             Command="{Binding ExportVideoCommand}" SizeForm="Small">
@@ -407,8 +473,9 @@
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- 4. テンプレートグループ -->
-                <syncfusion:RibbonBar Header="{DynamicResource Ribbon.Group.Template}" IsLauncherButtonVisible="False">
+                <!-- 動画: テンプレート -->
+                <syncfusion:RibbonBar x:Name="RibbonVideoTemplate" Header="{DynamicResource Ribbon.Group.Template}" IsLauncherButtonVisible="False"
+                                      Visibility="Collapsed">
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Template.Save}"
                             ToolTip="{DynamicResource Ribbon.Template.Save.Tooltip}"
                             Command="{Binding SaveTemplateCommand}" SizeForm="Small">
@@ -455,20 +522,30 @@
                     <!-- シーン編集エリア -->
                     <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="180" MinWidth="140" MaxWidth="300"/>
-                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="200" MinWidth="160" MaxWidth="320"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Left Panel: Scene List -->
-            <GroupBox Grid.Column="0" Header="{DynamicResource Scene.List}" Padding="4">
+            <!-- Left Panel: Scene List (Card style) -->
+            <Border Grid.Column="0" Background="{DynamicResource BgCard}"
+                    BorderBrush="{DynamicResource BorderLight}" BorderThickness="1"
+                    CornerRadius="6" Margin="0,0,0,0" Padding="0">
                 <DockPanel>
-                    <!-- 解像度選択（上部） -->
+                    <!-- Header -->
+                    <Border DockPanel.Dock="Top" Padding="10,8"
+                            BorderBrush="{DynamicResource BorderLight}" BorderThickness="0,0,0,1">
+                        <TextBlock Text="{DynamicResource Scene.List}"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimary}"/>
+                    </Border>
+
+                    <!-- Settings compact bar -->
                     <Border DockPanel.Dock="Top" Background="{DynamicResource BgSecondary}"
-                            CornerRadius="4" Padding="6" Margin="0,0,0,6">
+                            Padding="8,6" BorderBrush="{DynamicResource BorderLight}" BorderThickness="0,0,0,1">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Export.Resolution}" FontSize="10"
-                                       Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,4"/>
+                                       Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,3"/>
                             <ComboBox SelectedIndex="{Binding SelectedResolutionIndex}" FontSize="11"
                                      ToolTip="{DynamicResource Export.Resolution.Tooltip}">
                                 <ComboBoxItem Content="{DynamicResource Resolution.Landscape}" Tag="1920x1080"/>
@@ -479,28 +556,40 @@
                                 <ComboBoxItem Content="{DynamicResource Resolution.TikTok}" Tag="1080x1920"/>
                             </ComboBox>
                             <TextBlock Text="{DynamicResource Export.DefaultSpeaker}" FontSize="10"
-                                       Foreground="{DynamicResource TextTertiary}" Margin="0,8,0,4"/>
+                                       Foreground="{DynamicResource TextTertiary}" Margin="0,6,0,3"/>
                             <ComboBox ItemsSource="{Binding ExportSpeakers}"
                                       SelectedIndex="{Binding SelectedExportSpeakerIndex}"
                                       FontSize="11"
                                       ToolTip="{DynamicResource Export.DefaultSpeaker.Tooltip}"/>
                         </StackPanel>
                     </Border>
-                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
-                                HorizontalAlignment="Center" Margin="0,4,0,0">
-                        <Button Content="{DynamicResource Common.Add}" Padding="4,2" Margin="1"
-                                Command="{Binding AddSceneCommand}"/>
-                        <Button Content="{DynamicResource Common.Remove}" Padding="4,2" Margin="1"
-                                Command="{Binding RemoveSceneCommand}"/>
-                        <Button Content="↑" Padding="6,2" Margin="1"
-                                Command="{Binding MoveSceneUpCommand}"/>
-                        <Button Content="↓" Padding="6,2" Margin="1"
-                                Command="{Binding MoveSceneDownCommand}"/>
-                    </StackPanel>
+
+                    <!-- Scene action buttons -->
+                    <Border DockPanel.Dock="Bottom" Padding="6,4"
+                            BorderBrush="{DynamicResource BorderLight}" BorderThickness="0,1,0,0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Content="{DynamicResource Common.Add}" Padding="8,3" Margin="2"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
+                                    Command="{Binding AddSceneCommand}"/>
+                            <Button Content="{DynamicResource Common.Remove}" Padding="8,3" Margin="2"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
+                                    Command="{Binding RemoveSceneCommand}"/>
+                            <Button Content="↑" Padding="8,3" Margin="2"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
+                                    Command="{Binding MoveSceneUpCommand}"/>
+                            <Button Content="↓" Padding="8,3" Margin="2"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
+                                    Command="{Binding MoveSceneDownCommand}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Scene list -->
                     <ListBox x:Name="SceneListBox"
                              ItemsSource="{Binding SceneItems}"
                              SelectedIndex="{Binding SelectedSceneIndex}"
-                             HorizontalContentAlignment="Stretch">
+                             HorizontalContentAlignment="Stretch"
+                             Background="Transparent" BorderThickness="0"
+                             Padding="4,2">
                         <ListBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="{DynamicResource Ribbon.Scene.Remove}"
@@ -509,10 +598,11 @@
                         </ListBox.ContextMenu>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Margin="0,1">
-                                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" Margin="0,0,0,2"/>
+                                <StackPanel Margin="2,3">
+                                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis"
+                                               FontSize="11" Margin="0,0,0,3"/>
                                     <StackPanel Orientation="Horizontal">
-                                        <Border CornerRadius="2" Padding="3,1" Margin="0,0,2,0" MinWidth="28">
+                                        <Border CornerRadius="3" Padding="5,2" Margin="0,0,3,0" MinWidth="32">
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
@@ -523,7 +613,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
-                                            <TextBlock Text="{DynamicResource Progress.Media}" FontSize="9" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource Progress.Media}" FontSize="10" HorizontalAlignment="Center">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
@@ -536,8 +626,8 @@
                                                 </TextBlock.Style>
                                             </TextBlock>
                                         </Border>
-                                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,2,0" FontSize="10"/>
-                                        <Border CornerRadius="2" Padding="3,1" Margin="0,0,2,0" MinWidth="28">
+                                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,3,0" FontSize="11"/>
+                                        <Border CornerRadius="3" Padding="5,2" Margin="0,0,3,0" MinWidth="32">
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
@@ -548,7 +638,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
-                                            <TextBlock Text="{DynamicResource Progress.Narration}" FontSize="9" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource Progress.Narration}" FontSize="10" HorizontalAlignment="Center">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
@@ -561,8 +651,8 @@
                                                 </TextBlock.Style>
                                             </TextBlock>
                                         </Border>
-                                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,2,0" FontSize="10"/>
-                                        <Border CornerRadius="2" Padding="3,1" MinWidth="28">
+                                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,3,0" FontSize="11"/>
+                                        <Border CornerRadius="3" Padding="5,2" MinWidth="32">
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
@@ -573,7 +663,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
-                                            <TextBlock Text="{DynamicResource Progress.Subtitle}" FontSize="9" HorizontalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource Progress.Subtitle}" FontSize="10" HorizontalAlignment="Center">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
@@ -592,129 +682,166 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </DockPanel>
-            </GroupBox>
+            </Border>
 
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"
-                          Background="{DynamicResource BorderDefault}"/>
+            <!-- Splitter (thin, subtle) -->
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center"
+                          Background="Transparent" Margin="0,8">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="GridSplitter">
+                        <Border Background="Transparent" Width="6">
+                            <Border Width="2" Background="{DynamicResource BorderLight}"
+                                    CornerRadius="1" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
 
-            <!-- Right Panel: Scene Editor -->
-            <GroupBox Grid.Column="2" Padding="4">
-                <GroupBox.Header>
-                    <StackPanel Orientation="Horizontal" DataContext="{Binding CurrentSceneItem}">
-                        <TextBlock Text="{DynamicResource Scene.Editor}" VerticalAlignment="Center" Margin="0,0,16,0"/>
-                        <!-- 素材 chevron -->
-                        <Border CornerRadius="3" Padding="10,3" Margin="0,0,4,0">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding StepMediaDone}" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource Success}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <TextBlock Text="{DynamicResource Progress.Media}" FontSize="11" HorizontalAlignment="Center">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding StepMediaDone}" Value="True">
-                                                <Setter Property="Foreground" Value="White"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Border>
-                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,4,0" FontSize="14"/>
-                        <!-- ナレーション chevron -->
-                        <Border CornerRadius="3" Padding="10,3" Margin="0,0,4,0">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding StepNarrationDone}" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource Success}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <TextBlock Text="{DynamicResource Progress.Narration}" FontSize="11" HorizontalAlignment="Center">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding StepNarrationDone}" Value="True">
-                                                <Setter Property="Foreground" Value="White"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Border>
-                        <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="0,0,4,0" FontSize="14"/>
-                        <!-- 字幕 chevron -->
-                        <Border CornerRadius="3" Padding="10,3">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding StepSubtitleDone}" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource Success}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <TextBlock Text="{DynamicResource Progress.Subtitle}" FontSize="11" HorizontalAlignment="Center">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding StepSubtitleDone}" Value="True">
-                                                <Setter Property="Foreground" Value="White"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Border>
-                    </StackPanel>
-                </GroupBox.Header>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel Margin="8">
+            <!-- Right Panel: Scene Editor (Card style) -->
+            <Border Grid.Column="2" Background="{DynamicResource BgCard}"
+                    BorderBrush="{DynamicResource BorderLight}" BorderThickness="1"
+                    CornerRadius="6" Padding="0">
+                <DockPanel>
+                    <!-- Header with progress steps -->
+                    <Border DockPanel.Dock="Top" Padding="12,8"
+                            BorderBrush="{DynamicResource BorderLight}" BorderThickness="0,0,0,1">
+                        <DockPanel DataContext="{Binding CurrentSceneItem}">
+                            <TextBlock Text="{DynamicResource Scene.Editor}" VerticalAlignment="Center"
+                                       FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,16,0"
+                                       DockPanel.Dock="Left"/>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <!-- Media step -->
+                                <Border CornerRadius="4" Padding="10,4" Margin="0,0,4,0">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StepMediaDone}" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource Success}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{DynamicResource Progress.Media}" FontSize="11" HorizontalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding StepMediaDone}" Value="True">
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+                                <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="2,0,6,0" FontSize="13"/>
+                                <!-- Narration step -->
+                                <Border CornerRadius="4" Padding="10,4" Margin="0,0,4,0">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StepNarrationDone}" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource Success}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{DynamicResource Progress.Narration}" FontSize="11" HorizontalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding StepNarrationDone}" Value="True">
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+                                <TextBlock Text="›" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiary}" Margin="2,0,6,0" FontSize="13"/>
+                                <!-- Subtitle step -->
+                                <Border CornerRadius="4" Padding="10,4">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StepSubtitleDone}" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource Success}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{DynamicResource Progress.Subtitle}" FontSize="11" HorizontalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextTertiary}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding StepSubtitleDone}" Value="True">
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Editor content -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                                  Padding="0">
+                    <StackPanel Margin="12,10">
 
                         <!-- Media info -->
-                        <DockPanel Margin="0,0,0,4">
+                        <DockPanel Margin="0,0,0,8">
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                <Button Content="{DynamicResource Tool.TitleCreator}" Padding="10,3" Margin="2"
+                                <Button Content="{DynamicResource Tool.TitleCreator}" Padding="10,4" Margin="3,0"
+                                        Style="{DynamicResource SecondaryButton}" FontSize="11"
                                         ToolTip="{DynamicResource Tool.TitleCreator.Tooltip}"
                                         Click="TitleCreatorButton_Click"/>
-                                <Button Content="{DynamicResource Tool.ScreenCapture}" Padding="10,3" Margin="2"
+                                <Button Content="{DynamicResource Overlay.Dialog.Button}" Padding="10,4" Margin="3,0"
+                                        Style="{DynamicResource SecondaryButton}" FontSize="11"
+                                        ToolTip="{DynamicResource Overlay.Dialog.Button.Tooltip}"
+                                        Click="TextOverlayButton_Click"/>
+                                <Button Content="{DynamicResource Tool.ScreenRecord}" Padding="10,4" Margin="3,0"
+                                        Style="{DynamicResource SecondaryButton}" FontSize="11"
+                                        ToolTip="{DynamicResource Ribbon.Scene.Record.Tooltip}"
+                                        Command="{Binding ScreenRecordCommand}"/>
+                                <Button Content="{DynamicResource Tool.ImageCapture}" Padding="10,4" Margin="3,0"
+                                        Style="{DynamicResource SecondaryButton}" FontSize="11"
                                         ToolTip="{DynamicResource Tool.ScreenCapture.Tooltip}"
                                         Command="{Binding ScreenCaptureCommand}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center"
+                                           FontSize="11" FontWeight="SemiBold" Margin="0,0,8,0"/>
                                 <TextBlock Text="{Binding MediaName}" VerticalAlignment="Center"
-                                           Foreground="{DynamicResource TextSecondary}" MinWidth="120" Margin="0,0,8,0"/>
-                                <Button Content="{DynamicResource Common.Select}" Padding="10,3" Margin="2"
+                                           Foreground="{DynamicResource TextSecondary}" FontSize="11"
+                                           MinWidth="100" Margin="0,0,8,0"/>
+                                <Button Content="{DynamicResource Common.Select}" Padding="10,4" Margin="3,0"
+                                        Style="{DynamicResource SecondaryButton}" FontSize="11"
                                         Command="{Binding SelectMediaCommand}"
                                         ToolTip="{DynamicResource Scene.Media.Select.Tooltip}"/>
-                                <Button Content="{DynamicResource Common.Clear}" Padding="10,3" Margin="2"
+                                <Button Content="{DynamicResource Common.Clear}" Padding="10,4" Margin="3,0"
+                                        Style="{DynamicResource SecondaryButton}" FontSize="11"
                                         Command="{Binding ClearMediaCommand}"
                                         ToolTip="{DynamicResource Scene.Media.Clear.Tooltip}"/>
                             </StackPanel>
                         </DockPanel>
 
                         <!-- Preview + Narration -->
-                        <Grid Margin="0,0,0,4">
+                        <Grid Margin="0,0,0,8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Width="120" Height="180"
-                                    Background="#1a1a2e" CornerRadius="2" Margin="0,0,8,0" ClipToBounds="True"
+                            <Border Grid.Column="0" Width="128" Height="192"
+                                    Background="#1a1a2e" CornerRadius="6" Margin="0,0,12,0" ClipToBounds="True"
                                     Cursor="Hand" MouseLeftButtonUp="PreviewImage_Click"
                                     ToolTip="{DynamicResource Preview.ClickToEnlarge}">
                                 <Grid>
@@ -735,7 +862,7 @@
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding Text}" FontSize="{Binding PreviewFontSize}"
                                                            FontWeight="{Binding FontWeightValue}" Opacity="{Binding Opacity}"
-                                                           MaxWidth="112" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentValue}">
+                                                           MaxWidth="120" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentValue}">
                                                     <TextBlock.Foreground><SolidColorBrush Color="{Binding TextColorValue}"/></TextBlock.Foreground>
                                                     <TextBlock.Effect><DropShadowEffect ShadowDepth="1" BlurRadius="2" Color="Black" Opacity="0.8"/></TextBlock.Effect>
                                                 </TextBlock>
@@ -743,13 +870,14 @@
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
                                     <!-- Subtitle overlay -->
-                                    <Border VerticalAlignment="Bottom" Background="#80000000" Padding="4,2">
+                                    <Border VerticalAlignment="Bottom" Background="#80000000" Padding="4,2"
+                                            CornerRadius="0,0,6,6">
                                         <TextBlock Text="{Binding SubtitleText}" Foreground="White"
-                                                   FontSize="9" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="112"/>
+                                                   FontSize="9" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="120"/>
                                     </Border>
                                     <!-- Zoom icon -->
                                     <Border HorizontalAlignment="Right" VerticalAlignment="Top"
-                                            Background="#80000000" CornerRadius="0,0,0,4" Padding="4">
+                                            Background="#80000000" CornerRadius="0,6,0,4" Padding="4">
                                         <Path Data="M9,0 A9,9 0 1 0 9,18 A9,9 0 1 0 9,0 M15,15 L20,20"
                                               Stroke="White" StrokeThickness="1.5" Width="16" Height="16"
                                               Stretch="Uniform"/>
@@ -757,271 +885,240 @@
                                 </Grid>
                             </Border>
                             <Grid Grid.Column="1">
-                                <TextBox x:Name="NarrationTextBox"
-                                         Text="{Binding NarrationText, UpdateSourceTrigger=PropertyChanged}"
-                                         TextWrapping="Wrap" AcceptsReturn="True"
-                                         VerticalScrollBarVisibility="Auto" MinHeight="140"
-                                         VerticalContentAlignment="Top" Padding="4"/>
+                                <Border BorderBrush="{DynamicResource BorderLight}" BorderThickness="1"
+                                        CornerRadius="4" Background="{DynamicResource BgInput}">
+                                    <TextBox x:Name="NarrationTextBox"
+                                             Text="{Binding NarrationText, UpdateSourceTrigger=PropertyChanged}"
+                                             TextWrapping="Wrap" AcceptsReturn="True"
+                                             VerticalScrollBarVisibility="Auto" MinHeight="150"
+                                             VerticalContentAlignment="Top" Padding="8,6"
+                                             FontSize="12" BorderThickness="0" Background="Transparent"/>
+                                </Border>
                                 <TextBlock Text="{DynamicResource Scene.Narration.Placeholder}"
                                            Foreground="{DynamicResource TextPlaceholder}" FontStyle="Italic"
-                                           IsHitTestVisible="False" Margin="8,6,0,0" VerticalAlignment="Top"
+                                           IsHitTestVisible="False" Margin="12,10,0,0" VerticalAlignment="Top"
+                                           FontSize="12"
                                            Visibility="{Binding NarrationPlaceholderVisible, Converter={StaticResource BoolToVis}}"
                                            ToolTip="{DynamicResource Scene.Narration.Tooltip}"/>
                             </Grid>
                         </Grid>
 
                         <!-- Speaker + Audio controls -->
-                        <WrapPanel Margin="0,0,0,4">
-                            <TextBlock Text="{DynamicResource Scene.Speaker}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                            <ComboBox MinWidth="180" Margin="0,0,12,0"
-                                      ItemsSource="{Binding SceneSpeakers}"
-                                      SelectedIndex="{Binding SelectedSceneSpeakerIndex}"
-                                      DisplayMemberPath="DisplayName"
-                                      ToolTip="{DynamicResource Scene.Speaker.Tooltip}"/>
-                            <CheckBox Content="{DynamicResource Scene.KeepAudio}"
-                                      IsChecked="{Binding KeepOriginalAudio}"
-                                      VerticalAlignment="Center" Margin="0,0,12,0"
-                                      ToolTip="{DynamicResource Scene.KeepAudio.Tooltip}"/>
-                            <Button Content="{DynamicResource Scene.PreviewAudio}" Padding="8,3" Margin="2"
-                                    Command="{Binding PreviewAudioCommand}"
-                                    ToolTip="{DynamicResource Scene.PreviewAudio.Tooltip}"
-                                    AutomationProperties.Name="Preview Audio"/>
-                            <Button Content="{DynamicResource Scene.PreviewScene}" Padding="8,3" Margin="2"
-                                    Command="{Binding PreviewSceneCommand}"
-                                    ToolTip="{DynamicResource Scene.PreviewScene.Tooltip}"
-                                    AutomationProperties.Name="Preview Scene"/>
-                            <Button Content="{DynamicResource Scene.Stop}" Padding="8,3" Margin="2"
-                                    Command="{Binding StopPreviewCommand}"
-                                    ToolTip="{DynamicResource Scene.Stop.Tooltip}"/>
-                            <TextBlock Text="{DynamicResource Scene.SpeechSpeed}" VerticalAlignment="Center" Margin="12,0,4,0"/>
-                            <ComboBox Width="90" ItemsSource="{Binding SpeechSpeedOptions}"
-                                      SelectedIndex="{Binding SelectedSpeechSpeedIndex}"
-                                      ToolTip="{DynamicResource Scene.SpeechSpeed.Tooltip}"/>
-                        </WrapPanel>
+                        <Border Background="{DynamicResource BgSecondary}" CornerRadius="4" Padding="10,8" Margin="0,0,0,8">
+                            <StackPanel>
+                                <WrapPanel Margin="0,0,0,4">
+                                    <TextBlock Text="{DynamicResource Scene.Speaker}" VerticalAlignment="Center"
+                                               FontSize="11" FontWeight="SemiBold" Margin="0,0,6,0"/>
+                                    <ComboBox MinWidth="180" Margin="0,0,16,0"
+                                              ItemsSource="{Binding SceneSpeakers}"
+                                              SelectedIndex="{Binding SelectedSceneSpeakerIndex}"
+                                              DisplayMemberPath="DisplayName" FontSize="11"
+                                              ToolTip="{DynamicResource Scene.Speaker.Tooltip}"/>
+                                    <CheckBox Content="{DynamicResource Scene.KeepAudio}"
+                                              IsChecked="{Binding KeepOriginalAudio}"
+                                              VerticalAlignment="Center" Margin="0,0,16,0" FontSize="11"
+                                              ToolTip="{DynamicResource Scene.KeepAudio.Tooltip}"/>
+                                    <Button Content="{DynamicResource Scene.PreviewAudio}" Padding="10,4" Margin="3,0"
+                                            Style="{DynamicResource SecondaryButton}" FontSize="11"
+                                            Command="{Binding PreviewAudioCommand}"
+                                            ToolTip="{DynamicResource Scene.PreviewAudio.Tooltip}"
+                                            AutomationProperties.Name="Preview Audio"/>
+                                    <Button Content="{DynamicResource Scene.PreviewScene}" Padding="10,4" Margin="3,0"
+                                            Style="{DynamicResource SecondaryButton}" FontSize="11"
+                                            Command="{Binding PreviewSceneCommand}"
+                                            ToolTip="{DynamicResource Scene.PreviewScene.Tooltip}"
+                                            AutomationProperties.Name="Preview Scene"/>
+                                    <Button Content="{DynamicResource Scene.Stop}" Padding="10,4" Margin="3,0"
+                                            Style="{DynamicResource SecondaryButton}" FontSize="11"
+                                            Command="{Binding StopPreviewCommand}"
+                                            ToolTip="{DynamicResource Scene.Stop.Tooltip}"/>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <TextBlock Text="{DynamicResource Scene.SpeechSpeed}" VerticalAlignment="Center"
+                                               FontSize="11" Margin="0,0,6,0"/>
+                                    <ComboBox Width="90" ItemsSource="{Binding SpeechSpeedOptions}"
+                                              SelectedIndex="{Binding SelectedSpeechSpeedIndex}" FontSize="11"
+                                              ToolTip="{DynamicResource Scene.SpeechSpeed.Tooltip}"/>
+                                    <TextBlock Text="{DynamicResource Export.DefaultSubtitleSize}" VerticalAlignment="Center"
+                                               FontSize="11" Margin="16,0,6,0"/>
+                                    <TextBox Width="50" Text="{Binding EffectiveSubtitleFontSize, UpdateSourceTrigger=LostFocus}"
+                                             VerticalAlignment="Center" Padding="6,3" FontSize="11"
+                                             ToolTip="{DynamicResource Export.DefaultSubtitleSize.Tooltip}"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
 
                         <!-- Subtitle -->
-                        <StackPanel Margin="0,0,0,4">
+                        <StackPanel Margin="0,0,0,8">
                             <DockPanel Margin="0,0,0,4">
-                                <TextBlock Text="{DynamicResource Scene.Subtitle}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
-                                <!-- B9: Copy narration to subtitle -->
-                                <Button Content="{DynamicResource Scene.CopyNarration}" Padding="6,2" Margin="8,0,0,0"
-                                        FontSize="10" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                                <TextBlock Text="{DynamicResource Scene.Subtitle}" VerticalAlignment="Center"
+                                           FontSize="11" FontWeight="SemiBold" DockPanel.Dock="Left"/>
+                                <Button Content="{DynamicResource Scene.CopyNarration}" Padding="10,3" Margin="8,0,0,0"
+                                        Style="{DynamicResource SecondaryButton}" FontSize="10"
+                                        DockPanel.Dock="Right" HorizontalAlignment="Right"
                                         Command="{Binding CopyNarrationToSubtitleCommand}"
                                         IsEnabled="{Binding CanSubtitle}"
                                         ToolTip="{DynamicResource Scene.CopyNarration.Tooltip}"/>
                             </DockPanel>
                             <Grid>
-                                <TextBox Text="{Binding SubtitleText, UpdateSourceTrigger=PropertyChanged}"
-                                         Padding="4" MinHeight="50" MaxHeight="100"
-                                         TextWrapping="Wrap" AcceptsReturn="True"
-                                         VerticalScrollBarVisibility="Auto"
-                                         VerticalContentAlignment="Top"
-                                         IsEnabled="{Binding CanSubtitle}"
-                                         ToolTip="{DynamicResource Scene.Subtitle.Tooltip}"/>
+                                <Border BorderBrush="{DynamicResource BorderLight}" BorderThickness="1"
+                                        CornerRadius="4" Background="{DynamicResource BgInput}">
+                                    <TextBox Text="{Binding SubtitleText, UpdateSourceTrigger=PropertyChanged}"
+                                             Padding="8,6" MinHeight="50" MaxHeight="100"
+                                             TextWrapping="Wrap" AcceptsReturn="True"
+                                             VerticalScrollBarVisibility="Auto"
+                                             VerticalContentAlignment="Top" FontSize="12"
+                                             BorderThickness="0" Background="Transparent"
+                                             IsEnabled="{Binding CanSubtitle}"
+                                             ToolTip="{DynamicResource Scene.Subtitle.Tooltip}"/>
+                                </Border>
                                 <TextBlock Text="{Binding SubtitlePlaceholder}"
                                            Foreground="{DynamicResource TextPlaceholder}" FontStyle="Italic"
-                                           IsHitTestVisible="False" Margin="8,6,0,0" VerticalAlignment="Top"
+                                           IsHitTestVisible="False" Margin="12,10,0,0" VerticalAlignment="Top"
+                                           FontSize="12"
                                            Visibility="{Binding SubtitlePlaceholderVisible, Converter={StaticResource BoolToVis}}"/>
                             </Grid>
                         </StackPanel>
 
                         <!-- Detail mode only sections -->
                         <!-- Subtitle style -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6"
                                     Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Text="{DynamicResource Scene.SubtitleStyle}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="{DynamicResource Scene.SubtitleStyle}" VerticalAlignment="Center"
+                                       FontSize="11" Margin="0,0,8,0"/>
                             <Border BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                                    CornerRadius="2" Padding="8,2" Margin="0,0,8,0" Background="#1a1a2e" MinWidth="40">
+                                    CornerRadius="4" Padding="8,2" Margin="0,0,8,0" Background="#1a1a2e" MinWidth="40">
                                 <TextBlock x:Name="StylePreviewLabel" Text="A" FontSize="16" FontWeight="Bold"
                                            Foreground="White" HorizontalAlignment="Center"/>
                             </Border>
-                            <Button Content="{DynamicResource Scene.SubtitleStyle.Select}" Padding="10,3" Margin="2"
+                            <Button Content="{DynamicResource Scene.SubtitleStyle.Select}" Padding="10,4" Margin="3,0"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
                                     Command="{Binding OpenStyleDialogCommand}" IsEnabled="{Binding CanSubtitleStyle}"/>
                         </StackPanel>
 
-                        <!-- Text Overlays -->
-                        <StackPanel Margin="0,4,0,4" Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
-                            <DockPanel Margin="0,0,0,4">
-                                <TextBlock Text="{DynamicResource Overlay.Title}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Content="{DynamicResource Common.Add}" Padding="6,2" Margin="2"
-                                            Command="{Binding AddOverlayCommand}"
-                                            ToolTip="{DynamicResource Overlay.Add.Tooltip}"/>
-                                    <Button Content="{DynamicResource Overlay.CoverTemplate}" Padding="6,2" Margin="2"
-                                            Command="{Binding AddCoverTemplateCommand}"
-                                            ToolTip="{DynamicResource Overlay.CoverTemplate.Tooltip}"/>
-                                    <Button Content="{DynamicResource Common.Remove}" Padding="6,2" Margin="2"
-                                            Command="{Binding RemoveOverlayCommand}"
-                                            ToolTip="{DynamicResource Overlay.Remove.Tooltip}"/>
-                                </StackPanel>
-                            </DockPanel>
-                            <!-- Overlay list with reorder buttons -->
-                            <DockPanel Visibility="{Binding OverlayListVisible, Converter={StaticResource BoolToVis}}">
-                                <StackPanel DockPanel.Dock="Right" Margin="4,0,0,0" VerticalAlignment="Center">
-                                    <Button Content="▲" Padding="4,2" Margin="0,0,0,2" FontSize="10"
-                                            Command="{Binding MoveOverlayUpCommand}"
-                                            ToolTip="{DynamicResource Overlay.MoveUp.Tooltip}"/>
-                                    <Button Content="▼" Padding="4,2" FontSize="10"
-                                            Command="{Binding MoveOverlayDownCommand}"
-                                            ToolTip="{DynamicResource Overlay.MoveDown.Tooltip}"/>
-                                </StackPanel>
-                                <ListBox ItemsSource="{Binding OverlayItems}"
-                                         SelectedIndex="{Binding SelectedOverlayIndex}"
-                                         Height="80" HorizontalContentAlignment="Stretch">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Border Width="6" Height="14" CornerRadius="1" Margin="0,0,6,0"
-                                                        VerticalAlignment="Center">
-                                                    <Border.Background>
-                                                        <SolidColorBrush Color="{Binding ColorIndicator}"/>
-                                                    </Border.Background>
-                                                </Border>
-                                                <TextBlock Text="{Binding DisplayLabel}" FontSize="11"
-                                                           VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
-                            </DockPanel>
-                            <Border BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                                    CornerRadius="3" Padding="8,6" Margin="0,4,0,0"
-                                    Visibility="{Binding OverlayEditorVisible, Converter={StaticResource BoolToVis}}">
-                                <StackPanel>
-                                    <!-- Text input -->
-                                    <DockPanel Margin="0,0,0,4">
-                                        <TextBlock Text="{DynamicResource Overlay.Text}" FontSize="11"
-                                                   VerticalAlignment="Top" Margin="0,4,8,0" DockPanel.Dock="Left"/>
-                                        <TextBox Text="{Binding OverlayText, UpdateSourceTrigger=PropertyChanged}"
-                                                 Padding="4" MinHeight="24" MaxHeight="60"
-                                                 TextWrapping="Wrap" AcceptsReturn="True"
-                                                 VerticalScrollBarVisibility="Auto"
-                                                 VerticalContentAlignment="Top"/>
-                                    </DockPanel>
-                                    <!-- All settings in one row -->
-                                    <WrapPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                                            <TextBlock Text="{DynamicResource Overlay.XPosition}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                            <TextBox Text="{Binding OverlayXPercent, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="50" TextAlignment="Center" VerticalContentAlignment="Center"/>
-                                            <TextBlock Text="%" FontSize="11" VerticalAlignment="Center" Margin="2,0,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                                            <TextBlock Text="{DynamicResource Overlay.YPosition}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                            <TextBox Text="{Binding OverlayYPercent, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="50" TextAlignment="Center" VerticalContentAlignment="Center"/>
-                                            <TextBlock Text="%" FontSize="11" VerticalAlignment="Center" Margin="2,0,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                                            <TextBlock Text="{DynamicResource Overlay.FontSize}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                            <TextBox Text="{Binding OverlayFontSize, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="60" TextAlignment="Center" VerticalContentAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                                            <TextBlock Text="{DynamicResource Overlay.Alignment}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                            <ComboBox Width="70" ItemsSource="{Binding AlignmentOptions}"
-                                                      SelectedIndex="{Binding SelectedAlignmentIndex}"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                                            <TextBlock Text="{DynamicResource Overlay.Color}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                            <ComboBox Width="70" ItemsSource="{Binding OverlayColorOptions}"
-                                                      SelectedIndex="{Binding SelectedOverlayColorIndex}"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                                            <TextBlock Text="{DynamicResource Overlay.Opacity}" FontSize="11" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                            <Slider Width="80" Minimum="0" Maximum="100"
-                                                    Value="{Binding OverlayOpacitySlider}"
-                                                    TickFrequency="5" IsSnapToTickEnabled="True"
-                                                    VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding OverlayOpacityDisplay}" FontSize="11"
-                                                       VerticalAlignment="Center" Width="36" Margin="4,0,0,0"/>
-                                        </StackPanel>
-                                    </WrapPanel>
-                                </StackPanel>
-                            </Border>
+                        <!-- Text Overlays: count indicator -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6"
+                                    Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{DynamicResource Overlay.Title}" VerticalAlignment="Center"
+                                       FontSize="11" Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding OverlayCountDisplay}" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextSecondary}" FontSize="11"/>
                         </StackPanel>
 
                         <!-- Duration mode -->
-                        <StackPanel Margin="0,0,0,4" Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Text="{DynamicResource Duration.Title}" Margin="0,0,0,4"/>
+                        <StackPanel Margin="0,0,0,6" Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{DynamicResource Duration.Title}" FontSize="11" Margin="0,0,0,4"/>
                             <StackPanel Orientation="Horizontal">
                                 <RadioButton Content="{DynamicResource Duration.Auto}" IsChecked="{Binding IsAutoDuration}"
                                              VerticalAlignment="Center" Margin="0,0,16,0" GroupName="DurationMode"
+                                             FontSize="11"
                                              ToolTip="{DynamicResource Duration.Auto.Tooltip}"/>
                                 <RadioButton Content="{DynamicResource Duration.Fixed}" IsChecked="{Binding IsFixedDuration}"
                                              VerticalAlignment="Center" Margin="0,0,8,0" GroupName="DurationMode"
+                                             FontSize="11"
                                              ToolTip="{DynamicResource Duration.Fixed.Tooltip}"/>
                                 <TextBox Text="{Binding DurationSeconds, UpdateSourceTrigger=PropertyChanged}"
-                                         Width="60" TextAlignment="Center" Margin="0,0,4,0" IsEnabled="{Binding IsFixedDuration}"/>
+                                         Width="60" TextAlignment="Center" Padding="4,3" FontSize="11"
+                                         Margin="0,0,6,0" IsEnabled="{Binding IsFixedDuration}"/>
                                 <TextBlock Text="{DynamicResource Duration.Range}" VerticalAlignment="Center"
-                                           Foreground="{DynamicResource TextTertiary}" FontSize="11"/>
+                                           Foreground="{DynamicResource TextTertiary}" FontSize="10"/>
                             </StackPanel>
                         </StackPanel>
 
                         <!-- Transition -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6"
                                     Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Text="{DynamicResource Transition.Title}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <ComboBox Width="160" Margin="0,0,12,0"
+                            <TextBlock Text="{DynamicResource Transition.Title}" VerticalAlignment="Center"
+                                       FontSize="11" Margin="0,0,8,0"/>
+                            <ComboBox Width="160" Margin="0,0,12,0" FontSize="11"
                                       ItemsSource="{Binding TransitionDisplayNames}"
                                       SelectedIndex="{Binding SelectedTransitionIndex}"
                                       IsEnabled="{Binding CanTransition}"
                                       ToolTip="{DynamicResource Transition.Tooltip}"/>
-                            <TextBlock Text="{DynamicResource Transition.Duration}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock Text="{DynamicResource Transition.Duration}" VerticalAlignment="Center"
+                                       FontSize="11" Margin="0,0,6,0"/>
                             <TextBox Text="{Binding TransitionDuration, UpdateSourceTrigger=PropertyChanged}"
-                                     Width="60" TextAlignment="Center" Margin="0,0,4,0" IsEnabled="{Binding CanTransition}"
+                                     Width="60" TextAlignment="Center" Padding="4,3" FontSize="11"
+                                     Margin="0,0,6,0" IsEnabled="{Binding CanTransition}"
                                      ToolTip="{DynamicResource Transition.Duration.Tooltip}"/>
                             <TextBlock Text="{DynamicResource Transition.Range}" VerticalAlignment="Center"
-                                       Foreground="{DynamicResource TextTertiary}" FontSize="11"/>
-                            <!-- B10: Apply transition to all scenes -->
-                            <Button Content="{DynamicResource Transition.ApplyAll}" Padding="6,2" Margin="8,0,0,0"
-                                    FontSize="10" Command="{Binding ApplyTransitionToAllCommand}"
+                                       Foreground="{DynamicResource TextTertiary}" FontSize="10"/>
+                            <Button Content="{DynamicResource Transition.ApplyAll}" Padding="10,3" Margin="8,0,0,0"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="10"
+                                    Command="{Binding ApplyTransitionToAllCommand}"
                                     IsEnabled="{Binding CanTransition}"
                                     ToolTip="{DynamicResource Transition.ApplyAll.Tooltip}"/>
                         </StackPanel>
 
+                        <!-- Subtitle Size + Motion (Ken Burns) -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <TextBlock Text="{DynamicResource Scene.SubtitleSize}" VerticalAlignment="Center"
+                                       FontSize="11" Margin="0,0,6,0"/>
+                            <ComboBox x:Name="SubtitleSizeCombo" Width="80" FontSize="11"
+                                      IsEnabled="{Binding CanSubtitle}"
+                                      SelectionChanged="SubtitleSizeCombo_SelectionChanged"
+                                      ToolTip="{DynamicResource Scene.SubtitleSize.Tooltip}"/>
+                            <TextBlock Text="{DynamicResource Motion.Title}" VerticalAlignment="Center"
+                                       FontSize="11" Margin="16,0,8,0"/>
+                            <ComboBox Width="200" FontSize="11"
+                                      ItemsSource="{Binding MotionDisplayNames}"
+                                      SelectedIndex="{Binding SelectedMotionIndex}"
+                                      ToolTip="{DynamicResource Motion.Tooltip}"/>
+                        </StackPanel>
+
                         <!-- Watermark -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6"
                                     Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Text="{DynamicResource Watermark.Title}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock Text="{DynamicResource Watermark.Title}" VerticalAlignment="Center"
+                                       FontSize="11" Margin="0,0,6,0"/>
                             <TextBlock Text="{Binding WatermarkFileName}" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextSecondary}" FontSize="11"
-                                       MinWidth="80" MaxWidth="140" TextTrimming="CharacterEllipsis" Margin="0,0,4,0"/>
-                            <Button Content="{DynamicResource Common.Select}" Padding="6,2" Margin="1"
+                                       MinWidth="80" MaxWidth="140" TextTrimming="CharacterEllipsis" Margin="0,0,6,0"/>
+                            <Button Content="{DynamicResource Common.Select}" Padding="8,3" Margin="3,0"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
                                     Command="{Binding SelectWatermarkCommand}"
                                     ToolTip="{DynamicResource Watermark.Tooltip}"/>
-                            <Button Content="✕" Padding="4,2" Margin="1"
+                            <Button Content="✕" Padding="6,3" Margin="3,0"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
                                     Command="{Binding ClearWatermarkCommand}"
                                     ToolTip="{DynamicResource Watermark.Clear.Tooltip}"/>
-                            <TextBlock Text="{DynamicResource Watermark.Position}" VerticalAlignment="Center" Margin="12,0,4,0"/>
+                            <TextBlock Text="{DynamicResource Watermark.Position}" VerticalAlignment="Center"
+                                       FontSize="11" Margin="12,0,6,0"/>
                             <ComboBox Width="80" ItemsSource="{Binding WatermarkPositionOptions}"
-                                      SelectedIndex="{Binding SelectedWatermarkPosIndex}"
+                                      SelectedIndex="{Binding SelectedWatermarkPosIndex}" FontSize="11"
                                       ToolTip="{DynamicResource Watermark.Position.Tooltip}"/>
                         </StackPanel>
 
                         <!-- Template -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6"
                                     Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Text="{DynamicResource Template.Title}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <Button Content="{DynamicResource Common.Save}" Padding="8,3" Margin="2"
+                            <TextBlock Text="{DynamicResource Template.Title}" VerticalAlignment="Center"
+                                       FontSize="11" Margin="0,0,8,0"/>
+                            <Button Content="{DynamicResource Common.Save}" Padding="10,4" Margin="3,0"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
                                     Command="{Binding SaveTemplateCommand}"/>
-                            <Button Content="{DynamicResource Common.Load}" Padding="8,3" Margin="2"
+                            <Button Content="{DynamicResource Common.Load}" Padding="10,4" Margin="3,0"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
                                     Command="{Binding LoadTemplateCommand}"/>
-                            <Button Content="{DynamicResource Template.OpenOutput}" Padding="8,3" Margin="12,2,2,2"
+                            <Button Content="{DynamicResource Template.OpenOutput}" Padding="10,4" Margin="12,0,3,0"
+                                    Style="{DynamicResource SecondaryButton}" FontSize="11"
                                     Command="{Binding OpenOutputFolderCommand}"/>
                         </StackPanel>
 
                         <!-- Info label -->
                         <TextBlock Text="{DynamicResource Duration.Info}"
                                    TextWrapping="Wrap" Foreground="{DynamicResource TextTertiary}"
-                                   FontSize="11" Margin="0,0,0,0"/>
+                                   FontSize="10" Margin="0,4,0,0"/>
                     </StackPanel>
                     </ScrollViewer>
-            </GroupBox>
+                </DockPanel>
+            </Border>
                     </Grid>
 
-                    <!-- Export Panel (動画生成タブ内) -->
-                    <GroupBox Grid.Row="1" Header="{DynamicResource Export.Settings}" Margin="0,4,0,0" Padding="4">
+                    <!-- Export Panel (card style) -->
+                    <Border Grid.Row="1" Background="{DynamicResource BgCard}"
+                            BorderBrush="{DynamicResource BorderLight}" BorderThickness="1"
+                            CornerRadius="6" Margin="0,6,0,0" Padding="12,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -1030,34 +1127,35 @@
 
                 <WrapPanel Grid.Column="0" VerticalAlignment="Center">
                     <!-- FPS: Detail mode only -->
-                    <StackPanel Orientation="Horizontal" Margin="0,2,12,2"
+                    <StackPanel Orientation="Horizontal" Margin="0,2,16,2"
                                 Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="FPS:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBlock Text="FPS:" VerticalAlignment="Center" FontSize="11" Margin="0,0,6,0"/>
                         <TextBox Text="{Binding FpsText, UpdateSourceTrigger=PropertyChanged}"
-                                 Width="60" TextAlignment="Center"
+                                 Width="60" TextAlignment="Center" FontSize="11" Padding="6,3"
                                  ToolTip="{DynamicResource Export.FPS.Tooltip}"/>
                     </StackPanel>
 
                     <!-- BGM: Detail mode only -->
-                    <StackPanel Orientation="Horizontal" Margin="0,2,12,2"
+                    <StackPanel Orientation="Horizontal" Margin="0,2,16,2"
                                 Visibility="{Binding IsDetailMode, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="{Binding BgmStatusText}" VerticalAlignment="Center"
-                                   Foreground="{DynamicResource TextTertiary}" Margin="0,0,6,0"/>
-                        <Button Content="{DynamicResource Export.BGM.Settings}" Padding="8,3"
+                                   Foreground="{DynamicResource TextTertiary}" FontSize="11" Margin="0,0,8,0"/>
+                        <Button Content="{DynamicResource Export.BGM.Settings}" Padding="10,4"
+                                Style="{DynamicResource SecondaryButton}" FontSize="11"
                                 Command="{Binding BgmSettingsCommand}"/>
                     </StackPanel>
                 </WrapPanel>
 
                 <Button Grid.Column="1"
                         Content="{DynamicResource Export.Button}"
-                        Width="150" Height="44"
-                        FontSize="12" FontWeight="Bold"
+                        Width="160" Height="42"
+                        FontSize="13" FontWeight="SemiBold"
                         Style="{DynamicResource PrimaryButton}"
                         Command="{Binding ExportVideoCommand}"
                         ToolTip="{DynamicResource Export.Button.Tooltip}"
                         AutomationProperties.Name="Export Video"/>
             </Grid>
-                    </GroupBox>
+                    </Border>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -1123,5 +1221,23 @@
 
             </Grid>
         </Border>
+
+        <!-- Drop overlay (child of outer Grid, overlays everything) -->
+        <Border x:Name="DropOverlay" Visibility="Collapsed"
+                Background="#CC1a1a2e" CornerRadius="8" Margin="4"
+                IsHitTestVisible="False">
+            <Border BorderBrush="#4090FF" BorderThickness="3" CornerRadius="12"
+                    Margin="32" Background="Transparent"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="📁" FontSize="64" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{DynamicResource DragDrop.Overlay}" FontSize="22" FontWeight="Bold"
+                               Foreground="White" HorizontalAlignment="Center" Margin="0,12,0,4"/>
+                    <TextBlock Text="{DynamicResource DragDrop.Overlay.Sub}" FontSize="13"
+                               Foreground="#88FFFFFF" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Border>
+
     </Grid>
 </Window>

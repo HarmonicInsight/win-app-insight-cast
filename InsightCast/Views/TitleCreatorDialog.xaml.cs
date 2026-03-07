@@ -137,7 +137,7 @@ namespace InsightCast.Views
 
             // Load config (reuses API keys from AiSettingsDialog)
             var config = AiProviderConfig.Load("INMV");
-            _imageService ??= new AiImageService(config);
+            _imageService ??= new AiImageService();
 
             AiGenerateBtn.IsEnabled = false;
             AiStatusText.Text = "生成中...";

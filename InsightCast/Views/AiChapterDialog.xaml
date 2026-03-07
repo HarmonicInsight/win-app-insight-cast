@@ -1,0 +1,93 @@
+<Window x:Class="InsightCast.Views.AiChapterDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:InsightCast.Converters"
+        Title="{DynamicResource AiChapter.Title}"
+        Width="700" Height="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Options -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock Text="{DynamicResource AiChapter.Heading}" FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,8"/>
+
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{DynamicResource AiChapter.ChapterCount}" VerticalAlignment="Center"
+                           Margin="0,0,8,0" FontSize="13"/>
+                <ComboBox x:Name="ChapterCountCombo" Grid.Column="1" Height="32" FontSize="13"
+                          SelectedIndex="2">
+                    <ComboBoxItem Content="3"/>
+                    <ComboBoxItem Content="4"/>
+                    <ComboBoxItem Content="5"/>
+                    <ComboBoxItem Content="6"/>
+                    <ComboBoxItem Content="7"/>
+                    <ComboBoxItem Content="8"/>
+                    <ComboBoxItem Content="10"/>
+                </ComboBox>
+
+                <TextBlock Grid.Column="2" Text="{DynamicResource AiChapter.MaterialCount}"
+                           VerticalAlignment="Center" Margin="16,0,8,0" FontSize="12"
+                           Foreground="{DynamicResource TextSecondary}"/>
+                <TextBlock x:Name="MaterialCountText" Grid.Column="3" VerticalAlignment="Center"
+                           FontSize="12" Foreground="{DynamicResource AccentGold}"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Additional instructions -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,8">
+            <TextBlock Text="{DynamicResource AiChapter.Instructions}" FontSize="12"
+                       Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+            <TextBox x:Name="InstructionsBox" Height="60" AcceptsReturn="True" TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto" FontSize="12"/>
+        </StackPanel>
+
+        <!-- Generate button -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button x:Name="GenerateButton" Content="{DynamicResource AiChapter.Generate}"
+                    Height="36" MinWidth="140" FontSize="13" FontWeight="Bold"
+                    Padding="16,4" Click="Generate_Click"/>
+            <TextBlock x:Name="StatusText" VerticalAlignment="Center" Margin="12,0,0,0"
+                       FontSize="11" Foreground="{DynamicResource TextSecondary}"/>
+            <ProgressBar x:Name="ProgressBar" Width="100" Height="16" Margin="8,0,0,0"
+                         IsIndeterminate="True" Visibility="Collapsed"/>
+        </StackPanel>
+
+        <!-- Preview -->
+        <Border Grid.Row="3" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                CornerRadius="4" Padding="0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="ChapterPreviewPanel" Margin="8"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Action buttons -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button x:Name="ApplyButton" Content="{DynamicResource AiChapter.Apply}"
+                    Height="36" MinWidth="120" FontSize="13" FontWeight="Bold"
+                    Padding="16,4" Click="Apply_Click" IsEnabled="False"/>
+            <Button Content="{DynamicResource Common.Cancel}"
+                    Height="36" MinWidth="80" Margin="8,0,0,0"
+                    Padding="16,4" Click="Cancel_Click" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -155,51 +155,85 @@ public partial class App : Application
         // ── 5. Default speaker ID ──────────────────────────────────
         int speakerId = config.DefaultSpeakerId ?? 13;
 
-        // ── 6. Show main window IMMEDIATELY ─────────────────────────────
-        var mainWindow = new MainWindow(client, speakerId, ffmpeg, config);
-        mainWindow.Show();
+        // Prevent auto-shutdown when QuickModeWindow dialog closes
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-        // ── 7. Background: VOICEVOX connection check (non-blocking) ────────
-        if (!config.IsFirstRun)
-        {
-            _ = Task.Run(async () =>
-            {
-                var version = await client.CheckConnectionAsync();
-                if (version == null)
-                {
-                    var discovered = await client.DiscoverEngineAsync();
-                    if (discovered != null)
-                    {
-                        config.BeginUpdate();
-                        config.EngineUrl = discovered.BaseUrl;
-                        config.EndUpdate();
-                    }
-                }
-            });
-        }
-
-        // ── 8. Open project from command-line argument ─────────────────────
+        // ── 6. Check for command-line project file ─────────────────────
+        string? cmdLineProject = null;
         if (e.Args.Length > 0 && !string.IsNullOrEmpty(e.Args[0]))
         {
             var filePath = e.Args[0];
             if (System.IO.File.Exists(filePath) &&
                 filePath.EndsWith(".icproj", StringComparison.OrdinalIgnoreCase))
+                cmdLineProject = filePath;
+        }
+
+        // ── 7. Show Quick Mode or Main Window ─────────────────────────────
+        if (cmdLineProject == null)
+        {
+            // No project file — show Quick Mode first
+            var quickWindow = new QuickModeWindow(client, speakerId, ffmpeg, config);
+            quickWindow.ShowDialog();
+
+            if (quickWindow.OpenDetailEditor)
             {
-                try
-                {
-                    var project = Models.Project.Load(filePath);
-                    mainWindow.LoadProject(project);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(
-                        LocalizationService.GetString("App.Error.Startup", ex.Message),
-                        "Insight Training Studio",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                }
+                var mainWindow = new MainWindow(client, speakerId, ffmpeg, config);
+                ShutdownMode = ShutdownMode.OnMainWindowClose;
+                MainWindow = mainWindow;
+                mainWindow.Show();
+                BackgroundVoiceVoxCheck(config, client);
+
+                if (quickWindow.LoadedProject != null)
+                    mainWindow.LoadProject(quickWindow.LoadedProject);
+            }
+            else
+            {
+                // User closed Quick Mode without opening editor — exit
+                Shutdown();
+                return;
             }
         }
+        else
+        {
+            // Project file specified — go straight to detail editor
+            var mainWindow = new MainWindow(client, speakerId, ffmpeg, config);
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            MainWindow = mainWindow;
+            mainWindow.Show();
+            BackgroundVoiceVoxCheck(config, client);
+
+            try
+            {
+                var project = Models.Project.Load(cmdLineProject);
+                mainWindow.LoadProject(project);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    LocalizationService.GetString("App.Error.Startup", ex.Message),
+                    "InsightCast",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+        }
+    }
+
+    private void BackgroundVoiceVoxCheck(Config config, VoiceVoxClient client)
+    {
+        _ = Task.Run(async () =>
+        {
+            var version = await client.CheckConnectionAsync();
+            if (version == null)
+            {
+                var discovered = await client.DiscoverEngineAsync();
+                if (discovered != null)
+                {
+                    config.BeginUpdate();
+                    config.EngineUrl = discovered.BaseUrl;
+                    config.EndUpdate();
+                }
+            }
+        });
     }
 
     /// <summary>

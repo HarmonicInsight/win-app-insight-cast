@@ -21,10 +21,10 @@ public class UserPrompt
     public string Icon { get; set; } = "\U0001F4CC"; // 📌
 
     [JsonPropertyName("createdAt")]
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [JsonPropertyName("updatedAt")]
-    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     [JsonPropertyName("useCount")]
     public int UseCount { get; set; }
@@ -43,6 +43,10 @@ public class UserPrompt
 
     [JsonPropertyName("recommendedPersonaId")]
     public string RecommendedPersonaId { get; set; } = "megumi";
+
+    /// <summary>モデルID（AiModelRegistry 統合対応）。未設定時は RecommendedPersonaId でフォールバック。</summary>
+    [JsonPropertyName("recommendedModelId")]
+    public string? RecommendedModelId { get; set; }
 
     [JsonPropertyName("requiresContextData")]
     public bool RequiresContextData { get; set; } = true;
