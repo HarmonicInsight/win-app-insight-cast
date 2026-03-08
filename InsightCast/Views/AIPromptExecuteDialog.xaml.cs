@@ -63,7 +63,6 @@ public partial class AIPromptExecuteDialog : Window
                 Description = lang == "ja" ? preset.CategoryJa : preset.CategoryEn,
                 Category = lang == "ja" ? preset.CategoryJa : preset.CategoryEn,
                 Icon = preset.Icon,
-                Mode = preset.Mode,
                 IsToolEnabled = true,
                 Source = preset,
             });
@@ -157,7 +156,6 @@ public class PromptItemVm
     public string Description { get; set; } = "";
     public string Category { get; set; } = "";
     public string Icon { get; set; } = "";
-    public string Mode { get; set; } = "";
     public bool IsToolEnabled { get; set; }
     public InsightCastPresetPrompt? Source { get; set; }
 }

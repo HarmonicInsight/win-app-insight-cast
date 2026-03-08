@@ -79,12 +79,10 @@
                     <RowDefinition Height="Auto"/>  <!-- Row 5: Model combo -->
                     <RowDefinition Height="Auto"/>  <!-- Row 6: Output type (text/image) -->
                     <RowDefinition Height="Auto"/>  <!-- Row 7: Image size (image mode only) -->
-                    <RowDefinition Height="Auto"/>  <!-- Row 8: Mode -->
-                    <RowDefinition Height="Auto"/>  <!-- Row 9: Mode description -->
-                    <RowDefinition Height="Auto"/>  <!-- Row 10: Requires context data -->
-                    <RowDefinition Height="Auto"/>  <!-- Row 11: Prompt label -->
-                    <RowDefinition Height="*"/>     <!-- Row 12: Prompt box -->
-                    <RowDefinition Height="Auto"/>  <!-- Row 13: Buttons -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 8: Requires context data -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 9: Prompt label -->
+                    <RowDefinition Height="*"/>     <!-- Row 10: Prompt box -->
+                    <RowDefinition Height="Auto"/>  <!-- Row 11: Buttons -->
                 </Grid.RowDefinitions>
 
                 <!-- Name -->
@@ -146,37 +144,13 @@
                               FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
                 </StackPanel>
 
-                <!-- Mode + RequiresContextData -->
-                <StackPanel Grid.Row="8" x:Name="ModePanel" Orientation="Horizontal" Margin="0,0,0,4">
-                    <TextBlock x:Name="ModeLabel" Text="モード:"
-                               FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"
-                               Margin="0,0,8,0"
-                               Foreground="{DynamicResource TextSecondary}"
-                               FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
-                    <RadioButton x:Name="ModeCheck" Content="Check" GroupName="Mode"
-                                 IsChecked="True" Margin="0,0,12,0" VerticalAlignment="Center"
-                                 FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"/>
-                    <RadioButton x:Name="ModeAdvice" Content="Advice" GroupName="Mode"
-                                 VerticalAlignment="Center"
-                                 FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"/>
-                </StackPanel>
-
-                <!-- Mode description -->
-                <TextBlock Grid.Row="9" x:Name="ModeDescriptionText"
-                           Text="Check: シーンデータをAIが修正提案します&#x0a;Advice: アドバイスをテキストで返します"
-                           FontSize="9.5" FontStyle="Italic"
-                           Foreground="{DynamicResource TextTertiary}"
-                           TextWrapping="Wrap"
-                           Margin="0,0,0,6"
-                           FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
-
-                <CheckBox Grid.Row="10" x:Name="RequiresContextDataCheckBox"
+                <CheckBox Grid.Row="8" x:Name="RequiresContextDataCheckBox"
                           Content="シーンデータ必須" IsChecked="True"
                           FontFamily="Yu Gothic UI, Meiryo, Segoe UI" FontSize="11"
                           VerticalAlignment="Center" Margin="0,0,0,8"/>
 
                 <!-- Prompt Text -->
-                <DockPanel Grid.Row="11" Margin="0,0,0,3">
+                <DockPanel Grid.Row="9" Margin="0,0,0,3">
                     <TextBlock x:Name="PromptLabel" Text="プロンプト"
                                FontSize="11" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextSecondary}"
@@ -193,14 +167,14 @@
                                 BorderThickness="1" Cursor="Hand" Margin="2,0,0,0" ToolTip="フォントサイズ拡大"/>
                     </StackPanel>
                 </DockPanel>
-                <TextBox Grid.Row="12" x:Name="PromptBox" FontSize="12" Padding="6,4"
+                <TextBox Grid.Row="10" x:Name="PromptBox" FontSize="12" Padding="6,4"
                          AcceptsReturn="True" TextWrapping="Wrap"
                          VerticalScrollBarVisibility="Auto"
                          BorderBrush="{DynamicResource BorderDefault}"
                          FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
 
                 <!-- Save + Customize + Execute buttons -->
-                <DockPanel Grid.Row="13" Margin="0,8,0,0">
+                <DockPanel Grid.Row="11" Margin="0,8,0,0">
                     <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                         <Button x:Name="ExportButton"
                                 Click="Export_Click" Padding="10,6" Cursor="Hand"

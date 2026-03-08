@@ -1550,7 +1550,7 @@ public partial class HelpWindow : Window
             <p>A: Create an account at the Anthropic console (<code>console.anthropic.com</code>) and generate an API key. Keys start with <code>sk-ant-</code>.</p>
 
             <h3>Q: AI directly modified my scenes — can I undo?</h3>
-            <p>A: Use <kbd>Ctrl</kbd>+<kbd>Z</kbd> to undo. We recommend saving your project before running AI auto-execution (check mode) presets.</p>
+            <p>A: Use <kbd>Ctrl</kbd>+<kbd>Z</kbd> to undo. We recommend saving your project before running AI auto-execution presets.</p>
 
             <h3>Q: How do I use a background image for thumbnail generation?</h3>
             <p>A: If a scene has image media, AI will automatically detect and use it as a thumbnail background. Run the "Auto-generate thumbnails" preset and AI will find suitable scene images.</p>

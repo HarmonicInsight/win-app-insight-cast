@@ -31,7 +31,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "One-click subtitle generation",
             Icon = "📝",
             RecommendedPersonaId = "shunsuke",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "各シーンのナレーションテキストを読み取り、字幕として適切な短いテキストに変換してください。字幕は1行あたり20文字以内が理想です。get_scenesツールでシーン情報を取得し、set_multiple_scenesツールで字幕を設定してください。",
             PromptEn = "Read the narration text from each scene and convert it into short, subtitle-friendly text. Ideally, each subtitle line should be within 40 characters. Use the get_scenes tool to get scene info and set_multiple_scenes to set subtitles.",
@@ -45,7 +45,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Instantly create English version",
             Icon = "🌐",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、英語に翻訳してください。直訳ではなく、教育動画にふさわしい自然な英語表現にしてください。翻訳結果をset_multiple_scenesツールでナレーションとして上書き設定してください。",
             PromptEn = "Use get_scenes to get all narration text and translate to English. Use natural English expressions appropriate for educational videos, not literal translations. Apply translated narration with set_multiple_scenes.",
@@ -59,7 +59,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Instantly create Japanese version",
             Icon = "🇯🇵",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、日本語に翻訳してください。教育動画にふさわしい分かりやすい日本語にしてください。翻訳結果をset_multiple_scenesツールでナレーションとして上書き設定してください。",
             PromptEn = "Use get_scenes to get all narration text and translate to Japanese. Use clear, easy-to-understand Japanese appropriate for educational videos. Apply translated narration with set_multiple_scenes.",
@@ -74,7 +74,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Expand to Chinese market (add subtitles)",
             Icon = "🇨🇳",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、簡体字中国語に翻訳してください。教育動画にふさわしい自然な中国語表現にしてください。翻訳結果をset_multiple_scenesツールで字幕として設定してください（ナレーションは変更しない）。",
             PromptEn = "Use get_scenes to get all narration text and translate to Simplified Chinese. Use natural Chinese expressions appropriate for educational videos. Apply translations as subtitles (not narration) with set_multiple_scenes.",
@@ -88,7 +88,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Expand to Korean market (add subtitles)",
             Icon = "🇰🇷",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、韓国語に翻訳してください。教育動画にふさわしい自然な韓国語表現にしてください。翻訳結果をset_multiple_scenesツールで字幕として設定してください（ナレーションは変更しない）。",
             PromptEn = "Use get_scenes to get all narration text and translate to Korean. Use natural Korean expressions appropriate for educational videos. Apply translations as subtitles (not narration) with set_multiple_scenes.",
@@ -109,7 +109,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Instant pro narration from slides",
             Icon = "🎙️",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_pptx_notesツールでスライドのノート（スピーカーノート）を取得し、各シーンのナレーションに変換してください。箇条書きのノートを自然な話し言葉に変換し、set_multiple_scenesツールで設定してください。1シーンあたり100〜200文字を目安にしてください。ノートが空のシーンはシーンタイトルから内容を推測してナレーションを作成してください。",
             PromptEn = "Use get_pptx_notes to get slide speaker notes and convert them into narration for each scene. Transform bullet-point notes into natural spoken language, aiming for 50-100 words per scene. Use set_multiple_scenes to apply. For scenes without notes, infer content from the scene title.",
@@ -123,7 +123,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Polish narration for maximum impact",
             Icon = "✨",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを読み取り、文法の修正、表現の改善、分かりやすさの向上を行ってください。大幅な変更は避け、自然な改善にとどめてください。改善したテキストをset_multiple_scenesで設定してください。",
             PromptEn = "Use get_scenes to read all narration text, then proofread for grammar, improve expressions, and enhance clarity. Avoid major changes — keep improvements natural. Apply changes with set_multiple_scenes.",
@@ -137,7 +137,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Complete narration from titles alone",
             Icon = "📖",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのタイトルと既存テキストを取得し、各シーンに適したナレーションを新規作成してください。導入→本題→まとめの流れを意識し、1シーンあたり100〜150文字の自然な話し言葉にしてください。set_multiple_scenesで設定してください。\n\n※AIはシーンのタイトル・ナレーション・字幕のテキスト情報のみ参照できます。画像や動画の内容は参照できません。",
             PromptEn = "Use get_scenes to get all scene titles and existing text, then create new narration for each scene. Follow an intro → body → summary flow, aiming for 50-80 words per scene in natural spoken language. Apply with set_multiple_scenes.\n\nNote: AI can only read scene titles, narration, and subtitle text. It cannot see images or video content.",
@@ -156,7 +156,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Optimize structure for viewer retention",
             Icon = "🔍",
             RecommendedPersonaId = "manabu",
-            Mode = "advice",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールとget_project_summaryツールでプロジェクト情報を取得し、ナレーションの構成を分析してアドバイスしてください:\n\n1. シーン間のナレーションの流れと論理構造\n2. 各シーンのナレーション量のバランス（長すぎ・短すぎ）\n3. 導入→本題→まとめの構成が適切か\n4. ナレーションが空のシーン、メディアが未設定のシーンの指摘\n5. 具体的な改善提案（シーンの追加・削除・並べ替えが必要な場合は、add_scene / remove_scene / move_scene ツールで対応可能であることも伝える）\n\n※テキスト情報とメディアパスの有無のみ分析できます。画像・動画の内容は参照できません。",
             PromptEn = "Use get_scenes and get_project_summary to analyze the narration structure and provide advice:\n\n1. Flow and logical structure between scene narrations\n2. Balance of narration length (too long/short)\n3. Whether intro → body → summary structure is appropriate\n4. Flag scenes with empty narration or missing media\n5. Specific improvement suggestions (mention that add_scene / remove_scene / move_scene tools are available if structural changes are needed)\n\nNote: Only text data and media path presence can be analyzed. Image/video content cannot be reviewed.",
@@ -170,7 +170,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Pre-publish quality check",
             Icon = "✅",
             RecommendedPersonaId = "shunsuke",
-            Mode = "advice",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールとget_project_summaryツールで全シーンを確認し、以下の抜け漏れをチェックしてリスト化してください:\n\n- ナレーションが空のシーン\n- 字幕が空のシーン（ナレーションはあるのに字幕がない）\n- メディア（画像/動画）が未設定のシーン\n- ナレーションが極端に短いシーン（30文字未満）\n- ナレーションが極端に長いシーン（300文字超）\n\nシーン番号と現状を表形式で示してください。",
             PromptEn = "Use get_scenes and get_project_summary to check all scenes and list any gaps:\n\n- Scenes with empty narration\n- Scenes with narration but no subtitles\n- Scenes with no media (image/video) set\n- Scenes with very short narration (under 30 chars)\n- Scenes with very long narration (over 300 chars)\n\nList specific scene numbers and their current state in a table format.",
@@ -189,7 +189,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Cut the fluff, save viewer time",
             Icon = "✂️",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを取得し、より簡潔に書き直してください:\n\n- 冗長な表現や繰り返しを削除\n- 一文を短くし、要点を先に伝える\n- 「〜ということになります」→「〜です」等の圧縮\n- 各シーンのナレーションを現在の70〜80%の文字数に圧縮\n- 重要な情報は削らず、表現のみ簡潔にする\n\nset_multiple_scenesで設定してください。",
             PromptEn = "Use get_scenes to get all narration and rewrite it more concisely:\n\n- Remove redundant expressions and repetition\n- Shorten sentences, lead with key points\n- Compress to 70-80% of current word count per scene\n- Preserve important information, only simplify expression\n\nApply with set_multiple_scenes.",
@@ -203,7 +203,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Elevate tone for executives & clients",
             Icon = "👔",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを取得し、よりフォーマルで丁寧なトーンに調整してください:\n\n- 敬語（です・ます調）を徹底\n- 「〜してね」→「〜してください」等のカジュアル表現を修正\n- ビジネスにふさわしい語彙を使用\n- 社外向けプレゼン・経営層向け報告にも使えるトーンに\n- 過度に硬くならないよう、分かりやすさは維持\n\nset_multiple_scenesで設定してください。",
             PromptEn = "Use get_scenes to get all narration and adjust to a more formal, polite tone:\n\n- Use consistently professional language\n- Replace casual expressions with formal equivalents\n- Use business-appropriate vocabulary\n- Suitable for executive presentations and external audiences\n- Maintain clarity — don't make it overly stiff\n\nApply with set_multiple_scenes.",
@@ -217,7 +217,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Build rapport with a friendly tone",
             Icon = "😊",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを取得し、カジュアルで親しみやすいトーンに調整してください:\n\n- 「〜ですよね」「〜しましょう」等の親しみやすい表現を使用\n- 視聴者に語りかけるような口調（「皆さん」「一緒に〜」）\n- 堅い専門用語をやさしい言葉に置き換え\n- YouTube動画やSNSコンテンツにふさわしいトーン\n- 敬語は維持しつつ、距離感を縮める\n\nset_multiple_scenesで設定してください。",
             PromptEn = "Use get_scenes to get all narration and adjust to a casual, friendly tone:\n\n- Use approachable expressions and conversational style\n- Address viewers directly ('you', 'let's')\n- Replace jargon with simpler words\n- Suitable for YouTube and social media content\n- Stay respectful while being warm and engaging\n\nApply with set_multiple_scenes.",
@@ -237,7 +237,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Balance pacing for better viewing",
             Icon = "⚖️",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを取得し、長さのバラつきを分析してください。極端に短い・長いシーンを特定し、全体のバランスが取れるよう調整してください:\n\n- 目標: 各シーン80〜150文字程度\n- 短すぎるシーン: 補足説明を追加\n- 長すぎるシーン: 要点を絞って簡潔に\n- 内容の意味は変えない\n\nset_multiple_scenesで調整結果を設定してください。",
             PromptEn = "Use get_scenes to analyze narration length variation across scenes. Identify scenes that are too short or too long, then balance them:\n\n- Target: 40-80 words per scene\n- Too short: Add supporting detail\n- Too long: Condense to key points\n- Preserve original meaning\n\nApply with set_multiple_scenes.",
@@ -251,7 +251,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Enhance text-to-speech quality",
             Icon = "🔤",
             RecommendedPersonaId = "shunsuke",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを確認し、VOICEVOX音声合成エンジンが正しく読み上げられるよう発音補正してください:\n\n- 英語略語をカタカナに変換（「API」→「エーピーアイ」「IT」→「アイティー」等）\n- 数字の読み方を明確化（「10個」→「じゅっこ」等、必要に応じてひらがなに）\n- 難読固有名詞にひらがな表記を検討\n- 記号を読み上げ可能な表現に変換（「→」→「から」等）\n- 句読点の位置を読みやすさの観点で調整\n\nset_multiple_scenesで設定してください。",
             PromptEn = "Use get_scenes to review all narration and optimize for VOICEVOX text-to-speech engine:\n\n- Convert abbreviations to phonetic form (e.g., 'API' → 'A-P-I')\n- Clarify number readings where ambiguous\n- Add phonetic readings for difficult proper nouns\n- Replace symbols with speakable expressions ('→' → 'to')\n- Adjust punctuation for natural reading pace\n\nApply with set_multiple_scenes.",
@@ -265,7 +265,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Ensure brand consistency",
             Icon = "🎯",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを分析し、トーンと文体を統一してください:\n\n- 敬体（です・ます調）か常体（だ・である調）を統一\n- 主語の使い方を統一（「私たち」「当社」等）\n- 接続詞の使い方を統一\n- 文末表現のバリエーションを適度に維持\n- 全体を通して一貫した印象になるよう調整\n\nset_multiple_scenesで設定してください。",
             PromptEn = "Use get_scenes to analyze all narration and unify the tone and writing style:\n\n- Standardize formality level across scenes\n- Unify subject references ('we', 'our company', etc.)\n- Standardize conjunction usage\n- Maintain appropriate variation in sentence endings\n- Ensure a consistent impression throughout\n\nApply with set_multiple_scenes.",
@@ -284,7 +284,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "One-click video content creation",
             Icon = "🚀",
             RecommendedPersonaId = "manabu",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "全シーンのナレーションと字幕を一括で生成してください:\n\n1. get_pptx_notesでスライドのスピーカーノートを取得\n2. get_scenesで全シーンのタイトルと現状を確認\n3. シーン数が内容に対して不足している場合は、add_sceneで必要なシーンを追加\n4. ノートの内容をもとに、各シーンの教育的なナレーションを生成（100〜150文字/シーン）\n5. ナレーションから字幕用の短縮テキストを生成（20文字以内/シーン）\n6. set_multiple_scenesで全シーンのナレーションと字幕を一括設定（1回のツール呼び出しでまとめて設定すること）\n\nノートがないシーンは、シーンのタイトルから内容を推測してナレーションを作成してください。自然な話し言葉で、導入→本題→まとめの流れを意識してください。",
             PromptEn = "Auto-generate narration and subtitles for all scenes:\n\n1. Use get_pptx_notes to get slide speaker notes\n2. Use get_scenes to check current state and titles\n3. If the scene count is insufficient for the content, add scenes with add_scene\n4. Generate educational narration for each scene based on notes (50-80 words/scene)\n5. Create shortened subtitle text from narration (under 40 chars/scene)\n6. Use set_multiple_scenes to apply ALL narration and subtitles in a single tool call\n\nFor scenes without notes, infer content from the scene title. Use natural spoken language with an intro → body → summary flow.",
@@ -298,7 +298,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Create bilingual JP/EN video instantly",
             Icon = "🌏",
             RecommendedPersonaId = "manabu",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "日本語ナレーション＋英語字幕を一括生成してください:\n\n1. get_scenesで全シーンのタイトルと現状を確認、get_pptx_notesでノートも取得\n2. ノートやタイトルをもとに各シーンの日本語ナレーションを生成（100〜150文字/シーン）\n3. そのナレーションを自然な英語に翻訳し、字幕として設定\n4. set_multiple_scenesで全シーンに日本語ナレーション＋英語字幕を一括設定\n\n日本語ナレーションは自然な話し言葉、英語字幕は直訳ではなく自然な表現にしてください。",
             PromptEn = "Auto-generate JP narration + EN subtitles:\n\n1. Use get_scenes and get_pptx_notes to gather info\n2. Generate Japanese narration for each scene from notes/titles (100-150 chars/scene)\n3. Translate narration to natural English for subtitles\n4. Use set_multiple_scenes to apply JP narration + EN subtitles\n\nJapanese narration should be natural spoken language. English subtitles should be natural, not literal translations.",
@@ -317,7 +317,7 @@ public static class InsightCastPresetPrompts
             LabelEn = "Maximize click-through with thumbnail audit",
             Icon = "📊",
             RecommendedPersonaId = "manabu",
-            Mode = "advice",
+
             RequiresContextData = true,
             PromptJa = @"get_scenesとget_project_summaryでプロジェクト情報を取得し、教育動画サムネイルの効果を分析してください。
 
@@ -354,7 +354,7 @@ Finally, generate an improved thumbnail using the generate_thumbnail tool with o
             LabelEn = "Maximize learning impact with structure review",
             Icon = "🎓",
             RecommendedPersonaId = "manabu",
-            Mode = "advice",
+
             RequiresContextData = true,
             PromptJa = @"get_scenesとget_project_summaryでプロジェクト全体を分析し、教育動画としての構成を詳細にレビューしてください。
 
@@ -409,7 +409,7 @@ Evaluate and provide specific improvement suggestions:
             LabelEn = "Auto-build scene structure from your plan",
             Icon = "🏗️",
             RecommendedPersonaId = "manabu",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "以下の手順でシーン構成を自動生成してください:\n\n1. get_scenesとget_pptx_notesで現在のシーン構成とノートを確認\n2. 導入→本題→まとめの構成に必要なシーンを分析し、不足分をadd_sceneで追加（末尾に追加でOK）\n3. 必要に応じてmove_sceneでシーン順序を最適化\n4. 全シーンのナレーションをまとめてset_multiple_scenesで一括設定（個別のset_scene_narrationではなく、必ず一括で設定すること）\n5. 結果を報告\n\n重要: ツール呼び出し回数を節約するため、ナレーション設定は必ずset_multiple_scenesで一度にまとめて行ってください。",
             PromptEn = "Auto-compose the scene structure:\n\n1. Use get_scenes and get_pptx_notes to check current structure and notes\n2. Analyze what scenes are needed for an intro → body → summary flow, add missing ones with add_scene (append at end is fine)\n3. Optimize scene order with move_scene if needed\n4. Set narration for ALL scenes at once using set_multiple_scenes (do NOT use individual set_scene_narration calls)\n5. Report the results\n\nImportant: To conserve tool call budget, always batch narration updates into a single set_multiple_scenes call.",
@@ -423,7 +423,7 @@ Evaluate and provide specific improvement suggestions:
             LabelEn = "Auto-cleanup & optimize scene flow",
             Icon = "🧹",
             RecommendedPersonaId = "manabu",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "シーンの整理を行ってください:\n\n1. get_scenesで全シーンを確認\n2. ナレーション・字幕・メディアがすべて空のシーンを特定し、一覧を報告\n3. 空シーンをremove_sceneで削除（インデックスが大きい方から順に削除すること。最低1シーンは残す）\n4. 削除後、get_scenesで最新状態を取得し、残ったシーンの順序を分析\n5. 論理的な流れになるようmove_sceneで並べ替えを実行\n6. 最終構成を報告\n\n重要: シーン削除時はインデックスのずれを防ぐため、必ず末尾側（大きいインデックス）から順に削除してください。",
             PromptEn = "Clean up the scene structure:\n\n1. Use get_scenes to review all scenes\n2. Identify scenes where narration, subtitles, and media are all empty, and report the list\n3. Remove empty scenes with remove_scene (delete from highest index first to avoid index shifting; keep at least 1 scene)\n4. After deletion, use get_scenes to get the updated state and analyze remaining scene order\n5. Reorder scenes with move_scene for logical flow\n6. Report the final structure\n\nImportant: Always delete scenes from highest index to lowest to prevent index shifting issues.",
@@ -442,7 +442,7 @@ Evaluate and provide specific improvement suggestions:
             LabelEn = "Auto-set learning objectives & intro scene",
             Icon = "🎯",
             RecommendedPersonaId = "manabu",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesとget_pptx_notesでプロジェクト内容を把握し、研修動画としての学習目標を設計してください:\n\n1. コンテンツ全体から3〜5個の学習目標を抽出\n2. 先頭に「学習目標」シーンをadd_sceneで追加し、目標を箇条書きナレーションとして設定\n3. 末尾に「まとめ・振り返り」シーンをadd_sceneで追加し、学習目標の達成を確認するナレーションを設定\n4. set_multiple_scenesでナレーションを一括設定\n\n学習目標は「〜できるようになる」の形式で、具体的・測定可能な表現にしてください。",
             PromptEn = "Analyze the project with get_scenes and get_pptx_notes, then design learning objectives for a training video:\n\n1. Extract 3-5 learning objectives from the content\n2. Add a 'Learning Objectives' scene at the beginning with add_scene, set objectives as bullet-point narration\n3. Add a 'Summary & Review' scene at the end with add_scene, set narration confirming objective achievement\n4. Apply all narration with set_multiple_scenes\n\nLearning objectives should be specific and measurable ('By the end, you will be able to...').",
@@ -456,7 +456,7 @@ Evaluate and provide specific improvement suggestions:
             LabelEn = "Auto-insert comprehension quiz scenes",
             Icon = "❓",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesで全シーンのナレーションを読み取り、内容に基づいた理解度チェッククイズを作成してください:\n\n1. 主要な学習ポイントを3〜5個特定\n2. 各ポイントの直後にadd_sceneでクイズシーンを挿入\n3. クイズのナレーション形式: 「ここで確認クイズです。[質問]　答えは…[回答と解説]」\n4. set_multiple_scenesで全クイズシーンのナレーションを一括設定\n\nクイズは選択式（A/B/C）または○×形式で、正解と簡潔な解説を含めてください。",
             PromptEn = "Read all scene narration with get_scenes and create comprehension quiz questions:\n\n1. Identify 3-5 key learning points\n2. Insert quiz scenes after each key point with add_scene\n3. Quiz narration format: 'Quick check: [question] The answer is... [answer and explanation]'\n4. Apply all quiz narration with set_multiple_scenes\n\nUse multiple choice (A/B/C) or true/false format with correct answers and brief explanations.",
@@ -470,7 +470,7 @@ Evaluate and provide specific improvement suggestions:
             LabelEn = "Estimate training duration & optimize",
             Icon = "⏱️",
             RecommendedPersonaId = "manabu",
-            Mode = "advice",
+
             RequiresContextData = true,
             PromptJa = "get_scenesとget_project_summaryでプロジェクト全体を分析し、研修動画としての時間配分を評価してください:\n\n1. 各シーンのナレーション文字数から読み上げ時間を推定（日本語: 約300文字/分）\n2. シーンごとの推定時間を表形式で一覧化\n3. 動画全体の合計時間を算出\n4. 研修動画の推奨時間（5〜15分）に対する過不足を指摘\n5. 長すぎる場合は分割案、短すぎる場合は補足すべき内容を提案\n\n視聴者の集中力維持の観点からもアドバイスしてください。",
             PromptEn = "Analyze the full project with get_scenes and get_project_summary to evaluate time allocation:\n\n1. Estimate reading time per scene from narration character count (English: ~150 words/min)\n2. List estimated time per scene in table format\n3. Calculate total video duration\n4. Flag if duration falls outside recommended training range (5-15 min)\n5. Suggest splitting if too long, or additional content if too short\n\nAlso advise from a viewer attention/retention perspective.",
@@ -490,7 +490,7 @@ Evaluate and provide specific improvement suggestions:
             LabelEn = "Rewrite in plain language for all audiences",
             Icon = "📖",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesで全シーンのナレーションを取得し、より平易でわかりやすい表現に書き換えてください:\n\n- 専門用語は初出時に「（＝○○のこと）」と補足説明を追加\n- 長い文は短い文に分割（1文40文字以内を目標）\n- カタカナ語は必要最低限にし、日本語で言い換え可能なものは置き換え\n- 抽象的な説明には具体例を追加\n- 新入社員や非専門家が理解できるレベルを目標\n\nset_multiple_scenesで設定してください。",
             PromptEn = "Use get_scenes to get all narration and rewrite for maximum accessibility:\n\n- Add brief explanations for technical terms on first use\n- Split long sentences (target: under 20 words per sentence)\n- Minimize jargon; use plain equivalents where possible\n- Add concrete examples for abstract explanations\n- Target comprehension level: new employees or non-specialists\n\nApply with set_multiple_scenes.",
@@ -504,7 +504,7 @@ Evaluate and provide specific improvement suggestions:
             LabelEn = "Add visual descriptions to narration",
             Icon = "👁️",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = "get_scenesで全シーンを確認し、音声だけで内容が伝わるようナレーションを補強してください:\n\n- 「この画面では」「ここに表示されている」等の指示語を具体的な説明に置き換え\n- グラフや図表を参照する場面では、数値や傾向を口頭で説明するテキストを追加\n- 「ご覧のように」→ 具体的に何が表示されているかを説明\n- 画面を見なくても内容が理解できるレベルを目標\n\nset_multiple_scenesで設定してください。",
             PromptEn = "Use get_scenes to review all scenes and enhance narration so content is understandable by audio alone:\n\n- Replace vague references ('as shown here') with specific descriptions\n- Add verbal descriptions of data, trends, and visuals\n- Ensure charts/graphs are described with key numbers and patterns\n- Target: full comprehension without viewing the screen\n\nApply with set_multiple_scenes.",
@@ -523,7 +523,7 @@ Evaluate and provide specific improvement suggestions:
             LabelEn = "Suggest what AI can do for this video",
             Icon = "💡",
             RecommendedPersonaId = "shunsuke",
-            Mode = "advice",
+
             RequiresContextData = true,
             PromptJa = @"あなたはInsight Training StudioのAIアシスタントです。
 get_scenesとget_project_summaryでこのプロジェクトの現状を確認した上で、
@@ -592,7 +592,7 @@ Add a one-line reason why each suggestion would be valuable.",
             LabelEn = "YouTube SEO optimization (title/desc/tags)",
             Icon = "🔍",
             RecommendedPersonaId = "manabu",
-            Mode = "advice",
+
             RequiresContextData = true,
             PromptJa = @"get_project_summary と get_scenes でプロジェクト内容を確認し、YouTube向けに以下を生成してください:
 
@@ -634,7 +634,7 @@ Focus on high-volume keywords relevant to the industry and target audience.",
             LabelEn = "Suggest Shorts clip points",
             Icon = "📱",
             RecommendedPersonaId = "megumi",
-            Mode = "advice",
+
             RequiresContextData = true,
             PromptJa = @"get_scenes でシーン構成を確認し、YouTube Shorts（60秒以内の縦型動画）に切り出せるポイントを提案してください。
 
@@ -666,7 +666,7 @@ Suggest at least 3 Shorts ideas, ordered by viral potential.",
             LabelEn = "Add retention hooks",
             Icon = "🎯",
             RecommendedPersonaId = "megumi",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = @"get_scenes で全シーンのナレーションを確認し、視聴維持率を向上させるフックを各シーンに追加してください。
 
@@ -697,7 +697,7 @@ Weave hooks naturally into the start or end of each scene's narration to keep vi
             LabelEn = "Plan a video series",
             Icon = "📋",
             RecommendedPersonaId = "manabu",
-            Mode = "advice",
+
             RequiresContextData = true,
             PromptJa = @"get_project_summary でこの動画の内容を確認し、これを起点としたシリーズ動画（5〜10本）の企画を立案してください。
 
@@ -743,7 +743,7 @@ Design it to function as a marketing funnel.",
             LabelEn = "Internal change management video",
             Icon = "🏢",
             RecommendedPersonaId = "manabu",
-            Mode = "check",
+
             RequiresContextData = true,
             PromptJa = @"get_scenes で現在の内容を確認し、社内向けチェンジマネジメント動画として最適化してください。
 

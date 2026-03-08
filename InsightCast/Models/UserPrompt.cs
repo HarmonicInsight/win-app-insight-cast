@@ -38,9 +38,6 @@ public class UserPrompt
     [JsonPropertyName("notes")]
     public string? Notes { get; set; }
 
-    [JsonPropertyName("mode")]
-    public string Mode { get; set; } = "check";
-
     [JsonPropertyName("recommendedPersonaId")]
     public string RecommendedPersonaId { get; set; } = "megumi";
 

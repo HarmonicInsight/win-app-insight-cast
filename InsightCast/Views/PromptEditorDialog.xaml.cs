@@ -25,9 +25,6 @@ public partial class PromptEditorDialog : Window
     /// <summary>実行リクエスト: プロンプトテキスト</summary>
     public string? ExecutePromptText { get; private set; }
 
-    /// <summary>実行リクエスト: モード (check/advice)</summary>
-    public string? ExecuteMode { get; private set; }
-
     /// <summary>実行リクエスト: モデルID</summary>
     public string? ExecuteModelId { get; private set; }
 
@@ -101,13 +98,10 @@ public partial class PromptEditorDialog : Window
         NameLabel.Text = Res("PE.Name", "タイトル");
         CategoryLabel.Text = Res("PE.Category", "カテゴリ");
         ModelLabel.Text = Res("PE.Model", "モデル");
-        ModeLabel.Text = Res("PE.Mode", "モード") + ":";
         PromptLabel.Text = Res("PE.PromptText", "プロンプト");
         RequiresContextDataCheckBox.Content = Res("PE.RequiresContextData", "シーンデータ必須");
         SaveButton.Content = Res("PE.Save", "保存");
         ExecuteButton.Content = "\u25B6 " + Res("PE.Execute", "実行");
-        ModeDescriptionText.Text = Res("PE.ModeDesc",
-            "Check: シーンデータをAIが修正提案します\nAdvice: アドバイスをテキストで返します");
         OutputTypeLabel.Text = Res("PE.OutputType", "出力") + ":";
         OutputText.Content = Res("PE.OutputText", "テキスト");
         OutputImage.Content = Res("PE.OutputImage", "画像");
@@ -220,8 +214,6 @@ public partial class PromptEditorDialog : Window
             ModelComboBox.SelectedValue = persona?.ModelId ?? ClaudeModels.DefaultModel;
             ModelComboBox.IsEnabled = false;
 
-            ModeCheck.IsChecked = preset.Mode == "check";
-            ModeAdvice.IsChecked = preset.Mode != "check";
             _suppressOutputToggle = true;
             OutputText.IsChecked = !preset.IsImageMode;
             OutputImage.IsChecked = preset.IsImageMode;
@@ -264,8 +256,6 @@ public partial class PromptEditorDialog : Window
                 ModelComboBox.SelectedValue = ClaudeModels.DefaultModel;
             ModelComboBox.IsEnabled = true;
 
-            ModeCheck.IsChecked = custom.Mode == "check";
-            ModeAdvice.IsChecked = custom.Mode != "check";
             _suppressOutputToggle = true;
             OutputText.IsChecked = !custom.IsImageMode;
             OutputImage.IsChecked = custom.IsImageMode;
@@ -312,7 +302,6 @@ public partial class PromptEditorDialog : Window
             Prompt = promptText,
             RecommendedModelId = selectedModelId,
             RecommendedPersonaId = AiPersona.FindByModelId(selectedModelId)?.Id ?? "megumi",
-            Mode = ModeCheck.IsChecked == true ? "check" : "advice",
             IsImageMode = OutputImage.IsChecked == true,
             ImageSize = ImageSizeComboBox.SelectedValue as string ?? "1024x1024",
             RequiresContextData = RequiresContextDataCheckBox.IsChecked == true,
@@ -367,7 +356,6 @@ public partial class PromptEditorDialog : Window
         _selectedCustom.Category = (CategoryComboBox.Text ?? string.Empty).Trim();
         _selectedCustom.RecommendedModelId = savedModelId;
         _selectedCustom.RecommendedPersonaId = AiPersona.FindByModelId(savedModelId)?.Id ?? "megumi";
-        _selectedCustom.Mode = ModeCheck.IsChecked == true ? "check" : "advice";
         _selectedCustom.IsImageMode = OutputImage.IsChecked == true;
         _selectedCustom.ImageSize = ImageSizeComboBox.SelectedValue as string ?? "1024x1024";
         _selectedCustom.RequiresContextData = RequiresContextDataCheckBox.IsChecked == true;
@@ -401,7 +389,6 @@ public partial class PromptEditorDialog : Window
     private void Execute_Click(object sender, RoutedEventArgs e)
     {
         ExecutePromptText = PromptBox.Text.Trim();
-        ExecuteMode = ModeCheck.IsChecked == true ? "check" : "advice";
         ExecuteModelId = ModelComboBox.SelectedValue as string ?? ClaudeModels.DefaultModel;
         ExecuteIsImageMode = OutputImage.IsChecked == true;
         ExecuteImageSize = ImageSizeComboBox.SelectedValue as string ?? "1024x1024";
@@ -529,12 +516,7 @@ public partial class PromptEditorDialog : Window
                 ModelComboBox.SelectedValue = imageModels[0].Id;
 
             RequiresContextDataCheckBox.IsChecked = false;
-            ModeAdvice.IsChecked = true;
             ImageSizeComboBox.SelectedValue = "1024x1024";
-
-            // Hide mode (not relevant for image generation)
-            ModePanel.Visibility = Visibility.Collapsed;
-            ModeDescriptionText.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -548,18 +530,12 @@ public partial class PromptEditorDialog : Window
         {
             ModelComboBox.SelectedValue = ClaudeModels.DefaultModel;
             RequiresContextDataCheckBox.IsChecked = true;
-            ModeCheck.IsChecked = true;
-
-            ModePanel.Visibility = Visibility.Visible;
-            ModeDescriptionText.Visibility = Visibility.Visible;
         }
     }
 
     private void ApplyImageModeUI(bool isImage)
     {
         ImageSizePanel.Visibility = isImage ? Visibility.Visible : Visibility.Collapsed;
-        ModePanel.Visibility = isImage ? Visibility.Collapsed : Visibility.Visible;
-        ModeDescriptionText.Visibility = isImage ? Visibility.Collapsed : Visibility.Visible;
     }
 
     // ── Font Size Control ──
