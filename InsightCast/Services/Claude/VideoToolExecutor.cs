@@ -85,6 +85,7 @@ public class VideoToolExecutor : IToolExecutor
                 "generate_scene_image" => await ExecuteGenerateSceneImageAsync(input, ct),
                 "generate_ab_thumbnails" => ExecuteGenerateAbThumbnails(input),
                 "add_cta_endcard" => ExecuteAddCtaEndcard(input),
+                "generate_report" or "revise_report" => await ExecuteGenerateReportAsync(input),
                 _ => JsonSerializer.Serialize(new { error = $"Unknown tool: {toolName}" }),
             };
             return new ToolExecutionResult { Content = content };
@@ -505,5 +506,60 @@ public class VideoToolExecutor : IToolExecutor
                 overlays = scenes[lastIndex].TextOverlays.Count,
             });
         });
+    }
+
+    /// <summary>
+    /// generate_report / revise_report: レポートを .docx で生成・保存
+    /// </summary>
+    private async Task<string> ExecuteGenerateReportAsync(JsonElement input)
+    {
+        var report = JsonSerializer.Deserialize<Models.Report.ReportStructure>(
+            input.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        if (report == null || report.Sections.Count == 0)
+            return JsonSerializer.Serialize(new { error = "Invalid report structure" });
+
+        report.OutputFormat = "docx";
+
+        // UI スレッドで SaveFileDialog を表示
+        var outputManager = new Report.ReportOutputManager();
+        var request = new Report.ReportOutputRequest
+        {
+            Report = report,
+            Destination = "export_file",
+        };
+
+        var result = await _dispatcher.InvokeAsync(async () =>
+        {
+            return await outputManager.ExecuteAsync(request);
+        }).Task.Unwrap();
+
+        if (result.Success)
+        {
+            return JsonSerializer.Serialize(new
+            {
+                success = true,
+                output_path = result.OutputPath,
+                format = result.OutputFormat,
+                message = result.MessageJa,
+            });
+        }
+        else if (result.Error == "cancelled")
+        {
+            return JsonSerializer.Serialize(new
+            {
+                success = false,
+                cancelled = true,
+                message = result.MessageJa,
+            });
+        }
+        else
+        {
+            return JsonSerializer.Serialize(new
+            {
+                error = result.Error,
+                message = result.MessageJa,
+            });
+        }
     }
 }

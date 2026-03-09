@@ -77,6 +77,12 @@ namespace InsightCast.Models
         [JsonPropertyName("generateChapters")]
         public bool GenerateChapters { get; set; } = true;
 
+        [JsonPropertyName("generateSubtitleFile")]
+        public bool GenerateSubtitleFile { get; set; } = true;
+
+        [JsonPropertyName("generateMetadata")]
+        public bool GenerateMetadata { get; set; } = true;
+
         [JsonPropertyName("thumbnailGenerator")]
         public ThumbnailGeneratorSettings ThumbnailGenerator { get; set; } = new();
 
@@ -88,6 +94,13 @@ namespace InsightCast.Models
 
         [JsonPropertyName("defaultSubtitleFontSize")]
         public int DefaultSubtitleFontSize { get; set; } = 28;
+
+        /// <summary>字幕を黒帯（レターボックス）に表示するか。false=映像上に重ねる。</summary>
+        [JsonPropertyName("subtitleLetterbox")]
+        public bool SubtitleLetterbox { get; set; } = true;
+
+        [JsonPropertyName("aiMemory")]
+        public InsightCommon.AI.AiMemoryHotCache? AiMemory { get; set; }
 
         public Project()
         {

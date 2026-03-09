@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,7 +16,9 @@ using InsightCast.Services;
 using InsightCast.Services.Claude;
 using InsightCast.Video;
 using InsightCast.ViewModels;
+using InsightCast.TTS;
 using InsightCast.VoiceVox;
+using InsightCommon.AI;
 using Syncfusion.SfSkinManager;
 
 namespace InsightCast.Views
@@ -23,18 +27,16 @@ namespace InsightCast.Views
     {
         private readonly MainWindowViewModel _vm;
         private readonly Config _config;
-        private ChatPanelViewModel? _chatVm;
         private ClaudeService? _claudeService;
-        private double _lastAiPanelWidth = 420;
-        private readonly VoiceVoxClient _voiceVoxClient;
+        private readonly TtsEngineManager _ttsManager;
         private readonly int _speakerId;
         private readonly FFmpegWrapper? _ffmpegWrapper;
 
-        public MainWindow(VoiceVoxClient voiceVoxClient, int speakerId,
+        public MainWindow(TtsEngineManager ttsManager, int speakerId,
                           FFmpegWrapper? ffmpegWrapper, Config config)
         {
             _config = config;
-            _voiceVoxClient = voiceVoxClient;
+            _ttsManager = ttsManager;
             _speakerId = speakerId;
             _ffmpegWrapper = ffmpegWrapper;
             InitializeComponent();
@@ -42,7 +44,7 @@ namespace InsightCast.Views
             // Hide until theme is applied in Loaded to prevent blue ribbon flash
             Opacity = 0;
 
-            _vm = new MainWindowViewModel(voiceVoxClient, speakerId, ffmpegWrapper, config);
+            _vm = new MainWindowViewModel(ttsManager, speakerId, ffmpegWrapper, config);
             DataContext = _vm;
 
             // Wire up ViewModel events for UI-specific operations
@@ -78,6 +80,9 @@ namespace InsightCast.Views
                 // Default to Video Generation tab
                 MainTabControl.SelectedIndex = 1;
 
+                // Initialize TTS engine selection
+                InitializeTtsRadioButtons();
+
                 // Show window after theme rendering is complete
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
                 {
@@ -100,14 +105,67 @@ namespace InsightCast.Views
                     _claudeService = new ClaudeService(_config);
 
                     // Initialize Planning Tab
-                    PlanningTabControl.Initialize(_config, _vm.Project, _claudeService);
+                    PlanningTabControl.Initialize(_config, _vm.Project, _claudeService.AiService.Config);
                     PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
-                    PlanningTabControl.TitleCreatorPopOutRequested += OpenTitleCreatorDialog;
 
-                    // Initialize AI Assistant panel (heavy)
-                    InitializeChatPanel();
+                    // Initialize Chat Panel for Planning Tab
+                    InitializePlanningChatPanel();
+
                 });
             };
+        }
+
+        private void InitializePlanningChatPanel()
+        {
+            if (_claudeService == null) return;
+
+            var toolExecutor = new Services.Claude.VideoToolExecutor(
+                () => _vm.Project.Scenes,
+                (index, action) =>
+                {
+                    if (index >= 0 && index < _vm.Project.Scenes.Count)
+                    {
+                        action(_vm.Project.Scenes[index]);
+                        _vm.RefreshSceneList();
+                    }
+                },
+                Dispatcher,
+                new Services.ThumbnailService(),
+                count =>
+                {
+                    for (int i = 0; i < (count ?? 1); i++)
+                        _vm.Project.Scenes.Add(new Models.Scene());
+                    _vm.RefreshSceneList();
+                },
+                index =>
+                {
+                    if (index >= 0 && index < _vm.Project.Scenes.Count)
+                    {
+                        _vm.Project.Scenes.RemoveAt(index);
+                        _vm.RefreshSceneList();
+                    }
+                },
+                (from, to) =>
+                {
+                    if (from >= 0 && from < _vm.Project.Scenes.Count &&
+                        to >= 0 && to < _vm.Project.Scenes.Count)
+                    {
+                        var scene = _vm.Project.Scenes[from];
+                        _vm.Project.Scenes.RemoveAt(from);
+                        _vm.Project.Scenes.Insert(to, scene);
+                        _vm.RefreshSceneList();
+                    }
+                },
+                () => _claudeService?.AiService.Config?.GetApiKey(AiProviderType.OpenAi)
+            );
+
+            var chatVm = new ViewModels.ChatPanelViewModel(
+                _claudeService,
+                toolExecutor,
+                () => _config.Language == "EN" ? "EN" : "JA",
+                _config);
+
+            PlanningTabControl.InitializeChatPanel(chatVm);
         }
 
         private void OnPlanningTabScenesChanged()
@@ -146,12 +204,14 @@ namespace InsightCast.Views
         private void UpdateRibbonForTab(bool isPptxTab, bool isVideoTab)
         {
             // PPTX tab groups
-            if (RibbonPptxExport != null)
-                RibbonPptxExport.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
-            if (RibbonPptxData != null)
-                RibbonPptxData.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
-            if (RibbonPptxTools != null)
-                RibbonPptxTools.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonPptxReference != null)
+                RibbonPptxReference.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonPptxBatch != null)
+                RibbonPptxBatch.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonPptxContent != null)
+                RibbonPptxContent.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonPptxHelp != null)
+                RibbonPptxHelp.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
 
             // Video tab groups
             if (RibbonVideoScene != null)
@@ -162,6 +222,13 @@ namespace InsightCast.Views
                 RibbonVideoExport.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
             if (RibbonVideoTemplate != null)
                 RibbonVideoTemplate.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
+
+            // Syncfusion テーマは Collapsed 状態のコントロールに適用されないため、
+            // Visible に変更した直後にテーマを再適用する
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Render, () =>
+            {
+                SfSkinManager.SetTheme(MainRibbon, new Theme("Office2019White"));
+            });
         }
 
         /// <summary>
@@ -352,18 +419,40 @@ namespace InsightCast.Views
             return null;
         }
 
-        private static readonly int[] SubtitleFontSizes = { 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 72 };
+        private static readonly int[] SubtitleFontSizes = { 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 72 };
         private readonly string _defaultLabel = LocalizationService.GetString("Common.Default");
+
+        private bool _suppressSubtitleSizeChange;
 
         private void InitializeSubtitleSizeCombo()
         {
-            // Scene-level combo: "デフォルト" + size list
+            // Scene list: default subtitle size (project-wide)
+            DefaultSubtitleSizeCombo.ItemsSource = SubtitleFontSizes;
+            SyncDefaultSubtitleSizeCombo(_vm.DefaultSubtitleFontSize);
+
+            // Scene edit: per-scene override ("デフォルト" + size list)
             var items = new List<object> { _defaultLabel };
             items.AddRange(SubtitleFontSizes.Cast<object>());
             SubtitleSizeCombo.ItemsSource = items;
-            SubtitleSizeCombo.SelectedIndex = 0; // Default
+            SubtitleSizeCombo.SelectedIndex = 0;
         }
 
+        private void DefaultSubtitleSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_suppressSubtitleSizeChange) return;
+            if (DefaultSubtitleSizeCombo.SelectedItem is int size)
+                _vm.DefaultSubtitleFontSize = size;
+        }
+
+        private void SyncDefaultSubtitleSizeCombo(int fontSize)
+        {
+            _suppressSubtitleSizeChange = true;
+            if (Array.IndexOf(SubtitleFontSizes, fontSize) >= 0)
+                DefaultSubtitleSizeCombo.SelectedItem = fontSize;
+            else
+                DefaultSubtitleSizeCombo.SelectedItem = SubtitleFontSizes.OrderBy(s => Math.Abs(s - fontSize)).First();
+            _suppressSubtitleSizeChange = false;
+        }
 
         private void SubtitleSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -373,7 +462,6 @@ namespace InsightCast.Views
             else if (SubtitleSizeCombo.SelectedItem is int size)
                 _vm.SubtitleFontSize = size;
         }
-
 
         private void SyncSubtitleSizeCombo(int? sceneFontSize)
         {
@@ -393,8 +481,6 @@ namespace InsightCast.Views
             _suppressSubtitleSizeChange = false;
         }
 
-        private bool _suppressSubtitleSizeChange;
-
         private void OnStylePreviewUpdateRequested(TextStyle style)
         {
             Dispatcher.Invoke(() =>
@@ -408,7 +494,6 @@ namespace InsightCast.Views
                     StylePreviewLabel.Foreground = new SolidColorBrush(textColor);
                     StylePreviewLabel.FontWeight = style.FontBold ? FontWeights.Bold : FontWeights.Normal;
 
-                    // Sync subtitle size combo with per-scene override
                     SyncSubtitleSizeCombo(_vm.SubtitleFontSize);
                 }
                 catch
@@ -442,13 +527,77 @@ namespace InsightCast.Views
                 {
                     var dialog = new PreviewPlayerDialog(videoPath);
                     dialog.Owner = this;
+
+                    // Enable font size control with live regeneration
+                    var effectiveSize = _vm.EffectiveSubtitleFontSize;
+                    dialog.EnableFontSizeControl(effectiveSize, async (newFontSize) =>
+                    {
+                        return await RegeneratePreviewWithFontSize(newFontSize);
+                    });
+
                     dialog.ShowDialog();
+
+                    // Apply the selected font size back to the scene/project
+                    var selectedSize = dialog.SelectedFontSize;
+                    if (selectedSize != effectiveSize)
+                    {
+                        if (_vm.CurrentScene?.SubtitleFontSize != null)
+                            _vm.SubtitleFontSize = selectedSize;
+                        else
+                            _vm.DefaultSubtitleFontSize = selectedSize;
+                    }
                 }
                 catch (Exception ex)
                 {
                     _vm.Logger.LogError(LocalizationService.GetString("VM.Preview.OpenError"), ex);
                 }
             });
+        }
+
+        private async Task<string?> RegeneratePreviewWithFontSize(int fontSize)
+        {
+            if (_vm.CurrentScene == null || _ffmpegWrapper == null) return null;
+
+            var previewDir = Path.Combine(Path.GetTempPath(), "insightcast_cache", "preview");
+            Directory.CreateDirectory(previewDir);
+            var previewPath = Path.Combine(previewDir, $"preview_{Guid.NewGuid():N}.mp4");
+
+            var resolution = _vm.GetSelectedResolution();
+            int exportSpeakerId = _speakerId;
+            if (_vm.SelectedExportSpeakerIndex >= 0 && _vm.SelectedExportSpeakerIndex < _vm.ExportSpeakers.Count)
+                exportSpeakerId = _vm.ExportSpeakers[_vm.SelectedExportSpeakerIndex].StyleId;
+
+            // Get style with overridden font size
+            var style = _vm.GetStyleForScene(_vm.CurrentScene);
+            style = new Models.TextStyle
+            {
+                Id = style.Id,
+                Name = style.Name,
+                FontFamily = style.FontFamily,
+                FontSize = fontSize,
+                FontBold = style.FontBold,
+                TextColor = (int[])style.TextColor.Clone(),
+                StrokeColor = (int[])style.StrokeColor.Clone(),
+                StrokeWidth = style.StrokeWidth,
+                BackgroundColor = (int[])style.BackgroundColor.Clone(),
+                BackgroundOpacity = style.BackgroundOpacity,
+                ShadowEnabled = style.ShadowEnabled,
+                ShadowColor = (int[])style.ShadowColor.Clone(),
+                ShadowOffset = (int[])style.ShadowOffset.Clone()
+            };
+
+            var sceneSnapshot = _vm.Project.Clone().Scenes
+                .ElementAtOrDefault(_vm.SelectedSceneIndex) ?? _vm.CurrentScene;
+
+            var progress = new Progress<string>(msg => _vm.Logger.Log(msg));
+
+            var exportService = new Services.ExportService(_ffmpegWrapper, _ttsManager.ActiveEngine, new VoiceVox.AudioCache());
+            var success = await Task.Run(() =>
+                exportService.GeneratePreview(sceneSnapshot, previewPath, resolution, 30,
+                    exportSpeakerId, style, progress, CancellationToken.None,
+                    _vm.SubtitleLetterbox));
+
+            return success && File.Exists(previewPath) ? previewPath : null;
         }
 
         private const int MaxLogLength = 100_000;
@@ -848,13 +997,7 @@ namespace InsightCast.Views
         {
             var newLang = LocalizationService.ToggleLanguage();
             _config.Language = newLang;
-            _chatVm?.RefreshForLanguageChange();
             UpdateLanguageRadioButtons();
-        }
-
-        private void TitleCreatorButton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenTitleCreatorDialog();
         }
 
         private void TextOverlayButton_Click(object sender, RoutedEventArgs e)
@@ -862,7 +1005,7 @@ namespace InsightCast.Views
             if (_vm.CurrentScene == null) return;
 
             var mediaPath = _vm.CurrentScene.MediaPath;
-            var dlg = new TextOverlayDialog(_vm.CurrentScene.TextOverlays, mediaPath) { Owner = this };
+            var dlg = new TextOverlayDialog(_vm.CurrentScene.TextOverlays, mediaPath, _vm.DefaultSubtitleFontSize) { Owner = this };
             if (dlg.ShowDialog() == true)
             {
                 _vm.CurrentScene.TextOverlays.Clear();
@@ -872,167 +1015,43 @@ namespace InsightCast.Views
         }
 
         // ── PPTX tab ribbon relay handlers ──
-        private void RibbonExportPptx_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteExportPptx();
-        private void RibbonExportJson_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteExportJson();
-        private void RibbonImportJson_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteImportJson();
-        private void RibbonAiImages_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteAiGenerateImages();
-        private void RibbonThumbnail_Click(object sender, RoutedEventArgs e) => PlanningTabControl.ExecuteOpenThumbnailCreator();
+        private void RibbonExportPptx_Click(object sender, RoutedEventArgs e) { /* TODO: wire to new prompt-based flow */ }
+        private void RibbonAiImages_Click(object sender, RoutedEventArgs e) { /* TODO: wire to new prompt-based flow */ }
 
-        private void AIPromptExecute_Click(object sender, RoutedEventArgs e)
+        // ── Video tab PPTX export ──
+        private async void RibbonVideoExportPptx_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new AIPromptExecuteDialog { Owner = this };
-            if (dialog.ShowDialog() == true && dialog.SelectedPreset != null)
+            if (_vm?.Project.Scenes == null || _vm.Project.Scenes.Count == 0) return;
+
+            string projectTitle = _vm.Project.ProjectPath != null
+                ? Path.GetFileNameWithoutExtension(_vm.Project.ProjectPath)
+                : "presentation";
+
+            var dlg = new Microsoft.Win32.SaveFileDialog
             {
-                if (_chatVm != null)
-                {
-                    var preset = dialog.SelectedPreset;
-                    var lang = Services.LocalizationService.CurrentLanguage;
-
-                    // Set the tool-enabled prompt
-                    _chatVm.AiInput = preset.GetPrompt(lang);
-
-                    // Open AI panel if closed
-                    if (!_chatVm.IsChatOpen)
-                    {
-                        _chatVm.IsChatOpen = true;
-                        AiPanelColumn.MinWidth = 280;
-                        AiPanelColumn.Width = new GridLength(_lastAiPanelWidth, GridUnitType.Pixel);
-                    }
-
-                    // Execute the prompt via Claude API with tools
-                    if (_chatVm.ExecutePromptCommand.CanExecute(null))
-                    {
-                        _chatVm.ExecutePromptCommand.Execute(null);
-                    }
-                }
-            }
-        }
-
-        private void OpenTitleCreatorDialog()
-        {
-            var viewModel = PlanningTabControl.ViewModel;
-            if (viewModel == null)
-            {
-                MessageBox.Show("企画タブが初期化されていません。", "エラー", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var dialog = new TitleCreatorDialog { Owner = this };
-            dialog.SetViewModel(viewModel);
-            dialog.AddToSceneRequested += (imagePath) =>
-            {
-                _vm.ApplyCapturedImage(imagePath);
-                _vm.Logger.Log($"タイトル画像をシーンに追加しました: {imagePath}");
+                Filter = "PowerPoint|*.pptx",
+                FileName = projectTitle + ".pptx",
+                Title = LocalizationService.GetString("AiFlow.ExportPptx")
             };
-            dialog.ShowDialog();
-        }
+            if (dlg.ShowDialog() != true) return;
 
-        private AiAssistantWindow? _aiAssistantWindow;
-
-        private void InitializeChatPanel()
-        {
-            var thumbnailService = new ThumbnailService();
-            var toolExecutor = new VideoToolExecutor(
-                () => _vm.Project.Scenes,
-                (index, action) =>
-                {
-                    if (index >= 0 && index < _vm.Project.Scenes.Count)
-                    {
-                        action(_vm.Project.Scenes[index]);
-                        _vm.RefreshSceneList();
-                    }
-                },
-                Dispatcher,
-                thumbnailService,
-                addScene: (index) => Dispatcher.Invoke(() =>
-                {
-                    _vm.Project.AddScene(index);
-                    _vm.NotifyScenesChanged();
-                }),
-                removeScene: (index) => Dispatcher.Invoke(() =>
-                {
-                    _vm.Project.RemoveScene(index);
-                    _vm.NotifyScenesChanged();
-                }),
-                moveScene: (from, to) => Dispatcher.Invoke(() =>
-                {
-                    _vm.Project.MoveScene(from, to);
-                    _vm.NotifyScenesChanged();
-                }),
-                getOpenAIApiKey: () => _config.OpenAIApiKey ?? "");
-
-            _chatVm = new ChatPanelViewModel(
-                _claudeService!,
-                toolExecutor,
-                () => LocalizationService.CurrentLanguage,
-                _config);
-
-            ChatPanel.DataContext = _chatVm;
-            ChatPanel.PopOutRequested += OnPopOutAiAssistant;
-            ChatPanel.CloseRequested += OnCloseChatPanel;
-
-            // Open AI panel by default
-            _chatVm.IsChatOpen = true;
-            AiPanelColumn.MinWidth = 280;
-            AiPanelColumn.Width = new GridLength(_lastAiPanelWidth, GridUnitType.Pixel);
-        }
-
-        private void OnPopOutAiAssistant()
-        {
-            if (_chatVm == null) return;
-
-            // If already popped out, bring existing window to front
-            if (_aiAssistantWindow != null)
+            try
             {
-                _aiAssistantWindow.Activate();
-                return;
+                var scenes = _vm.Project.Scenes.ToList();
+                await System.Threading.Tasks.Task.Run(() =>
+                    PptxGeneratorService.GenerateFromScenes(scenes, projectTitle, dlg.FileName));
+                MessageBox.Show(
+                    LocalizationService.GetString("AiFlow.PptxSaved"),
+                    LocalizationService.GetString("AiFlow.ExportPptx"),
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
-
-            _chatVm.IsPoppedOut = true;
-            _aiAssistantWindow = new AiAssistantWindow { Owner = this };
-            _aiAssistantWindow.SetViewModel(_chatVm);
-            _aiAssistantWindow.Closed += (_, _) =>
+            catch (Exception ex)
             {
-                _aiAssistantWindow = null;
-                if (_chatVm != null)
-                    _chatVm.IsPoppedOut = false;
-            };
-            _aiAssistantWindow.Show();
-        }
-
-        private void AiToggleButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_chatVm == null) return;
-
-            // Toggle button is now mainly for opening
-            if (!_chatVm.IsChatOpen)
-            {
-                _chatVm.IsChatOpen = true;
-                AiPanelColumn.MinWidth = 280;
-                AiPanelColumn.Width = new GridLength(_lastAiPanelWidth, GridUnitType.Pixel);
+                MessageBox.Show(
+                    LocalizationService.GetString("Common.ErrorWithMessage", ex.Message),
+                    LocalizationService.GetString("Common.Error"),
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else
-            {
-                // Can also close by toggle button
-                CloseChatPanel();
-            }
-        }
-
-        private void OnCloseChatPanel()
-        {
-            CloseChatPanel();
-        }
-
-        private void CloseChatPanel()
-        {
-            if (_chatVm == null) return;
-
-            if (AiPanelColumn.ActualWidth > 0)
-                _lastAiPanelWidth = AiPanelColumn.ActualWidth;
-
-            _chatVm.IsChatOpen = false;
-            AiPanelColumn.MinWidth = 0;
-            AiPanelColumn.Width = new GridLength(0);
         }
 
         private void DetailToggleButton_Click(object sender, RoutedEventArgs e)
@@ -1172,12 +1191,6 @@ namespace InsightCast.Views
             _vm.ScenesChanged -= OnMainViewModelScenesChanged;
             _vm.Logger.LogReceived -= OnLogReceived;
             PlanningTabControl.ScenesChanged -= OnPlanningTabScenesChanged;
-            PlanningTabControl.TitleCreatorPopOutRequested -= OpenTitleCreatorDialog;
-            ChatPanel.PopOutRequested -= OnPopOutAiAssistant;
-            ChatPanel.CloseRequested -= OnCloseChatPanel;
-
-            // Close popout window if open
-            _aiAssistantWindow?.Close();
         }
 
         #endregion
@@ -1241,14 +1254,62 @@ namespace InsightCast.Views
             {
                 LocalizationService.SetLanguage(lang);
                 _config.Language = lang;
-                _chatVm?.RefreshForLanguageChange();
             }
+        }
+
+        private bool _isSwitchingTtsEngine;
+
+        private async void BackStageTtsRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            if (_isSwitchingTtsEngine) return;
+            if (sender is RadioButton radio && radio.Tag is string tag)
+            {
+                if (Enum.TryParse<TTS.TtsEngineType>(tag, out var engineType))
+                {
+                    _isSwitchingTtsEngine = true;
+                    try
+                    {
+                        _ttsManager.SwitchEngine(engineType);
+                        await _vm.OnTtsEngineChanged();
+                        UpdateTtsConstraints();
+                    }
+                    finally
+                    {
+                        _isSwitchingTtsEngine = false;
+                    }
+                }
+            }
+        }
+
+        private void UpdateTtsConstraints()
+        {
+            if (TtsConstraintsText == null) return;
+            var constraints = _ttsManager.ActiveEngine.Constraints;
+            TtsConstraintsText.Text = string.Join("\n", constraints.Select(c => $"- {c}"));
+        }
+
+        private void InitializeTtsRadioButtons()
+        {
+            var current = _ttsManager.ActiveEngine.EngineType;
+            switch (current)
+            {
+                case TTS.TtsEngineType.EdgeNeural:
+                    TtsEdgeRadio.IsChecked = true;
+                    break;
+                case TTS.TtsEngineType.VoiceVox:
+                    TtsVoiceVoxRadio.IsChecked = true;
+                    break;
+                case TTS.TtsEngineType.WindowsOneCore:
+                    TtsWindowsRadio.IsChecked = true;
+                    break;
+            }
+            UpdateTtsConstraints();
         }
 
         private void BackStageQuickMode_Click(object sender, RoutedEventArgs e)
         {
             MainRibbon.HideBackStage();
-            var quickWindow = new QuickModeWindow(_voiceVoxClient, _speakerId, _ffmpegWrapper, _config)
+            var quickWindow = new QuickModeWindow(_ttsManager, _speakerId, _ffmpegWrapper, _config)
             {
                 Owner = this
             };
@@ -1265,6 +1326,51 @@ namespace InsightCast.Views
         {
             MainRibbon.HideBackStage();
             _vm.ExitCommand.Execute(null);
+        }
+
+        #endregion
+
+        #region PPTX Ribbon Handlers
+
+        private void RibbonRefAddFile_Click(object sender, RoutedEventArgs e)
+        {
+            PlanningTabControl.RibbonAddFile();
+        }
+
+        private void RibbonRefAddFolder_Click(object sender, RoutedEventArgs e)
+        {
+            PlanningTabControl.RibbonAddFolder();
+        }
+
+        private void RibbonRefClearAll_Click(object sender, RoutedEventArgs e)
+        {
+            PlanningTabControl.RibbonClearAllReferences();
+        }
+
+        private void RibbonBatchCreate_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Batch template creation
+        }
+
+        private void RibbonTemplateLib_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Template library
+        }
+
+        private void RibbonPromptLib_Click(object sender, RoutedEventArgs e)
+        {
+            PlanningTabControl.RibbonFocusPromptTree();
+        }
+
+        private void RibbonSolution_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Solutions
+        }
+
+        private void RibbonHelp_Click(object sender, RoutedEventArgs e)
+        {
+            var helpWindow = new HelpWindow { Owner = this };
+            helpWindow.ShowDialog();
         }
 
         #endregion

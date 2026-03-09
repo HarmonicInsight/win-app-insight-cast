@@ -21,6 +21,7 @@ namespace InsightCast.Views
         private List<TextOverlay> _overlays;
         private bool _isLoading;
         private string? _mediaPath;
+        private int _defaultFontSize = 64;
 
         private static readonly (byte R, byte G, byte B, string Name)[] SwatchColors =
         {
@@ -32,6 +33,22 @@ namespace InsightCast.Views
             (212, 175, 55, "Gold"),
             (255, 105, 180, "Pink"),
             (0, 191, 255, "LightBlue"),
+        };
+
+        private static readonly string[] AvailableFonts =
+        {
+            "Yu Gothic UI",
+            "Meiryo UI",
+            "MS Gothic",
+            "HGP創英角ﾎﾟｯﾌﾟ体",
+            "HGS創英角ｺﾞｼｯｸUB",
+            "HG丸ｺﾞｼｯｸM-PRO",
+            "BIZ UDPGothic",
+            "BIZ UDPMincho",
+            "Arial",
+            "Impact",
+            "Segoe UI",
+            "Consolas",
         };
 
         private static readonly string[] PositionKeys =
@@ -50,21 +67,33 @@ namespace InsightCast.Views
 
         public List<TextOverlay> ResultOverlays => _overlays;
 
-        public TextOverlayDialog(List<TextOverlay> overlays, string? mediaPath)
+        public TextOverlayDialog(List<TextOverlay> overlays, string? mediaPath, int defaultFontSize = 64)
         {
             InitializeComponent();
             _overlays = overlays.Select(CloneOverlay).ToList();
             _mediaPath = mediaPath;
+            _defaultFontSize = defaultFontSize;
             Loaded += OnLoaded;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            BuildFontCombo();
             BuildPositionGrid();
             BuildColorSwatches();
             BuildAlignmentCombo();
             LoadPreviewImage();
             RefreshList();
+        }
+
+        // ── Font ─────────────────────────────────────────────────────────
+
+        private void BuildFontCombo()
+        {
+            FontFamilyCombo.Items.Clear();
+            foreach (var font in AvailableFonts)
+                FontFamilyCombo.Items.Add(font);
+            FontFamilyCombo.SelectedIndex = 0;
         }
 
         // ── List ─────────────────────────────────────────────────────────
@@ -110,6 +139,17 @@ namespace InsightCast.Views
             OpacitySlider.Value = overlay.Opacity * 100;
             OpacityLabel.Text = $"{(int)(overlay.Opacity * 100)}%";
 
+            // Font family
+            var fontIdx = Array.IndexOf(AvailableFonts, overlay.FontFamily);
+            FontFamilyCombo.SelectedIndex = fontIdx >= 0 ? fontIdx : 0;
+
+            // Bold
+            BoldToggle.IsChecked = overlay.FontBold;
+
+            // Stroke
+            StrokeSlider.Value = overlay.StrokeWidth;
+            StrokeLabel.Text = overlay.StrokeWidth.ToString();
+
             // Alignment
             AlignmentCombo.SelectedIndex = overlay.Alignment switch
             {
@@ -127,26 +167,9 @@ namespace InsightCast.Views
 
         private void AddOverlay_Click(object sender, RoutedEventArgs e)
         {
-            _overlays.Add(new TextOverlay { Text = LocalizationService.GetString("Overlay.DefaultText") });
+            _overlays.Add(new TextOverlay { Text = LocalizationService.GetString("Overlay.DefaultText"), FontSize = _defaultFontSize });
             RefreshList();
             OverlayList.SelectedIndex = _overlays.Count - 1;
-        }
-
-        private void AddCoverTemplate_Click(object sender, RoutedEventArgs e)
-        {
-            if (_overlays.Count > 0)
-            {
-                var result = MessageBox.Show(
-                    LocalizationService.GetString("VM.CoverTemplate.ConfirmOverwrite"),
-                    LocalizationService.GetString("VM.CoverTemplate.ConfirmTitle"),
-                    MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result != MessageBoxResult.Yes) return;
-            }
-            _overlays.Clear();
-            _overlays.Add(TextOverlay.CreateTitle());
-            _overlays.Add(TextOverlay.CreateSubheading());
-            RefreshList();
-            OverlayList.SelectedIndex = 0;
         }
 
         private void RemoveOverlay_Click(object sender, RoutedEventArgs e)
@@ -225,6 +248,38 @@ namespace InsightCast.Views
             {
                 FontSizeSlider.Value = size;
             }
+        }
+
+        private void FontFamily_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            var overlay = GetSelected();
+            if (overlay == null) return;
+            var idx = FontFamilyCombo.SelectedIndex;
+            if (idx >= 0 && idx < AvailableFonts.Length)
+            {
+                overlay.FontFamily = AvailableFonts[idx];
+                RefreshPreview();
+            }
+        }
+
+        private void Bold_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isLoading) return;
+            var overlay = GetSelected();
+            if (overlay == null) return;
+            overlay.FontBold = BoldToggle.IsChecked == true;
+            RefreshPreview();
+        }
+
+        private void Stroke_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (_isLoading) return;
+            var overlay = GetSelected();
+            if (overlay == null) return;
+            overlay.StrokeWidth = (int)StrokeSlider.Value;
+            StrokeLabel.Text = overlay.StrokeWidth.ToString();
+            RefreshPreview();
         }
 
         private void Alignment_Changed(object sender, SelectionChangedEventArgs e)
@@ -415,6 +470,7 @@ namespace InsightCast.Views
                 var tb = new TextBlock
                 {
                     Text = overlay.Text,
+                    FontFamily = new FontFamily(overlay.FontFamily),
                     FontSize = Math.Max(8, overlay.FontSize * scale),
                     FontWeight = overlay.FontBold ? FontWeights.Bold : FontWeights.Normal,
                     Foreground = new SolidColorBrush(Color.FromRgb(

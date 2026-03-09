@@ -57,7 +57,7 @@
     <sys:String x:Key="Header.OpenFile">ファイルを開く</sys:String>
     <sys:String x:Key="Header.Save">上書き保存</sys:String>
     <sys:String x:Key="Header.SaveAs">別名で保存</sys:String>
-    <sys:String x:Key="Header.ImportPptx">ドキュメント取込</sys:String>
+    <sys:String x:Key="Header.ImportPptx">PPTXインポート</sys:String>
 
     <!-- Menu Bar -->
     <sys:String x:Key="Menu.File">ファイル(_F)</sys:String>
@@ -114,23 +114,31 @@
 
     <!-- Text Overlay -->
     <sys:String x:Key="Overlay.Title">テキストオーバーレイ:</sys:String>
-    <sys:String x:Key="Overlay.CoverTemplate">タイトル追加</sys:String>
+    <sys:String x:Key="Overlay.CoverTemplate">カバー一式</sys:String>
     <sys:String x:Key="Overlay.Text">テキスト:</sys:String>
     <sys:String x:Key="Overlay.XPosition">横位置:</sys:String>
     <sys:String x:Key="Overlay.YPosition">縦位置:</sys:String>
     <sys:String x:Key="Overlay.FontSize">文字サイズ:</sys:String>
     <sys:String x:Key="Overlay.Alignment">揃え:</sys:String>
     <sys:String x:Key="Overlay.Color">文字色:</sys:String>
-    <sys:String x:Key="Overlay.Opacity">不透明度:</sys:String>
+    <sys:String x:Key="Overlay.Opacity">透明度</sys:String>
     <sys:String x:Key="Overlay.Position">配置</sys:String>
     <sys:String x:Key="Overlay.Appearance">外観</sys:String>
+    <sys:String x:Key="Overlay.Font.Tooltip">フォントを選択</sys:String>
+    <sys:String x:Key="Overlay.Bold.Tooltip">太字</sys:String>
+    <sys:String x:Key="Overlay.Stroke">縁取り</sys:String>
     <sys:String x:Key="Overlay.Position.Fine">微調整</sys:String>
     <sys:String x:Key="Overlay.Dialog.Title">テキスト配置エディタ</sys:String>
-    <sys:String x:Key="Overlay.Dialog.Button">テキスト配置</sys:String>
+    <sys:String x:Key="Overlay.Dialog.Button">テキスト</sys:String>
     <sys:String x:Key="Overlay.Dialog.Button.Tooltip">タイトル・キャプション・注釈を画面上に配置するエディタを開きます</sys:String>
     <sys:String x:Key="Overlay.MoveUp.Tooltip">表示順を上に移動（前面へ）</sys:String>
     <sys:String x:Key="Overlay.MoveDown.Tooltip">表示順を下に移動（背面へ）</sys:String>
     <sys:String x:Key="Overlay.DefaultText">テキスト</sys:String>
+    <sys:String x:Key="Overlay.Tmpl.Title">タイトル</sys:String>
+    <sys:String x:Key="Overlay.Tmpl.Subtitle">字幕</sys:String>
+    <sys:String x:Key="Overlay.AddTitle.Tooltip">大きなタイトルテキストを追加</sys:String>
+    <sys:String x:Key="Overlay.AddSubtitle.Tooltip">字幕テキストを追加</sys:String>
+    <sys:String x:Key="Overlay.AddCta.Tooltip">CTA（チャンネル登録など）テキストを追加</sys:String>
 
     <!-- Duration -->
     <sys:String x:Key="Duration.Title">シーンの長さ:</sys:String>
@@ -198,8 +206,13 @@
     <sys:String x:Key="Export.Resolution">解像度:</sys:String>
     <sys:String x:Key="Export.DefaultSpeaker">デフォルトナレーター:</sys:String>
     <sys:String x:Key="Export.DefaultSpeaker.Tooltip">全シーンのデフォルトナレーターを選択します。個別シーンで上書き可能です。</sys:String>
+    <sys:String x:Key="Export.DefaultFontSize">デフォルトフォントサイズ:</sys:String>
     <sys:String x:Key="Export.DefaultSubtitleSize">デフォルト字幕サイズ:</sys:String>
-    <sys:String x:Key="Export.DefaultSubtitleSize.Tooltip">全シーンのデフォルト字幕サイズを選択します。個別シーンで上書き可能です。</sys:String>
+    <sys:String x:Key="Export.DefaultSubtitleSize.Tooltip">全シーン共通の字幕サイズを選択します。シーン個別に変更すると独立します</sys:String>
+    <sys:String x:Key="Export.SubtitleLetterbox">字幕を黒帯に表示</sys:String>
+    <sys:String x:Key="Export.SubtitleLetterbox.Tooltip">字幕を映像の下の黒帯エリアに表示します。スライドの内容が隠れません</sys:String>
+    <sys:String x:Key="Export.GenerateSubtitleFile">字幕ファイル出力 (.srt/.vtt)</sys:String>
+    <sys:String x:Key="Export.GenerateMetadata">メタデータ出力 (.metadata.txt)</sys:String>
     <sys:String x:Key="Export.Res.Portrait">1080x1920 (縦動画)</sys:String>
     <sys:String x:Key="Export.Res.Landscape">1920x1080 (横動画)</sys:String>
     <sys:String x:Key="Export.BGM.Settings">BGM設定...</sys:String>
@@ -280,6 +293,8 @@
     <sys:String x:Key="Preview.LoadError">動画ファイルの読み込みに失敗しました:\n{0}</sys:String>
     <sys:String x:Key="Preview.PlayError">メディアの再生に失敗しました:\n{0}</sys:String>
     <sys:String x:Key="Preview.PlayError.Title">再生エラー</sys:String>
+    <sys:String x:Key="Preview.FontSize">字幕サイズ:</sys:String>
+    <sys:String x:Key="Preview.Converting">変換中...</sys:String>
 
     <!-- Text Style Dialog -->
     <sys:String x:Key="Style.Title">字幕スタイル設定</sys:String>
@@ -419,6 +434,7 @@
     <sys:String x:Key="VM.Project.OpenError">プロジェクトファイルの読み込みに失敗しました:\n{0}</sys:String>
     <sys:String x:Key="VM.Project.OpenError.Title">読み込みエラー</sys:String>
     <sys:String x:Key="VM.Project.Saved">プロジェクトを保存しました: {0}</sys:String>
+    <sys:String x:Key="VM.Project.SaveSuccess">保存完了</sys:String>
     <sys:String x:Key="VM.Project.SaveError">保存に失敗しました:\n{0}</sys:String>
     <sys:String x:Key="VM.Project.SaveError.Title">保存エラー</sys:String>
     <sys:String x:Key="VM.Recent.NotFound">ファイルが見つかりません:\n{0}</sys:String>
@@ -479,8 +495,8 @@
     <sys:String x:Key="QVM.Import.Complete">取込完了: {0}</sys:String>
     <sys:String x:Key="QVM.Scene.Label">シーン {0}</sys:String>
     <sys:String x:Key="QVM.PPTX.Loading">PowerPointを読み込んでいます... {0}</sys:String>
-    <sys:String x:Key="QVM.PPTX.Complete">PPTX取込完了: {0} スライド</sys:String>
-    <sys:String x:Key="QVM.PPTX.Error">PPTX取込エラー</sys:String>
+    <sys:String x:Key="QVM.PPTX.Complete">PPTXインポート完了: {0} スライド</sys:String>
+    <sys:String x:Key="QVM.PPTX.Error">PPTXインポートエラー</sys:String>
     <sys:String x:Key="QVM.Text.Complete">テキスト取込: {0} 段落</sys:String>
     <sys:String x:Key="QVM.Text.Error">テキスト取込エラー</sys:String>
     <sys:String x:Key="QVM.Watermark.Select">ロゴ画像を選択</sys:String>
@@ -556,6 +572,11 @@
     <sys:String x:Key="VM.VoiceVox.Disconnected">VOICEVOX: ✗未接続</sys:String>
     <sys:String x:Key="VM.FFmpeg.Detected">ffmpeg: ✓検出OK</sys:String>
     <sys:String x:Key="VM.FFmpeg.NotDetected">ffmpeg: ✗未検出</sys:String>
+    <sys:String x:Key="VM.TTS.Unavailable">TTS: ✗利用不可</sys:String>
+    <sys:String x:Key="VM.TTS.NotConnected">✗未接続（エンジンを起動してください）</sys:String>
+    <sys:String x:Key="VM.TTS.Starting">VOICEVOX エンジンを起動しています...</sys:String>
+    <sys:String x:Key="VM.TTS.Unavailable.Detail">VOICEVOX エンジンに接続できません。インストールされているか確認してください。</sys:String>
+    <sys:String x:Key="TTS.DefaultSpeaker">デフォルト話者</sys:String>
 
     <!-- VM Audio Preview -->
     <sys:String x:Key="VM.Preview.NoNarration">ナレーションテキストを入力してください。</sys:String>
@@ -619,7 +640,7 @@
     <sys:String x:Key="VM.Project.RecentFiles">最近使ったファイル</sys:String>
 
     <!-- VM PPTX Import -->
-    <sys:String x:Key="VM.Pptx.FeatureLimit">PPTX取込機能はTrial・BIZプラン以上でご利用いただけます。\nライセンスをアップグレードしてください。</sys:String>
+    <sys:String x:Key="VM.Pptx.FeatureLimit">PPTXインポート機能はTrial・BIZプラン以上でご利用いただけます。\nライセンスをアップグレードしてください。</sys:String>
     <sys:String x:Key="VM.Pptx.PlanRequired">機能制限</sys:String>
     <sys:String x:Key="VM.Pptx.Select">PowerPointファイルを選択</sys:String>
     <sys:String x:Key="VM.Pptx.Filter">対応ドキュメント|*.pptx;*.docx;*.xlsx;*.pdf|PowerPoint|*.pptx|Word|*.docx|Excel|*.xlsx|PDF|*.pdf</sys:String>
@@ -631,15 +652,15 @@
     <sys:String x:Key="DocConvert.PdfRequiresPpt">PDFの変換にはMicrosoft PowerPointが必要です。</sys:String>
     <sys:String x:Key="DocConvert.Failed">ドキュメントの変換に失敗しました: {0}</sys:String>
     <sys:String x:Key="DocConvert.Success">ドキュメントをPPTXに変換して取り込みました。</sys:String>
-    <sys:String x:Key="VM.Pptx.Started">PPTX取込を開始: {0}</sys:String>
+    <sys:String x:Key="VM.Pptx.Started">PPTXインポートを開始: {0}</sys:String>
     <sys:String x:Key="VM.Pptx.NoSlides">スライドが見つかりませんでした。</sys:String>
     <sys:String x:Key="VM.Pptx.Result">取込結果</sys:String>
     <sys:String x:Key="VM.Pptx.Imported">PPTXからシーンを取り込みました ({0} スライド, {1} 画像): {2}</sys:String>
     <sys:String x:Key="VM.Pptx.NotesOnly">{0} 件のスライドのノートを取り込みました。\nスライド画像の取込にはPowerPointのインストールが必要です。</sys:String>
     <sys:String x:Key="VM.Pptx.IncludeSubtitle">スライドのテキストを字幕に取り込みますか？&#x0a;（文字量が多い場合、字幕がずれることがあります）</sys:String>
     <sys:String x:Key="VM.Pptx.IncludeSubtitle.Title">字幕取込オプション</sys:String>
-    <sys:String x:Key="VM.Pptx.Error">PPTX取込に失敗しました:\n{0}</sys:String>
-    <sys:String x:Key="VM.Pptx.Failed">取込エラー</sys:String>
+    <sys:String x:Key="VM.Pptx.Error">PPTXインポートに失敗しました:\n{0}</sys:String>
+    <sys:String x:Key="VM.Pptx.Failed">インポートエラー</sys:String>
     <sys:String x:Key="VM.DragDrop.Added">{0} 件のメディアファイルをシーンに追加しました</sys:String>
     <sys:String x:Key="DragDrop.Overlay">ここにファイルをドロップ</sys:String>
     <sys:String x:Key="DragDrop.Overlay.Sub">PPTX・画像・動画に対応</sys:String>
@@ -669,7 +690,7 @@
 ■ テンプレート
   BGM・透かし・解像度などの設定をテンプレートとして保存・読込可能。
 
-■ PPTX取込
+■ PPTXインポート
   PowerPointファイルをドロップすると、スライドごとにシーンが自動作成されます。
   （Trial以上のプランが必要）</sys:String>
     <sys:String x:Key="VM.Tutorial.Title">チュートリアル</sys:String>
@@ -768,7 +789,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Dialog.Feature.Subtitle">字幕機能</sys:String>
     <sys:String x:Key="Dialog.Feature.SubtitleStyle">字幕スタイル選択</sys:String>
     <sys:String x:Key="Dialog.Feature.Transition">トランジション効果</sys:String>
-    <sys:String x:Key="Dialog.Feature.PptxImport">PPTX取込</sys:String>
+    <sys:String x:Key="Dialog.Feature.PptxImport">PPTXインポート</sys:String>
 
     <!-- Additional keys from agents -->
     <sys:String x:Key="Common.Dot">、</sys:String>
@@ -794,8 +815,8 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="QVM.Import.TextCount">テキスト{0}件</sys:String>
     <sys:String x:Key="QVM.Import.ReadyToGenerate">設定を確認して「動画を生成」をクリック</sys:String>
     <sys:String x:Key="QVM.Import.Summary">シーン（{0}）— {1}</sys:String>
-    <sys:String x:Key="QVM.Pptx.Complete">PPTX取込完了: {0} スライド</sys:String>
-    <sys:String x:Key="QVM.Pptx.Error">PPTX取込エラー</sys:String>
+    <sys:String x:Key="QVM.Pptx.Complete">PPTXインポート完了: {0} スライド</sys:String>
+    <sys:String x:Key="QVM.Pptx.Error">PPTXインポートエラー</sys:String>
     <sys:String x:Key="QVM.Pptx.Loading">PowerPointを読み込んでいます... {0}</sys:String>
     <sys:String x:Key="QVM.Pptx.Reading">PPTX読込中: {0}</sys:String>
     <sys:String x:Key="QVM.Template.SpeakerInfo">ナレーター: {0}</sys:String>
@@ -896,7 +917,7 @@ F1              チュートリアルを表示</sys:String>
 
     <!-- Planning Tab -->
     <sys:String x:Key="Tab.Planning">PPTX作成</sys:String>
-    <sys:String x:Key="Tab.VideoGeneration">動画生成</sys:String>
+    <sys:String x:Key="Tab.VideoGeneration">動画制作</sys:String>
     <sys:String x:Key="Planning.AIChat">AI相談</sys:String>
     <sys:String x:Key="Planning.SendChat">送信</sys:String>
     <sys:String x:Key="Planning.GenerateOutline">構成を生成</sys:String>
@@ -951,6 +972,37 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Planning.Chat.User">あなた</sys:String>
     <sys:String x:Key="Planning.Chat.AI">AI</sys:String>
     <sys:String x:Key="Planning.TransferToVideo">動画生成へ</sys:String>
+
+    <!-- Prompt Editor Panel -->
+    <sys:String x:Key="PE.PromptList">プロンプト一覧</sys:String>
+    <sys:String x:Key="PE.Presets">プリセット</sys:String>
+    <sys:String x:Key="PE.Custom">カスタム</sys:String>
+    <sys:String x:Key="PE.Name">名前</sys:String>
+    <sys:String x:Key="PE.Group">グループ</sys:String>
+    <sys:String x:Key="PE.Category">カテゴリ</sys:String>
+    <sys:String x:Key="PE.Model">モデル</sys:String>
+    <sys:String x:Key="PE.PromptText">プロンプトテキスト</sys:String>
+    <sys:String x:Key="PE.Save">保存</sys:String>
+    <sys:String x:Key="PE.Execute">実行</sys:String>
+    <sys:String x:Key="PE.ExecuteTooltip">AIコンシェルジュにプロンプトを送信して実行</sys:String>
+    <sys:String x:Key="PE.Customize">カスタム追加</sys:String>
+    <sys:String x:Key="PE.CustomizeTooltip">このプリセットをカスタムプロンプトとして複製</sys:String>
+    <sys:String x:Key="PE.CustomSuffix">カスタム</sys:String>
+    <sys:String x:Key="PE.Add">新規追加</sys:String>
+    <sys:String x:Key="PE.AddGroup">グループに追加</sys:String>
+    <sys:String x:Key="PE.Delete">削除</sys:String>
+    <sys:String x:Key="PE.NewPrompt">新しいプロンプト</sys:String>
+    <sys:String x:Key="PE.InputHeader">① 参考資料 : Input</sys:String>
+    <sys:String x:Key="PE.ProcessHeader">② 処理 : Process</sys:String>
+    <sys:String x:Key="PE.OutputHeader">③ 成果物 : Output</sys:String>
+    <sys:String x:Key="PE.OutputAll">すべて</sys:String>
+    <sys:String x:Key="PE.OutputEmpty">AIで生成した成果物がここに表示されます</sys:String>
+    <sys:String x:Key="PE.Apply">反映</sys:String>
+    <sys:String x:Key="PE.ApplyTooltip">AIの出力をシーンに反映します</sys:String>
+    <sys:String x:Key="PE.Register">カスタム登録</sys:String>
+    <sys:String x:Key="PE.RegisterTooltip">現在のプロンプトをカスタムプロンプトとして登録</sys:String>
+    <sys:String x:Key="PE.Confirm">確認</sys:String>
+    <sys:String x:Key="PE.ConfirmTooltip">生成結果を確認します</sys:String>
 
     <!-- Title Creator (旧: Thumbnail Generator) -->
     <sys:String x:Key="Planning.ThumbnailGenerator">タイトルクリエーター</sys:String>
@@ -1220,22 +1272,9 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Ai.ImageGenerated">画像を生成しました</sys:String>
     <sys:String x:Key="Ai.DalleError">画像生成に失敗しました</sys:String>
 
-    <!-- プロンプトエディタ ダイアログ -->
+    <!-- プロンプトエディタ ダイアログ（重複しないキーのみ） -->
     <sys:String x:Key="PE.Title">プロンプト管理</sys:String>
-    <sys:String x:Key="PE.PromptList">プロンプト一覧</sys:String>
-    <sys:String x:Key="PE.Name">タイトル</sys:String>
-    <sys:String x:Key="PE.Category">カテゴリ</sys:String>
-    <sys:String x:Key="PE.Model">モデル</sys:String>
-    <sys:String x:Key="PE.Mode">モード</sys:String>
-    <sys:String x:Key="PE.PromptText">プロンプト</sys:String>
     <sys:String x:Key="PE.RequiresContextData">シーンデータ必須</sys:String>
-    <sys:String x:Key="PE.Save">保存</sys:String>
-    <sys:String x:Key="PE.Execute">実行</sys:String>
-    <sys:String x:Key="PE.Add">新規追加</sys:String>
-    <sys:String x:Key="PE.Delete">削除</sys:String>
-    <sys:String x:Key="PE.ModeDesc">Check: シーンデータをAIが修正提案します
-Advice: アドバイスをテキストで返します</sys:String>
-    <sys:String x:Key="PE.NewPrompt">新しいプロンプト</sys:String>
     <sys:String x:Key="PE.ConfirmDelete">{0} を削除しますか？</sys:String>
     <sys:String x:Key="PE.ConfirmTitle">確認</sys:String>
     <sys:String x:Key="PE.OutputType">出力</sys:String>
@@ -1259,19 +1298,31 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Ribbon.Group.License">ライセンス</sys:String>
     <sys:String x:Key="Ribbon.Group.Legal">法的情報</sys:String>
     <sys:String x:Key="Ribbon.File">ファイル</sys:String>
-    <sys:String x:Key="Ribbon.File.New">新規</sys:String>
-    <sys:String x:Key="Ribbon.File.Open">開く</sys:String>
+    <sys:String x:Key="Ribbon.File.New">新規プロジェクト</sys:String>
+    <sys:String x:Key="Ribbon.File.Open">プロジェクトを開く</sys:String>
     <sys:String x:Key="Ribbon.File.Recent">最近使ったファイル</sys:String>
-    <sys:String x:Key="Ribbon.File.Save">上書き保存</sys:String>
-    <sys:String x:Key="Ribbon.File.SaveAs">別名保存</sys:String>
-    <sys:String x:Key="Ribbon.File.ImportPptx">ドキュメント取込</sys:String>
+    <sys:String x:Key="Ribbon.File.Save">プロジェクトの上書き保存</sys:String>
+    <sys:String x:Key="Ribbon.File.SaveAs">プロジェクトの別名保存</sys:String>
+    <sys:String x:Key="Ribbon.File.ImportPptx">PPTXインポート</sys:String>
     <sys:String x:Key="Ribbon.File.ImportJson">JSONインポート</sys:String>
     <sys:String x:Key="Ribbon.File.BatchExport">JSONエクスポート</sys:String>
     <sys:String x:Key="Ribbon.File.Exit">終了</sys:String>
     <sys:String x:Key="Ribbon.Group.File">ファイル</sys:String>
-    <sys:String x:Key="Ribbon.Group.PptxExport">出力</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxExport">PPTX出力</sys:String>
     <sys:String x:Key="Ribbon.Group.PptxData">データ連携</sys:String>
-    <sys:String x:Key="Ribbon.Group.PptxTools">ツール</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxTools">AI画像</sys:String>
+    <sys:String x:Key="Ribbon.Group.Reference">参考資料</sys:String>
+    <sys:String x:Key="Ribbon.Group.BatchCreate">一括作成</sys:String>
+    <sys:String x:Key="Ribbon.Group.Content">コンテンツ</sys:String>
+    <sys:String x:Key="Ribbon.Group.Help">ヘルプ</sys:String>
+    <sys:String x:Key="Ribbon.Ref.AddFile">ファイル追加</sys:String>
+    <sys:String x:Key="Ribbon.Ref.AddFolder">フォルダ取込み</sys:String>
+    <sys:String x:Key="Ribbon.Ref.ClearAll">すべてクリア</sys:String>
+    <sys:String x:Key="Ribbon.Batch.TemplateBatch">テンプレート一括作成</sys:String>
+    <sys:String x:Key="Ribbon.Content.TemplateLib">テンプレート集</sys:String>
+    <sys:String x:Key="Ribbon.Content.PromptLib">プロンプト集</sys:String>
+    <sys:String x:Key="Ribbon.Content.Solution">ソリューション</sys:String>
+    <sys:String x:Key="Ribbon.Help.Help">ヘルプ</sys:String>
     <sys:String x:Key="Ribbon.Script.Clear">スクリプトクリア</sys:String>
     <sys:String x:Key="Ribbon.Script.Clear.Tooltip">全シーンのスクリプト（ナレーション）をクリアします</sys:String>
     <sys:String x:Key="VM.Script.ClearConfirm">全シーンのスクリプトをクリアしますか？</sys:String>
@@ -1328,7 +1379,7 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Backstage.SaveAs">名前を付けて保存</sys:String>
     <sys:String x:Key="Backstage.Import">インポート</sys:String>
     <sys:String x:Key="Backstage.Export">エクスポート</sys:String>
-    <sys:String x:Key="Backstage.ImportPptx">ドキュメント取込</sys:String>
+    <sys:String x:Key="Backstage.ImportPptx">PPTXインポート</sys:String>
     <sys:String x:Key="Backstage.ImportJson">JSONインポート</sys:String>
     <sys:String x:Key="Backstage.BatchExport">JSONエクスポート</sys:String>
     <sys:String x:Key="Backstage.Recent">最近使ったファイル</sys:String>
@@ -1343,6 +1394,15 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Backstage.Language.Current">現在の言語</sys:String>
     <sys:String x:Key="Backstage.Language.Japanese">日本語</sys:String>
     <sys:String x:Key="Backstage.Language.English">English</sys:String>
+    <sys:String x:Key="Backstage.Narrator">ナレーター切替</sys:String>
+    <sys:String x:Key="TTS.Edge.Name">Microsoft Neural TTS（推奨）</sys:String>
+    <sys:String x:Key="TTS.Edge.Desc">高品質な AI 音声。インターネット接続が必要。無料・APIキー不要。</sys:String>
+    <sys:String x:Key="TTS.VoiceVox.Name">VOICEVOX</sys:String>
+    <sys:String x:Key="TTS.VoiceVox.Desc">最高品質の日本語音声。30+ キャラクター。別途インストールが必要。</sys:String>
+    <sys:String x:Key="TTS.Windows.Name">Windows 標準音声</sys:String>
+    <sys:String x:Key="TTS.Windows.Desc">追加インストール不要。完全オフライン対応。日本語は Haruka のみ。音声品質はやや低め。</sys:String>
+    <sys:String x:Key="TTS.Constraints">制約事項</sys:String>
+    <sys:String x:Key="VM.TTS.Switched">{0} に切り替えました</sys:String>
     <sys:String x:Key="Backstage.Info.Version">バージョン</sys:String>
     <sys:String x:Key="Backstage.Info.Plan">プラン</sys:String>
     <sys:String x:Key="Backstage.Info.Copyright">Copyright</sys:String>
@@ -1418,6 +1478,7 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Planning.MoveDown.Tooltip">シーンの順番を下に移動</sys:String>
     <sys:String x:Key="Planning.ClearScene.Tooltip">このシーンの内容をクリア</sys:String>
     <!-- Overlay Tooltips -->
+    <sys:String x:Key="Overlay.Add.Label">テキスト追加</sys:String>
     <sys:String x:Key="Overlay.Add.Tooltip">シーン上に自由に配置できるテキストオーバーレイを追加します。タイトルや補足説明に使用します</sys:String>
     <sys:String x:Key="Overlay.CoverTemplate.Tooltip">タイトルとサブタイトルのテンプレートを一括追加します。表紙シーンの作成に便利です</sys:String>
     <sys:String x:Key="Overlay.Remove.Tooltip">選択中のテキストオーバーレイを削除します</sys:String>
@@ -1453,6 +1514,7 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="Chat.PresetPrompts.Tooltip">用意されたプリセットプロンプトを表示</sys:String>
     <sys:String x:Key="Chat.Execute.Tooltip">プロンプトを実行 (Ctrl+Enter)</sys:String>
     <sys:String x:Key="Chat.Cancel.Tooltip">実行中のAI処理をキャンセル</sys:String>
+    <sys:String x:Key="Chat.CopyMessage">メッセージをコピー</sys:String>
     <sys:String x:Key="Chat.SaveThumbnail.Tooltip">生成されたサムネイル画像を保存</sys:String>
 
     <!-- AI Prompt Execute Dialog -->
@@ -1554,8 +1616,9 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="AiFlow.Step1.Title">構成を自動生成</sys:String>
     <sys:String x:Key="AiFlow.Step1.Desc">素材をAIが読み取り、動画の章立てを自動で作成します</sys:String>
     <sys:String x:Key="AiFlow.Step1.Hint">追加の指示があればここに入力（例: 初心者向けに、3分以内で…）</sys:String>
-    <sys:String x:Key="AiFlow.GenerateBtn">素材から構成を作成</sys:String>
+    <sys:String x:Key="AiFlow.GenerateBtn">構成を生成</sys:String>
     <sys:String x:Key="AiFlow.ExpandScenes">シーンに展開</sys:String>
+    <sys:String x:Key="AiFlow.ExportPptx.Hero">PPTXを出力する</sys:String>
     <sys:String x:Key="AiFlow.CreatePptx">PPTXを作成</sys:String>
     <sys:String x:Key="AiFlow.ExportPptx">PPTXを作成</sys:String>
     <sys:String x:Key="AiFlow.PptxSaved">PPTXファイルを保存しました</sys:String>
@@ -1579,6 +1642,51 @@ Advice: アドバイスをテキストで返します</sys:String>
     <sys:String x:Key="AiFlow.JsonImported">{0} シーンをインポートしました</sys:String>
     <sys:String x:Key="AiFlow.EmptyTitle">素材を追加して構成を生成</sys:String>
     <sys:String x:Key="AiFlow.EmptyDesc">左の素材ライブラリーにファイルを追加し、「AI構成を生成」ボタンで動画の章立てを自動作成できます</sys:String>
+
+    <!-- Pipeline: 3-column workflow -->
+    <sys:String x:Key="Pipeline.Step1.Title">素材を集める</sys:String>
+    <sys:String x:Key="Pipeline.Step1.Desc">Excel・Word・PDFをドラッグ＆ドロップ</sys:String>
+    <sys:String x:Key="Pipeline.Step2.Title">AIで構成する</sys:String>
+    <sys:String x:Key="Pipeline.Step2.Desc">プリセットを選んで生成、またはPPTXをインポート</sys:String>
+    <sys:String x:Key="Pipeline.Step2.Empty">上のプリセットを選んで「構成を生成」するか、PPTXをインポートしてください</sys:String>
+    <sys:String x:Key="Pipeline.Step3.Title">仕上げ・出力</sys:String>
+    <sys:String x:Key="Pipeline.Step3.Desc">ナレーション原稿を編集してPPTXを出力</sys:String>
+    <sys:String x:Key="Pipeline.Step3.Empty">まだシーンがありません</sys:String>
+    <sys:String x:Key="Pipeline.Step3.EmptyDesc">Step 2 で構成を作成して「シーンに展開」してください</sys:String>
+    <sys:String x:Key="Pipeline.Or">または</sys:String>
+    <sys:String x:Key="Pipeline.ImportPptx">PPTXインポート</sys:String>
+    <sys:String x:Key="Pipeline.ImportEmpty">スライドが見つかりませんでした</sys:String>
+    <sys:String x:Key="Pipeline.ImportedSlides">{0} スライドをインポートしました</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Label">どんな動画を作りますか？</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Document">資料ベース</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Document.Tip">アップロードした素材から構成を自動生成</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Scratch">ゼロから</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Scratch.Tip">テーマだけ入力して自由に構成を生成</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Training">研修・教育</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Training.Tip">受講者向けの分かりやすい研修動画の構成</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Onboarding">オンボーディング</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Onboarding.Tip">新メンバー向けの入社・配属ガイド</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Manual">マニュアル</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Manual.Tip">業務マニュアル・操作手順書の構成</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Sales">営業・提案</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Sales.Tip">説得力のあるプレゼン・提案書の構成</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Proposal">社内企画</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Proposal.Tip">社内提案・企画書向けの構成</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Seminar">セミナー</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Seminar.Tip">セミナー・勉強会向けの構成</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Quarterly">経営報告</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Quarterly.Tip">四半期レビュー・経営報告の構成</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Handover">引継ぎ</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Handover.Tip">業務引継ぎ資料の構成</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Compliance">コンプライアンス</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Compliance.Tip">コンプライアンス・社内規程の教育資料</sys:String>
+    <sys:String x:Key="Pipeline.PromptLabel">AIへの指示（編集可）</sys:String>
+    <sys:String x:Key="Pipeline.AiNotes">AIノート生成</sys:String>
+    <sys:String x:Key="Pipeline.AiNotes.Tooltip">ナレーションが未設定のスライドにAIでナレーション原稿を自動生成</sys:String>
+    <sys:String x:Key="Pipeline.ImagePrompt">画像プロンプト（AI画像生成用）</sys:String>
+    <sys:String x:Key="Pipeline.AllScenesHaveNotes">すべてのシーンにナレーションが設定済みです</sys:String>
+    <sys:String x:Key="Pipeline.GeneratingNotes">AIでナレーション生成中...</sys:String>
+    <sys:String x:Key="Pipeline.NotesGenerated">{0} シーンのナレーションを生成しました</sys:String>
 
     <!-- AI画像生成 -->
     <sys:String x:Key="AiGenerate.Title">AI画像生成</sys:String>

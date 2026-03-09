@@ -25,6 +25,8 @@ public static class VideoToolDefinitions
         GenerateSceneImage,
         GenerateAbThumbnails,
         AddCtaEndcard,
+        GenerateReport,
+        ReviseReport,
     };
 
     public static readonly ToolDefinition GetScenes = new()
@@ -347,6 +349,145 @@ public static class VideoToolDefinitions
                 },
             },
             ["required"] = new JsonArray("main_text"),
+        },
+    };
+
+    public static readonly ToolDefinition GenerateReport = new()
+    {
+        Name = "generate_report",
+        Description = "動画台本・スクリプトレポートを .docx 形式で生成します。シーンのナレーション、画面説明、タイミングを構造化されたドキュメントにまとめます。テンプレート: 'video-script'（台本形式）、'free-form'（自由形式）。",
+        InputSchema = new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["title"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "レポートタイトル",
+                },
+                ["subtitle"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "サブタイトル（任意）",
+                },
+                ["template"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "テンプレート種別: video-script（動画台本）, free-form（自由形式）",
+                    ["enum"] = new JsonArray("video-script", "free-form"),
+                },
+                ["sections"] = new JsonObject
+                {
+                    ["type"] = "array",
+                    ["description"] = "レポートのセクション配列",
+                    ["items"] = new JsonObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JsonObject
+                        {
+                            ["type"] = new JsonObject
+                            {
+                                ["type"] = "string",
+                                ["enum"] = new JsonArray("title", "heading", "text", "summary", "table", "comparison", "bullet_list", "recommendation", "key_metrics"),
+                            },
+                            ["title"] = new JsonObject { ["type"] = "string" },
+                            ["content"] = new JsonObject { ["type"] = "string" },
+                            ["level"] = new JsonObject { ["type"] = "integer" },
+                            ["items"] = new JsonObject
+                            {
+                                ["type"] = "array",
+                                ["items"] = new JsonObject { ["type"] = "string" },
+                            },
+                            ["tableData"] = new JsonObject
+                            {
+                                ["type"] = "object",
+                                ["properties"] = new JsonObject
+                                {
+                                    ["headers"] = new JsonObject
+                                    {
+                                        ["type"] = "array",
+                                        ["items"] = new JsonObject { ["type"] = "string" },
+                                    },
+                                    ["rows"] = new JsonObject
+                                    {
+                                        ["type"] = "array",
+                                        ["items"] = new JsonObject
+                                        {
+                                            ["type"] = "array",
+                                            ["items"] = new JsonObject { ["type"] = "string" },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        ["required"] = new JsonArray("type"),
+                    },
+                },
+            },
+            ["required"] = new JsonArray("title", "sections"),
+        },
+    };
+
+    public static readonly ToolDefinition ReviseReport = new()
+    {
+        Name = "revise_report",
+        Description = "直前に生成したレポートを修正します。修正指示に基づいて新しいバージョンを生成します。",
+        InputSchema = new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["title"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "修正後のレポートタイトル",
+                },
+                ["sections"] = new JsonObject
+                {
+                    ["type"] = "array",
+                    ["description"] = "修正後のセクション配列（generate_report と同じ構造）",
+                    ["items"] = new JsonObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JsonObject
+                        {
+                            ["type"] = new JsonObject { ["type"] = "string" },
+                            ["title"] = new JsonObject { ["type"] = "string" },
+                            ["content"] = new JsonObject { ["type"] = "string" },
+                            ["level"] = new JsonObject { ["type"] = "integer" },
+                            ["items"] = new JsonObject
+                            {
+                                ["type"] = "array",
+                                ["items"] = new JsonObject { ["type"] = "string" },
+                            },
+                            ["tableData"] = new JsonObject
+                            {
+                                ["type"] = "object",
+                                ["properties"] = new JsonObject
+                                {
+                                    ["headers"] = new JsonObject
+                                    {
+                                        ["type"] = "array",
+                                        ["items"] = new JsonObject { ["type"] = "string" },
+                                    },
+                                    ["rows"] = new JsonObject
+                                    {
+                                        ["type"] = "array",
+                                        ["items"] = new JsonObject
+                                        {
+                                            ["type"] = "array",
+                                            ["items"] = new JsonObject { ["type"] = "string" },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        ["required"] = new JsonArray("type"),
+                    },
+                },
+            },
+            ["required"] = new JsonArray("title", "sections"),
         },
     };
 

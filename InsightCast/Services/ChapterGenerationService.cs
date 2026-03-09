@@ -37,9 +37,9 @@ namespace InsightCast.Services
             return ParseResponse(response);
         }
 
-        private static string BuildSystemPrompt(int chapterCount, string? additionalInstructions)
+        public static string BuildSystemPrompt(int chapterCount, string? additionalInstructions)
         {
-            var prompt = $@"あなたはプレゼンテーション構成のプロフェッショナルです。
+            var prompt = $@"あなたはプレゼンテーション構成のプロフェッショナルであり、企業研修・営業資料・セミナー教材の設計経験が豊富です。
 参考資料を深く分析し、聴衆を惹きつけるプレゼンテーション（PowerPointスライド）の構成を作成してください。
 
 # 作成ルール
@@ -50,7 +50,20 @@ namespace InsightCast.Services
   - 第1章: 導入・課題提起（なぜこのテーマが重要か）
   - 中間章: 本論・データ・事例・解決策
   - 最終章: まとめ・結論・次のアクション
-- 各スライドは1つの明確なメッセージに絞ること
+- 各スライドは1つの明確なメッセージに絞ること（1スライド1メッセージの原則）
+- titleは結論型で書くこと（「○○の概要」ではなく「○○で生産性が30%向上する」のように要点を述べる）
+
+## ストーリー骨格（推奨パターン）
+以下を参考にスライドの流れを設計すること:
+1. Title（表紙）— 自動生成のため不要
+2. Purpose（なぜこのテーマか — 課題提起・目的の明示）
+3. Agenda（目次 — 全体の見通し）
+4. Overview（全体像・業務フロー・背景）
+5. Step（手順・詳細 — 複数スライド可）
+6. Decision（判断基準・分岐・例外処理）
+7. Data（数値・グラフ・比較データ）
+8. FAQ（よくある質問・ミス・注意点）
+9. Summary/Checklist（まとめ・チェックリスト・次のアクション）
 
 ## narration（ナレーション原稿）
 - プレゼンターがスライドを見せながら読み上げる原稿として書くこと
@@ -58,6 +71,7 @@ namespace InsightCast.Services
 - 口語体で自然な語りかけ（「〜ですね」「〜してみましょう」等OK）
 - 資料の数値・固有名詞・具体例を積極的に引用すること
 - 冒頭で「このスライドで何を伝えるか」を明示し、最後に次スライドへの橋渡しを入れること
+- 聴衆への問いかけや具体例を交えて理解を促進すること
 
 ## imageDescription（画像生成プロンプト）
 - DALL-E / Midjourney / Stable Diffusion で使える英語プロンプトとして書くこと
@@ -83,7 +97,7 @@ namespace InsightCast.Services
   ""videoTitle"": ""プレゼンテーションのタイトル"",
   ""chapters"": [
     {{
-      ""title"": ""スライドタイトル"",
+      ""title"": ""スライドタイトル（結論型で書く）"",
       ""narration"": ""このスライドのナレーション原稿..."",
       ""imageDescription"": ""Professional photograph of... detailed English prompt for image generation...""
     }}

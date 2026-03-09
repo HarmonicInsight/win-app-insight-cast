@@ -15,6 +15,9 @@ using InsightCast.Services.Claude;
 using InsightCommon.AI;
 using ChatMsg = InsightCommon.AI.ChatMessageVm;
 using PromptPresetSvc = InsightCast.Services.PromptPresetService;
+using AiMemoryHotCache = InsightCommon.AI.AiMemoryHotCache;
+using AiMemoryService = InsightCommon.AI.AiMemoryService;
+using MemoryExtractor = InsightCommon.AI.MemoryExtractor;
 
 namespace InsightCast.ViewModels;
 
@@ -141,6 +144,10 @@ public class ChatPanelViewModel : ViewModelBase
     public bool HasWelcomeMessage => !string.IsNullOrEmpty(WelcomeMessage);
 
     private string? _conciergeSystemPromptExtension;
+
+    // ── AI Memory ──
+    private AiMemoryService? _memoryService;
+    private AiMemoryHotCache? _memoryHotCache;
 
     // ── Chat Messages ──
     public ObservableCollection<ChatMsg> ChatMessages { get; } = new();
@@ -508,7 +515,9 @@ public class ChatPanelViewModel : ViewModelBase
         ClearChatCommand = new RelayCommand(_ =>
         {
             ChatMessages.Clear();
+            AiInput = string.Empty;
             LastAiResult = string.Empty;
+            LastGeneratedThumbnailPath = null;
             OnPropertyChanged(nameof(IsChatEmpty));
         });
 
@@ -736,7 +745,7 @@ public class ChatPanelViewModel : ViewModelBase
     {
         var tools = VideoToolDefinitions.GetAll();
         var lang = _getLang();
-        var systemContext = BuildSystemContext(lang);
+        var systemContext = BuildMemoryAwareSystemPrompt(BuildSystemContext(lang));
 
         var apiMessages = new List<object>
         {
@@ -830,12 +839,20 @@ public class ChatPanelViewModel : ViewModelBase
             });
         }
 
-        LastAiResult = resultBuilder.ToString().Trim();
+        LastAiResult = ExtractAndMergeMemory(resultBuilder.ToString().Trim());
     }
 
     private string BuildSystemContext(string lang)
     {
         var concierge = _conciergeSystemPromptExtension ?? "";
+
+        // プリセットのペルソナ拡張を付加
+        if (_loadedPreset?.Source?.HasSystemPromptExtension == true)
+        {
+            var presetExt = _loadedPreset.Source.GetSystemPromptExtension(lang);
+            if (!string.IsNullOrEmpty(presetExt))
+                concierge = (string.IsNullOrEmpty(concierge) ? "" : concierge + "\n\n") + presetExt;
+        }
 
         if (lang == "EN")
         {
@@ -858,6 +875,61 @@ public class ChatPanelViewModel : ViewModelBase
                "ナレーション・字幕の一括更新にはset_multiple_scenesを使い、効率を最大化してください。" +
                "日本語で回答してください。" +
                (string.IsNullOrEmpty(concierge) ? "" : "\n\n" + concierge);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // AI Memory
+    // ═══════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// プロジェクトから AI メモリを読み込み、AiMemoryService を初期化する
+    /// </summary>
+    public void LoadMemoryFromProject(AiMemoryHotCache? hotCache, string planCode)
+    {
+        _memoryHotCache = hotCache;
+        _memoryService = new AiMemoryService(planCode, _memoryHotCache);
+        _memoryHotCache = _memoryService.HotCache;
+
+        var (current, max) = _memoryService.GetCapacity();
+        if (current > 0)
+            System.Diagnostics.Debug.WriteLine($"AI Memory loaded: {current}/{max} entries");
+    }
+
+    /// <summary>
+    /// AI メモリホットキャッシュを返す（プロジェクト保存時に呼ばれる）
+    /// </summary>
+    public AiMemoryHotCache? GetMemoryHotCache() => _memoryHotCache;
+
+    /// <summary>
+    /// AI 応答からメモリエントリを抽出し、ホットキャッシュにマージする。
+    /// 表示用のクリーンテキストを返す。
+    /// </summary>
+    private string ExtractAndMergeMemory(string responseText)
+    {
+        if (_memoryService == null || string.IsNullOrEmpty(responseText))
+            return responseText;
+
+        var result = MemoryExtractor.Extract(responseText);
+        if (result.ExtractedEntries.Count > 0)
+        {
+            var mergeResult = _memoryService.MergeEntries(result.ExtractedEntries);
+            _memoryHotCache = _memoryService.HotCache;
+
+            if (mergeResult.Added > 0 || mergeResult.Updated > 0)
+                System.Diagnostics.Debug.WriteLine(
+                    $"AI Memory: +{mergeResult.Added} new, ~{mergeResult.Updated} updated, x{mergeResult.Skipped} skipped");
+        }
+
+        return result.CleanText;
+    }
+
+    /// <summary>
+    /// メモリ注入済みシステムプロンプトを構築する
+    /// </summary>
+    private string BuildMemoryAwareSystemPrompt(string basePrompt)
+    {
+        var locale = _getLang() == "EN" ? "en" : "ja";
+        return MemoryExtractor.BuildSystemPrompt(basePrompt, _memoryHotCache, locale);
     }
 
     // ── Save Prompt ──

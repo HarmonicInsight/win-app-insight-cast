@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,6 +17,12 @@ namespace InsightCast.Views
         private bool _isPlaying;
         private bool _isSeeking;
         private readonly DispatcherTimer _positionTimer;
+
+        // Font size regeneration support
+        private static readonly int[] FontSizes = { 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 72 };
+        private int _currentFontSize;
+        private Func<int, Task<string?>>? _regenerateCallback;
+        private CancellationTokenSource? _regenerateCts;
 
         public PreviewPlayerDialog()
         {
@@ -44,6 +52,34 @@ namespace InsightCast.Views
         {
             _videoFiles.AddRange(videoFilePaths);
         }
+
+        /// <summary>
+        /// Enables font size adjustment in the preview dialog.
+        /// The callback receives the new font size and should return the new video path, or null on failure.
+        /// </summary>
+        public void EnableFontSizeControl(int currentFontSize, Func<int, Task<string?>> regenerateCallback)
+        {
+            _currentFontSize = currentFontSize;
+            _regenerateCallback = regenerateCallback;
+
+            _suppressFontSizeChange = true;
+            FontSizeCombo.ItemsSource = FontSizes;
+            FontSizeCombo.SelectedItem = currentFontSize;
+            if (FontSizeCombo.SelectedItem == null)
+            {
+                // Find closest
+                int closest = FontSizes[0];
+                foreach (var s in FontSizes)
+                    if (Math.Abs(s - currentFontSize) < Math.Abs(closest - currentFontSize))
+                        closest = s;
+                FontSizeCombo.SelectedItem = closest;
+            }
+            _suppressFontSizeChange = false;
+            FontSizePanel.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>Gets the font size selected by the user (for applying back to the scene).</summary>
+        public int SelectedFontSize => _currentFontSize;
 
         private void PreviewPlayerDialog_Loaded(object sender, RoutedEventArgs e)
         {
@@ -119,6 +155,9 @@ namespace InsightCast.Views
 
         // ── Event Handlers: Media ───────────────────────────────────────
 
+        private TimeSpan? _pendingSeek;
+        private bool _autoPlayAfterSeek;
+
         private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
         {
             if (MediaPlayer.NaturalDuration.HasTimeSpan)
@@ -131,6 +170,25 @@ namespace InsightCast.Views
             {
                 SeekSlider.Maximum = 100;
                 TotalTimeLabel.Text = "--:--";
+            }
+
+            // Handle pending seek from regeneration
+            if (_pendingSeek.HasValue)
+            {
+                var seekTo = _pendingSeek.Value;
+                _pendingSeek = null;
+                if (MediaPlayer.NaturalDuration.HasTimeSpan && seekTo <= MediaPlayer.NaturalDuration.TimeSpan)
+                {
+                    MediaPlayer.Position = seekTo;
+                    SeekSlider.Value = seekTo.TotalSeconds;
+                    CurrentTimeLabel.Text = FormatTime(seekTo);
+                }
+                if (_autoPlayAfterSeek)
+                {
+                    Play();
+                    _autoPlayAfterSeek = false;
+                    return;
+                }
             }
 
             SeekSlider.Value = 0;
@@ -271,6 +329,61 @@ namespace InsightCast.Views
             }
         }
 
+        // ── Font Size ───────────────────────────────────────────────────
+
+        private bool _suppressFontSizeChange;
+
+        private async void FontSizeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_suppressFontSizeChange) return;
+            if (FontSizeCombo.SelectedItem is not int newSize) return;
+            if (newSize == _currentFontSize) return;
+            if (_regenerateCallback == null) return;
+
+            _currentFontSize = newSize;
+
+            // Cancel any in-progress regeneration
+            _regenerateCts?.Cancel();
+            _regenerateCts = new CancellationTokenSource();
+            var cts = _regenerateCts;
+
+            // Show converting overlay
+            var resumePosition = MediaPlayer.Position;
+            var wasPlaying = _isPlaying;
+            Pause();
+            ConvertingOverlay.Visibility = Visibility.Visible;
+            FontSizeCombo.IsEnabled = false;
+
+            try
+            {
+                var newPath = await _regenerateCallback(newSize);
+
+                if (cts.IsCancellationRequested) return;
+
+                if (newPath != null)
+                {
+                    StopPlayback();
+                    _videoFiles.Clear();
+                    _videoFiles.Add(newPath);
+                    _currentSceneIndex = 0;
+
+                    _pendingSeek = resumePosition;
+                    _autoPlayAfterSeek = wasPlaying;
+                    MediaPlayer.Source = new Uri(newPath, UriKind.Absolute);
+                    UpdateSceneLabel();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Font size regeneration failed: {ex.Message}");
+            }
+            finally
+            {
+                ConvertingOverlay.Visibility = Visibility.Collapsed;
+                FontSizeCombo.IsEnabled = true;
+            }
+        }
+
         // ── Timer ───────────────────────────────────────────────────────
 
         private void PositionTimer_Tick(object? sender, EventArgs e)
@@ -300,6 +413,7 @@ namespace InsightCast.Views
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            _regenerateCts?.Cancel();
             _positionTimer.Stop();
             MediaPlayer.Stop();
             MediaPlayer.Source = null;

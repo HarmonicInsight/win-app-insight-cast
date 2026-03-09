@@ -114,7 +114,7 @@
 
     <!-- Text Overlay -->
     <sys:String x:Key="Overlay.Title">Text Overlay:</sys:String>
-    <sys:String x:Key="Overlay.CoverTemplate">Add Title</sys:String>
+    <sys:String x:Key="Overlay.CoverTemplate">Cover Set</sys:String>
     <sys:String x:Key="Overlay.Text">Text:</sys:String>
     <sys:String x:Key="Overlay.XPosition">Horizontal:</sys:String>
     <sys:String x:Key="Overlay.YPosition">Vertical:</sys:String>
@@ -124,13 +124,21 @@
     <sys:String x:Key="Overlay.Opacity">Opacity:</sys:String>
     <sys:String x:Key="Overlay.Position">Position</sys:String>
     <sys:String x:Key="Overlay.Appearance">Appearance</sys:String>
+    <sys:String x:Key="Overlay.Font.Tooltip">Select font</sys:String>
+    <sys:String x:Key="Overlay.Bold.Tooltip">Bold</sys:String>
+    <sys:String x:Key="Overlay.Stroke">Stroke</sys:String>
     <sys:String x:Key="Overlay.Position.Fine">Fine Adjust</sys:String>
     <sys:String x:Key="Overlay.Dialog.Title">Text Overlay Editor</sys:String>
-    <sys:String x:Key="Overlay.Dialog.Button">Text Overlay</sys:String>
+    <sys:String x:Key="Overlay.Dialog.Button">Text</sys:String>
     <sys:String x:Key="Overlay.Dialog.Button.Tooltip">Open the text overlay editor to add titles, captions, and annotations to the scene</sys:String>
     <sys:String x:Key="Overlay.MoveUp.Tooltip">Move to front (higher layer)</sys:String>
     <sys:String x:Key="Overlay.MoveDown.Tooltip">Move to back (lower layer)</sys:String>
     <sys:String x:Key="Overlay.DefaultText">Text</sys:String>
+    <sys:String x:Key="Overlay.Tmpl.Title">Title</sys:String>
+    <sys:String x:Key="Overlay.Tmpl.Subtitle">Subtitle</sys:String>
+    <sys:String x:Key="Overlay.AddTitle.Tooltip">Add a large title text</sys:String>
+    <sys:String x:Key="Overlay.AddSubtitle.Tooltip">Add a subtitle text</sys:String>
+    <sys:String x:Key="Overlay.AddCta.Tooltip">Add a CTA (subscribe, etc.) text</sys:String>
 
     <!-- Duration -->
     <sys:String x:Key="Duration.Title">Scene Duration:</sys:String>
@@ -198,8 +206,13 @@
     <sys:String x:Key="Export.Resolution">Resolution:</sys:String>
     <sys:String x:Key="Export.DefaultSpeaker">Default Narrator:</sys:String>
     <sys:String x:Key="Export.DefaultSpeaker.Tooltip">Select the default narrator for all scenes. Can be overridden per scene.</sys:String>
+    <sys:String x:Key="Export.DefaultFontSize">Default Font Size:</sys:String>
     <sys:String x:Key="Export.DefaultSubtitleSize">Default Subtitle Size:</sys:String>
-    <sys:String x:Key="Export.DefaultSubtitleSize.Tooltip">Default subtitle font size for all scenes. Can be overridden per scene.</sys:String>
+    <sys:String x:Key="Export.DefaultSubtitleSize.Tooltip">Default subtitle size for all scenes. Overridden when changed per scene</sys:String>
+    <sys:String x:Key="Export.SubtitleLetterbox">Subtitles in black bar</sys:String>
+    <sys:String x:Key="Export.SubtitleLetterbox.Tooltip">Display subtitles in a black bar below the video. Slide content is not obscured</sys:String>
+    <sys:String x:Key="Export.GenerateSubtitleFile">Export subtitle files (.srt/.vtt)</sys:String>
+    <sys:String x:Key="Export.GenerateMetadata">Export metadata (.metadata.txt)</sys:String>
     <sys:String x:Key="Export.Res.Portrait">1080x1920 (Portrait)</sys:String>
     <sys:String x:Key="Export.Res.Landscape">1920x1080 (Landscape)</sys:String>
     <sys:String x:Key="Export.BGM.Settings">BGM Settings...</sys:String>
@@ -280,6 +293,8 @@
     <sys:String x:Key="Preview.LoadError">Failed to load video file:\n{0}</sys:String>
     <sys:String x:Key="Preview.PlayError">Failed to play media:\n{0}</sys:String>
     <sys:String x:Key="Preview.PlayError.Title">Playback Error</sys:String>
+    <sys:String x:Key="Preview.FontSize">Subtitle Size:</sys:String>
+    <sys:String x:Key="Preview.Converting">Converting...</sys:String>
 
     <!-- Text Style Dialog -->
     <sys:String x:Key="Style.Title">Subtitle Style Settings</sys:String>
@@ -419,6 +434,7 @@
     <sys:String x:Key="VM.Project.OpenError">Failed to load project file:\n{0}</sys:String>
     <sys:String x:Key="VM.Project.OpenError.Title">Load Error</sys:String>
     <sys:String x:Key="VM.Project.Saved">Project saved: {0}</sys:String>
+    <sys:String x:Key="VM.Project.SaveSuccess">Save Complete</sys:String>
     <sys:String x:Key="VM.Project.SaveError">Save failed:\n{0}</sys:String>
     <sys:String x:Key="VM.Project.SaveError.Title">Save Error</sys:String>
     <sys:String x:Key="VM.Recent.NotFound">File not found:\n{0}</sys:String>
@@ -556,6 +572,11 @@
     <sys:String x:Key="VM.VoiceVox.Disconnected">VOICEVOX: ✗Disconnected</sys:String>
     <sys:String x:Key="VM.FFmpeg.Detected">ffmpeg: ✓Detected</sys:String>
     <sys:String x:Key="VM.FFmpeg.NotDetected">ffmpeg: ✗Not found</sys:String>
+    <sys:String x:Key="VM.TTS.Unavailable">TTS: ✗Unavailable</sys:String>
+    <sys:String x:Key="VM.TTS.NotConnected">✗Not connected (please start the engine)</sys:String>
+    <sys:String x:Key="VM.TTS.Starting">Starting VOICEVOX engine...</sys:String>
+    <sys:String x:Key="VM.TTS.Unavailable.Detail">Cannot connect to VOICEVOX engine. Please check that it is installed.</sys:String>
+    <sys:String x:Key="TTS.DefaultSpeaker">Default Speaker</sys:String>
 
     <!-- VM Audio Preview -->
     <sys:String x:Key="VM.Preview.NoNarration">Please enter narration text.</sys:String>
@@ -894,8 +915,8 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="License.Error.Expired">License has expired ({0}).</sys:String>
 
     <!-- Planning Tab -->
-    <sys:String x:Key="Tab.Planning">PPTX Builder</sys:String>
-    <sys:String x:Key="Tab.VideoGeneration">Video Generation</sys:String>
+    <sys:String x:Key="Tab.Planning">Create PPTX</sys:String>
+    <sys:String x:Key="Tab.VideoGeneration">Production</sys:String>
     <sys:String x:Key="Planning.AIChat">AI Chat</sys:String>
     <sys:String x:Key="Planning.SendChat">Send</sys:String>
     <sys:String x:Key="Planning.GenerateOutline">Generate Outline</sys:String>
@@ -950,6 +971,37 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Planning.Chat.User">You</sys:String>
     <sys:String x:Key="Planning.Chat.AI">AI</sys:String>
     <sys:String x:Key="Planning.TransferToVideo">To Video Generation</sys:String>
+
+    <!-- Prompt Editor Panel -->
+    <sys:String x:Key="PE.PromptList">Prompt List</sys:String>
+    <sys:String x:Key="PE.Presets">Presets</sys:String>
+    <sys:String x:Key="PE.Custom">Custom</sys:String>
+    <sys:String x:Key="PE.Name">Name</sys:String>
+    <sys:String x:Key="PE.Group">Group</sys:String>
+    <sys:String x:Key="PE.Category">Category</sys:String>
+    <sys:String x:Key="PE.Model">Model</sys:String>
+    <sys:String x:Key="PE.PromptText">Prompt Text</sys:String>
+    <sys:String x:Key="PE.Save">Save</sys:String>
+    <sys:String x:Key="PE.Execute">Execute</sys:String>
+    <sys:String x:Key="PE.ExecuteTooltip">Send prompt to AI Concierge for execution</sys:String>
+    <sys:String x:Key="PE.Customize">Customize</sys:String>
+    <sys:String x:Key="PE.CustomizeTooltip">Duplicate this preset as a custom prompt</sys:String>
+    <sys:String x:Key="PE.CustomSuffix">Custom</sys:String>
+    <sys:String x:Key="PE.Add">Add New</sys:String>
+    <sys:String x:Key="PE.AddGroup">Add to Group</sys:String>
+    <sys:String x:Key="PE.Delete">Delete</sys:String>
+    <sys:String x:Key="PE.NewPrompt">New Prompt</sys:String>
+    <sys:String x:Key="PE.InputHeader">① Input</sys:String>
+    <sys:String x:Key="PE.ProcessHeader">② Process</sys:String>
+    <sys:String x:Key="PE.OutputHeader">③ Output</sys:String>
+    <sys:String x:Key="PE.OutputAll">All</sys:String>
+    <sys:String x:Key="PE.OutputEmpty">AI-generated output will appear here</sys:String>
+    <sys:String x:Key="PE.Apply">Apply</sys:String>
+    <sys:String x:Key="PE.ApplyTooltip">Apply AI output to scenes</sys:String>
+    <sys:String x:Key="PE.Register">Register Custom</sys:String>
+    <sys:String x:Key="PE.RegisterTooltip">Register current prompt as custom prompt</sys:String>
+    <sys:String x:Key="PE.Confirm">Confirm</sys:String>
+    <sys:String x:Key="PE.ConfirmTooltip">Review generated results</sys:String>
 
     <!-- Title Creator (formerly: Thumbnail Generator) -->
     <sys:String x:Key="Planning.ThumbnailGenerator">Title Creator</sys:String>
@@ -1110,6 +1162,7 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Export.FPS.Tooltip">Video frame rate (frames per second). 30fps is standard for educational videos</sys:String>
 
     <!-- Overlay Tooltips -->
+    <sys:String x:Key="Overlay.Add.Label">Add Text</sys:String>
     <sys:String x:Key="Overlay.Add.Tooltip">Add a text overlay that can be freely positioned on the scene. Use for titles and annotations</sys:String>
     <sys:String x:Key="Overlay.CoverTemplate.Tooltip">Add title and subtitle template overlays at once. Convenient for creating cover scenes</sys:String>
     <sys:String x:Key="Overlay.Remove.Tooltip">Remove the selected text overlay</sys:String>
@@ -1235,22 +1288,9 @@ To get started, try one of these:
     <sys:String x:Key="Ai.ImageGenerated">Image generated</sys:String>
     <sys:String x:Key="Ai.DalleError">Image generation failed</sys:String>
 
-    <!-- Prompt Editor Dialog -->
+    <!-- Prompt Editor Dialog (unique keys only) -->
     <sys:String x:Key="PE.Title">Prompt Manager</sys:String>
-    <sys:String x:Key="PE.PromptList">Prompt List</sys:String>
-    <sys:String x:Key="PE.Name">Title</sys:String>
-    <sys:String x:Key="PE.Category">Category</sys:String>
-    <sys:String x:Key="PE.Model">Model</sys:String>
-    <sys:String x:Key="PE.Mode">Mode</sys:String>
-    <sys:String x:Key="PE.PromptText">Prompt</sys:String>
     <sys:String x:Key="PE.RequiresContextData">Requires scene data</sys:String>
-    <sys:String x:Key="PE.Save">Save</sys:String>
-    <sys:String x:Key="PE.Execute">Execute</sys:String>
-    <sys:String x:Key="PE.Add">Add New</sys:String>
-    <sys:String x:Key="PE.Delete">Delete</sys:String>
-    <sys:String x:Key="PE.ModeDesc">Check: AI proposes edits to scene data
-Advice: AI returns text advice</sys:String>
-    <sys:String x:Key="PE.NewPrompt">New Prompt</sys:String>
     <sys:String x:Key="PE.ConfirmDelete">Delete "{0}"?</sys:String>
     <sys:String x:Key="PE.ConfirmTitle">Confirm</sys:String>
     <sys:String x:Key="PE.OutputType">Output</sys:String>
@@ -1274,19 +1314,31 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Ribbon.Group.License">License</sys:String>
     <sys:String x:Key="Ribbon.Group.Legal">Legal</sys:String>
     <sys:String x:Key="Ribbon.File">File</sys:String>
-    <sys:String x:Key="Ribbon.File.New">New</sys:String>
-    <sys:String x:Key="Ribbon.File.Open">Open</sys:String>
+    <sys:String x:Key="Ribbon.File.New">New Project</sys:String>
+    <sys:String x:Key="Ribbon.File.Open">Open Project</sys:String>
     <sys:String x:Key="Ribbon.File.Recent">Recent Files</sys:String>
-    <sys:String x:Key="Ribbon.File.Save">Save</sys:String>
-    <sys:String x:Key="Ribbon.File.SaveAs">Save As</sys:String>
+    <sys:String x:Key="Ribbon.File.Save">Save Project</sys:String>
+    <sys:String x:Key="Ribbon.File.SaveAs">Save Project As</sys:String>
     <sys:String x:Key="Ribbon.File.ImportPptx">Import Document</sys:String>
     <sys:String x:Key="Ribbon.File.ImportJson">Import JSON</sys:String>
     <sys:String x:Key="Ribbon.File.BatchExport">JSON Export</sys:String>
     <sys:String x:Key="Ribbon.File.Exit">Exit</sys:String>
     <sys:String x:Key="Ribbon.Group.File">File</sys:String>
-    <sys:String x:Key="Ribbon.Group.PptxExport">Export</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxExport">PPTX Export</sys:String>
     <sys:String x:Key="Ribbon.Group.PptxData">Data</sys:String>
-    <sys:String x:Key="Ribbon.Group.PptxTools">Tools</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxTools">AI Images</sys:String>
+    <sys:String x:Key="Ribbon.Group.Reference">Reference</sys:String>
+    <sys:String x:Key="Ribbon.Group.BatchCreate">Batch</sys:String>
+    <sys:String x:Key="Ribbon.Group.Content">Content</sys:String>
+    <sys:String x:Key="Ribbon.Group.Help">Help</sys:String>
+    <sys:String x:Key="Ribbon.Ref.AddFile">Add Files</sys:String>
+    <sys:String x:Key="Ribbon.Ref.AddFolder">Add Folder</sys:String>
+    <sys:String x:Key="Ribbon.Ref.ClearAll">Clear All</sys:String>
+    <sys:String x:Key="Ribbon.Batch.TemplateBatch">Template Batch</sys:String>
+    <sys:String x:Key="Ribbon.Content.TemplateLib">Templates</sys:String>
+    <sys:String x:Key="Ribbon.Content.PromptLib">Prompts</sys:String>
+    <sys:String x:Key="Ribbon.Content.Solution">Solutions</sys:String>
+    <sys:String x:Key="Ribbon.Help.Help">Help</sys:String>
     <sys:String x:Key="Ribbon.Script.Clear">Clear Scripts</sys:String>
     <sys:String x:Key="Ribbon.Script.Clear.Tooltip">Clear narration scripts from all scenes</sys:String>
     <sys:String x:Key="VM.Script.ClearConfirm">Clear scripts from all scenes?</sys:String>
@@ -1358,6 +1410,15 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Backstage.Language.Current">Current Language</sys:String>
     <sys:String x:Key="Backstage.Language.Japanese">Japanese</sys:String>
     <sys:String x:Key="Backstage.Language.English">English</sys:String>
+    <sys:String x:Key="Backstage.Narrator">Narrator Engine</sys:String>
+    <sys:String x:Key="TTS.Edge.Name">Microsoft Neural TTS (Recommended)</sys:String>
+    <sys:String x:Key="TTS.Edge.Desc">High-quality AI voice. Requires internet. Free, no API key needed.</sys:String>
+    <sys:String x:Key="TTS.VoiceVox.Name">VOICEVOX</sys:String>
+    <sys:String x:Key="TTS.VoiceVox.Desc">Best quality Japanese voices. 30+ characters. Requires separate install.</sys:String>
+    <sys:String x:Key="TTS.Windows.Name">Windows Built-in Voice</sys:String>
+    <sys:String x:Key="TTS.Windows.Desc">No additional install needed. Fully offline. Japanese: Haruka only. Lower voice quality.</sys:String>
+    <sys:String x:Key="TTS.Constraints">Constraints</sys:String>
+    <sys:String x:Key="VM.TTS.Switched">Switched to {0}</sys:String>
     <sys:String x:Key="Backstage.Info.Version">Version</sys:String>
     <sys:String x:Key="Backstage.Info.Plan">Plan</sys:String>
     <sys:String x:Key="Backstage.Info.Copyright">Copyright</sys:String>
@@ -1452,6 +1513,7 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="Chat.PresetPrompts.Tooltip">Show preset prompt library</sys:String>
     <sys:String x:Key="Chat.Execute.Tooltip">Execute prompt (Ctrl+Enter)</sys:String>
     <sys:String x:Key="Chat.Cancel.Tooltip">Cancel the current AI operation</sys:String>
+    <sys:String x:Key="Chat.CopyMessage">Copy message</sys:String>
     <sys:String x:Key="Chat.SaveThumbnail.Tooltip">Save the generated thumbnail image</sys:String>
 
     <!-- AI Prompt Execute Dialog -->
@@ -1553,8 +1615,9 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="AiFlow.Step1.Title">Auto-generate Structure</sys:String>
     <sys:String x:Key="AiFlow.Step1.Desc">AI reads your materials and creates video chapter structure automatically</sys:String>
     <sys:String x:Key="AiFlow.Step1.Hint">Additional instructions (e.g., for beginners, under 3 minutes...)</sys:String>
-    <sys:String x:Key="AiFlow.GenerateBtn">Create Structure from Materials</sys:String>
+    <sys:String x:Key="AiFlow.GenerateBtn">Generate Structure</sys:String>
     <sys:String x:Key="AiFlow.ExpandScenes">Expand to Scenes</sys:String>
+    <sys:String x:Key="AiFlow.ExportPptx.Hero">Export PPTX</sys:String>
     <sys:String x:Key="AiFlow.CreatePptx">Create PPTX</sys:String>
     <sys:String x:Key="AiFlow.ExportPptx">Create PPTX</sys:String>
     <sys:String x:Key="AiFlow.PptxSaved">PPTX file saved</sys:String>
@@ -1578,6 +1641,51 @@ Advice: AI returns text advice</sys:String>
     <sys:String x:Key="AiFlow.JsonImported">{0} scenes imported</sys:String>
     <sys:String x:Key="AiFlow.EmptyTitle">Add materials and generate structure</sys:String>
     <sys:String x:Key="AiFlow.EmptyDesc">Add files to the Material Library, then click "Generate AI Structure" to auto-create your video chapters</sys:String>
+
+    <!-- Pipeline: 3-column workflow -->
+    <sys:String x:Key="Pipeline.Step1.Title">Gather Materials</sys:String>
+    <sys:String x:Key="Pipeline.Step1.Desc">Drag &amp; drop Excel, Word, PDF files</sys:String>
+    <sys:String x:Key="Pipeline.Step2.Title">Structure with AI</sys:String>
+    <sys:String x:Key="Pipeline.Step2.Desc">Pick a preset and generate, or import PPTX</sys:String>
+    <sys:String x:Key="Pipeline.Step2.Empty">Select a preset above and click "Generate", or import a PPTX file</sys:String>
+    <sys:String x:Key="Pipeline.Step3.Title">Finish &amp; Export</sys:String>
+    <sys:String x:Key="Pipeline.Step3.Desc">Edit narration scripts and export PPTX</sys:String>
+    <sys:String x:Key="Pipeline.Step3.Empty">No scenes yet</sys:String>
+    <sys:String x:Key="Pipeline.Step3.EmptyDesc">Create a structure in Step 2, then click "Expand to Scenes"</sys:String>
+    <sys:String x:Key="Pipeline.Or">or</sys:String>
+    <sys:String x:Key="Pipeline.ImportPptx">Import PPTX</sys:String>
+    <sys:String x:Key="Pipeline.ImportEmpty">No slides found in the file</sys:String>
+    <sys:String x:Key="Pipeline.ImportedSlides">{0} slides imported</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Label">What kind of video?</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Document">From Document</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Document.Tip">Auto-generate structure from uploaded materials</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Scratch">From Scratch</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Scratch.Tip">Enter a topic and freely generate a structure</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Training">Training</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Training.Tip">Create an easy-to-follow training video outline</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Onboarding">Onboarding</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Onboarding.Tip">New member onboarding guide</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Manual">Manual</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Manual.Tip">Operation manual / procedure guide</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Sales">Sales</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Sales.Tip">Build a persuasive presentation structure</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Proposal">Proposal</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Proposal.Tip">Internal proposal / business case</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Seminar">Seminar</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Seminar.Tip">Seminar / study group presentation</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Quarterly">Quarterly</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Quarterly.Tip">Quarterly review / executive report</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Handover">Handover</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Handover.Tip">Business handover documentation</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Compliance">Compliance</sys:String>
+    <sys:String x:Key="Pipeline.Preset.Compliance.Tip">Compliance / internal regulations training</sys:String>
+    <sys:String x:Key="Pipeline.PromptLabel">AI Instructions (editable)</sys:String>
+    <sys:String x:Key="Pipeline.AiNotes">AI Notes</sys:String>
+    <sys:String x:Key="Pipeline.AiNotes.Tooltip">Auto-generate narration scripts for slides without notes</sys:String>
+    <sys:String x:Key="Pipeline.ImagePrompt">Image prompt (for AI generation)</sys:String>
+    <sys:String x:Key="Pipeline.AllScenesHaveNotes">All scenes already have narration</sys:String>
+    <sys:String x:Key="Pipeline.GeneratingNotes">Generating narration with AI...</sys:String>
+    <sys:String x:Key="Pipeline.NotesGenerated">{0} scene narrations generated</sys:String>
 
     <!-- AI Image Generation -->
     <sys:String x:Key="AiGenerate.Title">AI Image Generation</sys:String>

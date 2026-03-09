@@ -138,6 +138,16 @@ public partial class ChatPanelView : UserControl
     public event System.Action? CloseRequested;
 
 
+    // ── Message Action Handlers ──
+
+    private void CopyMessage_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.Tag is string content && !string.IsNullOrEmpty(content))
+        {
+            try { Clipboard.SetText(content); } catch { /* clipboard locked */ }
+        }
+    }
+
     // ── Mode Toggle Handlers ──
 
     private void TextModeButton_Click(object sender, RoutedEventArgs e)

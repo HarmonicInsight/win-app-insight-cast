@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using InsightCast.Models;
 using InsightCast.Services.OpenAI;
+using InsightCast.TTS;
 using InsightCast.Video;
 using InsightCast.VoiceVox;
 
@@ -41,12 +42,22 @@ namespace InsightCast.Services.Batch
         /// </summary>
         public BatchExportService(
             FFmpegWrapper ffmpeg,
-            VoiceVoxClient voiceVoxClient,
+            ITtsEngine ttsEngine,
             AudioCache audioCache,
             IOpenAIService? openAIService = null)
         {
-            _exportService = new ExportService(ffmpeg, voiceVoxClient, audioCache);
+            _exportService = new ExportService(ffmpeg, ttsEngine, audioCache);
             _openAIService = openAIService;
+        }
+
+        // 既存コード互換
+        public BatchExportService(
+            FFmpegWrapper ffmpeg,
+            VoiceVoxClient voiceVoxClient,
+            AudioCache audioCache,
+            IOpenAIService? openAIService = null)
+            : this(ffmpeg, new VoiceVoxTtsAdapter(voiceVoxClient), audioCache, openAIService)
+        {
         }
 
         /// <inheritdoc />

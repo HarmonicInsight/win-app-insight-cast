@@ -67,63 +67,114 @@ public class SceneGenerator
     /// <param name="text">The subtitle text to split.</param>
     /// <param name="maxChars">Maximum characters per line before splitting.</param>
     /// <returns>The text with a newline inserted at the best split point.</returns>
-    public static string SplitSubtitleText(string text, int maxChars = 18)
+    /// <summary>
+    /// Splits subtitle text into lines that fit within the video width.
+    /// Uses pixel-width estimation: CJK chars = fontSize, ASCII = fontSize * 0.55.
+    /// </summary>
+    public static string SplitSubtitleText(string text, int maxChars = 0, int videoWidth = 1920, int fontSize = 28)
     {
-        if (string.IsNullOrEmpty(text) || text.Length <= maxChars)
-        {
+        if (string.IsNullOrEmpty(text))
             return text;
-        }
+
+        // Usable width: 80% of video width (10% margin each side)
+        double maxLineWidth = videoWidth * 0.80;
 
         // Punctuation characters that are good split points
-        char[] splitChars =
+        var splitChars = new HashSet<char>
         {
             '.', ',', '!', '?', ';', ':',
-            '\u3001', // Japanese comma
-            '\u3002', // Japanese period
-            '\u3000', // Ideographic space
-            '\u300C', // Left corner bracket
-            '\u300D', // Right corner bracket
-            '\u300E', // Left white corner bracket
-            '\u300F', // Right white corner bracket
-            '\uFF0C', // Fullwidth comma
-            '\uFF0E', // Fullwidth full stop
-            '\uFF01', // Fullwidth exclamation mark
-            '\uFF1F', // Fullwidth question mark
+            '\u3001', '\u3002', '\u3000',
+            '\u300C', '\u300D', '\u300E', '\u300F',
+            '\uFF0C', '\uFF0E', '\uFF01', '\uFF1F',
         };
 
-        int center = text.Length / 2;
-        int bestSplit = -1;
-        int bestDistance = int.MaxValue;
+        // Split existing newlines first, then wrap each segment
+        var inputLines = text.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n');
+        var resultLines = new List<string>();
 
-        // Search for a punctuation character closest to the center
+        foreach (var inputLine in inputLines)
+        {
+            string remaining = inputLine.Trim();
+            if (string.IsNullOrEmpty(remaining))
+                continue;
+
+            while (EstimateTextWidth(remaining, fontSize) > maxLineWidth)
+            {
+                // Find the last character index that fits within maxLineWidth
+                int fitEnd = FindFitEnd(remaining, fontSize, maxLineWidth);
+                if (fitEnd <= 0) fitEnd = 1; // at least 1 char
+
+                // Look for a punctuation split point (search backward from fitEnd)
+                int bestSplit = -1;
+                int searchStart = Math.Max(0, fitEnd / 2);
+                for (int i = fitEnd; i >= searchStart; i--)
+                {
+                    if (splitChars.Contains(remaining[i]))
+                    {
+                        bestSplit = i + 1;
+                        break;
+                    }
+                }
+
+                // If no punctuation, look for space
+                if (bestSplit < 0)
+                {
+                    for (int i = fitEnd; i >= searchStart; i--)
+                    {
+                        if (remaining[i] == ' ' || remaining[i] == '\u3000')
+                        {
+                            bestSplit = i + 1;
+                            break;
+                        }
+                    }
+                }
+
+                // If still no good point, force split at fitEnd
+                if (bestSplit <= 0)
+                    bestSplit = fitEnd;
+
+                resultLines.Add(remaining[..bestSplit].TrimEnd());
+                remaining = remaining[bestSplit..].TrimStart();
+            }
+
+            if (!string.IsNullOrEmpty(remaining))
+                resultLines.Add(remaining);
+        }
+
+        return string.Join("\n", resultLines);
+    }
+
+    private static bool IsCjk(char c)
+    {
+        // CJK Unified Ideographs, Hiragana, Katakana, Fullwidth forms, etc.
+        return (c >= 0x3000 && c <= 0x9FFF)
+            || (c >= 0xF900 && c <= 0xFAFF)
+            || (c >= 0xFF00 && c <= 0xFFEF);
+    }
+
+    private static double EstimateCharWidth(char c, int fontSize)
+    {
+        return IsCjk(c) ? fontSize : fontSize * 0.55;
+    }
+
+    private static double EstimateTextWidth(string text, int fontSize)
+    {
+        double width = 0;
+        foreach (char c in text)
+            width += EstimateCharWidth(c, fontSize);
+        return width;
+    }
+
+    private static int FindFitEnd(string text, int fontSize, double maxWidth)
+    {
+        double width = 0;
         for (int i = 0; i < text.Length; i++)
         {
-            if (splitChars.Contains(text[i]))
-            {
-                int distance = Math.Abs(i - center);
-                if (distance < bestDistance)
-                {
-                    bestDistance = distance;
-                    bestSplit = i + 1; // Split after punctuation
-                }
-            }
+            width += EstimateCharWidth(text[i], fontSize);
+            if (width > maxWidth)
+                return i;
         }
-
-        // If no punctuation found, split at center
-        if (bestSplit < 0 || bestSplit >= text.Length)
-        {
-            bestSplit = center;
-        }
-
-        string line1 = text[..bestSplit].TrimEnd();
-        string line2 = text[bestSplit..].TrimStart();
-
-        if (string.IsNullOrEmpty(line2))
-        {
-            return line1;
-        }
-
-        return $"{line1}\n{line2}";
+        return text.Length;
     }
 
     /// <summary>
@@ -147,7 +198,8 @@ public class SceneGenerator
         TextStyle? textStyle = null,
         WatermarkSettings? watermark = null,
         int sceneIndex = 0,
-        MotionIntensity motionIntensity = MotionIntensity.Medium)
+        MotionIntensity motionIntensity = MotionIntensity.Medium,
+        bool subtitleLetterbox = false)
     {
         try
         {
@@ -224,17 +276,29 @@ public class SceneGenerator
                 }
             }
 
-            // Step 3: Add subtitle if present
+            // Step 3: Add subtitle (or letterbox black bar even if no subtitle)
             string? tempSubtitle = null;
 
-            if (scene.HasSubtitle)
+            if (scene.HasSubtitle || subtitleLetterbox)
             {
                 tempSubtitle = Path.Combine(
                     Path.GetTempPath(),
                     $"scene_sub_{Guid.NewGuid():N}.mp4");
 
-                bool subSuccess = AddSubtitle(
-                    currentFile, tempSubtitle, scene.SubtitleText!, width, height, textStyle);
+                bool subSuccess;
+                if (subtitleLetterbox)
+                {
+                    // Letterbox mode: shrink video to top, add black bar with subtitle at bottom
+                    // Even if no subtitle text, add the black bar for consistent sizing across scenes
+                    subSuccess = AddSubtitleLetterbox(
+                        currentFile, tempSubtitle, scene.SubtitleText ?? "", width, height, textStyle);
+                }
+                else
+                {
+                    // Overlay mode: draw subtitle on top of video
+                    subSuccess = AddSubtitle(
+                        currentFile, tempSubtitle, scene.SubtitleText!, width, height, textStyle);
+                }
 
                 if (subSuccess)
                 {
@@ -243,7 +307,6 @@ public class SceneGenerator
                 }
                 else
                 {
-                    // Subtitle failed; continue without it
                     CleanupTempFile(tempSubtitle);
                     tempSubtitle = null;
                 }
@@ -575,7 +638,7 @@ public class SceneGenerator
 
         foreach (var overlay in activeOverlays)
         {
-            string escapedText = EscapeDrawText(overlay.Text);
+            string escapedText = EscapeDrawTextLine(overlay.Text);
 
             string textColorHex = ArrayToFfmpegColor(overlay.TextColor);
             string strokeColorHex = ArrayToFfmpegColor(overlay.StrokeColor);
@@ -596,7 +659,7 @@ public class SceneGenerator
             {
                 filterParts.Add(
                     $"drawtext={fontSpec}" +
-                    $"text='{escapedText}':" +
+                    $"text={escapedText}:" +
                     $"fontsize={overlay.FontSize}:" +
                     $"fontcolor={shadowColorHex}:" +
                     $"x={xExpr}+{overlay.ShadowOffset[0]}:" +
@@ -606,7 +669,7 @@ public class SceneGenerator
             // Main text layer
             string mainDraw =
                 $"drawtext={fontSpec}" +
-                $"text='{escapedText}':" +
+                $"text={escapedText}:" +
                 $"fontsize={overlay.FontSize}:" +
                 $"fontcolor={textColorHex}:" +
                 $"borderw={overlay.StrokeWidth}:" +
@@ -643,59 +706,187 @@ public class SceneGenerator
     {
         style ??= new TextStyle();
 
-        // Split long text for readability
-        string displayText = SplitSubtitleText(text);
+        // Split text into lines that fit within the video width
+        string displayText = SplitSubtitleText(text, videoWidth: width, fontSize: style.FontSize);
+        string normalized = displayText.Replace("\r\n", "\n").Replace("\r", "\n");
+        normalized = new string(normalized.Where(c => c == '\n' || !char.IsControl(c)).ToArray());
+        string[] lines = normalized.Split('\n');
 
-        // Escape text for ffmpeg drawtext filter
-        string escapedText = EscapeDrawText(displayText);
-
-        // Build font path for ffmpeg (escape Windows path separators)
+        // Build font path for ffmpeg
         string fontSpec = BuildFontSpec(style);
 
-        // Calculate vertical position (85% from top by default)
-        int yPosition = (int)(height * 0.85);
+        int fontSize = style.FontSize;
+        int lineHeight = (int)(fontSize * 1.4);
+        int bottomMargin = Math.Max(10, (int)(height * 0.03));
+        int totalTextHeight = lines.Length * lineHeight;
+        int baseY = height - totalTextHeight - bottomMargin;
 
-        // Convert int[] color arrays to ffmpeg hex color strings
+        // Convert colors
         string textColorHex = ArrayToFfmpegColor(style.TextColor);
         string strokeColorHex = ArrayToFfmpegColor(style.StrokeColor);
         string shadowColorHex = ArrayToFfmpegColor(style.ShadowColor);
         string bgColorWithAlpha = ArrayToFfmpegColorWithAlpha(
             style.BackgroundColor, style.BackgroundOpacity);
 
-        // Build drawtext filter parts
+        // Build one drawtext per line
         var filterParts = new List<string>();
 
-        // Shadow layer (rendered first, offset behind main text)
-        if (style.ShadowEnabled && style.ShadowOffset.Length >= 2 &&
-            (style.ShadowOffset[0] != 0 || style.ShadowOffset[1] != 0))
+        for (int i = 0; i < lines.Length; i++)
         {
-            filterParts.Add(
+            string escapedLine = EscapeDrawTextLine(lines[i]);
+            int y = baseY + i * lineHeight;
+
+            // Shadow layer
+            if (style.ShadowEnabled && style.ShadowOffset.Length >= 2 &&
+                (style.ShadowOffset[0] != 0 || style.ShadowOffset[1] != 0))
+            {
+                filterParts.Add(
+                    $"drawtext={fontSpec}" +
+                    $"text='{escapedLine}':" +
+                    $"fontsize={fontSize}:" +
+                    $"fontcolor={shadowColorHex}:" +
+                    $"x=(w-text_w)/2+{style.ShadowOffset[0]}:" +
+                    $"y={y}+{style.ShadowOffset[1]}");
+            }
+
+            // Main text layer
+            string mainDraw =
                 $"drawtext={fontSpec}" +
-                $"text='{escapedText}':" +
-                $"fontsize={style.FontSize}:" +
-                $"fontcolor={shadowColorHex}:" +
-                $"x=(w-text_w)/2+{style.ShadowOffset[0]}:" +
-                $"y={yPosition}+{style.ShadowOffset[1]}");
+                $"text='{escapedLine}':" +
+                $"fontsize={fontSize}:" +
+                $"fontcolor={textColorHex}:" +
+                $"borderw={style.StrokeWidth}:" +
+                $"bordercolor={strokeColorHex}:" +
+                $"x=(w-text_w)/2:" +
+                $"y={y}";
+
+            if (style.BackgroundOpacity > 0)
+            {
+                mainDraw += $":box=1:boxcolor={bgColorWithAlpha}:boxborderw=10";
+            }
+
+            filterParts.Add(mainDraw);
         }
 
-        // Main text layer with border (stroke)
-        string mainDraw =
-            $"drawtext={fontSpec}" +
-            $"text='{escapedText}':" +
-            $"fontsize={style.FontSize}:" +
-            $"fontcolor={textColorHex}:" +
-            $"borderw={style.StrokeWidth}:" +
-            $"bordercolor={strokeColorHex}:" +
-            $"x=(w-text_w)/2:" +
-            $"y={yPosition}";
+        string filterChain = string.Join(",", filterParts);
 
-        // Background box
-        if (style.BackgroundOpacity > 0)
+        var args = new List<string>
         {
-            mainDraw += $":box=1:boxcolor={bgColorWithAlpha}:boxborderw=10";
+            "-y",
+            "-i", $"\"{inputPath}\"",
+            "-vf", $"\"{filterChain}\"",
+            "-c:v", "libx264",
+            "-pix_fmt", "yuv420p",
+            "-c:a", "copy",
+            $"\"{outputPath}\""
+        };
+
+        return _ffmpeg.RunCommand(args);
+    }
+
+    /// <summary>
+    /// Letterbox mode: shrinks the video to the top portion, adds a black bar at the bottom,
+    /// and draws subtitles in the black bar area.
+    /// </summary>
+    private bool AddSubtitleLetterbox(
+        string inputPath, string outputPath, string text,
+        int width, int height, TextStyle? style = null)
+    {
+        style ??= new TextStyle();
+
+        int fontSize = style.FontSize;
+
+        // Parse subtitle lines (may be empty for scenes without subtitle)
+        string[] lines = Array.Empty<string>();
+        bool hasText = !string.IsNullOrWhiteSpace(text);
+        if (hasText)
+        {
+            string displayText = SplitSubtitleText(text, videoWidth: width, fontSize: fontSize);
+            string normalized = displayText.Replace("\r\n", "\n").Replace("\r", "\n");
+            normalized = new string(normalized.Where(c => c == '\n' || !char.IsControl(c)).ToArray());
+            lines = normalized.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
         }
 
-        filterParts.Add(mainDraw);
+        // Black bar max = 40% of output height; video gets at least 60%
+        int maxBarHeight = (int)(height * 0.40);
+        int barPadding = 10;
+
+        // Auto-shrink font size if text doesn't fit in the bar
+        int lineHeight = (int)(fontSize * 1.4);
+        if (lines.Length > 0)
+        {
+            int neededBarHeight = lines.Length * lineHeight + barPadding * 2;
+            while (neededBarHeight > maxBarHeight && fontSize > 12)
+            {
+                fontSize -= 2;
+                lineHeight = (int)(fontSize * 1.4);
+                neededBarHeight = lines.Length * lineHeight + barPadding * 2;
+            }
+        }
+
+        // Calculate black bar height
+        int barHeight;
+        if (lines.Length > 0)
+        {
+            barHeight = lines.Length * lineHeight + barPadding * 2;
+        }
+        else
+        {
+            // No text — minimal black bar for consistency
+            barHeight = lineHeight + barPadding * 2;
+        }
+        // No minimum — bar is exactly as tall as the text needs
+        // Cap at max
+        barHeight = Math.Min(barHeight, maxBarHeight);
+        // Ensure even number for ffmpeg
+        if (barHeight % 2 != 0) barHeight++;
+
+        // Video area height (shrunk to fit above the bar)
+        int videoHeight = height - barHeight;
+        // Ensure even number for ffmpeg
+        if (videoHeight % 2 != 0) videoHeight--;
+
+        // Safety: video height must be positive
+        if (videoHeight < 100)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Letterbox] videoHeight too small ({videoHeight}), skipping letterbox");
+            return false;
+        }
+
+        // Build filter:
+        // 1. Scale video to fit within width x videoHeight, keeping aspect ratio
+        // 2. Pad to exactly width x videoHeight (centers video, fills gaps with black)
+        // 3. Pad to full output height (adds black bar at bottom)
+        string scaleFilter =
+            $"scale={width}:{videoHeight}:force_original_aspect_ratio=decrease," +
+            $"setsar=1," +
+            $"pad={width}:{videoHeight}:(ow-iw)/2:(oh-ih)/2:black," +
+            $"pad={width}:{height}:0:0:black";
+
+        var filterParts = new List<string> { scaleFilter };
+
+        // Add drawtext filters only if there's subtitle text
+        if (lines.Length > 0)
+        {
+            string fontSpec = BuildFontSpec(style);
+
+            int textBlockHeight = lines.Length * lineHeight;
+            int textStartY = videoHeight + (barHeight - textBlockHeight) / 2;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string escapedLine = EscapeDrawTextLine(lines[i]);
+                int y = textStartY + i * lineHeight;
+
+                filterParts.Add(
+                    $"drawtext={fontSpec}" +
+                    $"text='{escapedLine}':" +
+                    $"fontsize={fontSize}:" +
+                    $"fontcolor=white:" +
+                    $"x=(w-text_w)/2:" +
+                    $"y={y}");
+            }
+        }
 
         string filterChain = string.Join(",", filterParts);
 
@@ -912,9 +1103,13 @@ public class SceneGenerator
     /// <summary>
     /// Escapes text for use in the ffmpeg drawtext filter.
     /// </summary>
-    private static string EscapeDrawText(string text)
+    /// <summary>
+    /// Escapes a single line of text for ffmpeg drawtext text='...' parameter.
+    /// </summary>
+    private static string EscapeDrawTextLine(string line)
     {
-        string escaped = text;
+        // Remove control characters
+        string escaped = new string(line.Where(c => !char.IsControl(c)).ToArray());
         escaped = escaped.Replace("\\", "\\\\");
         escaped = escaped.Replace("'", "'\\''");
         escaped = escaped.Replace(":", "\\:");

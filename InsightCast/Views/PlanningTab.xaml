@@ -2,412 +2,398 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:InsightCast.Converters"
-             xmlns:local="clr-namespace:InsightCast.Views">
+             xmlns:local="clr-namespace:InsightCast.Views"
+             xmlns:ref="clr-namespace:InsightCommon.UI.Reference;assembly=InsightCommon">
 
-    <UserControl.Resources>
-        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
-        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>      <!-- 0: Main 4-panel area -->
+            <RowDefinition Height="Auto"/>   <!-- 1: Action buttons bar -->
+        </Grid.RowDefinitions>
 
-        <!-- Compact icon button -->
-        <Style x:Key="IconBtn" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="6,4"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                                CornerRadius="4" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#10000000"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <!-- ═══ Row 0: 4-Panel Layout ═══ -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="RefCol" Width="200" MinWidth="120" MaxWidth="320"/>
+                <ColumnDefinition x:Name="RefSplitterCol" Width="Auto"/>
+                <ColumnDefinition Width="200" MinWidth="120" MaxWidth="320"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" MinWidth="200"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition x:Name="OutputCol" Width="280" MinWidth="180" MaxWidth="500"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition x:Name="ChatCol" Width="300" MinWidth="220" MaxWidth="500"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Gold primary button -->
-        <Style x:Key="GoldBtn" TargetType="Button">
-            <Setter Property="Padding" Value="16,7"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bd" CornerRadius="5" Padding="{TemplateBinding Padding}"
-                                Background="#B8942F">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#D4AA3C"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="Bd" Property="Background" Value="#C8C0B0"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Outlined button -->
-        <Style x:Key="OutlineBtn" TargetType="Button">
-            <Setter Property="Padding" Value="10,5"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bd" CornerRadius="4" Padding="{TemplateBinding Padding}"
-                                Background="Transparent"
-                                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentGold}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
-
-    <Grid Margin="6">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220" MinWidth="180"/>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <!-- ═══ Left: Material Library (narrow) ═══ -->
-        <local:WorkingFolderPanel Grid.Column="0" x:Name="WorkingFolderPanelControl"/>
-
-        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="Transparent"/>
-
-        <!-- ═══ Right: AI Production ═══ -->
-        <Grid Grid.Column="2" Margin="4,0,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>  <!-- Setup bar -->
-                <RowDefinition Height="Auto"/>  <!-- Chapter preview (collapsed) -->
-                <RowDefinition Height="*"/>     <!-- Scene list (main content) -->
-                <RowDefinition Height="Auto"/>  <!-- Footer tools -->
-            </Grid.RowDefinitions>
-
-            <!-- ── Setup Bar (compact, one line) ── -->
-            <Border Grid.Row="0" CornerRadius="6" Padding="10,8"
-                    Background="{DynamicResource BgCard}"
-                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                    Margin="0,0,0,6">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- Chapter count -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
-                        <TextBlock Text="{DynamicResource AiChapter.ChapterCount}" FontSize="11"
-                                   Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <ComboBox x:Name="ChapterCountCombo" Height="26" Width="60" FontSize="11" SelectedIndex="2">
-                            <ComboBoxItem Content="3"/>
-                            <ComboBoxItem Content="5"/>
-                            <ComboBoxItem Content="7"/>
-                            <ComboBoxItem Content="10"/>
-                            <ComboBoxItem Content="15"/>
-                        </ComboBox>
-                    </StackPanel>
-
-                    <!-- Instructions (compact inline) -->
-                    <TextBox Grid.Column="2" x:Name="InstructionsBox" FontSize="11" Padding="6,4"
-                             VerticalAlignment="Center" Margin="0,0,10,0" Height="26"
-                             VerticalContentAlignment="Center">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Style.Triggers>
-                                    <Trigger Property="Text" Value="">
-                                        <Setter Property="Background">
-                                            <Setter.Value>
-                                                <VisualBrush Stretch="None" AlignmentX="Left" AlignmentY="Center">
-                                                    <VisualBrush.Visual>
-                                                        <TextBlock Text="{DynamicResource AiFlow.Step1.Hint}"
-                                                                   FontSize="11" Foreground="#AAA" Margin="6,0,0,0"/>
-                                                    </VisualBrush.Visual>
-                                                </VisualBrush>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
-
-                    <!-- Material count -->
-                    <TextBlock Grid.Column="3" x:Name="MaterialStatusText" FontSize="10"
-                               Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"
-                               Margin="0,0,10,0"/>
-
-                    <!-- Generate button -->
-                    <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
-                        <ProgressBar x:Name="ChapterProgressBar" Width="60" Height="3"
-                                     IsIndeterminate="True" Visibility="Collapsed" Margin="0,0,8,0"
-                                     VerticalAlignment="Center"/>
-                        <Button x:Name="GenerateChaptersButton" Style="{StaticResource GoldBtn}"
-                                Content="{DynamicResource AiFlow.GenerateBtn}"
-                                Click="GenerateChapters_Click"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- ── Chapter Preview (shown after generation, before apply) ── -->
-            <Border Grid.Row="1" x:Name="ChapterPreviewCard" Visibility="Collapsed"
-                    CornerRadius="6" Padding="10,8"
-                    Background="{DynamicResource BgCard}"
-                    BorderBrush="{DynamicResource AccentGold}" BorderThickness="1"
-                    Margin="0,0,0,6" MaxHeight="300">
+            <!-- ═══ Col 0: ① Input — 参考資料 ═══ -->
+            <Border x:Name="RefBorder" Grid.Column="0"
+                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <!-- Preview header -->
-                    <DockPanel Grid.Row="0" Margin="0,0,0,6">
-                        <TextBlock x:Name="VideoTitleText" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"
-                                   TextTrimming="CharacterEllipsis"/>
-                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <TextBlock x:Name="ChapterStatusText" FontSize="10"
-                                       Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"
-                                       Margin="0,0,10,0"/>
-                            <Button Content="{DynamicResource AiFlow.ExpandScenes}" Style="{StaticResource GoldBtn}"
-                                    Padding="12,5" FontSize="11"
-                                    Click="ExpandToScenes_Click"/>
-                        </StackPanel>
-                    </DockPanel>
-
-                    <!-- Chapter list (scrollable, compact) -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                        <StackPanel x:Name="ChapterPreviewPanel"/>
-                    </ScrollViewer>
+                    <!-- Section Header -->
+                    <Border Grid.Row="0" Padding="8,4"
+                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
+                        <Border.Background>
+                            <SolidColorBrush Color="#4CAF50" Opacity="0.08"/>
+                        </Border.Background>
+                        <TextBlock Text="{DynamicResource PE.InputHeader}" FontWeight="SemiBold" FontSize="11"
+                                   Foreground="#4CAF50"/>
+                    </Border>
+                    <ref:ReferencePanelView Grid.Row="1" x:Name="ReferencePanelControl"/>
                 </Grid>
             </Border>
 
-            <!-- ── Scene List (MAIN CONTENT - fills remaining space) ── -->
-            <Border Grid.Row="2" x:Name="SceneListCard" Visibility="Collapsed"
-                    CornerRadius="6"
-                    Background="{DynamicResource BgCard}"
-                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1">
+            <!-- Splitter -->
+            <GridSplitter x:Name="RefSplitter" Grid.Column="1" Width="5"
+                          HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
+
+            <!-- ═══ Col 2: ② Process — プロンプト一覧 ═══ -->
+            <Border Grid.Column="2" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Scene list header -->
-                    <Border Grid.Row="0" Padding="10,6"
+                    <!-- Section Header -->
+                    <Border Grid.Row="0" Padding="8,4"
+                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
+                        <Border.Background>
+                            <SolidColorBrush Color="#B8942F" Opacity="0.08"/>
+                        </Border.Background>
+                        <TextBlock Text="{DynamicResource PE.ProcessHeader}" FontWeight="SemiBold" FontSize="11"
+                                   Foreground="{DynamicResource AccentGold}"/>
+                    </Border>
+
+                    <!-- Prompt List Header -->
+                    <Border Grid.Row="1" Padding="8,4"
                             BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
                         <DockPanel>
-                            <TextBlock Text="{DynamicResource AiFlow.Scenes}" FontWeight="SemiBold" FontSize="12"
-                                       Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="SceneCountText" FontSize="10"
-                                       Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"
-                                       Margin="8,0,0,0"/>
-                            <Button DockPanel.Dock="Right" HorizontalAlignment="Right"
-                                    Content="{DynamicResource Planning.ClearAll}" Style="{StaticResource IconBtn}"
-                                    Foreground="OrangeRed" FontSize="10"
-                                    Command="{Binding ClearAllScenesCommand}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                           Foreground="{DynamicResource AccentGold}"
+                                           VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Text="{DynamicResource PE.PromptList}" FontWeight="SemiBold" FontSize="10"
+                                           Foreground="{DynamicResource AccentGold}"/>
+                            </StackPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button x:Name="AddGroupButton" Content="&#xE8F4;" FontFamily="Segoe MDL2 Assets"
+                                        Click="AddGroup_Click" Padding="3,1" MinWidth="0" MinHeight="0"
+                                        FontSize="10" Cursor="Hand"
+                                        Background="Transparent" BorderThickness="0"
+                                        Foreground="{DynamicResource AccentGold}"
+                                        ToolTip="{DynamicResource PE.AddGroup}"/>
+                                <Button x:Name="AddButton" Content="+" Click="Add_Click"
+                                        Padding="4,0" MinWidth="18" MinHeight="0"
+                                        FontSize="13" FontWeight="Bold" Cursor="Hand"
+                                        Background="Transparent" BorderThickness="0"
+                                        Foreground="{DynamicResource AccentGold}"
+                                        ToolTip="{DynamicResource PE.Add}"/>
+                                <Button x:Name="DeleteButton" Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
+                                        Click="Delete_Click" Padding="3,1" MinWidth="0" MinHeight="0"
+                                        FontSize="10" Cursor="Hand"
+                                        Background="Transparent" BorderThickness="0"
+                                        Foreground="OrangeRed"
+                                        ToolTip="{DynamicResource PE.Delete}"
+                                        IsEnabled="False"/>
+                            </StackPanel>
                         </DockPanel>
                     </Border>
 
-                    <!-- Scene items (scrollable) -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0">
-                        <ItemsControl x:Name="SceneListControl" ItemsSource="{Binding PlanningScenes}"
-                                      Margin="6,4,6,6">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Margin="0,0,0,6" Padding="10,8" CornerRadius="6"
-                                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                                            Background="{DynamicResource BgCard}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="24"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Number -->
-                                            <TextBlock Text="{Binding Index}" FontWeight="Bold" FontSize="13"
-                                                       Foreground="{DynamicResource AccentGold}"
-                                                       HorizontalAlignment="Center" Margin="0,2,0,0"/>
-
-                                            <!-- Left: Narration section -->
-                                            <DockPanel Grid.Column="1" Margin="4,0,6,0">
-                                                <!-- Title (editable) -->
-                                                <TextBox DockPanel.Dock="Top"
-                                                         Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
-                                                         FontWeight="SemiBold" FontSize="11.5"
-                                                         BorderThickness="0" Background="Transparent"
-                                                         Foreground="{DynamicResource TextPrimary}"
-                                                         Margin="0,0,0,4"/>
-                                                <!-- Label -->
-                                                <TextBlock DockPanel.Dock="Top" FontSize="10"
-                                                           Foreground="{DynamicResource TextTertiary}" Margin="2,0,0,3"
-                                                           Text="{DynamicResource AiFlow.NarrationLabel}"/>
-                                                <!-- Narration textarea -->
-                                                <Border CornerRadius="4" BorderBrush="{DynamicResource BorderLight}"
-                                                        BorderThickness="1" Background="{DynamicResource BgInput}">
-                                                    <TextBox Text="{Binding Script, UpdateSourceTrigger=PropertyChanged}"
-                                                             MinHeight="60" MaxHeight="140" AcceptsReturn="True"
-                                                             TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
-                                                             FontSize="11" Padding="6,4"
-                                                             BorderThickness="0" Background="Transparent"
-                                                             Foreground="{DynamicResource TextPrimary}"
-                                                             VerticalContentAlignment="Top"/>
-                                                </Border>
-                                            </DockPanel>
-
-                                            <!-- Right: Image prompt section -->
-                                            <DockPanel Grid.Column="2" Margin="6,0,0,0">
-                                                <!-- Header with copy button -->
-                                                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,3">
-                                                    <TextBlock FontSize="10"
-                                                               Foreground="{DynamicResource TextTertiary}" Margin="2,0,0,0"
-                                                               VerticalAlignment="Center"
-                                                               Text="{DynamicResource AiFlow.ImagePrompt}"/>
-                                                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right"
-                                                            Click="CopyPrompt_Click"
-                                                            Tag="{Binding ImagePrompt}" Style="{StaticResource IconBtn}"
-                                                            ToolTip="{DynamicResource AiFlow.CopyPrompt}"
-                                                            Padding="4,2">
-                                                        <TextBlock Text="&#xE8C8;" FontFamily="Segoe MDL2 Assets" FontSize="11"
-                                                                   Foreground="{DynamicResource AccentGold}"/>
-                                                    </Button>
-                                                </DockPanel>
-                                                <!-- Spacer for title alignment -->
-                                                <Border DockPanel.Dock="Top" Height="22"/>
-                                                <!-- Image prompt textarea -->
-                                                <Border CornerRadius="4" BorderThickness="1">
-                                                    <Border.BorderBrush>
-                                                        <SolidColorBrush Color="#B8942F" Opacity="0.3"/>
-                                                    </Border.BorderBrush>
-                                                    <Border.Background>
-                                                        <SolidColorBrush Color="#B8942F" Opacity="0.04"/>
-                                                    </Border.Background>
-                                                    <TextBox Text="{Binding ImagePrompt, UpdateSourceTrigger=PropertyChanged}"
-                                                             MinHeight="60" MaxHeight="140" AcceptsReturn="True"
-                                                             TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
-                                                             FontSize="11" Padding="6,4"
-                                                             BorderThickness="0" Background="Transparent"
-                                                             Foreground="{DynamicResource TextPrimary}"
-                                                             VerticalContentAlignment="Top"/>
-                                                </Border>
-                                            </DockPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
+                    <!-- Tree -->
+                    <TreeView Grid.Row="2" x:Name="PromptTree" BorderThickness="0"
+                              SelectedItemChanged="PromptTree_SelectedItemChanged"
+                              Background="Transparent">
+                        <TreeView.Resources>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="Padding" Value="2,1"/>
+                                <Setter Property="FontSize" Value="11"/>
+                            </Style>
+                        </TreeView.Resources>
+                    </TreeView>
                 </Grid>
             </Border>
 
-            <!-- Empty state (shown when no scenes) -->
-            <Border Grid.Row="2" x:Name="EmptyState" CornerRadius="6" Padding="24"
-                    Background="{DynamicResource BgCard}"
-                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1">
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Border Width="48" Height="48" CornerRadius="24" HorizontalAlignment="Center"
-                            Margin="0,0,0,12">
-                        <Border.Background>
-                            <SolidColorBrush Color="#B8942F" Opacity="0.1"/>
-                        </Border.Background>
-                        <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="20"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Foreground="{DynamicResource AccentGold}"/>
-                    </Border>
-                    <TextBlock Text="{DynamicResource AiFlow.EmptyTitle}" FontSize="14" FontWeight="SemiBold"
-                               TextAlignment="Center" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,4"/>
-                    <TextBlock Text="{DynamicResource AiFlow.EmptyDesc}" FontSize="11"
-                               TextAlignment="Center" Foreground="{DynamicResource TextTertiary}"
-                               TextWrapping="Wrap" MaxWidth="320"/>
-                </StackPanel>
-            </Border>
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
 
-            <!-- ── Footer Tools ── -->
-            <Border Grid.Row="3" Padding="8,6,8,4" Margin="0,6,0,0"
-                    CornerRadius="6"
-                    Background="{DynamicResource BgCard}"
-                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1">
-                <DockPanel>
-                    <TextBlock x:Name="ImageGenStatusText" FontSize="10"
-                               Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center"/>
+            <!-- ═══ Col 4: ② Process — プロンプトエディタ ═══ -->
+            <Grid x:Name="EditorPanel" Grid.Column="4" IsEnabled="False" Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>  <!-- 0: Name -->
+                    <RowDefinition Height="Auto"/>  <!-- 1: Category -->
+                    <RowDefinition Height="Auto"/>  <!-- 2: Model -->
+                    <RowDefinition Height="Auto"/>  <!-- 3: Prompt label + font -->
+                    <RowDefinition Height="*"/>     <!-- 4: Prompt box -->
+                    <RowDefinition Height="Auto"/>  <!-- 5: Execute button -->
+                    <RowDefinition Height="Auto"/>  <!-- 6: Secondary buttons -->
+                </Grid.RowDefinitions>
+
+                <!-- Name -->
+                <Grid Grid.Row="0" Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{DynamicResource PE.Name}"
+                               FontSize="11" FontWeight="SemiBold" Margin="0,0,8,0"
+                               Foreground="{DynamicResource TextTertiary}"
+                               VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" x:Name="NameBox" FontSize="12" Padding="6,3"
+                             Foreground="{DynamicResource TextPrimary}"
+                             BorderBrush="{DynamicResource BorderDefault}"/>
+                </Grid>
+
+                <!-- Category -->
+                <Grid Grid.Row="1" Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{DynamicResource PE.Category}"
+                               FontSize="11" FontWeight="SemiBold" Margin="0,0,8,0"
+                               Foreground="{DynamicResource TextTertiary}"
+                               VerticalAlignment="Center"/>
+                    <ComboBox Grid.Column="1" x:Name="CategoryCombo" IsEditable="True"
+                              FontSize="11" Padding="4,2"
+                              Foreground="{DynamicResource TextPrimary}"
+                              BorderBrush="{DynamicResource BorderDefault}"/>
+                </Grid>
+
+                <!-- Model -->
+                <Grid Grid.Row="2" Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{DynamicResource PE.Model}"
+                               FontSize="11" FontWeight="SemiBold" Margin="0,0,8,0"
+                               Foreground="{DynamicResource TextTertiary}"
+                               VerticalAlignment="Center"/>
+                    <ComboBox Grid.Column="1" x:Name="ModelCombo"
+                              FontSize="11" Padding="4,2"
+                              Foreground="{DynamicResource TextPrimary}"
+                              BorderBrush="{DynamicResource BorderDefault}"/>
+                </Grid>
+
+                <!-- Prompt Text label + font controls -->
+                <DockPanel Grid.Row="3" Margin="0,0,0,3">
+                    <TextBlock Text="{DynamicResource PE.PromptText}"
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextTertiary}"
+                               VerticalAlignment="Center"/>
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <!-- PPTX Export from scenes -->
-                        <Button Style="{StaticResource GoldBtn}" Click="ExportPptx_Click"
-                                Padding="12,5" Margin="0,0,6,0">
+                        <Button Content="A&#x2212;" Click="FontSizeDown_Click" Padding="4,1" MinWidth="24" MinHeight="0"
+                                FontSize="10" Background="Transparent" BorderBrush="{DynamicResource BorderDefault}"
+                                BorderThickness="1" Cursor="Hand" Margin="0,0,2,0"/>
+                        <TextBlock x:Name="FontSizeLabel" Text="12" FontSize="10" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextTertiary}" MinWidth="16" TextAlignment="Center"/>
+                        <Button Content="A+" Click="FontSizeUp_Click" Padding="4,1" MinWidth="24" MinHeight="0"
+                                FontSize="10" Background="Transparent" BorderBrush="{DynamicResource BorderDefault}"
+                                BorderThickness="1" Cursor="Hand" Margin="2,0,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+
+                <!-- Prompt Text -->
+                <TextBox Grid.Row="4" x:Name="PromptBox" FontSize="12" Padding="6,4"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         Foreground="{DynamicResource TextPrimary}"
+                         BorderBrush="{DynamicResource BorderDefault}"/>
+
+                <!-- Execute button (Doc Factory style — big gold full-width) -->
+                <Button x:Name="ExecuteButton" Grid.Row="5"
+                        Click="Execute_Click" Cursor="Hand"
+                        Padding="16,10" Margin="0,8,0,0" FontSize="13"
+                        HorizontalAlignment="Stretch"
+                        ToolTip="{DynamicResource PE.ExecuteTooltip}"
+                        IsEnabled="False">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{DynamicResource BrandPrimary}"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#A68329"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Background" Value="#CCCCCC"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="{DynamicResource PE.Execute}" VerticalAlignment="Center"
+                                   FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Secondary buttons row -->
+                <DockPanel Grid.Row="6" Margin="0,6,0,0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="CustomizeButton"
+                                Click="Customize_Click" Padding="10,4" Margin="0,0,6,0" Cursor="Hand"
+                                Background="Transparent"
+                                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                                FontSize="11"
+                                IsEnabled="False"
+                                ToolTip="{DynamicResource PE.CustomizeTooltip}">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="12"
-                                           Foreground="White" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBlock Text="{DynamicResource AiFlow.ExportPptx}" FontSize="11"
-                                           Foreground="White" VerticalAlignment="Center"/>
+                                <TextBlock Text="&#xE8C8;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                           Foreground="{DynamicResource TextPrimary}" Margin="0,0,4,0"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource PE.Customize}"
+                                           Foreground="{DynamicResource TextPrimary}"/>
                             </StackPanel>
                         </Button>
-                        <!-- JSON Export -->
-                        <Button Style="{StaticResource OutlineBtn}" Click="ExportJson_Click"
-                                ToolTip="{DynamicResource AiFlow.JsonExport.Tooltip}" Margin="0,0,6,0">
+                        <Button x:Name="SaveButton"
+                                Click="Save_Click" Padding="10,4" Cursor="Hand"
+                                Background="Transparent"
+                                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                                FontSize="11">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xEDE1;" FontFamily="Segoe MDL2 Assets" FontSize="12"
-                                           Foreground="{DynamicResource AccentGold}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBlock Text="{DynamicResource AiFlow.JsonExport}" FontSize="11"
-                                           Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <!-- JSON Import -->
-                        <Button Style="{StaticResource OutlineBtn}" Click="ImportJson_Click"
-                                ToolTip="{DynamicResource AiFlow.JsonImport.Tooltip}" Margin="0,0,6,0">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="12"
-                                           Foreground="{DynamicResource AccentGold}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBlock Text="{DynamicResource AiFlow.JsonImport}" FontSize="11"
-                                           Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <!-- AI Image Generation -->
-                        <Button Style="{StaticResource OutlineBtn}" Click="AiGenerateImages_Click"
-                                ToolTip="{DynamicResource AiGenerate.ImagesButton.Tooltip}" Margin="0,0,6,0">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE91B;" FontFamily="Segoe MDL2 Assets" FontSize="12"
-                                           Foreground="{DynamicResource AccentGold}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBlock Text="{DynamicResource AiFlow.Tool.AiImage}" FontSize="11"
-                                           Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <!-- Thumbnail Creator -->
-                        <Button Style="{StaticResource OutlineBtn}" Click="OpenThumbnailCreator_Click"
-                                ToolTip="{DynamicResource AiWorkspace.ThumbnailButton.Tooltip}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE8B9;" FontFamily="Segoe MDL2 Assets" FontSize="12"
-                                           Foreground="{DynamicResource AccentGold}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBlock Text="{DynamicResource AiFlow.Tool.Thumbnail}" FontSize="11"
-                                           Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
+                                <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                           Foreground="{DynamicResource TextPrimary}" Margin="0,0,4,0"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource PE.Save}"
+                                           Foreground="{DynamicResource TextPrimary}"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
                 </DockPanel>
+            </Grid>
+
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
+
+            <!-- ═══ Col 6: ③ Output — 成果物 ═══ -->
+            <Border Grid.Column="6" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Section Header -->
+                    <Border Grid.Row="0" Padding="8,4"
+                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
+                        <Border.Background>
+                            <SolidColorBrush Color="#FF6D00" Opacity="0.08"/>
+                        </Border.Background>
+                        <DockPanel>
+                            <TextBlock Text="{DynamicResource PE.OutputHeader}" FontWeight="SemiBold" FontSize="11"
+                                       Foreground="#FF6D00"/>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Filter tabs -->
+                    <Border Grid.Row="1" Padding="6,3"
+                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{DynamicResource PE.OutputAll}" FontSize="10"
+                                       Foreground="{DynamicResource TextSecondary}"
+                                       Padding="6,2" Cursor="Hand"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Output content area -->
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled" Padding="8">
+                        <StackPanel x:Name="OutputPanel">
+                            <!-- Empty state -->
+                            <TextBlock x:Name="OutputEmptyText"
+                                       Text="{DynamicResource PE.OutputEmpty}"
+                                       FontSize="11" FontStyle="Italic"
+                                       Foreground="{DynamicResource TextTertiary}"
+                                       TextWrapping="Wrap" Margin="0,20,0,0"
+                                       HorizontalAlignment="Center"/>
+                            <!-- Output items will be added dynamically -->
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
             </Border>
+
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="7" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
+
+            <!-- ═══ Col 8: ④ AI Chat — コンシェルジュ ═══ -->
+            <local:ChatPanelView x:Name="PlanningChatPanel" Grid.Column="8"/>
         </Grid>
+
+        <!-- ═══ Row 1: Action Buttons ═══ -->
+        <Border Grid.Row="1" Padding="8,5"
+                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,1,0,0">
+            <Border.Background>
+                <SolidColorBrush Color="#B8942F" Opacity="0.05"/>
+            </Border.Background>
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- Apply (gold primary — Doc Factory style) -->
+                    <Button x:Name="ApplyButton" Click="Apply_Click"
+                            Padding="14,5" Margin="0,0,6,0" Cursor="Hand"
+                            Background="#B8942F" Foreground="White"
+                            BorderThickness="0" FontSize="11" FontWeight="SemiBold"
+                            ToolTip="{DynamicResource PE.ApplyTooltip}"
+                            IsEnabled="False">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,4,0"/>
+                            <TextBlock Text="{DynamicResource PE.Apply}"/>
+                        </StackPanel>
+                    </Button>
+                    <!-- Register (transparent border — Doc Factory style) -->
+                    <Button x:Name="RegisterButton" Click="Register_Click"
+                            Padding="14,5" Margin="0,0,6,0" Cursor="Hand"
+                            Background="Transparent"
+                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                            FontSize="11" FontWeight="SemiBold"
+                            ToolTip="{DynamicResource PE.RegisterTooltip}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,4,0"
+                                       Foreground="{DynamicResource TextPrimary}"/>
+                            <TextBlock Text="{DynamicResource PE.Register}"
+                                       Foreground="{DynamicResource TextPrimary}"/>
+                        </StackPanel>
+                    </Button>
+                    <!-- Confirm (transparent border — Doc Factory style) -->
+                    <Button x:Name="ConfirmButton" Click="Confirm_Click"
+                            Padding="14,5" Cursor="Hand"
+                            Background="Transparent"
+                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
+                            FontSize="11" FontWeight="SemiBold"
+                            ToolTip="{DynamicResource PE.ConfirmTooltip}"
+                            IsEnabled="False">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8A3;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,4,0"
+                                       Foreground="{DynamicResource TextPrimary}"/>
+                            <TextBlock Text="{DynamicResource PE.Confirm}"
+                                       Foreground="{DynamicResource TextPrimary}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
     </Grid>
 </UserControl>

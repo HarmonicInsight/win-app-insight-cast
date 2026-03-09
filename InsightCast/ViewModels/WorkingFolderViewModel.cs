@@ -79,6 +79,14 @@ namespace InsightCast.ViewModels
             OnPropertyChanged(nameof(HasCheckedMaterials));
         }
 
+        public void ClearAll()
+        {
+            RootNodes.Clear();
+            _parseCache.Clear();
+            OnPropertyChanged(nameof(MaterialCountText));
+            OnPropertyChanged(nameof(HasCheckedMaterials));
+        }
+
         public void Unload()
         {
             RootNodes.Clear();

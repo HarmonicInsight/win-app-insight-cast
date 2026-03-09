@@ -11,6 +11,7 @@ using InsightCast.Core;
 using InsightCast.Models;
 using InsightCast.Services;
 using InsightCast.Utils;
+using InsightCast.TTS;
 using InsightCast.Video;
 using InsightCast.VoiceVox;
 
@@ -18,7 +19,7 @@ namespace InsightCast.Views
 {
     public partial class QuickModeWindow : Window
     {
-        private readonly VoiceVoxClient _voiceVoxClient;
+        private readonly TtsEngineManager _ttsManager;
         private readonly int _defaultSpeakerId;
         private readonly FFmpegWrapper? _ffmpegWrapper;
         private readonly Config _config;
@@ -33,10 +34,10 @@ namespace InsightCast.Views
         /// <summary>The loaded project (for passing to MainWindow).</summary>
         public Project? LoadedProject { get; private set; }
 
-        public QuickModeWindow(VoiceVoxClient client, int speakerId, FFmpegWrapper? ffmpeg, Config config)
+        public QuickModeWindow(TtsEngineManager ttsManager, int speakerId, FFmpegWrapper? ffmpeg, Config config)
         {
             InitializeComponent();
-            _voiceVoxClient = client;
+            _ttsManager = ttsManager;
             _defaultSpeakerId = speakerId;
             _ffmpegWrapper = ffmpeg;
             _config = config;
@@ -100,35 +101,23 @@ namespace InsightCast.Views
         {
             try
             {
-                var speakers = await _voiceVoxClient.GetSpeakersAsync();
+                var ttsSpeakers = await _ttsManager.ActiveEngine.GetSpeakersAsync();
                 SpeakerCombo.Items.Clear();
 
                 int selectedIndex = 0;
                 int index = 0;
-                foreach (var speaker in speakers)
+                foreach (var speaker in ttsSpeakers)
                 {
-                    if (!speaker.TryGetProperty("name", out var nameProp)) continue;
-                    var speakerName = VoiceVoxClient.GetLocalizedSpeakerName(nameProp.GetString() ?? "Unknown");
-                    if (!speaker.TryGetProperty("styles", out var styles)) continue;
-
-                    foreach (var style in styles.EnumerateArray())
+                    var item = new ComboBoxItem
                     {
-                        if (!style.TryGetProperty("id", out var idProp)) continue;
-                        var styleId = idProp.GetInt32();
-                        var styleName = VoiceVoxClient.GetLocalizedStyleName(
-                            style.TryGetProperty("name", out var snProp) ? snProp.GetString() ?? "" : "");
+                        Content = speaker.DisplayName,
+                        Tag = speaker.StyleId >= 0 ? speaker.StyleId : index
+                    };
+                    SpeakerCombo.Items.Add(item);
 
-                        var item = new ComboBoxItem
-                        {
-                            Content = $"{speakerName} ({styleName})",
-                            Tag = styleId
-                        };
-                        SpeakerCombo.Items.Add(item);
-
-                        if (styleId == _defaultSpeakerId)
-                            selectedIndex = index;
-                        index++;
-                    }
+                    if (speaker.StyleId == _defaultSpeakerId)
+                        selectedIndex = index;
+                    index++;
                 }
 
                 if (SpeakerCombo.Items.Count > 0)
@@ -140,7 +129,7 @@ namespace InsightCast.Views
             }
             catch
             {
-                var item = new ComboBoxItem { Content = "VOICEVOX (default)", Tag = _defaultSpeakerId };
+                var item = new ComboBoxItem { Content = LocalizationService.GetString("TTS.DefaultSpeaker"), Tag = _defaultSpeakerId };
                 SpeakerCombo.Items.Add(item);
                 SpeakerCombo.SelectedIndex = 0;
             }
@@ -320,7 +309,7 @@ namespace InsightCast.Views
             try
             {
                 var audioCache = new AudioCache();
-                var exportService = new ExportService(_ffmpegWrapper, _voiceVoxClient, audioCache);
+                var exportService = new ExportService(_ffmpegWrapper, _ttsManager.ActiveEngine, audioCache);
                 var baseStyle = TextStyle.PRESET_STYLES.First(s => s.Id == "default");
                 var defaultStyle = new TextStyle
                 {

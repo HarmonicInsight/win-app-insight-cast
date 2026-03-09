@@ -12,6 +12,7 @@ using InsightCast.Services;
 using InsightCast.Services.Batch;
 using InsightCast.Video;
 using InsightCast.Views;
+using InsightCast.TTS;
 using InsightCast.VoiceVox;
 using Syncfusion.SfSkinManager;
 
@@ -22,6 +23,7 @@ using Syncfusion.SfSkinManager;
 public partial class App : Application
 {
     private VoiceVoxClient? _voiceVoxClient;
+    private TtsEngineManager? _ttsEngineManager;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -131,9 +133,11 @@ public partial class App : Application
             }
         }
 
-        // ── 3. Create VOICEVOX client (no connection check yet) ────────────
+        // ── 3. Create VOICEVOX client & TTS engine manager ────────────
         var client = wizardClient ?? new VoiceVoxClient(config.EngineUrl);
         _voiceVoxClient = client;
+        var ttsManager = new TtsEngineManager(config, client);
+        _ttsEngineManager = ttsManager;
 
         // ── 4. FFmpeg wrapper (fast - just path lookup) ────────────────────
         FFmpegWrapper? ffmpeg = null;
@@ -172,16 +176,16 @@ public partial class App : Application
         if (cmdLineProject == null)
         {
             // No project file — show Quick Mode first
-            var quickWindow = new QuickModeWindow(client, speakerId, ffmpeg, config);
+            var quickWindow = new QuickModeWindow(ttsManager, speakerId, ffmpeg, config);
             quickWindow.ShowDialog();
 
             if (quickWindow.OpenDetailEditor)
             {
-                var mainWindow = new MainWindow(client, speakerId, ffmpeg, config);
+                var mainWindow = new MainWindow(ttsManager, speakerId, ffmpeg, config);
                 ShutdownMode = ShutdownMode.OnMainWindowClose;
                 MainWindow = mainWindow;
                 mainWindow.Show();
-                BackgroundVoiceVoxCheck(config, client);
+                BackgroundTtsCheck(ttsManager);
 
                 if (quickWindow.LoadedProject != null)
                     mainWindow.LoadProject(quickWindow.LoadedProject);
@@ -196,11 +200,11 @@ public partial class App : Application
         else
         {
             // Project file specified — go straight to detail editor
-            var mainWindow = new MainWindow(client, speakerId, ffmpeg, config);
+            var mainWindow = new MainWindow(ttsManager, speakerId, ffmpeg, config);
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             MainWindow = mainWindow;
             mainWindow.Show();
-            BackgroundVoiceVoxCheck(config, client);
+            BackgroundTtsCheck(ttsManager);
 
             try
             {
@@ -218,22 +222,16 @@ public partial class App : Application
         }
     }
 
-    private void BackgroundVoiceVoxCheck(Config config, VoiceVoxClient client)
+    private void BackgroundTtsCheck(TtsEngineManager ttsManager)
     {
-        _ = Task.Run(async () =>
+        // VOICEVOX が選択されている場合、エンジンを自動起動
+        if (ttsManager.ActiveEngine.EngineType == TtsEngineType.VoiceVox)
         {
-            var version = await client.CheckConnectionAsync();
-            if (version == null)
+            _ = Task.Run(async () =>
             {
-                var discovered = await client.DiscoverEngineAsync();
-                if (discovered != null)
-                {
-                    config.BeginUpdate();
-                    config.EngineUrl = discovered.BaseUrl;
-                    config.EndUpdate();
-                }
-            }
-        });
+                await ttsManager.EnsureVoiceVoxRunningAsync();
+            });
+        }
     }
 
     /// <summary>
@@ -278,9 +276,10 @@ public partial class App : Application
             try
             {
                 var client = new VoiceVoxClient(config.EngineUrl);
+                var batchTtsManager = new TtsEngineManager(config, client);
                 var ffmpeg = new FFmpegWrapper();
                 var audioCache = new AudioCache();
-                var batchService = new BatchExportService(ffmpeg, client, audioCache);
+                var batchService = new BatchExportService(ffmpeg, batchTtsManager.ActiveEngine, audioCache);
 
                 var batchConfig = batchService.LoadBatchConfig(batchPath);
 
@@ -337,6 +336,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _ttsEngineManager?.Dispose();
         _voiceVoxClient?.Dispose();
         base.OnExit(e);
     }

@@ -768,5 +768,437 @@ Use set_multiple_scenes to reorganize narration into:
 
 Use a tone that builds empathy and drives action, translating leadership decisions into frontline understanding.",
         },
+
+        // ========================================
+        // カテゴリ: ペルソナ付き品質チェック
+        // ========================================
+        new InsightCastPresetPrompt
+        {
+            Id = "review_training_designer",
+            CategoryJa = "品質チェック",
+            CategoryEn = "Quality Check",
+            LabelJa = "研修設計者チェック",
+            LabelEn = "Training designer review",
+            Icon = "\U0001F393",
+            RecommendedPersonaId = "manabu",
+            RequiresContextData = true,
+            SystemPromptExtensionJa = """
+                あなたは企業研修の設計者として15年以上の経験を持つインストラクショナルデザイナーです。
+                ADDIEモデル・メリルの第一原理・ガニェの9教授事象に精通しています。
+                以下の観点で厳しくチェックしてください：
+                - 学習目標が明確か（KSA: Knowledge, Skill, Attitude の区別）
+                - 導入→展開→まとめの構成が教育効果を最大化しているか
+                - 1シーンの情報量が適切か（認知負荷理論に基づく7±2の原則）
+                - 具体例・演習・振り返りが適切に配置されているか
+                - ナレーションのペース・トーンが学習者に適しているか
+                問題を発見したら、シーン番号と具体的な改善案を提示してください。
+                """,
+            SystemPromptExtensionEn = """
+                You are a senior instructional designer with 15+ years in corporate training.
+                Expert in ADDIE model, Merrill's First Principles, and Gagné's Nine Events.
+                Check rigorously for:
+                - Clear learning objectives (KSA distinction)
+                - Intro → Development → Summary structure maximizing learning outcomes
+                - Appropriate information density per scene (7±2 cognitive load principle)
+                - Proper placement of examples, exercises, and reflections
+                - Narration pace and tone suitable for learners
+                Flag issues with scene numbers and specific improvement suggestions.
+                """,
+            PromptJa = "研修設計の専門家として、この動画の教育効果をチェックしてください。学習目標の明確さ、構成の適切さ、情報量のバランスを確認してください。",
+            PromptEn = "As a training design expert, review this video's educational effectiveness. Check learning objectives, structure, and information balance.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "review_video_director",
+            CategoryJa = "品質チェック",
+            CategoryEn = "Quality Check",
+            LabelJa = "映像ディレクターチェック",
+            LabelEn = "Video director review",
+            Icon = "\U0001F3AC",
+            RecommendedPersonaId = "megumi",
+            RequiresContextData = true,
+            SystemPromptExtensionJa = """
+                あなたは企業向け映像制作のディレクターとして10年以上の経験を持ちます。
+                研修動画・製品紹介動画・社内コミュニケーション動画を多数制作してきました。
+                以下の観点で厳しくチェックしてください：
+                - オープニングのインパクト（最初の5秒で視聴者を引き込めるか）
+                - シーンの切り替えテンポ（1シーンが長すぎないか、短すぎないか）
+                - ナレーションと視覚情報の同期（文字と音声の一致）
+                - 字幕の読みやすさ（文字数、表示時間）
+                - エンディングのCTA（視聴後に何をすべきか明確か）
+                - サムネイルのクリック率を上げる改善案
+                問題を発見したら、シーン番号と具体的な改善案を提示してください。
+                """,
+            SystemPromptExtensionEn = """
+                You are a corporate video director with 10+ years producing training, product, and communications videos.
+                Check rigorously for:
+                - Opening impact (hooks viewer in first 5 seconds?)
+                - Scene pacing (too long/short per scene?)
+                - Narration-visual sync (text and audio alignment)
+                - Subtitle readability (character count, display duration)
+                - Ending CTA clarity (clear next step for viewers?)
+                - Thumbnail click-through rate improvements
+                Flag issues with scene numbers and specific improvement suggestions.
+                """,
+            PromptJa = "映像ディレクターとして、この動画の視聴体験をチェックしてください。テンポ、演出、視聴者の離脱ポイントを重点的に確認してください。",
+            PromptEn = "As a video director, review the viewing experience. Focus on pacing, production quality, and potential viewer drop-off points.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "review_marketing_strategist",
+            CategoryJa = "品質チェック",
+            CategoryEn = "Quality Check",
+            LabelJa = "マーケティング戦略家チェック",
+            LabelEn = "Marketing strategist review",
+            Icon = "\U0001F4C8",
+            RecommendedPersonaId = "manabu",
+            RequiresContextData = true,
+            SystemPromptExtensionJa = """
+                あなたはデジタルマーケティングの戦略家として、YouTube・SNS動画のパフォーマンス最適化に精通しています。
+                以下の観点で厳しくチェックしてください：
+                - サムネイル＋タイトルの CTR 予測（クリックしたくなるか）
+                - 冒頭15秒の視聴者維持率（離脱を防ぐフックがあるか）
+                - SEO 観点でのキーワード配置（タイトル・説明文・字幕）
+                - CTA の効果予測（チャンネル登録・問い合わせ・資料請求への誘導）
+                - 動画尺の適切さ（ターゲット視聴者の集中力に合っているか）
+                - シェアされやすい要素の有無（驚き・共感・実用性）
+                問題を発見したら、具体的な改善案と期待される効果を提示してください。
+                """,
+            SystemPromptExtensionEn = """
+                You are a digital marketing strategist specializing in YouTube/SNS video performance optimization.
+                Check rigorously for:
+                - Thumbnail + title CTR prediction (compelling enough to click?)
+                - First 15-second retention (hook to prevent drop-off?)
+                - SEO keyword placement (title, description, subtitles)
+                - CTA effectiveness (subscribe, inquire, download?)
+                - Video length appropriateness for target audience attention span
+                - Shareability factors (surprise, empathy, practical value)
+                Flag issues with specific improvements and expected impact.
+                """,
+            PromptJa = "マーケティング戦略家として、この動画の集客・コンバージョン効果をチェックしてください。CTR、視聴維持率、CTA の効果を重点的に確認してください。",
+            PromptEn = "As a marketing strategist, review this video's audience acquisition and conversion potential. Focus on CTR, retention, and CTA effectiveness.",
+        },
+
+        // ========================================
+        // カテゴリ14: PPTX生成 — 研修用
+        //   スライド構成設計 → Opus
+        //   テキスト生成 → Sonnet
+        // ========================================
+        new InsightCastPresetPrompt
+        {
+            Id = "pptx_training_onboarding",
+            CategoryJa = "PPTX生成・研修",
+            CategoryEn = "PPTX Generation (Training)",
+            LabelJa = "新入社員研修スライドを自動生成",
+            LabelEn = "Auto-generate onboarding training slides",
+            Icon = "🎓",
+            RecommendedPersonaId = "manabu",
+
+            RequiresContextData = true,
+            PromptJa = @"新入社員向けの研修スライド構成を設計し、各シーンにナレーションを設定してください。
+
+手順:
+1. get_scenesで現在のシーン構成を確認
+2. 以下の構成でシーンが不足していればadd_sceneで追加:
+   - オープニング（研修の目的・ゴール）
+   - 会社概要（ビジョン・ミッション・沿革）
+   - 組織体制（部門構成・キーパーソン）
+   - 業務概要（主要業務フロー）
+   - 社内ルール（勤怠・経費・情報セキュリティ）
+   - ツール紹介（使用する社内システム）
+   - Q&A・次のステップ
+3. set_multiple_scenesで全シーンのナレーションを一括設定
+   - 1シーン100〜150文字
+   - 新入社員が安心できる親しみやすいトーン
+   - 各シーン冒頭に「ここでは〜を説明します」の導入文",
+            PromptEn = @"Design onboarding training slides and set narration for each scene.
+
+Steps:
+1. Check current scenes with get_scenes
+2. Add missing scenes with add_scene for this structure:
+   - Opening (training goals)
+   - Company overview (vision, mission, history)
+   - Organization structure
+   - Business operations overview
+   - Internal rules (attendance, expenses, security)
+   - Tools introduction
+   - Q&A / Next steps
+3. Set all narration with set_multiple_scenes (50-80 words/scene, welcoming tone)",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "pptx_training_compliance",
+            CategoryJa = "PPTX生成・研修",
+            CategoryEn = "PPTX Generation (Training)",
+            LabelJa = "コンプライアンス研修スライドを生成",
+            LabelEn = "Generate compliance training slides",
+            Icon = "⚖️",
+            RecommendedPersonaId = "manabu",
+
+            RequiresContextData = true,
+            PromptJa = @"コンプライアンス研修用のスライド構成を設計し、ナレーションを設定してください。
+
+手順:
+1. get_scenesで現在のシーン構成を確認
+2. 以下の構成でadd_sceneで追加:
+   - 導入（コンプライアンスとは何か・なぜ重要か）
+   - 情報セキュリティ（パスワード管理、メール誤送信、持ち出し禁止）
+   - ハラスメント防止（定義、具体例、相談窓口）
+   - インサイダー取引禁止（対象者、規制内容）
+   - 反社会的勢力排除（判断基準、対応フロー）
+   - SNS・情報発信のルール
+   - 内部通報制度
+   - ケーススタディ（「こんなときどうする？」2-3事例）
+   - まとめ・確認テスト
+3. set_multiple_scenesでナレーションを一括設定
+   - 具体的な事例を交えて説明
+   - 「自分ごと」として考えさせるトーン",
+            PromptEn = @"Design compliance training slides with narration.
+
+Structure: Introduction → Information Security → Harassment Prevention → Insider Trading → Anti-Social Forces → SNS Rules → Whistleblowing → Case Studies → Summary & Quiz
+
+Use set_multiple_scenes to batch-set narration with specific examples and a tone that makes it personally relevant.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "pptx_training_product",
+            CategoryJa = "PPTX生成・研修",
+            CategoryEn = "PPTX Generation (Training)",
+            LabelJa = "製品・サービス研修スライドを生成",
+            LabelEn = "Generate product/service training slides",
+            Icon = "📦",
+            RecommendedPersonaId = "manabu",
+
+            RequiresContextData = true,
+            PromptJa = @"製品・サービスの研修用スライド構成を設計してください。
+
+手順:
+1. get_pptx_notesとget_scenesで既存の情報を確認
+2. 以下の構成でシーンを追加・整理:
+   - 製品/サービスの全体像（ポジショニング、ターゲット）
+   - 主要機能・特徴（3-5つに絞って深掘り）
+   - 競合との差別化ポイント
+   - ユースケース・導入事例（業種別に2-3パターン）
+   - デモシナリオ（画面操作の流れ）
+   - 価格体系・ライセンス
+   - よくある質問（FAQ）
+   - 営業トーク例（提案時の話法）
+3. set_multiple_scenesでナレーション一括設定
+   - 社内メンバーが顧客に説明できるレベルの内容
+   - 数字・具体例を多用",
+            PromptEn = @"Design product/service training slides.
+
+Structure: Product overview → Key features (3-5 deep dives) → Competitive differentiation → Use cases (2-3 patterns) → Demo scenario → Pricing → FAQ → Sales talk examples
+
+Set narration with set_multiple_scenes. Content should enable team members to explain to customers, heavy on numbers and examples.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "pptx_training_it_security",
+            CategoryJa = "PPTX生成・研修",
+            CategoryEn = "PPTX Generation (Training)",
+            LabelJa = "ITセキュリティ研修スライドを生成",
+            LabelEn = "Generate IT security training slides",
+            Icon = "🔒",
+            RecommendedPersonaId = "manabu",
+
+            RequiresContextData = true,
+            PromptJa = @"ITセキュリティ研修のスライド構成を設計してください。
+
+手順:
+1. get_scenesで現在のシーン構成を確認し、以下の構成でadd_sceneで追加:
+   - なぜセキュリティが大切か（実際の被害事例と金額）
+   - パスワード管理（強いパスワードの作り方、多要素認証）
+   - フィッシング詐欺（見分け方、実例スクリーンショット風の説明）
+   - マルウェア対策（怪しい添付ファイル、USBメモリ）
+   - 公衆Wi-Fi・リモートワークのリスク
+   - データの取り扱い（分類、暗号化、廃棄）
+   - インシデント発生時の対応フロー
+   - クイズ（3問）
+   - まとめ・相談窓口
+2. set_multiple_scenesでナレーション一括設定
+   - 「明日から実践できる」具体的なアクションを各シーンに含める
+   - 恐怖訴求しすぎず、ポジティブな行動変容を促すトーン",
+            PromptEn = @"Design IT security training slides.
+
+Structure: Why security matters (real incidents) → Password management → Phishing → Malware → Public Wi-Fi/remote risks → Data handling → Incident response → Quiz (3 questions) → Summary
+
+Narration should include actionable tips for each scene. Positive behavior-change tone, not fear-based.",
+        },
+
+        // ========================================
+        // カテゴリ15: PPTX生成 — プレゼン・マニュアル
+        //   資料構成 → Opus
+        //   テキスト生成 → Sonnet
+        // ========================================
+        new InsightCastPresetPrompt
+        {
+            Id = "pptx_manual_operation",
+            CategoryJa = "PPTX生成・マニュアル",
+            CategoryEn = "PPTX Generation (Manual)",
+            LabelJa = "操作マニュアル動画のスライド生成",
+            LabelEn = "Generate operation manual video slides",
+            Icon = "📖",
+            RecommendedPersonaId = "manabu",
+
+            RequiresContextData = true,
+            PromptJa = @"操作マニュアル動画のスライド構成を設計してください。
+
+手順:
+1. get_pptx_notesで既存のノート情報を確認
+2. 以下の構成でadd_sceneで追加:
+   - タイトル（ツール名 + 「操作ガイド」）
+   - 目次（この動画で学べること、3-5項目）
+   - 事前準備（必要な環境、ログイン方法）
+   - 各操作手順（1操作1シーンの原則）
+     - 画面名を明記
+     - 「①〜をクリック → ②〜を入力 → ③〜を確認」の手順形式
+   - よくあるミスと対処法
+   - Tips（知っておくと便利な機能）
+   - まとめ（操作フロー全体図）
+3. set_multiple_scenesでナレーション一括設定
+   - 「画面左上の〜ボタンをクリックしてください」のような具体的な指示
+   - 初めて使う人でも迷わない丁寧さ",
+            PromptEn = @"Design operation manual video slides.
+
+Structure: Title → TOC (3-5 items) → Prerequisites → Step-by-step operations (1 operation per scene) → Common mistakes → Tips → Summary
+
+Narration should use specific UI references ('Click the button in the top-left corner') and be beginner-friendly.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "pptx_manual_process",
+            CategoryJa = "PPTX生成・マニュアル",
+            CategoryEn = "PPTX Generation (Manual)",
+            LabelJa = "業務プロセス説明動画のスライド生成",
+            LabelEn = "Generate business process explanation slides",
+            Icon = "🔄",
+            RecommendedPersonaId = "manabu",
+
+            RequiresContextData = true,
+            PromptJa = @"業務プロセス説明動画のスライド構成を設計してください。
+
+手順:
+1. get_pptx_notesとget_scenesで既存情報を確認
+2. 以下の構成でadd_sceneで追加:
+   - プロセス全体像（フロー図の説明）
+   - 各ステップの詳細（担当者・入出力・判断基準）
+   - 分岐条件（「Aの場合は〜、Bの場合は〜」）
+   - 例外処理（イレギュラー時の対応）
+   - チェックポイント（品質確認のタイミング）
+   - 関連部門との連携ポイント
+   - よくある質問
+3. set_multiple_scenesでナレーション一括設定
+   - 「まず○○部門の担当者が〜します」のように主語を明確に
+   - フローの全体と各ステップの位置関係を常に意識させる表現",
+            PromptEn = @"Design business process explanation slides.
+
+Structure: Process overview → Step-by-step details (who/input/output/criteria) → Branch conditions → Exception handling → Quality checkpoints → Cross-department coordination → FAQ
+
+Narration should clearly state who does what, maintaining awareness of the overall flow.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "pptx_presentation_pitch",
+            CategoryJa = "PPTX生成・マニュアル",
+            CategoryEn = "PPTX Generation (Manual)",
+            LabelJa = "営業ピッチ動画のスライド生成",
+            LabelEn = "Generate sales pitch video slides",
+            Icon = "💼",
+            RecommendedPersonaId = "manabu",
+
+            RequiresContextData = true,
+            PromptJa = @"営業ピッチ動画のスライド構成を設計してください。
+
+手順:
+1. get_pptx_notesで製品/サービス情報を確認
+2. 以下の構成でadd_sceneで追加（AIDA法則に基づく）:
+   - Attention: 衝撃的な数字やデータで注意を引く（「〇〇%の企業が〜」）
+   - Interest: 共感できる課題提示（「こんな経験ありませんか？」）
+   - Desire: ソリューションの紹介（3つの差別化ポイント）
+   - Action: 導入ステップ・CTA（「まずは無料トライアルから」）
+   - 導入事例（Before/After）
+   - 価格・プラン比較
+   - 次のアクション（問い合わせ先、デモ申込）
+3. set_multiple_scenesでナレーション一括設定
+   - 視聴者の課題に共感する語りかけ口調
+   - 数字と具体例で説得力を持たせる",
+            PromptEn = @"Design sales pitch video slides using AIDA framework.
+
+Structure: Attention (striking data) → Interest (relatable problem) → Desire (solution + 3 differentiators) → Action (CTA) → Case studies (Before/After) → Pricing → Next steps
+
+Narration should empathize with viewer challenges and use numbers for persuasion.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "pptx_presentation_quarterly",
+            CategoryJa = "PPTX生成・マニュアル",
+            CategoryEn = "PPTX Generation (Manual)",
+            LabelJa = "四半期報告プレゼン動画のスライド生成",
+            LabelEn = "Generate quarterly report presentation slides",
+            Icon = "📊",
+            RecommendedPersonaId = "manabu",
+
+            RequiresContextData = true,
+            PromptJa = @"四半期報告プレゼン動画のスライド構成を設計してください。
+
+手順:
+1. get_pptx_notesで既存の報告データを確認
+2. 以下の構成でadd_sceneで追加:
+   - エグゼクティブサマリー（結論を最初に）
+   - KPIハイライト（主要指標5つ、前期比付き）
+   - 売上・収益の推移（グラフの説明）
+   - 部門別/製品別の実績
+   - 達成した主要マイルストーン
+   - 課題とリスク（対策付き）
+   - 来期の計画・目標
+   - 質疑応答
+3. set_multiple_scenesでナレーション一括設定
+   - 数字を必ず含める（「前年同期比12%増の〜」）
+   - 結論ファーストで簡潔に",
+            PromptEn = @"Design quarterly report presentation slides.
+
+Structure: Executive summary → KPI highlights (5 metrics, YoY) → Revenue trends → Department/product breakdown → Key milestones → Challenges & risks → Next quarter plan → Q&A
+
+Narration must include numbers ('12% YoY increase') and be conclusion-first.",
+        },
+        new InsightCastPresetPrompt
+        {
+            Id = "pptx_from_reference",
+            CategoryJa = "PPTX生成・マニュアル",
+            CategoryEn = "PPTX Generation (Manual)",
+            LabelJa = "参考資料からスライド構成を自動生成",
+            LabelEn = "Auto-generate slides from reference materials",
+            Icon = "📎",
+            RecommendedPersonaId = "manabu",
+
+            RequiresContextData = true,
+            PromptJa = @"参考資料（スライドノートまたは登録済み参考資料）の内容を読み取り、動画スライド構成を自動生成してください。
+
+手順:
+1. get_pptx_notesで全スライドのスピーカーノートを取得
+2. get_scenesで現在のシーン構成を確認
+3. ノートの内容を分析し、最適なシーン構成を設計:
+   - 関連する内容をグループ化
+   - 論理的な流れに並べ替え
+   - 導入・まとめシーンを追加
+   - 1シーン1トピックの原則
+4. 不足シーンをadd_sceneで追加
+5. set_multiple_scenesで全シーンのナレーションを一括設定
+   - ノートの箇条書きを自然な話し言葉に変換
+   - 1シーン100〜150文字
+
+参考資料の情報量が多い場合は、重要度に基づいて取捨選択し、動画として最適な長さ（10-15シーン）にまとめてください。",
+            PromptEn = @"Read reference materials (slide notes or registered references) and auto-generate video slide structure.
+
+Steps:
+1. Get slide notes with get_pptx_notes
+2. Check current scenes with get_scenes
+3. Analyze and design optimal scene structure (group related content, add intro/summary)
+4. Add missing scenes with add_scene
+5. Set all narration with set_multiple_scenes (convert bullet points to natural speech, 50-80 words/scene)
+
+If reference material is extensive, prioritize by importance and aim for 10-15 scenes.",
+        },
     };
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using InsightCast.Models;
+using InsightCast.TTS;
 using InsightCast.Video;
 using InsightCast.VoiceVox;
 
@@ -26,14 +27,21 @@ namespace InsightCast.Services
     public class ExportService
     {
         private readonly FFmpegWrapper _ffmpeg;
-        private readonly VoiceVoxClient _voiceVoxClient;
+        private readonly ITtsEngine _ttsEngine;
         private readonly AudioCache _audioCache;
 
-        public ExportService(FFmpegWrapper ffmpeg, VoiceVoxClient voiceVoxClient, AudioCache audioCache)
+        // 新しいコンストラクタ（ITtsEngine 対応）
+        public ExportService(FFmpegWrapper ffmpeg, ITtsEngine ttsEngine, AudioCache audioCache)
         {
             _ffmpeg = ffmpeg;
-            _voiceVoxClient = voiceVoxClient;
+            _ttsEngine = ttsEngine;
             _audioCache = audioCache;
+        }
+
+        // 既存コンストラクタ（後方互換）
+        public ExportService(FFmpegWrapper ffmpeg, VoiceVoxClient voiceVoxClient, AudioCache audioCache)
+            : this(ffmpeg, new VoiceVoxTtsAdapter(voiceVoxClient), audioCache)
+        {
         }
 
         public bool Export(
@@ -116,7 +124,7 @@ namespace InsightCast.Services
                     if (!_audioCache.Exists(cacheKey, sid))
                     {
                         var audioData = Task.Run(() =>
-                            _voiceVoxClient.GenerateAudioAsync(scene.NarrationText!, sid, speed))
+                            _ttsEngine.GenerateAudioAsync(scene.NarrationText!, sid.ToString(), speed))
                             .GetAwaiter().GetResult();
                         audioPath = _audioCache.Save(cacheKey, sid, audioData);
                     }
@@ -152,7 +160,7 @@ namespace InsightCast.Services
 
                 var success = sceneGen.GenerateScene(scene, scenePath, duration,
                     resolution, fps, audioPath, style, project.Watermark, i,
-                    project.MotionIntensity);
+                    project.MotionIntensity, project.SubtitleLetterbox);
 
                 if (!success)
                 {
@@ -238,19 +246,25 @@ namespace InsightCast.Services
             }
 
             // Step: Generate subtitle files (SRT + VTT)
-            progress.Report(LocalizationService.GetString("Export.GeneratingSubtitles"));
-            var srtPath = WriteSrtFile(outputPath, project, chapterTimes);
-            if (srtPath != null)
+            if (project.GenerateSubtitleFile)
             {
-                result.SubtitleFilePath = srtPath;
-                WriteVttFile(outputPath, project, chapterTimes);
+                progress.Report(LocalizationService.GetString("Export.GeneratingSubtitles"));
+                var srtPath = WriteSrtFile(outputPath, project, chapterTimes);
+                if (srtPath != null)
+                {
+                    result.SubtitleFilePath = srtPath;
+                    WriteVttFile(outputPath, project, chapterTimes);
+                }
             }
 
             // Step: Generate YouTube metadata
-            progress.Report(LocalizationService.GetString("Export.GeneratingMetadata"));
-            var metadataPath = Path.ChangeExtension(outputPath, ".metadata.txt");
-            WriteYouTubeMetadata(metadataPath, project, chapterTimes);
-            result.MetadataFilePath = metadataPath;
+            if (project.GenerateMetadata)
+            {
+                progress.Report(LocalizationService.GetString("Export.GeneratingMetadata"));
+                var metadataPath = Path.ChangeExtension(outputPath, ".metadata.txt");
+                WriteYouTubeMetadata(metadataPath, project, chapterTimes);
+                result.MetadataFilePath = metadataPath;
+            }
 
             // Clean up temp build directory
             try
@@ -275,7 +289,8 @@ namespace InsightCast.Services
             int defaultSpeakerId,
             TextStyle textStyle,
             IProgress<string> progress,
-            CancellationToken ct)
+            CancellationToken ct,
+            bool subtitleLetterbox = false)
         {
             progress.Report(LocalizationService.GetString("Export.Preview.Generating"));
 
@@ -302,7 +317,7 @@ namespace InsightCast.Services
                 {
                     progress.Report(LocalizationService.GetString("Export.Preview.Audio"));
                     var audioData = Task.Run(() =>
-                        _voiceVoxClient.GenerateAudioAsync(scene.NarrationText!, sid, speed))
+                        _ttsEngine.GenerateAudioAsync(scene.NarrationText!, sid.ToString(), speed))
                         .GetAwaiter().GetResult();
                     audioPath = _audioCache.Save(cacheKey, sid, audioData);
                 }
@@ -324,7 +339,8 @@ namespace InsightCast.Services
 
             progress.Report($"[Preview] Duration={duration:F2}s, Resolution={resolution}, Audio={audioPath ?? "none"}");
             var success = sceneGen.GenerateScene(scene, outputPath, duration,
-                resolution, fps, audioPath, textStyle, sceneIndex: 0);
+                resolution, fps, audioPath, textStyle, sceneIndex: 0,
+                subtitleLetterbox: subtitleLetterbox);
 
             if (success)
             {

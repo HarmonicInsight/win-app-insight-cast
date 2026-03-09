@@ -80,6 +80,12 @@ namespace InsightCast.Views
                 await _vm.AddFilesAsync(null, dlg.FileNames);
         }
 
+        // ── Public triggers (called from Ribbon) ────────
+
+        public void TriggerAddFile() => AddFile_Click(this, new RoutedEventArgs());
+
+        public void TriggerAddFolder() => AddFolder_Click(this, new RoutedEventArgs());
+
         // ── Toolbar buttons ────────────────────────────
 
         private void NewFolder_Click(object sender, RoutedEventArgs e)

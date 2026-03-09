@@ -239,6 +239,19 @@ public class Config
     /// <summary>
     /// OpenAI APIキー（暗号化して保存）。
     /// </summary>
+    /// <summary>
+    /// TTS エンジン種別。デフォルト: EdgeNeural（企業向け推奨）。
+    /// </summary>
+    public TTS.TtsEngineType TtsEngineType
+    {
+        get
+        {
+            var val = Get<string>("tts_engine", "EdgeNeural");
+            return Enum.TryParse<TTS.TtsEngineType>(val, out var t) ? t : TTS.TtsEngineType.EdgeNeural;
+        }
+        set => Set("tts_engine", value.ToString());
+    }
+
     public string? OpenAIApiKey
     {
         get => Get<string?>("openai_api_key", null);
@@ -297,7 +310,7 @@ public class Config
 
     public int QuickSpeakerIndex
     {
-        get => Get<int>("quick_speaker_index", 0);
+        get => Get<int>("quick_speaker_index", -1);
         set => Set("quick_speaker_index", value);
     }
 

@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using InsightCast.Models;
 using D = DocumentFormat.OpenXml.Drawing;
+using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace InsightCast.Services
 {
@@ -46,6 +48,131 @@ namespace InsightCast.Services
 
             presentationPart.Presentation.Save();
             return outputPath;
+        }
+
+        /// <summary>
+        /// Generates PPTX from Scene list — embeds images full-bleed and puts narration in notes.
+        /// </summary>
+        public static string GenerateFromScenes(List<Scene> scenes, string title, string outputPath)
+        {
+            var dir = Path.GetDirectoryName(outputPath);
+            if (dir != null) Directory.CreateDirectory(dir);
+
+            using var presentation = PresentationDocument.Create(outputPath, PresentationDocumentType.Presentation);
+            var presentationPart = presentation.AddPresentationPart();
+            presentationPart.Presentation = new Presentation();
+
+            var slideLayoutPart = CreateSlideLayout(presentationPart);
+            var slideIdList = new SlideIdList();
+            presentationPart.Presentation.SlideIdList = slideIdList;
+            presentationPart.Presentation.SlideSize = new SlideSize { Cx = (int)SlideWidth, Cy = (int)SlideHeight };
+
+            uint slideId = 256;
+
+            // Title slide
+            AddSlide(presentationPart, slideLayoutPart, ref slideId, title, "", "");
+
+            // Scene slides — image + narration notes
+            foreach (var scene in scenes)
+            {
+                AddSceneSlide(presentationPart, slideLayoutPart, ref slideId, scene);
+            }
+
+            presentationPart.Presentation.Save();
+            return outputPath;
+        }
+
+        private static void AddSceneSlide(
+            PresentationPart presentationPart, SlideLayoutPart slideLayoutPart,
+            ref uint slideId, Scene scene)
+        {
+            var slidePart = presentationPart.AddNewPart<SlidePart>();
+            slidePart.AddPart(slideLayoutPart);
+
+            var shapeTree = new ShapeTree(
+                new NonVisualGroupShapeProperties(
+                    new NonVisualDrawingProperties { Id = 1, Name = "" },
+                    new NonVisualGroupShapeDrawingProperties(),
+                    new ApplicationNonVisualDrawingProperties()),
+                new GroupShapeProperties(new D.TransformGroup()));
+
+            // Add title shape if scene has a title
+            if (!string.IsNullOrEmpty(scene.Title))
+            {
+                shapeTree.Append(CreateTitleShape(scene.Title, slideId));
+            }
+
+            // Embed image full-bleed if scene has an image
+            string? imagePath = scene.MediaPath;
+            if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath) && scene.MediaType == MediaType.Image)
+            {
+                string ext = Path.GetExtension(imagePath).ToLowerInvariant();
+                var imageType = ext switch
+                {
+                    ".png" => ImagePartType.Png,
+                    ".gif" => ImagePartType.Gif,
+                    ".bmp" => ImagePartType.Bmp,
+                    _ => ImagePartType.Jpeg
+                };
+
+                var imagePart = slidePart.AddImagePart(imageType);
+                using (var stream = File.OpenRead(imagePath))
+                {
+                    imagePart.FeedData(stream);
+                }
+                string imageRelId = slidePart.GetIdOfPart(imagePart);
+
+                var picture = CreatePicture(imageRelId, slideId + 200);
+                shapeTree.Append(picture);
+            }
+
+            slidePart.Slide = new Slide(new CommonSlideData(shapeTree));
+
+            // Add narration as notes
+            string notesText = scene.NarrationText ?? "";
+            if (!string.IsNullOrWhiteSpace(notesText))
+            {
+                var notesSlidePart = slidePart.AddNewPart<NotesSlidePart>();
+                notesSlidePart.NotesSlide = new NotesSlide(
+                    new CommonSlideData(
+                        new ShapeTree(
+                            new NonVisualGroupShapeProperties(
+                                new NonVisualDrawingProperties { Id = 1, Name = "" },
+                                new NonVisualGroupShapeDrawingProperties(),
+                                new ApplicationNonVisualDrawingProperties()),
+                            new GroupShapeProperties(new D.TransformGroup()),
+                            CreateNotesShape(notesText))));
+                notesSlidePart.NotesSlide.Save();
+            }
+
+            slidePart.Slide.Save();
+
+            presentationPart.Presentation.SlideIdList!.Append(new SlideId
+            {
+                Id = slideId++,
+                RelationshipId = presentationPart.GetIdOfPart(slidePart)
+            });
+        }
+
+        /// <summary>
+        /// Creates a full-bleed picture element covering the entire slide.
+        /// </summary>
+        private static Picture CreatePicture(string imageRelId, uint id)
+        {
+            return new Picture(
+                new NonVisualPictureProperties(
+                    new NonVisualDrawingProperties { Id = id, Name = $"Image {id}" },
+                    new NonVisualPictureDrawingProperties(
+                        new D.PictureLocks { NoChangeAspect = true }),
+                    new ApplicationNonVisualDrawingProperties()),
+                new BlipFill(
+                    new D.Blip { Embed = imageRelId },
+                    new D.Stretch(new D.FillRectangle())),
+                new ShapeProperties(
+                    new D.Transform2D(
+                        new D.Offset { X = 0, Y = 0 },
+                        new D.Extents { Cx = SlideWidth, Cy = SlideHeight }),
+                    new D.PresetGeometry(new D.AdjustValueList()) { Preset = D.ShapeTypeValues.Rectangle }));
         }
 
         private static SlideLayoutPart CreateSlideLayout(PresentationPart presentationPart)

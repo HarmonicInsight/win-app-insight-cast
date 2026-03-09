@@ -39,15 +39,29 @@
         </Grid.RowDefinitions>
 
         <!-- Video Area (keep dark for video content) -->
-        <Border Grid.Row="0" Background="Black">
-            <MediaElement x:Name="MediaPlayer"
-                          LoadedBehavior="Manual"
-                          UnloadedBehavior="Stop"
-                          Stretch="Uniform"
-                          MediaOpened="MediaPlayer_MediaOpened"
-                          MediaEnded="MediaPlayer_MediaEnded"
-                          MediaFailed="MediaPlayer_MediaFailed"/>
-        </Border>
+        <Grid Grid.Row="0">
+            <Border Background="Black">
+                <MediaElement x:Name="MediaPlayer"
+                              LoadedBehavior="Manual"
+                              UnloadedBehavior="Stop"
+                              Stretch="Uniform"
+                              MediaOpened="MediaPlayer_MediaOpened"
+                              MediaEnded="MediaPlayer_MediaEnded"
+                              MediaFailed="MediaPlayer_MediaFailed"/>
+            </Border>
+
+            <!-- Converting overlay -->
+            <Border x:Name="ConvertingOverlay" Visibility="Collapsed"
+                    Background="#AA000000" IsHitTestVisible="True">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="{DynamicResource Preview.Converting}"
+                               Foreground="White" FontSize="18" FontWeight="SemiBold"
+                               HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <ProgressBar IsIndeterminate="True" Width="200" Height="4"
+                                 Foreground="{DynamicResource AccentGold}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
 
         <!-- Control Panel -->
         <Border Grid.Row="1" Background="{DynamicResource BgSecondary}"
@@ -115,12 +129,23 @@
                                 ToolTip="{DynamicResource Preview.Next.Tooltip}"/>
                     </StackPanel>
 
-                    <!-- Center: Scene Info -->
+                    <!-- Center: Scene Info + Font Size -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal"
                                 HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock x:Name="SceneLabel" Text="シーン: 1/1"
                                    Foreground="{DynamicResource TextSecondary}" FontSize="13"
                                    VerticalAlignment="Center"/>
+
+                        <!-- Font Size Control (hidden by default, shown via EnableFontSizeControl) -->
+                        <StackPanel x:Name="FontSizePanel" Orientation="Horizontal"
+                                    Visibility="Collapsed" Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource Preview.FontSize}"
+                                       Foreground="{DynamicResource TextSecondary}" FontSize="12"
+                                       VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <ComboBox x:Name="FontSizeCombo" Width="65" Height="28"
+                                      VerticalContentAlignment="Center"
+                                      SelectionChanged="FontSizeCombo_SelectionChanged"/>
+                        </StackPanel>
                     </StackPanel>
 
                     <!-- Right: Volume, Speed, Close -->

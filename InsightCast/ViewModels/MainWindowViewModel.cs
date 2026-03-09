@@ -22,6 +22,8 @@ namespace InsightCast.ViewModels
     {
         public string DisplayName { get; set; } = string.Empty;
         public int StyleId { get; set; }
+        /// <summary>TTS エンジンに渡す話者 ID 文字列（Edge: "ja-JP-NanamiNeural", VoiceVox: "13" 等）</summary>
+        public string TtsSpeakerId { get; set; } = string.Empty;
         public override string ToString() => DisplayName;
     }
 
@@ -29,7 +31,7 @@ namespace InsightCast.ViewModels
     {
         #region Services
 
-        private readonly VoiceVoxClient _voiceVoxClient;
+        private readonly TTS.TtsEngineManager _ttsManager;
         private readonly int _defaultSpeakerId;
         private readonly FFmpegWrapper? _ffmpegWrapper;
         public FFmpegWrapper? FfmpegWrapper => _ffmpegWrapper;
@@ -74,6 +76,7 @@ namespace InsightCast.ViewModels
         private bool _exportProgressVisible;
         private double _exportProgressValue;
 
+
         // License state
         private LicenseInfo? _licenseInfo;
         private PlanCode _currentPlan = PlanCode.Free;
@@ -89,6 +92,9 @@ namespace InsightCast.ViewModels
         private readonly Dictionary<string, TextStyle> _sceneSubtitleStyles = new();
         private Dictionary<int, string> _speakerStyles = new();
         private int _defaultSubtitleFontSize = 28;
+        private bool _subtitleLetterbox;
+        private bool _generateSubtitleFile = true;
+        private bool _generateMetadata = true;
 
         // Watermark
         private string _watermarkFilePath = string.Empty;
@@ -314,7 +320,7 @@ namespace InsightCast.ViewModels
             "1080x1920", // TikTok
         };
 
-        private string GetSelectedResolution()
+        public string GetSelectedResolution()
         {
             if (_selectedResolutionIndex >= 0 && _selectedResolutionIndex < ResolutionValues.Length)
                 return ResolutionValues[_selectedResolutionIndex];
@@ -728,10 +734,10 @@ namespace InsightCast.ViewModels
 
         #region Constructor
 
-        public MainWindowViewModel(VoiceVoxClient voiceVoxClient, int speakerId,
+        public MainWindowViewModel(TTS.TtsEngineManager ttsManager, int speakerId,
                                     FFmpegWrapper? ffmpegWrapper, Config config)
         {
-            _voiceVoxClient = voiceVoxClient;
+            _ttsManager = ttsManager;
             _defaultSpeakerId = speakerId;
             _ffmpegWrapper = ffmpegWrapper;
             _config = config;
@@ -841,12 +847,49 @@ namespace InsightCast.ViewModels
 
         public async Task InitializeAsync()
         {
+            // VOICEVOX が選択されている場合、エンジンを自動起動
+            if (_ttsManager.ActiveEngine.EngineType == TTS.TtsEngineType.VoiceVox)
+            {
+                _logger.Log(LocalizationService.GetString("VM.TTS.Starting"));
+                await _ttsManager.EnsureVoiceVoxRunningAsync();
+            }
+
             await LoadSpeakers();
             LoadSceneSpeakers();
+            UpdateStatusText();
             _logger.Log(LocalizationService.GetString("VM.Initialized"));
 
             // Background update check (non-blocking)
             _ = CheckForUpdateAsync();
+        }
+
+        /// <summary>
+        /// TTS エンジンが切り替えられたときに呼び出す。
+        /// 話者リストを再読み込みし、ステータスを更新する。
+        /// </summary>
+        public async Task OnTtsEngineChanged()
+        {
+            // エンジン切替時はキャッシュをクリア（旧エンジンの音声が残るのを防ぐ）
+            _audioCache.ClearCache();
+
+            // シーンのキャッシュパスもクリア
+            foreach (var scene in _project.Scenes)
+                scene.AudioCachePath = null;
+
+            // VOICEVOX の場合、エンジンが起動していなければ自動起動
+            if (_ttsManager.ActiveEngine.EngineType == TTS.TtsEngineType.VoiceVox)
+            {
+                _logger.Log(LocalizationService.GetString("VM.TTS.Starting"));
+                var started = await _ttsManager.EnsureVoiceVoxRunningAsync();
+                if (!started)
+                    _logger.Log(LocalizationService.GetString("VM.TTS.Unavailable.Detail"));
+            }
+
+            await LoadSpeakers();
+
+            LoadSceneSpeakers();
+            UpdateStatusText();
+            _logger.Log(LocalizationService.GetString("VM.TTS.Switched", _ttsManager.ActiveEngine.DisplayName));
         }
 
         private async Task CheckForUpdateAsync()
@@ -882,21 +925,24 @@ namespace InsightCast.ViewModels
 
         private async void UpdateStatusText()
         {
-            string vvStatus;
+            string ttsStatus;
             try
             {
-                var version = await _voiceVoxClient.CheckConnectionAsync();
-                vvStatus = version != null ? LocalizationService.GetString("VM.VoiceVox.Connected", version) : LocalizationService.GetString("VM.VoiceVox.Guide");
+                var engineName = _ttsManager.ActiveEngine.DisplayName;
+                var status = await _ttsManager.ActiveEngine.CheckConnectionAsync();
+                ttsStatus = status != null
+                    ? $"{engineName}: {status}"
+                    : $"{engineName}: {LocalizationService.GetString("VM.TTS.NotConnected")}";
             }
             catch
             {
-                vvStatus = LocalizationService.GetString("VM.VoiceVox.Guide");
+                ttsStatus = LocalizationService.GetString("VM.TTS.Unavailable");
             }
 
             var ffStatus = _ffmpegWrapper?.CheckAvailable() == true
                 ? LocalizationService.GetString("VM.FFmpeg.Detected")
                 : LocalizationService.GetString("VM.FFmpeg.NotDetected");
-            StatusText = $"{vvStatus} • {ffStatus}";
+            StatusText = $"{ttsStatus} • {ffStatus}";
         }
 
         #endregion
@@ -1187,30 +1233,23 @@ namespace InsightCast.ViewModels
 
         private async Task LoadSpeakers()
         {
+            _speakerStyles.Clear();
+            ExportSpeakers.Clear();
+
             try
             {
-                var speakers = await _voiceVoxClient.GetSpeakersAsync();
-                _speakerStyles.Clear();
-                ExportSpeakers.Clear();
+                var ttsSpeakers = await _ttsManager.ActiveEngine.GetSpeakersAsync();
 
-                foreach (var speaker in speakers)
+                foreach (var speaker in ttsSpeakers)
                 {
-                    if (!speaker.TryGetProperty("name", out var nameProp)) continue;
-                    var rawSpeakerName = nameProp.GetString() ?? "Unknown";
-                    var speakerName = VoiceVox.VoiceVoxClient.GetLocalizedSpeakerName(rawSpeakerName);
-                    if (!speaker.TryGetProperty("styles", out var styles)) continue;
-
-                    foreach (var style in styles.EnumerateArray())
+                    var styleId = speaker.StyleId >= 0 ? speaker.StyleId : ExportSpeakers.Count;
+                    _speakerStyles[styleId] = speaker.DisplayName;
+                    ExportSpeakers.Add(new SpeakerItem
                     {
-                        if (!style.TryGetProperty("id", out var idProp)) continue;
-                        var styleId = idProp.GetInt32();
-                        var rawStyleName = style.TryGetProperty("name", out var snProp)
-                            ? snProp.GetString() ?? "ノーマル" : "ノーマル";
-                        var styleName = VoiceVox.VoiceVoxClient.GetLocalizedStyleName(rawStyleName);
-                        var displayName = $"{speakerName} ({styleName})";
-                        _speakerStyles[styleId] = displayName;
-                        ExportSpeakers.Add(new SpeakerItem { DisplayName = displayName, StyleId = styleId });
-                    }
+                        DisplayName = speaker.DisplayName,
+                        StyleId = styleId,
+                        TtsSpeakerId = speaker.Id
+                    });
                 }
 
                 for (int i = 0; i < ExportSpeakers.Count; i++)
@@ -1398,6 +1437,31 @@ namespace InsightCast.ViewModels
             OnPropertyChanged(nameof(EffectiveSubtitleFontSize));
         }
 
+        /// <summary>字幕を黒帯（レターボックス）に表示するか。</summary>
+        public bool SubtitleLetterbox
+        {
+            get => _subtitleLetterbox;
+            set
+            {
+                if (SetProperty(ref _subtitleLetterbox, value))
+                {
+                    _project.SubtitleLetterbox = value;
+                }
+            }
+        }
+
+        public bool GenerateSubtitleFile
+        {
+            get => _generateSubtitleFile;
+            set { if (SetProperty(ref _generateSubtitleFile, value)) _project.GenerateSubtitleFile = value; }
+        }
+
+        public bool GenerateMetadata
+        {
+            get => _generateMetadata;
+            set { if (SetProperty(ref _generateMetadata, value)) _project.GenerateMetadata = value; }
+        }
+
         /// <summary>Default subtitle font size for all scenes (used when scene has no override).</summary>
         public int DefaultSubtitleFontSize
         {
@@ -1486,7 +1550,7 @@ namespace InsightCast.ViewModels
         {
             if (_currentScene == null) return;
 
-            var overlay = new TextOverlay { Text = LocalizationService.GetString("Overlay.DefaultText") };
+            var overlay = new TextOverlay { Text = LocalizationService.GetString("Overlay.DefaultText"), FontSize = _defaultSubtitleFontSize };
             _currentScene.TextOverlays.Add(overlay);
             RefreshOverlayList();
             SelectedOverlayIndex = _currentScene.TextOverlays.Count - 1;
@@ -1727,6 +1791,35 @@ namespace InsightCast.ViewModels
 
         #region Audio Preview
 
+        /// <summary>
+        /// シーンの SpeakerId (int) からエンジンに渡す話者ID文字列を解決する。
+        /// シーン個別の話者が設定されていなければ、エクスポート用デフォルト話者を使う。
+        /// </summary>
+        private string ResolveTtsSpeakerId(int? sceneSpeakerId)
+        {
+            // シーン個別の話者がある場合、ExportSpeakers から TtsSpeakerId を探す
+            if (sceneSpeakerId.HasValue)
+            {
+                var match = ExportSpeakers.FirstOrDefault(s => s.StyleId == sceneSpeakerId.Value);
+                if (match != null && !string.IsNullOrEmpty(match.TtsSpeakerId))
+                    return match.TtsSpeakerId;
+            }
+
+            // デフォルトのエクスポート話者
+            if (_selectedExportSpeakerIndex >= 0 && _selectedExportSpeakerIndex < ExportSpeakers.Count)
+            {
+                var def = ExportSpeakers[_selectedExportSpeakerIndex];
+                if (!string.IsNullOrEmpty(def.TtsSpeakerId))
+                    return def.TtsSpeakerId;
+            }
+
+            // フォールバック: 先頭の話者
+            if (ExportSpeakers.Count > 0 && !string.IsNullOrEmpty(ExportSpeakers[0].TtsSpeakerId))
+                return ExportSpeakers[0].TtsSpeakerId;
+
+            return sceneSpeakerId?.ToString() ?? _defaultSpeakerId.ToString();
+        }
+
         private async Task PreviewCurrentScene()
         {
             if (_currentScene == null || string.IsNullOrWhiteSpace(_currentScene.NarrationText))
@@ -1735,7 +1828,8 @@ namespace InsightCast.ViewModels
                 return;
             }
 
-            var speakerId = _currentScene.SpeakerId ?? _defaultSpeakerId;
+            var ttsSpeakerId = ResolveTtsSpeakerId(_currentScene.SpeakerId);
+            var cacheKey = $"{_ttsManager.ActiveEngine.EngineType}_{ttsSpeakerId}".GetHashCode();
             var text = _currentScene.NarrationText!;
 
             try
@@ -1743,15 +1837,15 @@ namespace InsightCast.ViewModels
                 _logger.Log(LocalizationService.GetString("VM.Preview.Generating"));
 
                 string audioPath;
-                if (_audioCache.Exists(text, speakerId))
+                if (_audioCache.Exists(text, cacheKey))
                 {
-                    audioPath = _audioCache.GetCachePath(text, speakerId);
+                    audioPath = _audioCache.GetCachePath(text, cacheKey);
                     _logger.Log(LocalizationService.GetString("VM.Preview.CacheLoaded"));
                 }
                 else
                 {
-                    var audioData = await _voiceVoxClient.GenerateAudioAsync(text, speakerId);
-                    audioPath = _audioCache.Save(text, speakerId, audioData);
+                    var audioData = await _ttsManager.ActiveEngine.GenerateAudioAsync(text, ttsSpeakerId, 1.0);
+                    audioPath = _audioCache.Save(text, cacheKey, audioData);
                     _logger.Log(LocalizationService.GetString("VM.Preview.Generated"));
                 }
 
@@ -1815,10 +1909,11 @@ namespace InsightCast.ViewModels
 
             try
             {
-                var exportService = new ExportService(_ffmpegWrapper, _voiceVoxClient, _audioCache);
+                var exportService = new ExportService(_ffmpegWrapper, _ttsManager.ActiveEngine, _audioCache);
                 var success = await Task.Run(() =>
                     exportService.GeneratePreview(sceneSnapshot, previewPath, resolution, 30,
-                        exportSpeakerId, style, progress, CancellationToken.None));
+                        exportSpeakerId, style, progress, CancellationToken.None,
+                        _project.SubtitleLetterbox));
 
                 if (success && File.Exists(previewPath))
                 {
@@ -2078,7 +2173,7 @@ namespace InsightCast.ViewModels
             try
             {
                 var ffmpeg = _ffmpegWrapper!; // null already checked above
-                var exportService = new ExportService(ffmpeg, _voiceVoxClient, _audioCache);
+                var exportService = new ExportService(ffmpeg, _ttsManager.ActiveEngine, _audioCache);
                 var exportResult = await Task.Run(() =>
                     exportService.ExportFull(projectSnapshot, outputPath, resolution, fps,
                         exportSpeakerId, GetStyleSnapshot, progress, ct), ct);
@@ -2185,6 +2280,8 @@ namespace InsightCast.ViewModels
             RefreshSceneList();
             UpdateBgmStatus();
             SyncProjectToUI();
+
+
             _logger.Log(LocalizationService.GetString("VM.Project.Loaded", project.Scenes.Count));
         }
 
@@ -2198,6 +2295,12 @@ namespace InsightCast.ViewModels
             }
             _defaultSubtitleFontSize = _project.DefaultSubtitleFontSize;
             OnPropertyChanged(nameof(DefaultSubtitleFontSize));
+            _subtitleLetterbox = _project.SubtitleLetterbox;
+            OnPropertyChanged(nameof(SubtitleLetterbox));
+            _generateSubtitleFile = _project.GenerateSubtitleFile;
+            OnPropertyChanged(nameof(GenerateSubtitleFile));
+            _generateMetadata = _project.GenerateMetadata;
+            OnPropertyChanged(nameof(GenerateMetadata));
         }
 
         private void NewProject()
@@ -2284,6 +2387,9 @@ namespace InsightCast.ViewModels
                 RefreshSceneList();
                 UpdateBgmStatus();
                 SyncProjectToUI();
+
+
+
                 _logger.Log(LocalizationService.GetString("VM.Project.Opened", path));
             }
             catch (Exception ex)
@@ -2302,10 +2408,14 @@ namespace InsightCast.ViewModels
 
             try
             {
+
                 _project.Save();
                 _isDirty = false;
                 _config.AddRecentFile(_project.ProjectPath!);
                 _logger.Log(LocalizationService.GetString("VM.Project.Saved", _project.ProjectPath));
+                _dialogService?.ShowInfo(
+                    LocalizationService.GetString("VM.Project.Saved", _project.ProjectPath),
+                    LocalizationService.GetString("VM.Project.SaveSuccess"));
             }
             catch (Exception ex)
             {
@@ -2380,11 +2490,15 @@ namespace InsightCast.ViewModels
 
             try
             {
+
                 _project.Save(path);
                 _isDirty = false;
                 _config.AddRecentFile(path);
                 WindowTitle = $"InsightCast - {Path.GetFileNameWithoutExtension(path)}";
                 _logger.Log(LocalizationService.GetString("VM.Project.Saved", path));
+                _dialogService?.ShowInfo(
+                    LocalizationService.GetString("VM.Project.Saved", path),
+                    LocalizationService.GetString("VM.Project.SaveSuccess"));
             }
             catch (Exception ex)
             {
@@ -2453,12 +2567,15 @@ namespace InsightCast.ViewModels
                     return;
                 }
 
+                // Clear existing scenes before import
+                _project.Scenes.Clear();
+
                 foreach (var slide in slides)
                 {
                     var scene = new Scene
                     {
                         NarrationText = slide.Notes,
-                        SubtitleText = includeSubtitle && !string.IsNullOrWhiteSpace(slide.SlideText) ? slide.SlideText : null
+                        SubtitleText = slide.Notes,
                     };
                     if (!string.IsNullOrEmpty(slide.ImagePath) && File.Exists(slide.ImagePath))
                     {
@@ -2469,6 +2586,8 @@ namespace InsightCast.ViewModels
                 }
 
                 RefreshSceneList();
+                if (_project.Scenes.Count > 0)
+                    SelectedSceneIndex = 0;
 
                 int imageCount = slides.Count(s => !string.IsNullOrEmpty(s.ImagePath) && File.Exists(s.ImagePath));
                 _logger.Log(LocalizationService.GetString("VM.Pptx.Imported", slides.Count, imageCount, path));
@@ -2540,12 +2659,15 @@ namespace InsightCast.ViewModels
                     return;
                 }
 
+                // Clear existing scenes before import
+                _project.Scenes.Clear();
+
                 foreach (var slide in slides)
                 {
                     var scene = new Scene
                     {
                         NarrationText = slide.Notes,
-                        SubtitleText = includeSubtitle && !string.IsNullOrWhiteSpace(slide.SlideText) ? slide.SlideText : null
+                        SubtitleText = slide.Notes,
                     };
                     if (!string.IsNullOrEmpty(slide.ImagePath) && File.Exists(slide.ImagePath))
                     {
@@ -2556,6 +2678,8 @@ namespace InsightCast.ViewModels
                 }
 
                 RefreshSceneList();
+                if (_project.Scenes.Count > 0)
+                    SelectedSceneIndex = 0;
 
                 int imageCount = slides.Count(s => !string.IsNullOrEmpty(s.ImagePath) && File.Exists(s.ImagePath));
                 _logger.Log(LocalizationService.GetString("VM.Pptx.Imported", slides.Count, imageCount, path));
@@ -3003,7 +3127,7 @@ namespace InsightCast.ViewModels
 
             return new Services.Batch.BatchExportService(
                 _ffmpegWrapper,
-                _voiceVoxClient,
+                _ttsManager.ActiveEngine,
                 _audioCache,
                 openAIService);
         }

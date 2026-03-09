@@ -132,20 +132,6 @@
 
                         <Rectangle Width="1" Height="20" Fill="{DynamicResource BorderDefault}" Margin="4,0"/>
 
-                        <!-- AI Assistant toggle -->
-                        <Button x:Name="AiToggleButton" Click="AiToggleButton_Click"
-                                Style="{DynamicResource TitleBarButtonStyle}"
-                                ToolTip="{DynamicResource Chat.ToggleTooltip}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE8D4;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,4,0"
-                                           VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}"/>
-                                <TextBlock Text="AI" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"
-                                           Foreground="{DynamicResource TextSecondary}"/>
-                            </StackPanel>
-                        </Button>
-
-                        <Rectangle Width="1" Height="20" Fill="{DynamicResource BorderDefault}" Margin="4,0"/>
-
                         <!-- Minimize -->
                         <Button x:Name="MinimizeButton" Click="MinimizeButton_Click"
                                 Style="{DynamicResource WindowControlButtonStyle}"
@@ -259,6 +245,52 @@
                         </Grid>
                     </syncfusion:BackstageTabItem>
                     <syncfusion:BackStageSeparator/>
+                    <syncfusion:BackstageTabItem Header="{DynamicResource Backstage.Narrator}">
+                        <Grid Margin="16,12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="{DynamicResource Backstage.Narrator}" FontSize="18" FontWeight="SemiBold"
+                                       Margin="0,0,0,16"/>
+                            <StackPanel Grid.Row="1">
+                                <RadioButton x:Name="TtsEdgeRadio" GroupName="TtsEngine"
+                                             Checked="BackStageTtsRadio_Checked" Tag="EdgeNeural"
+                                             FontSize="14" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource TTS.Edge.Name}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{DynamicResource TTS.Edge.Desc}" FontSize="11" Foreground="#666" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton x:Name="TtsVoiceVoxRadio" GroupName="TtsEngine"
+                                             Checked="BackStageTtsRadio_Checked" Tag="VoiceVox"
+                                             FontSize="14" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource TTS.VoiceVox.Name}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{DynamicResource TTS.VoiceVox.Desc}" FontSize="11" Foreground="#666" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton x:Name="TtsWindowsRadio" GroupName="TtsEngine"
+                                             Checked="BackStageTtsRadio_Checked" Tag="WindowsOneCore"
+                                             FontSize="14" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource TTS.Windows.Name}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{DynamicResource TTS.Windows.Desc}" FontSize="11" Foreground="#666" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </RadioButton>
+                            </StackPanel>
+                            <!-- 制約事項 -->
+                            <Border Grid.Row="2" Background="#FFF8F0" BorderBrush="#E0D0B0" BorderThickness="1" CornerRadius="4" Padding="12,8" Margin="0,12,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource TTS.Constraints}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock x:Name="TtsConstraintsText" FontSize="12" Foreground="#555" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </syncfusion:BackstageTabItem>
+                    <syncfusion:BackStageSeparator/>
                     <syncfusion:BackStageCommandButton Header="{DynamicResource Quick.WindowTitle}" Click="BackStageQuickMode_Click"/>
                     <syncfusion:BackStageSeparator/>
                     <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.License}" Click="BackStageLicense_Click"/>
@@ -304,63 +336,78 @@
 
                 <!-- ═══ PPTX作成タブ専用 ═══ -->
 
-                <!-- PPTX: 出力 -->
-                <syncfusion:RibbonBar x:Name="RibbonPptxExport" Header="{DynamicResource Ribbon.Group.PptxExport}" IsLauncherButtonVisible="False">
-                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.ExportPptx}"
-                            ToolTip="{DynamicResource AiFlow.ExportPptx}"
-                            Click="RibbonExportPptx_Click" SizeForm="Large">
+                <!-- PPTX: 参考資料 -->
+                <syncfusion:RibbonBar x:Name="RibbonPptxReference" Header="{DynamicResource Ribbon.Group.Reference}" IsLauncherButtonVisible="False"
+                                      Visibility="Collapsed">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Ref.AddFile}"
+                            ToolTip="{DynamicResource Ribbon.Ref.AddFile}"
+                            Click="RibbonRefAddFile_Click" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="#B8942F"/></DataTemplate>
+                            <DataTemplate><TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Ref.AddFolder}"
+                            ToolTip="{DynamicResource Ribbon.Ref.AddFolder}"
+                            Click="RibbonRefAddFolder_Click" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Ref.ClearAll}"
+                            ToolTip="{DynamicResource Ribbon.Ref.ClearAll}"
+                            Click="RibbonRefClearAll_Click" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- PPTX: データ連携 -->
-                <syncfusion:RibbonBar x:Name="RibbonPptxData" Header="{DynamicResource Ribbon.Group.PptxData}" IsLauncherButtonVisible="False">
-                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.JsonExport}"
-                            ToolTip="{DynamicResource AiFlow.JsonExport.Tooltip}"
-                            Click="RibbonExportJson_Click" SizeForm="Small">
+                <!-- PPTX: 一括作成 -->
+                <syncfusion:RibbonBar x:Name="RibbonPptxBatch" Header="{DynamicResource Ribbon.Group.BatchCreate}" IsLauncherButtonVisible="False"
+                                      Visibility="Collapsed">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Batch.TemplateBatch}"
+                            ToolTip="{DynamicResource Ribbon.Batch.TemplateBatch}"
+                            Click="RibbonBatchCreate_Click" SizeForm="Large">
                         <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xEDE1;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.JsonImport}"
-                            ToolTip="{DynamicResource AiFlow.JsonImport.Tooltip}"
-                            Click="RibbonImportJson_Click" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.ImportPptx}"
-                            ToolTip="{DynamicResource Ribbon.File.ImportPptx}"
-                            Command="{Binding ImportPptxCommand}" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#C04000"/></DataTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8B1;" FontFamily="Segoe MDL2 Assets" FontSize="20"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- PPTX: ツール -->
-                <syncfusion:RibbonBar x:Name="RibbonPptxTools" Header="{DynamicResource Ribbon.Group.PptxTools}" IsLauncherButtonVisible="False">
-                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.Tool.AiImage}"
-                            ToolTip="{DynamicResource AiGenerate.ImagesButton.Tooltip}"
-                            Click="RibbonAiImages_Click" SizeForm="Small">
+                <!-- PPTX: コンテンツ -->
+                <syncfusion:RibbonBar x:Name="RibbonPptxContent" Header="{DynamicResource Ribbon.Group.Content}" IsLauncherButtonVisible="False"
+                                      Visibility="Collapsed">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Content.TemplateLib}"
+                            ToolTip="{DynamicResource Ribbon.Content.TemplateLib}"
+                            Click="RibbonTemplateLib_Click" SizeForm="Large">
                         <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE91B;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#B8942F"/></DataTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#2B579A"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource AiFlow.Tool.Thumbnail}"
-                            ToolTip="{DynamicResource AiWorkspace.ThumbnailButton.Tooltip}"
-                            Click="RibbonThumbnail_Click" SizeForm="Small">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Content.PromptLib}"
+                            ToolTip="{DynamicResource Ribbon.Content.PromptLib}"
+                            Click="RibbonPromptLib_Click" SizeForm="Large">
                         <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8B9;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
+                            <DataTemplate><TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#7C3AED"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource AIPrompt.Execute}"
-                            ToolTip="{DynamicResource AIPrompt.DialogTitle}"
-                            Click="AIPromptExecute_Click" SizeForm="Small">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Content.Solution}"
+                            ToolTip="{DynamicResource Ribbon.Content.Solution}"
+                            Click="RibbonSolution_Click" SizeForm="Large">
                         <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8D4;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#9C27B0"/></DataTemplate>
+                            <DataTemplate><TextBlock Text="&#xE74C;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#D97706"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                </syncfusion:RibbonBar>
+
+                <!-- PPTX: ヘルプ -->
+                <syncfusion:RibbonBar x:Name="RibbonPptxHelp" Header="{DynamicResource Ribbon.Group.Help}" IsLauncherButtonVisible="False"
+                                      Visibility="Collapsed">
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Help.Help}"
+                            ToolTip="{DynamicResource Ribbon.Help.Help}"
+                            Click="RibbonHelp_Click" SizeForm="Large">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE897;" FontFamily="Segoe MDL2 Assets" FontSize="20"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
@@ -431,13 +478,6 @@
                             <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#C04000"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource AIPrompt.Execute}"
-                            ToolTip="{DynamicResource AIPrompt.DialogTitle}"
-                            Click="AIPromptExecute_Click" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8D4;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#9C27B0"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Script.Clear}"
                             ToolTip="{DynamicResource Ribbon.Script.Clear.Tooltip}"
                             Command="{Binding ClearAllScriptsCommand}" SizeForm="Small">
@@ -495,13 +535,11 @@
         </syncfusion:Ribbon>
 
         <!-- ================================================================ -->
-        <!-- C) Main Content - TabControl + AI Panel                           -->
+        <!-- C) Main Content - TabControl                                      -->
         <!-- ================================================================ -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition x:Name="AiPanelColumn" Width="0" MinWidth="0" MaxWidth="800"/>
             </Grid.ColumnDefinitions>
 
         <TabControl Grid.Column="0" Margin="4,4,4,2" x:Name="MainTabControl"
@@ -542,7 +580,9 @@
 
                     <!-- Settings compact bar -->
                     <Border DockPanel.Dock="Top" Background="{DynamicResource BgSecondary}"
-                            Padding="8,6" BorderBrush="{DynamicResource BorderLight}" BorderThickness="0,0,0,1">
+                            Padding="8,6" BorderBrush="{DynamicResource BorderLight}" BorderThickness="0,0,0,1"
+                            MaxHeight="220">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Export.Resolution}" FontSize="10"
                                        Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,3"/>
@@ -561,7 +601,23 @@
                                       SelectedIndex="{Binding SelectedExportSpeakerIndex}"
                                       FontSize="11"
                                       ToolTip="{DynamicResource Export.DefaultSpeaker.Tooltip}"/>
+                            <TextBlock Text="{DynamicResource Export.DefaultSubtitleSize}" FontSize="10"
+                                       Foreground="{DynamicResource TextTertiary}" Margin="0,6,0,3"/>
+                            <ComboBox x:Name="DefaultSubtitleSizeCombo" FontSize="11" MinWidth="80"
+                                      SelectionChanged="DefaultSubtitleSizeCombo_SelectionChanged"
+                                      ToolTip="{DynamicResource Export.DefaultSubtitleSize.Tooltip}"/>
+                            <CheckBox x:Name="LetterboxCheckBox" Content="{DynamicResource Export.SubtitleLetterbox}"
+                                      FontSize="10" Margin="0,6,0,0"
+                                      IsChecked="{Binding SubtitleLetterbox}"
+                                      ToolTip="{DynamicResource Export.SubtitleLetterbox.Tooltip}"/>
+                            <CheckBox Content="{DynamicResource Export.GenerateSubtitleFile}"
+                                      FontSize="10" Margin="0,4,0,0"
+                                      IsChecked="{Binding GenerateSubtitleFile}"/>
+                            <CheckBox Content="{DynamicResource Export.GenerateMetadata}"
+                                      FontSize="10" Margin="0,4,0,0"
+                                      IsChecked="{Binding GenerateMetadata}"/>
                         </StackPanel>
+                        </ScrollViewer>
                     </Border>
 
                     <!-- Scene action buttons -->
@@ -800,10 +856,6 @@
                         <!-- Media info -->
                         <DockPanel Margin="0,0,0,8">
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                <Button Content="{DynamicResource Tool.TitleCreator}" Padding="10,4" Margin="3,0"
-                                        Style="{DynamicResource SecondaryButton}" FontSize="11"
-                                        ToolTip="{DynamicResource Tool.TitleCreator.Tooltip}"
-                                        Click="TitleCreatorButton_Click"/>
                                 <Button Content="{DynamicResource Overlay.Dialog.Button}" Padding="10,4" Margin="3,0"
                                         Style="{DynamicResource SecondaryButton}" FontSize="11"
                                         ToolTip="{DynamicResource Overlay.Dialog.Button.Tooltip}"
@@ -939,11 +991,12 @@
                                     <ComboBox Width="90" ItemsSource="{Binding SpeechSpeedOptions}"
                                               SelectedIndex="{Binding SelectedSpeechSpeedIndex}" FontSize="11"
                                               ToolTip="{DynamicResource Scene.SpeechSpeed.Tooltip}"/>
-                                    <TextBlock Text="{DynamicResource Export.DefaultSubtitleSize}" VerticalAlignment="Center"
+                                    <TextBlock Text="{DynamicResource Scene.SubtitleSize}" VerticalAlignment="Center"
                                                FontSize="11" Margin="16,0,6,0"/>
-                                    <TextBox Width="50" Text="{Binding EffectiveSubtitleFontSize, UpdateSourceTrigger=LostFocus}"
-                                             VerticalAlignment="Center" Padding="6,3" FontSize="11"
-                                             ToolTip="{DynamicResource Export.DefaultSubtitleSize.Tooltip}"/>
+                                    <ComboBox x:Name="SubtitleSizeCombo" Width="120" FontSize="11"
+                                              IsEnabled="{Binding CanSubtitle}"
+                                              SelectionChanged="SubtitleSizeCombo_SelectionChanged"
+                                              ToolTip="{DynamicResource Scene.SubtitleSize.Tooltip}"/>
                                 </WrapPanel>
                             </StackPanel>
                         </Border>
@@ -1050,16 +1103,10 @@
                                     ToolTip="{DynamicResource Transition.ApplyAll.Tooltip}"/>
                         </StackPanel>
 
-                        <!-- Subtitle Size + Motion (Ken Burns) -->
+                        <!-- Motion (Ken Burns) -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                            <TextBlock Text="{DynamicResource Scene.SubtitleSize}" VerticalAlignment="Center"
-                                       FontSize="11" Margin="0,0,6,0"/>
-                            <ComboBox x:Name="SubtitleSizeCombo" Width="80" FontSize="11"
-                                      IsEnabled="{Binding CanSubtitle}"
-                                      SelectionChanged="SubtitleSizeCombo_SelectionChanged"
-                                      ToolTip="{DynamicResource Scene.SubtitleSize.Tooltip}"/>
                             <TextBlock Text="{DynamicResource Motion.Title}" VerticalAlignment="Center"
-                                       FontSize="11" Margin="16,0,8,0"/>
+                                       FontSize="11" Margin="0,0,8,0"/>
                             <ComboBox Width="200" FontSize="11"
                                       ItemsSource="{Binding MotionDisplayNames}"
                                       SelectedIndex="{Binding SelectedMotionIndex}"
@@ -1160,24 +1207,6 @@
             </TabItem>
         </TabControl>
 
-            <!-- GridSplitter for AI panel resize -->
-            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center"
-                          VerticalAlignment="Stretch" Cursor="SizeWE"
-                          Background="{DynamicResource BorderDefault}"
-                          Visibility="{Binding DataContext.IsChatOpen, ElementName=ChatPanel, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed}">
-                <GridSplitter.Style>
-                    <Style TargetType="GridSplitter">
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource AccentDefault}"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </GridSplitter.Style>
-            </GridSplitter>
-
-            <!-- AI Assistant Panel -->
-            <views:ChatPanelView x:Name="ChatPanel" Grid.Column="2"/>
         </Grid>
 
         <!-- ================================================================ -->
