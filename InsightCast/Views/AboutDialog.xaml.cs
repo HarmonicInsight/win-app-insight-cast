@@ -50,7 +50,7 @@ public partial class AboutDialog : Window
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
-                FileName = "https://harmonic-insight.com",
+                FileName = "https://www.insight-office.com/ja",
                 UseShellExecute = true
             });
         }

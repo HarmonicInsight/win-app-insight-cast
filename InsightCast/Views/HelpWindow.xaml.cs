@@ -1421,15 +1421,15 @@ public partial class HelpWindow : Window
             <h2>サポート窓口</h2>
             <table>
                 <tr><th>項目</th><th>情報</th></tr>
-                <tr><td>メール</td><td>support@harmonic-insight.com</td></tr>
+                <tr><td>メール</td><td>support@h-insight.jp</td></tr>
                 <tr><td>開発元</td><td>HARMONIC insight</td></tr>
-                <tr><td>Web</td><td><a href="https://harmonic-insight.com">https://harmonic-insight.com</a></td></tr>
+                <tr><td>Web</td><td><a href="https://www.insight-office.com/ja">https://www.insight-office.com/ja</a></td></tr>
             </table>
 
             <h2>利用規約・プライバシーポリシー</h2>
             <ul>
-                <li><a href="https://harmonic-insight.com/ja/terms">利用規約</a></li>
-                <li><a href="https://harmonic-insight.com/ja/privacy">プライバシーポリシー</a></li>
+                <li><a href="https://www.insight-office.com/ja/ja/terms">利用規約</a></li>
+                <li><a href="https://www.insight-office.com/ja/ja/privacy">プライバシーポリシー</a></li>
             </ul>
 
             <h2>VOICEVOX について</h2>
@@ -2301,15 +2301,15 @@ public partial class HelpWindow : Window
             <h1 id="support">Support</h1>
             <table>
                 <tr><th>Item</th><th>Details</th></tr>
-                <tr><td>Email</td><td>support@harmonic-insight.com</td></tr>
+                <tr><td>Email</td><td>support@h-insight.jp</td></tr>
                 <tr><td>Developer</td><td>HARMONIC insight</td></tr>
-                <tr><td>Website</td><td><a href="https://harmonic-insight.com">https://harmonic-insight.com</a></td></tr>
+                <tr><td>Website</td><td><a href="https://www.insight-office.com/ja">https://www.insight-office.com/ja</a></td></tr>
             </table>
 
             <h2>Legal</h2>
             <ul>
-                <li><a href="https://harmonic-insight.com/ja/terms">Terms of Service</a></li>
-                <li><a href="https://harmonic-insight.com/ja/privacy">Privacy Policy</a></li>
+                <li><a href="https://www.insight-office.com/ja/ja/terms">Terms of Service</a></li>
+                <li><a href="https://www.insight-office.com/ja/ja/privacy">Privacy Policy</a></li>
             </ul>
 
             <h2>About VOICEVOX</h2>

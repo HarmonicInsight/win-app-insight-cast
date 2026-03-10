@@ -2865,7 +2865,7 @@ namespace InsightCast.ViewModels
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://harmonic-insight.com/ja/terms",
+                    FileName = "https://www.insight-office.com/ja/ja/terms",
                     UseShellExecute = true
                 });
             }
@@ -2883,7 +2883,7 @@ namespace InsightCast.ViewModels
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "https://harmonic-insight.com/ja/privacy",
+                    FileName = "https://www.insight-office.com/ja/ja/privacy",
                     UseShellExecute = true
                 });
             }

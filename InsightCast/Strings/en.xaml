@@ -728,7 +728,7 @@ Q: Where are templates saved?
 A: In %LOCALAPPDATA%\InsightCast\Templates.
 
 Q: How do I contact support?
-A: Email support@harmonic-insight.com.</sys:String>
+A: Email support@h-insight.jp.</sys:String>
     <sys:String x:Key="VM.FAQ.Title">FAQ</sys:String>
     <sys:String x:Key="VM.About">Insight Training Studio v{0}
 
@@ -737,8 +737,8 @@ Auto video generation tool using VOICEVOX voice engine
 Simply enter text to easily create narrated videos.
 
 Developer: HARMONIC insight
-Support: support@harmonic-insight.com
-Web: https://harmonic-insight.com</sys:String>
+Support: support@h-insight.jp
+Web: https://www.insight-office.com/ja</sys:String>
     <sys:String x:Key="VM.About.Title">About Insight Training Studio</sys:String>
     <sys:String x:Key="VM.Update.Available">A new version {0} is available. Open the download page?</sys:String>
     <sys:String x:Key="VM.Update.Title">Update Available</sys:String>
@@ -757,9 +757,9 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="VM.Shortcuts.Title">Keyboard Shortcuts</sys:String>
     <sys:String x:Key="VM.License.Title">License Info</sys:String>
     <sys:String x:Key="VM.License.Header">License Info\n─────────────────────\n\nPlan: {0}\nStatus: {1}\nExpires: {2}</sys:String>
-    <sys:String x:Key="VM.Terms.Fallback">Please review the Terms of Service at:\nhttps://harmonic-insight.com/ja/terms\n\nContact: support@harmonic-insight.com</sys:String>
+    <sys:String x:Key="VM.Terms.Fallback">Please review the Terms of Service at:\nhttps://www.insight-office.com/ja/ja/terms\n\nContact: support@h-insight.jp</sys:String>
     <sys:String x:Key="VM.Terms.Title">Terms of Service</sys:String>
-    <sys:String x:Key="VM.Privacy.Fallback">Please review the Privacy Policy at:\nhttps://harmonic-insight.com/ja/privacy\n\nContact: support@harmonic-insight.com</sys:String>
+    <sys:String x:Key="VM.Privacy.Fallback">Please review the Privacy Policy at:\nhttps://www.insight-office.com/ja/ja/privacy\n\nContact: support@h-insight.jp</sys:String>
     <sys:String x:Key="VM.Privacy.Title">Privacy Policy</sys:String>
 
     <!-- QVM Extended -->
