@@ -140,6 +140,16 @@ public partial class ChatPanelView : UserControl
 
     // ── Message Action Handlers ──
 
+    private void ArtifactLink_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (DataContext is ChatPanelViewModel vm &&
+            sender is FrameworkElement fe &&
+            fe.DataContext is InsightCommon.AI.ArtifactLink link)
+        {
+            vm.OpenArtifactCommand.Execute(link.Id);
+        }
+    }
+
     private void CopyMessage_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement fe && fe.Tag is string content && !string.IsNullOrEmpty(content))

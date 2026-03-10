@@ -22,6 +22,7 @@
     <Window.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <conv:InverseBoolConverter x:Key="InverseBool"/>
+
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -34,6 +35,9 @@
         <KeyBinding Key="N" Modifiers="Control" Command="ApplicationCommands.New"/>
         <KeyBinding Key="O" Modifiers="Control" Command="ApplicationCommands.Open"/>
         <KeyBinding Key="S" Modifiers="Control" Command="ApplicationCommands.Save"/>
+        <KeyBinding Key="OemPlus" Modifiers="Control" Command="{x:Static views:MainWindow.ZoomInCommand}"/>
+        <KeyBinding Key="OemMinus" Modifiers="Control" Command="{x:Static views:MainWindow.ZoomOutCommand}"/>
+        <KeyBinding Key="D0" Modifiers="Control" Command="{x:Static views:MainWindow.ZoomResetCommand}"/>
     </Window.InputBindings>
 
     <!-- Resize hit-test area (nearly transparent background needed for hit-testing) -->
@@ -362,44 +366,6 @@
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- PPTX: 一括作成 -->
-                <syncfusion:RibbonBar x:Name="RibbonPptxBatch" Header="{DynamicResource Ribbon.Group.BatchCreate}" IsLauncherButtonVisible="False"
-                                      Visibility="Collapsed">
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Batch.TemplateBatch}"
-                            ToolTip="{DynamicResource Ribbon.Batch.TemplateBatch}"
-                            Click="RibbonBatchCreate_Click" SizeForm="Large">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8B1;" FontFamily="Segoe MDL2 Assets" FontSize="20"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                </syncfusion:RibbonBar>
-
-                <!-- PPTX: コンテンツ -->
-                <syncfusion:RibbonBar x:Name="RibbonPptxContent" Header="{DynamicResource Ribbon.Group.Content}" IsLauncherButtonVisible="False"
-                                      Visibility="Collapsed">
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Content.TemplateLib}"
-                            ToolTip="{DynamicResource Ribbon.Content.TemplateLib}"
-                            Click="RibbonTemplateLib_Click" SizeForm="Large">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#2B579A"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Content.PromptLib}"
-                            ToolTip="{DynamicResource Ribbon.Content.PromptLib}"
-                            Click="RibbonPromptLib_Click" SizeForm="Large">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#7C3AED"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Content.Solution}"
-                            ToolTip="{DynamicResource Ribbon.Content.Solution}"
-                            Click="RibbonSolution_Click" SizeForm="Large">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE74C;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#D97706"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                </syncfusion:RibbonBar>
-
                 <!-- PPTX: ヘルプ -->
                 <syncfusion:RibbonBar x:Name="RibbonPptxHelp" Header="{DynamicResource Ribbon.Group.Help}" IsLauncherButtonVisible="False"
                                       Visibility="Collapsed">
@@ -475,7 +441,7 @@
                             ToolTip="{DynamicResource Ribbon.File.ImportPptx}"
                             Command="{Binding ImportPptxCommand}" SizeForm="Small">
                         <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#C04000"/></DataTemplate>
+                            <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource AccentGold}"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Script.Clear}"
@@ -1243,9 +1209,30 @@
         <Border Grid.Row="5" Background="{DynamicResource BgSecondary}"
                 BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,1,0,0"
                 Padding="8,4" CornerRadius="0,0,8,8">
-            <TextBlock Text="{Binding StatusText}" FontSize="11"
-                       Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"
-                       TextTrimming="CharacterEllipsis"/>
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
+                    <Button Content="-" FontSize="11" FontWeight="Bold"
+                            Click="ZoomOut_Click" Padding="4,0" MinWidth="0" MinHeight="0"
+                            Background="Transparent" BorderThickness="0" Cursor="Hand"
+                            Foreground="{DynamicResource TextSecondary}"
+                            FontFamily="Segoe UI"
+                            ToolTip="{DynamicResource UI.ZoomOut}"/>
+                    <TextBlock x:Name="ScaleLabel" Text="100%" FontSize="10" Margin="4,0"
+                               Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"
+                               Cursor="Hand" MouseLeftButtonDown="ScaleLabel_Click"
+                               FontFamily="Segoe UI"
+                               ToolTip="{DynamicResource UI.ZoomReset}"/>
+                    <Button Content="+" FontSize="11" FontWeight="Bold"
+                            Click="ZoomIn_Click" Padding="4,0" MinWidth="0" MinHeight="0"
+                            Background="Transparent" BorderThickness="0" Cursor="Hand"
+                            Foreground="{DynamicResource TextSecondary}"
+                            FontFamily="Segoe UI"
+                            ToolTip="{DynamicResource UI.ZoomIn}"/>
+                </StackPanel>
+                <TextBlock Text="{Binding StatusText}" FontSize="11"
+                           Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"/>
+            </DockPanel>
         </Border>
 
             </Grid>

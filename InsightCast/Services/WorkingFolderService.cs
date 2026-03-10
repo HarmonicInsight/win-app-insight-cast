@@ -151,7 +151,7 @@ namespace InsightCast.Services
             {
                 using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 using var doc = WordprocessingDocument.Open(stream, false);
-                var body = doc.MainDocumentPart?.Document.Body;
+                var body = doc.MainDocumentPart?.Document?.Body;
                 if (body == null)
                 {
                     return new ReferenceMaterial
@@ -243,7 +243,7 @@ namespace InsightCast.Services
                     sb.AppendLine($"--- Slide {slideCount} ---");
 
                     // Slide text
-                    var slideText = slidePart.Slide.InnerText;
+                    var slideText = slidePart.Slide?.InnerText;
                     if (!string.IsNullOrWhiteSpace(slideText))
                     {
                         if (slideText.Length > 500) slideText = slideText[..500] + "...";
@@ -254,7 +254,7 @@ namespace InsightCast.Services
                     var notesPart = slidePart.NotesSlidePart;
                     if (notesPart != null)
                     {
-                        var notesText = notesPart.NotesSlide.InnerText;
+                        var notesText = notesPart.NotesSlide?.InnerText;
                         if (!string.IsNullOrWhiteSpace(notesText))
                         {
                             sb.AppendLine($"[Notes] {notesText}");

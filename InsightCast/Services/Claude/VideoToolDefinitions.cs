@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using InsightCommon.AI;
+using InsightCommon.AI.FileGeneration;
 
 namespace InsightCast.Services.Claude;
 
@@ -27,6 +28,8 @@ public static class VideoToolDefinitions
         AddCtaEndcard,
         GenerateReport,
         ReviseReport,
+        FileGenerationToolDefinitions.GeneratePresentation,
+        FileGenerationToolDefinitions.GenerateSpreadsheet,
     };
 
     public static readonly ToolDefinition GetScenes = new()

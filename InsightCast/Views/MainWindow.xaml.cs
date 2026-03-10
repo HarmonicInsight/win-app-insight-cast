@@ -25,6 +25,11 @@ namespace InsightCast.Views
 {
     public partial class MainWindow : Window
     {
+        // ── Zoom Commands ──
+        public static readonly RoutedCommand ZoomInCommand = new();
+        public static readonly RoutedCommand ZoomOutCommand = new();
+        public static readonly RoutedCommand ZoomResetCommand = new();
+
         private readonly MainWindowViewModel _vm;
         private readonly Config _config;
         private ClaudeService? _claudeService;
@@ -68,11 +73,22 @@ namespace InsightCast.Views
             if (version != null)
                 VersionLabel.Text = $"v{version.Major}.{version.Minor}.{version.Build}";
 
+            // Zoom command bindings
+            CommandBindings.Add(new CommandBinding(ZoomInCommand, (_, _) => InsightCommon.UI.InsightScaleManager.Instance.ZoomIn()));
+            CommandBindings.Add(new CommandBinding(ZoomOutCommand, (_, _) => InsightCommon.UI.InsightScaleManager.Instance.ZoomOut()));
+            CommandBindings.Add(new CommandBinding(ZoomResetCommand, (_, _) => InsightCommon.UI.InsightScaleManager.Instance.Reset()));
+
             Loaded += (_, _) =>
             {
                 // ── Phase 1: Essential UI setup (immediate) ────────────────
                 SfSkinManager.SetTheme(MainRibbon, new Theme("Office2019White"));
                 MainRibbon.HideBackStage();
+
+                // UI Scale
+                InsightCommon.UI.InsightScaleManager.Instance.ApplyToWindow(this);
+                ScaleLabel.Text = InsightCommon.UI.InsightScaleManager.Instance.ScalePercent;
+                InsightCommon.UI.InsightScaleManager.Instance.ScaleChanged += (_, _) =>
+                    ScaleLabel.Text = InsightCommon.UI.InsightScaleManager.Instance.ScalePercent;
 
                 // Set dialog service immediately (needed for UI interactions)
                 _vm.SetDialogService(new DialogService(this));
@@ -87,6 +103,7 @@ namespace InsightCast.Views
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
                 {
                     Opacity = 1;
+                    StyleBackStageHeader();
                 });
 
                 // ── Phase 2: Deferred initialization (background/low priority) ──
@@ -156,7 +173,7 @@ namespace InsightCast.Views
                         _vm.RefreshSceneList();
                     }
                 },
-                () => _claudeService?.AiService.Config?.GetApiKey(AiProviderType.OpenAi)
+                () => _claudeService?.AiService.Config?.GetApiKey(AiProviderType.OpenAi) ?? ""
             );
 
             var chatVm = new ViewModels.ChatPanelViewModel(
@@ -201,15 +218,33 @@ namespace InsightCast.Views
             UpdateRibbonForTab(isPptxTab, isVideoTab);
         }
 
+        /// <summary>BackStage ヘッダー（「ファイル」ボタン）のフォントを小さく＋白文字に</summary>
+        private void StyleBackStageHeader()
+        {
+            // TODO: Syncfusion BackStage ヘッダーの要素名が不明。ビジュアルツリー調査が必要。
+            // 次回セッションで対応: ToggleButton を探してFontSize=11, Foreground=White に設定する。
+        }
+
+        private static T? FindVisualChild<T>(DependencyObject parent, Func<T, bool>? predicate = null) where T : DependencyObject
+        {
+            for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
+                if (child is T t && (predicate == null || predicate(t)))
+                    return t;
+                var found = FindVisualChild<T>(child, predicate);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
         private void UpdateRibbonForTab(bool isPptxTab, bool isVideoTab)
         {
             // PPTX tab groups
             if (RibbonPptxReference != null)
                 RibbonPptxReference.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
-            if (RibbonPptxBatch != null)
-                RibbonPptxBatch.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
-            if (RibbonPptxContent != null)
-                RibbonPptxContent.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
+
+
             if (RibbonPptxHelp != null)
                 RibbonPptxHelp.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1015,8 +1050,6 @@ namespace InsightCast.Views
         }
 
         // ── PPTX tab ribbon relay handlers ──
-        private void RibbonExportPptx_Click(object sender, RoutedEventArgs e) { /* TODO: wire to new prompt-based flow */ }
-        private void RibbonAiImages_Click(object sender, RoutedEventArgs e) { /* TODO: wire to new prompt-based flow */ }
 
         // ── Video tab PPTX export ──
         private async void RibbonVideoExportPptx_Click(object sender, RoutedEventArgs e)
@@ -1236,17 +1269,6 @@ namespace InsightCast.Views
             _vm.ImportPptxCommand.Execute(null);
         }
 
-        private void BackStageImportJson_Click(object sender, RoutedEventArgs e)
-        {
-            MainRibbon.HideBackStage();
-            _vm.ImportJsonCommand.Execute(null);
-        }
-
-        private void BackStageBatchExport_Click(object sender, RoutedEventArgs e)
-        {
-            MainRibbon.HideBackStage();
-            _vm.BatchExportCommand.Execute(null);
-        }
 
         private void BackStageLanguageRadio_Checked(object sender, RoutedEventArgs e)
         {
@@ -1347,25 +1369,8 @@ namespace InsightCast.Views
             PlanningTabControl.RibbonClearAllReferences();
         }
 
-        private void RibbonBatchCreate_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: Batch template creation
-        }
 
-        private void RibbonTemplateLib_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: Template library
-        }
 
-        private void RibbonPromptLib_Click(object sender, RoutedEventArgs e)
-        {
-            PlanningTabControl.RibbonFocusPromptTree();
-        }
-
-        private void RibbonSolution_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: Solutions
-        }
 
         private void RibbonHelp_Click(object sender, RoutedEventArgs e)
         {
@@ -1374,6 +1379,17 @@ namespace InsightCast.Views
         }
 
         #endregion
+
+        // ── Zoom ──
+
+        private void ZoomIn_Click(object sender, RoutedEventArgs e)
+            => InsightCommon.UI.InsightScaleManager.Instance.ZoomIn();
+
+        private void ZoomOut_Click(object sender, RoutedEventArgs e)
+            => InsightCommon.UI.InsightScaleManager.Instance.ZoomOut();
+
+        private void ScaleLabel_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+            => InsightCommon.UI.InsightScaleManager.Instance.Reset();
     }
 
     /// <summary>Helper class for recent file display</summary>

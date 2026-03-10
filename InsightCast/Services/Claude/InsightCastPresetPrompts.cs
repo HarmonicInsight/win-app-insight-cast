@@ -44,7 +44,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "英語版を即座に作成",
             LabelEn = "Instantly create English version",
             Icon = "🌐",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、英語に翻訳してください。直訳ではなく、教育動画にふさわしい自然な英語表現にしてください。翻訳結果をset_multiple_scenesツールでナレーションとして上書き設定してください。",
@@ -58,7 +58,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "日本語版を即座に作成",
             LabelEn = "Instantly create Japanese version",
             Icon = "🇯🇵",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、日本語に翻訳してください。教育動画にふさわしい分かりやすい日本語にしてください。翻訳結果をset_multiple_scenesツールでナレーションとして上書き設定してください。",
@@ -73,7 +73,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "中国語圏に展開（字幕追加）",
             LabelEn = "Expand to Chinese market (add subtitles)",
             Icon = "🇨🇳",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、簡体字中国語に翻訳してください。教育動画にふさわしい自然な中国語表現にしてください。翻訳結果をset_multiple_scenesツールで字幕として設定してください（ナレーションは変更しない）。",
@@ -87,7 +87,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "韓国語圏に展開（字幕追加）",
             LabelEn = "Expand to Korean market (add subtitles)",
             Icon = "🇰🇷",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションテキストを取得し、韓国語に翻訳してください。教育動画にふさわしい自然な韓国語表現にしてください。翻訳結果をset_multiple_scenesツールで字幕として設定してください（ナレーションは変更しない）。",
@@ -108,7 +108,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "スライドから即プロナレーション",
             LabelEn = "Instant pro narration from slides",
             Icon = "🎙️",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_pptx_notesツールでスライドのノート（スピーカーノート）を取得し、各シーンのナレーションに変換してください。箇条書きのノートを自然な話し言葉に変換し、set_multiple_scenesツールで設定してください。1シーンあたり100〜200文字を目安にしてください。ノートが空のシーンはシーンタイトルから内容を推測してナレーションを作成してください。",
@@ -122,7 +122,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "伝わるナレーションに磨き上げ",
             LabelEn = "Polish narration for maximum impact",
             Icon = "✨",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを読み取り、文法の修正、表現の改善、分かりやすさの向上を行ってください。大幅な変更は避け、自然な改善にとどめてください。改善したテキストをset_multiple_scenesで設定してください。",
@@ -136,7 +136,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "タイトルだけでナレーション完成",
             LabelEn = "Complete narration from titles alone",
             Icon = "📖",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのタイトルと既存テキストを取得し、各シーンに適したナレーションを新規作成してください。導入→本題→まとめの流れを意識し、1シーンあたり100〜150文字の自然な話し言葉にしてください。set_multiple_scenesで設定してください。\n\n※AIはシーンのタイトル・ナレーション・字幕のテキスト情報のみ参照できます。画像や動画の内容は参照できません。",
@@ -188,7 +188,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "ムダを削ぎ落として時短",
             LabelEn = "Cut the fluff, save viewer time",
             Icon = "✂️",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを取得し、より簡潔に書き直してください:\n\n- 冗長な表現や繰り返しを削除\n- 一文を短くし、要点を先に伝える\n- 「〜ということになります」→「〜です」等の圧縮\n- 各シーンのナレーションを現在の70〜80%の文字数に圧縮\n- 重要な情報は削らず、表現のみ簡潔にする\n\nset_multiple_scenesで設定してください。",
@@ -202,7 +202,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "経営層・社外向けトーンに格上げ",
             LabelEn = "Elevate tone for executives & clients",
             Icon = "👔",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを取得し、よりフォーマルで丁寧なトーンに調整してください:\n\n- 敬語（です・ます調）を徹底\n- 「〜してね」→「〜してください」等のカジュアル表現を修正\n- ビジネスにふさわしい語彙を使用\n- 社外向けプレゼン・経営層向け報告にも使えるトーンに\n- 過度に硬くならないよう、分かりやすさは維持\n\nset_multiple_scenesで設定してください。",
@@ -216,7 +216,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "親しみやすく視聴者との距離を縮める",
             LabelEn = "Build rapport with a friendly tone",
             Icon = "😊",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを取得し、カジュアルで親しみやすいトーンに調整してください:\n\n- 「〜ですよね」「〜しましょう」等の親しみやすい表現を使用\n- 視聴者に語りかけるような口調（「皆さん」「一緒に〜」）\n- 堅い専門用語をやさしい言葉に置き換え\n- YouTube動画やSNSコンテンツにふさわしいトーン\n- 敬語は維持しつつ、距離感を縮める\n\nset_multiple_scenesで設定してください。",
@@ -236,7 +236,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "テンポを整えて視聴体験を向上",
             LabelEn = "Balance pacing for better viewing",
             Icon = "⚖️",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを取得し、長さのバラつきを分析してください。極端に短い・長いシーンを特定し、全体のバランスが取れるよう調整してください:\n\n- 目標: 各シーン80〜150文字程度\n- 短すぎるシーン: 補足説明を追加\n- 長すぎるシーン: 要点を絞って簡潔に\n- 内容の意味は変えない\n\nset_multiple_scenesで調整結果を設定してください。",
@@ -264,7 +264,7 @@ public static class InsightCastPresetPrompts
             LabelJa = "ブランドの一貫性を確保",
             LabelEn = "Ensure brand consistency",
             Icon = "🎯",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesツールで全シーンのナレーションを分析し、トーンと文体を統一してください:\n\n- 敬体（です・ます調）か常体（だ・である調）を統一\n- 主語の使い方を統一（「私たち」「当社」等）\n- 接続詞の使い方を統一\n- 文末表現のバリエーションを適度に維持\n- 全体を通して一貫した印象になるよう調整\n\nset_multiple_scenesで設定してください。",
@@ -455,7 +455,7 @@ Evaluate and provide specific improvement suggestions:
             LabelJa = "理解度チェッククイズを自動挿入",
             LabelEn = "Auto-insert comprehension quiz scenes",
             Icon = "❓",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesで全シーンのナレーションを読み取り、内容に基づいた理解度チェッククイズを作成してください:\n\n1. 主要な学習ポイントを3〜5個特定\n2. 各ポイントの直後にadd_sceneでクイズシーンを挿入\n3. クイズのナレーション形式: 「ここで確認クイズです。[質問]　答えは…[回答と解説]」\n4. set_multiple_scenesで全クイズシーンのナレーションを一括設定\n\nクイズは選択式（A/B/C）または○×形式で、正解と簡潔な解説を含めてください。",
@@ -489,7 +489,7 @@ Evaluate and provide specific improvement suggestions:
             LabelJa = "誰でもわかる平易な表現に書き換え",
             LabelEn = "Rewrite in plain language for all audiences",
             Icon = "📖",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesで全シーンのナレーションを取得し、より平易でわかりやすい表現に書き換えてください:\n\n- 専門用語は初出時に「（＝○○のこと）」と補足説明を追加\n- 長い文は短い文に分割（1文40文字以内を目標）\n- カタカナ語は必要最低限にし、日本語で言い換え可能なものは置き換え\n- 抽象的な説明には具体例を追加\n- 新入社員や非専門家が理解できるレベルを目標\n\nset_multiple_scenesで設定してください。",
@@ -503,7 +503,7 @@ Evaluate and provide specific improvement suggestions:
             LabelJa = "画面の説明をナレーションに追加",
             LabelEn = "Add visual descriptions to narration",
             Icon = "👁️",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = "get_scenesで全シーンを確認し、音声だけで内容が伝わるようナレーションを補強してください:\n\n- 「この画面では」「ここに表示されている」等の指示語を具体的な説明に置き換え\n- グラフや図表を参照する場面では、数値や傾向を口頭で説明するテキストを追加\n- 「ご覧のように」→ 具体的に何が表示されているかを説明\n- 画面を見なくても内容が理解できるレベルを目標\n\nset_multiple_scenesで設定してください。",
@@ -633,7 +633,7 @@ Focus on high-volume keywords relevant to the industry and target audience.",
             LabelJa = "Shorts用に切り出しポイントを提案",
             LabelEn = "Suggest Shorts clip points",
             Icon = "📱",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = @"get_scenes でシーン構成を確認し、YouTube Shorts（60秒以内の縦型動画）に切り出せるポイントを提案してください。
@@ -665,7 +665,7 @@ Suggest at least 3 Shorts ideas, ordered by viral potential.",
             LabelJa = "視聴維持率を上げるフック挿入",
             LabelEn = "Add retention hooks",
             Icon = "🎯",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
 
             RequiresContextData = true,
             PromptJa = @"get_scenes で全シーンのナレーションを確認し、視聴維持率を向上させるフックを各シーンに追加してください。
@@ -815,7 +815,7 @@ Use a tone that builds empathy and drives action, translating leadership decisio
             LabelJa = "映像ディレクターチェック",
             LabelEn = "Video director review",
             Icon = "\U0001F3AC",
-            RecommendedPersonaId = "megumi",
+            RecommendedPersonaId = "manabu",
             RequiresContextData = true,
             SystemPromptExtensionJa = """
                 あなたは企業向け映像制作のディレクターとして10年以上の経験を持ちます。

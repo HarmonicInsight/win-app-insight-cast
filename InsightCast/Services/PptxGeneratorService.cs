@@ -147,7 +147,7 @@ namespace InsightCast.Services
 
             slidePart.Slide.Save();
 
-            presentationPart.Presentation.SlideIdList!.Append(new SlideId
+            presentationPart.Presentation!.SlideIdList!.Append(new SlideId
             {
                 Id = slideId++,
                 RelationshipId = presentationPart.GetIdOfPart(slidePart)
@@ -205,7 +205,7 @@ namespace InsightCast.Services
                 Id = 2147483648u,
                 RelationshipId = presentationPart.GetIdOfPart(slideMasterPart)
             });
-            presentationPart.Presentation.SlideMasterIdList = masterIdList;
+            presentationPart.Presentation!.SlideMasterIdList = masterIdList;
 
             return slideLayoutPart;
         }
@@ -249,7 +249,7 @@ namespace InsightCast.Services
 
             slidePart.Slide.Save();
 
-            presentationPart.Presentation.SlideIdList!.Append(new SlideId
+            presentationPart.Presentation!.SlideIdList!.Append(new SlideId
             {
                 Id = slideId++,
                 RelationshipId = presentationPart.GetIdOfPart(slidePart)

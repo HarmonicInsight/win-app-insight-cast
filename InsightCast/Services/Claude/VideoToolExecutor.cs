@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using InsightCast.Models;
 using InsightCast.Services;
 using InsightCommon.AI;
+using InsightCommon.AI.FileGeneration;
 
 namespace InsightCast.Services.Claude;
 
@@ -86,6 +87,8 @@ public class VideoToolExecutor : IToolExecutor
                 "generate_ab_thumbnails" => ExecuteGenerateAbThumbnails(input),
                 "add_cta_endcard" => ExecuteAddCtaEndcard(input),
                 "generate_report" or "revise_report" => await ExecuteGenerateReportAsync(input),
+                "generate_presentation" => await ExecuteGeneratePresentationAsync(input, ct),
+                "generate_spreadsheet" => ExecuteGenerateSpreadsheetTool(input),
                 _ => JsonSerializer.Serialize(new { error = $"Unknown tool: {toolName}" }),
             };
             return new ToolExecutionResult { Content = content };
@@ -561,5 +564,25 @@ public class VideoToolExecutor : IToolExecutor
                 message = result.MessageJa,
             });
         }
+    }
+
+    /// <summary>
+    /// generate_presentation: PPTX プレゼンテーションを生成
+    /// </summary>
+    private async Task<string> ExecuteGeneratePresentationAsync(JsonElement input, CancellationToken ct)
+    {
+        var fallbackDir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        return await FileGenerationExecutor.ExecuteGeneratePresentationAsync(
+            input, fallbackDir, onGenerated: null, ct);
+    }
+
+    /// <summary>
+    /// generate_spreadsheet: Excel スプレッドシートを生成
+    /// </summary>
+    private string ExecuteGenerateSpreadsheetTool(JsonElement input)
+    {
+        var fallbackDir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        return FileGenerationExecutor.ExecuteGenerateSpreadsheet(
+            input, fallbackDir, onGenerated: null);
     }
 }

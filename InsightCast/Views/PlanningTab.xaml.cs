@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -35,7 +36,9 @@ public partial class PlanningTab : UserControl
     private string? _lastAiOutput;
 
     /// <summary>実行ボタン押下時に発火。プロンプトテキスト + 参考資料コンテキスト + モデルID。</summary>
+    #pragma warning disable CS0067
     public event Action<string /*promptText*/, string? /*referenceContext*/, string /*modelId*/>? ExecuteRequested;
+    #pragma warning restore CS0067
 
     public PlanningTab()
     {
@@ -79,7 +82,14 @@ public partial class PlanningTab : UserControl
         ModelCombo.ItemsSource = models;
         ModelCombo.DisplayMemberPath = "DisplayName";
         ModelCombo.SelectedValuePath = "ModelId";
-        ModelCombo.SelectedValue = ClaudeModels.DefaultModel;
+        ModelCombo.SelectedValue = ClaudeModels.DefaultPremiumModel;
+
+        // Artifact filter combo
+        ArtifactFilterCombo.ItemsSource = new[]
+        {
+            LocalizationService.GetString("PE.OutputAll"),
+        };
+        ArtifactFilterCombo.SelectedIndex = 0;
 
         RefreshCategoryComboBox();
         BuildTree();
@@ -90,6 +100,10 @@ public partial class PlanningTab : UserControl
     {
         _chatVm = chatVm;
         PlanningChatPanel.DataContext = chatVm;
+
+        // ── Context Providers（参考資料 + プロジェクトサマリーをシステムプロンプトに注入）──
+        chatVm.GetReferenceContext = () => _referencePanelVm?.BuildReferenceContext();
+        chatVm.GetProjectSummary = () => BuildProjectSummary();
 
         // AI の応答を Output パネルに反映するためイベント購読
         chatVm.PropertyChanged += (_, e) =>
@@ -102,6 +116,57 @@ public partial class PlanningTab : UserControl
 
         // Chat panel の Close/PopOut はここでは無視（PlanningTab 内では常時表示）
         PlanningChatPanel.CloseRequested += () => { /* noop in planning tab */ };
+
+        // ウェルカムメッセージ（プッシュ型）
+        SendWelcomeMessage(chatVm);
+    }
+
+    /// <summary>プロジェクトのシーン概要をテキスト化（システムプロンプト注入用）</summary>
+    private string? BuildProjectSummary()
+    {
+        var project = _viewModel?.Project;
+        if (project == null || project.Scenes.Count == 0) return null;
+
+        var lang = _config?.Language == "EN" ? "EN" : "JA";
+        var sb = new System.Text.StringBuilder();
+
+        var scenesWithNarration = project.Scenes.Count(s => !string.IsNullOrWhiteSpace(s.NarrationText));
+        var scenesWithMedia = project.Scenes.Count(s => s.MediaType != MediaType.None && !string.IsNullOrEmpty(s.MediaPath));
+        var scenesWithSubtitle = project.Scenes.Count(s => !string.IsNullOrWhiteSpace(s.SubtitleText));
+
+        if (lang == "EN")
+        {
+            sb.AppendLine($"- Total scenes: {project.Scenes.Count}");
+            sb.AppendLine($"- Scenes with narration: {scenesWithNarration}");
+            sb.AppendLine($"- Scenes with media: {scenesWithMedia}");
+            sb.AppendLine($"- Scenes with subtitles: {scenesWithSubtitle}");
+            sb.AppendLine($"- Resolution: {project.Output.Resolution}");
+            sb.AppendLine($"- Default transition: {project.DefaultTransition}");
+        }
+        else
+        {
+            sb.AppendLine($"- シーン数: {project.Scenes.Count}");
+            sb.AppendLine($"- ナレーションあり: {scenesWithNarration}");
+            sb.AppendLine($"- メディアあり: {scenesWithMedia}");
+            sb.AppendLine($"- 字幕あり: {scenesWithSubtitle}");
+            sb.AppendLine($"- 解像度: {project.Output.Resolution}");
+            sb.AppendLine($"- デフォルトトランジション: {project.DefaultTransition}");
+        }
+
+        return sb.ToString();
+    }
+
+    private void SendWelcomeMessage(ChatPanelViewModel chatVm)
+    {
+        if (chatVm.ChatMessages.Count > 0) return; // 既にメッセージがある場合はスキップ
+
+        var welcome = LocalizationService.GetString("PE.WelcomeMessage");
+        chatVm.ChatMessages.Add(new InsightCommon.AI.ChatMessageVm
+        {
+            Role = InsightCommon.AI.ChatRole.Assistant,
+            Content = welcome,
+            IsWelcome = true,
+        });
     }
 
     /// <summary>プロバイダー設定が更新された時に呼ぶ。</summary>
@@ -159,8 +224,6 @@ public partial class PlanningTab : UserControl
         if (string.IsNullOrWhiteSpace(result)) return;
 
         _lastAiOutput = result;
-        ApplyButton.IsEnabled = true;
-        ConfirmButton.IsEnabled = true;
 
         // Add output item to the panel
         OutputEmptyText.Visibility = Visibility.Collapsed;
@@ -200,7 +263,7 @@ public partial class PlanningTab : UserControl
         headerPanel.Children.Add(new TextBlock
         {
             Text = $"AI Output [{timestamp}]",
-            FontSize = 12,
+            FontSize = 11,
             FontWeight = FontWeights.SemiBold,
             Foreground = new System.Windows.Media.SolidColorBrush(
                 System.Windows.Media.Color.FromRgb(0x16, 0xA3, 0x4A)),
@@ -235,6 +298,7 @@ public partial class PlanningTab : UserControl
 
         border.Child = stack;
         OutputPanel.Children.Add(border);
+        RefreshArtifactCount();
     }
 
     // ── Ribbon Delegation (called from MainWindow) ──
@@ -259,75 +323,36 @@ public partial class PlanningTab : UserControl
         PromptTree?.Focus();
     }
 
-    // ── Action Buttons ──
+    // ── Artifact Panel ──
 
-    private void Apply_Click(object sender, RoutedEventArgs e)
+    private void OpenArtifactFolder_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(_lastAiOutput)) return;
-
-        // AI の出力をチャットパネル経由でシーンに反映
-        // ExecuteRequested で MainWindow に通知
-        ExecuteRequested?.Invoke(_lastAiOutput, null, "apply");
-    }
-
-    private void Register_Click(object sender, RoutedEventArgs e)
-    {
-        // 現在のプロンプトをカスタムとして登録
-        var promptText = PromptBox.Text?.Trim();
-        if (string.IsNullOrWhiteSpace(promptText))
+        var project = _viewModel?.Project;
+        if (project == null) return;
+        var folder = project.WorkingFolderPath;
+        if (!string.IsNullOrEmpty(folder) && System.IO.Directory.Exists(folder))
         {
-            // チャットパネルの入力テキストを使用
-            promptText = _chatVm?.AiInput?.Trim();
+            System.Diagnostics.Process.Start("explorer.exe", folder);
         }
-
-        if (string.IsNullOrWhiteSpace(promptText)) return;
-
-        var newPreset = new UserPromptPreset
-        {
-            Id = PromptPresetService.GenerateId(),
-            Name = LocalizationService.GetString("PE.NewPrompt"),
-            SystemPrompt = promptText,
-            Category = CategoryCombo.Text?.Trim() ?? "",
-        };
-        PromptPresetService.Add(newPreset);
-        RefreshCategoryComboBox();
-        BuildTree();
-        SelectPresetInTree(newPreset.Id);
     }
 
-    private void Confirm_Click(object sender, RoutedEventArgs e)
+    private void ArtifactFilter_Changed(object sender, SelectionChangedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(_lastAiOutput)) return;
+        // TODO: Filter output items by type
+        RefreshArtifactCount();
+    }
 
-        // 成果物の確認ダイアログを表示
-        var dialog = new Window
-        {
-            Title = LocalizationService.GetString("PE.Confirm"),
-            Width = 700,
-            Height = 500,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Owner = Window.GetWindow(this),
-        };
+    private void ArtifactSearch_Changed(object sender, TextChangedEventArgs e)
+    {
+        // TODO: Search/filter output items
+        RefreshArtifactCount();
+    }
 
-        var scrollViewer = new ScrollViewer
-        {
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Padding = new Thickness(12),
-        };
-
-        var textBox = new TextBox
-        {
-            Text = _lastAiOutput,
-            TextWrapping = TextWrapping.Wrap,
-            IsReadOnly = true,
-            Background = System.Windows.Media.Brushes.Transparent,
-            BorderThickness = new Thickness(0),
-            FontSize = 12,
-        };
-
-        scrollViewer.Content = textBox;
-        dialog.Content = scrollViewer;
-        dialog.ShowDialog();
+    private void RefreshArtifactCount()
+    {
+        var count = OutputPanel.Children.Count;
+        if (OutputEmptyText.Visibility == Visibility.Visible) count = 0;
+        ArtifactCountBadge.Text = count > 0 ? $"({count})" : "";
     }
 
     // ── Tree Building ──
@@ -337,19 +362,72 @@ public partial class PlanningTab : UserControl
         PromptTree.Items.Clear();
 
         var allPresets = PromptPresetService.LoadAll();
+        var custom = allPresets.Where(p => !p.Id.StartsWith("builtin_", StringComparison.Ordinal)).ToList();
+        var builtIn = allPresets.Where(p => p.Id.StartsWith("builtin_", StringComparison.Ordinal)).ToList();
 
-        // Built-in presets by category
+        // ── マイプロンプト（上） ──
+        var customHeader = new TreeViewItem
+        {
+            Header = LocalizationService.GetString("PE.Custom"),
+            IsExpanded = true,
+            FontWeight = FontWeights.Medium,
+            FontSize = 11,
+        };
+
+        if (custom.Count == 0)
+        {
+            customHeader.Items.Add(new TreeViewItem
+            {
+                Header = LocalizationService.GetString("PE.CustomEmpty"),
+                FontStyle = FontStyles.Italic,
+                FontSize = 10,
+                Foreground = System.Windows.Media.Brushes.Gray,
+                IsEnabled = false,
+            });
+        }
+        else
+        {
+            var grouped = custom.GroupBy(p => string.IsNullOrWhiteSpace(p.Category) ? "" : p.Category)
+                .OrderBy(g => g.Key == "" ? 1 : 0)
+                .ThenBy(g => g.Key);
+
+            foreach (var group in grouped)
+            {
+                if (string.IsNullOrEmpty(group.Key))
+                {
+                    foreach (var preset in group)
+                        customHeader.Items.Add(CreatePresetTreeItem(preset));
+                }
+                else
+                {
+                    var groupItem = new TreeViewItem
+                    {
+                        Header = "\uD83D\uDCC1 " + group.Key,
+                        IsExpanded = true,
+                        FontWeight = FontWeights.Normal,
+                        FontSize = 11,
+                    };
+                    foreach (var preset in group)
+                        groupItem.Items.Add(CreatePresetTreeItem(preset));
+                    customHeader.Items.Add(groupItem);
+                }
+            }
+        }
+        PromptTree.Items.Add(customHeader);
+
+        // ── 区切り ──
+        PromptTree.Items.Add(new Separator { Margin = new Thickness(4, 6, 4, 6) });
+
+        // ── プリセット（下） ──
         var presetHeader = new TreeViewItem
         {
             Header = LocalizationService.GetString("PE.Presets"),
-            IsExpanded = true,
-            FontWeight = FontWeights.SemiBold,
-            FontSize = 12,
+            IsExpanded = false,
+            FontWeight = FontWeights.Medium,
+            FontSize = 11,
         };
 
-        var builtIn = allPresets.Where(p => p.Id.StartsWith("builtin_", StringComparison.Ordinal)).ToList();
         var categories = builtIn.Select(p => p.Category).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct();
-
         foreach (var category in categories)
         {
             var catItem = new TreeViewItem
@@ -372,47 +450,6 @@ public partial class PlanningTab : UserControl
             presetHeader.Items.Add(catItem);
         }
         PromptTree.Items.Add(presetHeader);
-
-        // Custom prompts — group-based
-        var customHeader = new TreeViewItem
-        {
-            Header = LocalizationService.GetString("PE.Custom"),
-            IsExpanded = true,
-            FontWeight = FontWeights.SemiBold,
-            FontSize = 12,
-        };
-        var custom = allPresets.Where(p => !p.Id.StartsWith("builtin_", StringComparison.Ordinal)).ToList();
-
-        var grouped = custom.GroupBy(p => string.IsNullOrWhiteSpace(p.Category) ? "" : p.Category)
-            .OrderBy(g => g.Key == "" ? 1 : 0)
-            .ThenBy(g => g.Key);
-
-        foreach (var group in grouped)
-        {
-            if (string.IsNullOrEmpty(group.Key))
-            {
-                foreach (var preset in group)
-                {
-                    customHeader.Items.Add(CreatePresetTreeItem(preset));
-                }
-            }
-            else
-            {
-                var groupItem = new TreeViewItem
-                {
-                    Header = "\uD83D\uDCC1 " + group.Key,
-                    IsExpanded = true,
-                    FontWeight = FontWeights.Normal,
-                    FontSize = 11,
-                };
-                foreach (var preset in group)
-                {
-                    groupItem.Items.Add(CreatePresetTreeItem(preset));
-                }
-                customHeader.Items.Add(groupItem);
-            }
-        }
-        PromptTree.Items.Add(customHeader);
     }
 
     private static TreeViewItem CreatePresetTreeItem(UserPromptPreset preset)
@@ -448,14 +485,14 @@ public partial class PlanningTab : UserControl
         NameBox.Text = preset.Name;
         PromptBox.Text = preset.SystemPrompt;
         CategoryCombo.Text = preset.Category ?? "";
-        ExecuteButton.IsEnabled = true;
+        ConfirmToChatButton.IsEnabled = true;
 
         var modelId = preset.ModelId;
         if (string.IsNullOrEmpty(modelId))
             modelId = ClaudeModels.DefaultModel;
         ModelCombo.SelectedValue = modelId;
         if (ModelCombo.SelectedItem == null)
-            ModelCombo.SelectedValue = ClaudeModels.DefaultModel;
+            ModelCombo.SelectedValue = ClaudeModels.DefaultPremiumModel;
 
         if (preset.Id.StartsWith("builtin_", StringComparison.Ordinal))
         {
@@ -555,7 +592,7 @@ public partial class PlanningTab : UserControl
         SelectPresetInTree(savedId);
     }
 
-    private void Execute_Click(object sender, RoutedEventArgs e)
+    private void ConfirmToChat_Click(object sender, RoutedEventArgs e)
     {
         if (_selectedPreset == null) return;
         var text = _isPresetSelected ? _selectedPreset.SystemPrompt : PromptBox.Text.Trim();
@@ -566,13 +603,11 @@ public partial class PlanningTab : UserControl
         }
 
         var referenceContext = _referencePanelVm?.BuildReferenceContext();
-        var modelId = ModelCombo.SelectedValue as string ?? ClaudeModels.DefaultModel;
         PromptPresetService.IncrementUsage(_selectedPreset.Id);
 
-        // Send to embedded chat panel if available
+        // Copy prompt to AI concierge text field (do NOT execute)
         if (_chatVm != null)
         {
-            // Build the full prompt with reference context
             var fullPrompt = text;
             if (!string.IsNullOrWhiteSpace(referenceContext))
             {
@@ -580,30 +615,7 @@ public partial class PlanningTab : UserControl
             }
 
             _chatVm.AiInput = fullPrompt;
-            if (_chatVm.ExecutePromptCommand.CanExecute(null))
-            {
-                _chatVm.ExecutePromptCommand.Execute(null);
-            }
         }
-
-        // Also fire legacy event for MainWindow
-        ExecuteRequested?.Invoke(text, referenceContext, modelId);
-    }
-
-    // ── Font Size ──
-
-    private void FontSizeUp_Click(object sender, RoutedEventArgs e)
-    {
-        var size = Math.Min(PromptBox.FontSize + 1, 24);
-        PromptBox.FontSize = size;
-        FontSizeLabel.Text = size.ToString();
-    }
-
-    private void FontSizeDown_Click(object sender, RoutedEventArgs e)
-    {
-        var size = Math.Max(PromptBox.FontSize - 1, 9);
-        PromptBox.FontSize = size;
-        FontSizeLabel.Text = size.ToString();
     }
 
     // ── Group Management ──

@@ -984,6 +984,8 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="PE.Save">Save</sys:String>
     <sys:String x:Key="PE.Execute">Execute</sys:String>
     <sys:String x:Key="PE.ExecuteTooltip">Send prompt to AI Concierge for execution</sys:String>
+    <sys:String x:Key="PE.ConfirmToChat">Confirm</sys:String>
+    <sys:String x:Key="PE.ConfirmToChatTooltip">Copy prompt to AI Concierge text field</sys:String>
     <sys:String x:Key="PE.Customize">Customize</sys:String>
     <sys:String x:Key="PE.CustomizeTooltip">Duplicate this preset as a custom prompt</sys:String>
     <sys:String x:Key="PE.CustomSuffix">Custom</sys:String>
@@ -994,8 +996,31 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="PE.InputHeader">① Input</sys:String>
     <sys:String x:Key="PE.ProcessHeader">② Process</sys:String>
     <sys:String x:Key="PE.OutputHeader">③ Output</sys:String>
+    <sys:String x:Key="PE.ChatHeader">④ AI Concierge</sys:String>
+    <sys:String x:Key="PE.ArtifactTitle">Artifacts</sys:String>
+    <sys:String x:Key="PE.OpenFolder">Open Folder</sys:String>
     <sys:String x:Key="PE.OutputAll">All</sys:String>
+    <sys:String x:Key="PE.WelcomeMessage">Hello! I'm your AI Concierge.
+
+I'll help you create PowerPoint slides for your video production.
+
+① Add reference materials on the left
+② Select a prompt template from the list
+③ Press "Confirm" to send it here
+
+I'll suggest slide structures right away — feel free to ask anything!</sys:String>
+    <sys:String x:Key="PE.CustomEmpty">No custom prompts yet</sys:String>
+    <sys:String x:Key="UI.ZoomIn">Zoom In (Ctrl+Plus)</sys:String>
+    <sys:String x:Key="UI.ZoomOut">Zoom Out (Ctrl+Minus)</sys:String>
+    <sys:String x:Key="UI.ZoomReset">Reset to 100% (Ctrl+0)</sys:String>
     <sys:String x:Key="PE.OutputEmpty">AI-generated output will appear here</sys:String>
+    <sys:String x:Key="PE.FactorySubtitle">Add materials, choose a prompt, generate your PPTX</sys:String>
+    <sys:String x:Key="PE.Step1">1. Materials</sys:String>
+    <sys:String x:Key="PE.Step1Desc">Drag &amp; drop reference files or templates, or add files</sys:String>
+    <sys:String x:Key="PE.Step2">2. Instructions</sys:String>
+    <sys:String x:Key="PE.Step2Desc">Select a prompt, review instructions, and send to AI Concierge</sys:String>
+    <sys:String x:Key="PE.Step3">3. Output</sys:String>
+    <sys:String x:Key="PE.Step3Desc">Review AI-generated results and apply</sys:String>
     <sys:String x:Key="PE.Apply">Apply</sys:String>
     <sys:String x:Key="PE.ApplyTooltip">Apply AI output to scenes</sys:String>
     <sys:String x:Key="PE.Register">Register Custom</sys:String>

@@ -7,393 +7,314 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>      <!-- 0: Main 4-panel area -->
-            <RowDefinition Height="Auto"/>   <!-- 1: Action buttons bar -->
+            <RowDefinition Height="Auto"/>  <!-- 0: Step bar -->
+            <RowDefinition Height="*"/>     <!-- 1: Content -->
+            <RowDefinition Height="Auto"/>  <!-- 2: Action buttons -->
         </Grid.RowDefinitions>
 
-        <!-- ═══ Row 0: 4-Panel Layout ═══ -->
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="RefCol" Width="200" MinWidth="120" MaxWidth="320"/>
-                <ColumnDefinition x:Name="RefSplitterCol" Width="Auto"/>
-                <ColumnDefinition Width="200" MinWidth="120" MaxWidth="320"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*" MinWidth="200"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition x:Name="OutputCol" Width="280" MinWidth="180" MaxWidth="500"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition x:Name="ChatCol" Width="300" MinWidth="220" MaxWidth="500"/>
-            </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <!-- Col 0: ① INPUT — 参考資料 -->
+            <ColumnDefinition x:Name="RefCol" Width="200" MinWidth="140" MaxWidth="320"/>
+            <ColumnDefinition x:Name="RefSplitterCol" Width="Auto"/>
+            <!-- Col 2: プロンプト一覧 -->
+            <ColumnDefinition Width="180" MinWidth="140" MaxWidth="300"/>
+            <ColumnDefinition Width="Auto"/>
+            <!-- Col 4: プロンプト内容 -->
+            <ColumnDefinition Width="260" MinWidth="180" MaxWidth="450"/>
+            <ColumnDefinition Width="Auto"/>
+            <!-- Col 6: ③ OUTPUT — 成果物 -->
+            <ColumnDefinition x:Name="OutputCol" Width="*" MinWidth="160"/>
+            <ColumnDefinition Width="Auto"/>
+            <!-- Col 8: ④ AI Chat -->
+            <ColumnDefinition x:Name="ChatCol" Width="300" MinWidth="220" MaxWidth="500"/>
+        </Grid.ColumnDefinitions>
 
-            <!-- ═══ Col 0: ① Input — 参考資料 ═══ -->
-            <Border x:Name="RefBorder" Grid.Column="0"
-                    BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <!-- Section Header -->
-                    <Border Grid.Row="0" Padding="8,4"
-                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
-                        <Border.Background>
-                            <SolidColorBrush Color="#4CAF50" Opacity="0.08"/>
-                        </Border.Background>
-                        <TextBlock Text="{DynamicResource PE.InputHeader}" FontWeight="SemiBold" FontSize="11"
-                                   Foreground="#4CAF50"/>
-                    </Border>
-                    <ref:ReferencePanelView Grid.Row="1" x:Name="ReferencePanelControl"/>
-                </Grid>
-            </Border>
+        <!-- ═══ Row 0: ステップバー ═══ -->
 
-            <!-- Splitter -->
-            <GridSplitter x:Name="RefSplitter" Grid.Column="1" Width="5"
-                          HorizontalAlignment="Center" VerticalAlignment="Stretch"
-                          Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
+        <!-- ① 入力 (Col 0) — Light Gold -->
+        <Border x:Name="StepInputBar" Grid.Row="0" Grid.Column="0"
+                Background="#C9A84C" Padding="8,4"
+                BorderBrush="#B8942F" BorderThickness="0,0,0,1">
+            <TextBlock FontSize="10" FontWeight="Bold" Foreground="White"
+                       FontFamily="Yu Gothic UI, Meiryo, Segoe UI">
+                <Run Text="{DynamicResource PE.InputHeader}"/>
+            </TextBlock>
+        </Border>
 
-            <!-- ═══ Col 2: ② Process — プロンプト一覧 ═══ -->
-            <Border Grid.Column="2" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+        <!-- ② 処理 (Col 2 + 3 + 4) — Primary Gold -->
+        <Border Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3"
+                Background="#B8942F" Padding="8,4"
+                BorderBrush="#A68329" BorderThickness="0,0,0,1">
+            <TextBlock FontSize="10" FontWeight="Bold" Foreground="White"
+                       FontFamily="Yu Gothic UI, Meiryo, Segoe UI">
+                <Run Text="{DynamicResource PE.ProcessHeader}"/>
+            </TextBlock>
+        </Border>
 
-                    <!-- Section Header -->
-                    <Border Grid.Row="0" Padding="8,4"
-                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
-                        <Border.Background>
-                            <SolidColorBrush Color="#B8942F" Opacity="0.08"/>
-                        </Border.Background>
-                        <TextBlock Text="{DynamicResource PE.ProcessHeader}" FontWeight="SemiBold" FontSize="11"
-                                   Foreground="{DynamicResource AccentGold}"/>
-                    </Border>
+        <!-- ③ 成果物 (Col 6) — Deep Gold -->
+        <Border Grid.Row="0" Grid.Column="6"
+                Background="#9A7B25" Padding="8,4"
+                BorderBrush="#7D6420" BorderThickness="0,0,0,1">
+            <TextBlock FontSize="10" FontWeight="Bold" Foreground="White"
+                       FontFamily="Yu Gothic UI, Meiryo, Segoe UI">
+                <Run Text="{DynamicResource PE.OutputHeader}"/>
+            </TextBlock>
+        </Border>
 
-                    <!-- Prompt List Header -->
-                    <Border Grid.Row="1" Padding="8,4"
-                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
-                        <DockPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="10"
-                                           Foreground="{DynamicResource AccentGold}"
-                                           VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                <TextBlock Text="{DynamicResource PE.PromptList}" FontWeight="SemiBold" FontSize="10"
-                                           Foreground="{DynamicResource AccentGold}"/>
-                            </StackPanel>
-                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="AddGroupButton" Content="&#xE8F4;" FontFamily="Segoe MDL2 Assets"
-                                        Click="AddGroup_Click" Padding="3,1" MinWidth="0" MinHeight="0"
-                                        FontSize="10" Cursor="Hand"
-                                        Background="Transparent" BorderThickness="0"
-                                        Foreground="{DynamicResource AccentGold}"
-                                        ToolTip="{DynamicResource PE.AddGroup}"/>
-                                <Button x:Name="AddButton" Content="+" Click="Add_Click"
-                                        Padding="4,0" MinWidth="18" MinHeight="0"
-                                        FontSize="13" FontWeight="Bold" Cursor="Hand"
-                                        Background="Transparent" BorderThickness="0"
-                                        Foreground="{DynamicResource AccentGold}"
-                                        ToolTip="{DynamicResource PE.Add}"/>
-                                <Button x:Name="DeleteButton" Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
-                                        Click="Delete_Click" Padding="3,1" MinWidth="0" MinHeight="0"
-                                        FontSize="10" Cursor="Hand"
-                                        Background="Transparent" BorderThickness="0"
-                                        Foreground="OrangeRed"
-                                        ToolTip="{DynamicResource PE.Delete}"
-                                        IsEnabled="False"/>
-                            </StackPanel>
-                        </DockPanel>
-                    </Border>
+        <!-- ④ AI コンシェルジュ (Col 8) — Warm accent -->
+        <Border Grid.Row="0" Grid.Column="8"
+                Background="#7C6A3A" Padding="8,4"
+                BorderBrush="#5C4E2B" BorderThickness="0,0,0,1">
+            <TextBlock FontSize="10" FontWeight="Bold" Foreground="White"
+                       FontFamily="Yu Gothic UI, Meiryo, Segoe UI">
+                <Run Text="{DynamicResource PE.ChatHeader}"/>
+            </TextBlock>
+        </Border>
 
-                    <!-- Tree -->
-                    <TreeView Grid.Row="2" x:Name="PromptTree" BorderThickness="0"
-                              SelectedItemChanged="PromptTree_SelectedItemChanged"
-                              Background="Transparent">
-                        <TreeView.Resources>
-                            <Style TargetType="TreeViewItem">
-                                <Setter Property="Padding" Value="2,1"/>
-                                <Setter Property="FontSize" Value="11"/>
-                            </Style>
-                        </TreeView.Resources>
-                    </TreeView>
-                </Grid>
-            </Border>
+        <!-- ═══ Row 1: コンテンツ ═══ -->
 
-            <!-- Splitter -->
-            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
-                          Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
+        <!-- Col 0: INPUT — 参考資料 -->
+        <Border x:Name="RefBorder" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
+                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
+            <ref:ReferencePanelView x:Name="ReferencePanelControl"/>
+        </Border>
 
-            <!-- ═══ Col 4: ② Process — プロンプトエディタ ═══ -->
-            <Grid x:Name="EditorPanel" Grid.Column="4" IsEnabled="False" Margin="8">
+        <GridSplitter x:Name="RefSplitter" Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+                      Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                      Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
+
+        <!-- Col 2: プロンプト一覧 -->
+        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="2"
+                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
+            <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>  <!-- 0: Name -->
-                    <RowDefinition Height="Auto"/>  <!-- 1: Category -->
-                    <RowDefinition Height="Auto"/>  <!-- 2: Model -->
-                    <RowDefinition Height="Auto"/>  <!-- 3: Prompt label + font -->
-                    <RowDefinition Height="*"/>     <!-- 4: Prompt box -->
-                    <RowDefinition Height="Auto"/>  <!-- 5: Execute button -->
-                    <RowDefinition Height="Auto"/>  <!-- 6: Secondary buttons -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Name -->
-                <Grid Grid.Row="0" Margin="0,0,0,6">
+                <!-- Header -->
+                <Border Grid.Row="0" Padding="8,5"
+                        BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
+                    <Border.Background>
+                        <SolidColorBrush Color="#B8942F" Opacity="0.08"/>
+                    </Border.Background>
+                    <DockPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                       Foreground="{DynamicResource AccentGold}"
+                                       VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock Text="{DynamicResource PE.PromptList}" FontWeight="SemiBold" FontSize="12"
+                                       Foreground="{DynamicResource AccentGold}"
+                                       FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="AddGroupButton"
+                                    Click="AddGroup_Click" Padding="3,1" MinWidth="0" MinHeight="0"
+                                    Cursor="Hand"
+                                    Background="Transparent" BorderThickness="0"
+                                    Foreground="{DynamicResource AccentGold}"
+                                    ToolTip="{DynamicResource PE.AddGroup}">
+                                <TextBlock Text="&#xE8F4;" FontFamily="Segoe MDL2 Assets" FontSize="11"/>
+                            </Button>
+                            <Button x:Name="AddButton"
+                                    Click="Add_Click"
+                                    Padding="3,1" MinWidth="0" MinHeight="0"
+                                    Cursor="Hand"
+                                    Background="Transparent" BorderThickness="0"
+                                    Foreground="{DynamicResource AccentGold}"
+                                    ToolTip="{DynamicResource PE.Add}">
+                                <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="11"/>
+                            </Button>
+                            <Button x:Name="DeleteButton"
+                                    Click="Delete_Click" Padding="3,1" MinWidth="0" MinHeight="0"
+                                    Cursor="Hand"
+                                    Background="Transparent" BorderThickness="0"
+                                    Foreground="OrangeRed"
+                                    ToolTip="{DynamicResource PE.Delete}"
+                                    IsEnabled="False">
+                                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="11"/>
+                            </Button>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- Tree -->
+                <TreeView Grid.Row="1" x:Name="PromptTree" BorderThickness="0"
+                          SelectedItemChanged="PromptTree_SelectedItemChanged"
+                          Background="Transparent"
+                          FontFamily="Yu Gothic UI, Meiryo, Segoe UI">
+                    <TreeView.Resources>
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="Padding" Value="2,1"/>
+                            <Setter Property="FontSize" Value="11"/>
+                        </Style>
+                    </TreeView.Resources>
+                </TreeView>
+            </Grid>
+        </Border>
+
+        <!-- Splitter -->
+        <GridSplitter Grid.Row="0" Grid.RowSpan="3" Grid.Column="3"
+                      Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                      Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
+
+        <!-- Col 4: プロンプト内容 -->
+        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="4"
+                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
+            <Grid x:Name="EditorPanel" IsEnabled="False" Margin="6,4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>  <!-- 0: Name + Model -->
+                    <RowDefinition Height="*"/>     <!-- 1: Prompt box -->
+                    <RowDefinition Height="Auto"/>  <!-- 2: Buttons -->
+                </Grid.RowDefinitions>
+
+                <!-- Name + Model (compact: Doc Factory style) -->
+                <Grid Grid.Row="0" Margin="0,0,0,3">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="{DynamicResource PE.Name}"
-                               FontSize="11" FontWeight="SemiBold" Margin="0,0,8,0"
-                               Foreground="{DynamicResource TextTertiary}"
-                               VerticalAlignment="Center"/>
-                    <TextBox Grid.Column="1" x:Name="NameBox" FontSize="12" Padding="6,3"
+                    <TextBox Grid.Column="0" x:Name="NameBox" FontSize="11" Padding="4,2"
                              Foreground="{DynamicResource TextPrimary}"
-                             BorderBrush="{DynamicResource BorderDefault}"/>
-                </Grid>
-
-                <!-- Category -->
-                <Grid Grid.Row="1" Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="{DynamicResource PE.Category}"
-                               FontSize="11" FontWeight="SemiBold" Margin="0,0,8,0"
-                               Foreground="{DynamicResource TextTertiary}"
-                               VerticalAlignment="Center"/>
-                    <ComboBox Grid.Column="1" x:Name="CategoryCombo" IsEditable="True"
-                              FontSize="11" Padding="4,2"
+                             BorderBrush="{DynamicResource BorderDefault}"
+                             FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                    <ComboBox Grid.Column="2" x:Name="ModelCombo"
+                              FontSize="11" Padding="3,1" MinWidth="90"
                               Foreground="{DynamicResource TextPrimary}"
-                              BorderBrush="{DynamicResource BorderDefault}"/>
+                              BorderBrush="{DynamicResource BorderDefault}"
+                              FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
                 </Grid>
 
-                <!-- Model -->
-                <Grid Grid.Row="2" Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="{DynamicResource PE.Model}"
-                               FontSize="11" FontWeight="SemiBold" Margin="0,0,8,0"
-                               Foreground="{DynamicResource TextTertiary}"
-                               VerticalAlignment="Center"/>
-                    <ComboBox Grid.Column="1" x:Name="ModelCombo"
-                              FontSize="11" Padding="4,2"
-                              Foreground="{DynamicResource TextPrimary}"
-                              BorderBrush="{DynamicResource BorderDefault}"/>
-                </Grid>
-
-                <!-- Prompt Text label + font controls -->
-                <DockPanel Grid.Row="3" Margin="0,0,0,3">
-                    <TextBlock Text="{DynamicResource PE.PromptText}"
-                               FontSize="11" FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextTertiary}"
-                               VerticalAlignment="Center"/>
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="A&#x2212;" Click="FontSizeDown_Click" Padding="4,1" MinWidth="24" MinHeight="0"
-                                FontSize="10" Background="Transparent" BorderBrush="{DynamicResource BorderDefault}"
-                                BorderThickness="1" Cursor="Hand" Margin="0,0,2,0"/>
-                        <TextBlock x:Name="FontSizeLabel" Text="12" FontSize="10" VerticalAlignment="Center"
-                                   Foreground="{DynamicResource TextTertiary}" MinWidth="16" TextAlignment="Center"/>
-                        <Button Content="A+" Click="FontSizeUp_Click" Padding="4,1" MinWidth="24" MinHeight="0"
-                                FontSize="10" Background="Transparent" BorderBrush="{DynamicResource BorderDefault}"
-                                BorderThickness="1" Cursor="Hand" Margin="2,0,0,0"/>
-                    </StackPanel>
-                </DockPanel>
+                <!-- Hidden: Category (kept for code-behind compatibility) -->
+                <ComboBox x:Name="CategoryCombo" IsEditable="True" Visibility="Collapsed"/>
 
                 <!-- Prompt Text -->
-                <TextBox Grid.Row="4" x:Name="PromptBox" FontSize="12" Padding="6,4"
+                <TextBox Grid.Row="1" x:Name="PromptBox" FontSize="11" Padding="4,3"
                          AcceptsReturn="True" TextWrapping="Wrap"
                          VerticalScrollBarVisibility="Auto"
                          Foreground="{DynamicResource TextPrimary}"
-                         BorderBrush="{DynamicResource BorderDefault}"/>
+                         BorderBrush="{DynamicResource BorderDefault}"
+                         FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
 
-                <!-- Execute button (Doc Factory style — big gold full-width) -->
-                <Button x:Name="ExecuteButton" Grid.Row="5"
-                        Click="Execute_Click" Cursor="Hand"
-                        Padding="16,10" Margin="0,8,0,0" FontSize="13"
-                        HorizontalAlignment="Stretch"
-                        ToolTip="{DynamicResource PE.ExecuteTooltip}"
-                        IsEnabled="False">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Background" Value="{DynamicResource BrandPrimary}"/>
-                            <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}"
-                                                CornerRadius="6" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#A68329"/>
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Background" Value="#CCCCCC"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="14"
-                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <TextBlock Text="{DynamicResource PE.Execute}" VerticalAlignment="Center"
-                                   FontWeight="SemiBold"/>
-                    </StackPanel>
-                </Button>
-
-                <!-- Secondary buttons row -->
-                <DockPanel Grid.Row="6" Margin="0,6,0,0">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button x:Name="CustomizeButton"
-                                Click="Customize_Click" Padding="10,4" Margin="0,0,6,0" Cursor="Hand"
-                                Background="Transparent"
-                                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                                FontSize="11"
-                                IsEnabled="False"
-                                ToolTip="{DynamicResource PE.CustomizeTooltip}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE8C8;" FontFamily="Segoe MDL2 Assets" FontSize="11"
-                                           Foreground="{DynamicResource TextPrimary}" Margin="0,0,4,0"
-                                           VerticalAlignment="Center"/>
-                                <TextBlock Text="{DynamicResource PE.Customize}"
-                                           Foreground="{DynamicResource TextPrimary}"/>
-                            </StackPanel>
-                        </Button>
-                        <Button x:Name="SaveButton"
-                                Click="Save_Click" Padding="10,4" Cursor="Hand"
-                                Background="Transparent"
-                                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                                FontSize="11">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="11"
-                                           Foreground="{DynamicResource TextPrimary}" Margin="0,0,4,0"
-                                           VerticalAlignment="Center"/>
-                                <TextBlock Text="{DynamicResource PE.Save}"
-                                           Foreground="{DynamicResource TextPrimary}"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </DockPanel>
-            </Grid>
-
-            <!-- Splitter -->
-            <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
-                          Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
-
-            <!-- ═══ Col 6: ③ Output — 成果物 ═══ -->
-            <Border Grid.Column="6" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Section Header -->
-                    <Border Grid.Row="0" Padding="8,4"
-                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
-                        <Border.Background>
-                            <SolidColorBrush Color="#FF6D00" Opacity="0.08"/>
-                        </Border.Background>
-                        <DockPanel>
-                            <TextBlock Text="{DynamicResource PE.OutputHeader}" FontWeight="SemiBold" FontSize="11"
-                                       Foreground="#FF6D00"/>
-                        </DockPanel>
-                    </Border>
-
-                    <!-- Filter tabs -->
-                    <Border Grid.Row="1" Padding="6,3"
-                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{DynamicResource PE.OutputAll}" FontSize="10"
-                                       Foreground="{DynamicResource TextSecondary}"
-                                       Padding="6,2" Cursor="Hand"/>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Output content area -->
-                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled" Padding="8">
-                        <StackPanel x:Name="OutputPanel">
-                            <!-- Empty state -->
-                            <TextBlock x:Name="OutputEmptyText"
-                                       Text="{DynamicResource PE.OutputEmpty}"
-                                       FontSize="11" FontStyle="Italic"
-                                       Foreground="{DynamicResource TextTertiary}"
-                                       TextWrapping="Wrap" Margin="0,20,0,0"
-                                       HorizontalAlignment="Center"/>
-                            <!-- Output items will be added dynamically -->
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </Border>
-
-            <!-- Splitter -->
-            <GridSplitter Grid.Column="7" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
-                          Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
-
-            <!-- ═══ Col 8: ④ AI Chat — コンシェルジュ ═══ -->
-            <local:ChatPanelView x:Name="PlanningChatPanel" Grid.Column="8"/>
-        </Grid>
-
-        <!-- ═══ Row 1: Action Buttons ═══ -->
-        <Border Grid.Row="1" Padding="8,5"
-                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,1,0,0">
-            <Border.Background>
-                <SolidColorBrush Color="#B8942F" Opacity="0.05"/>
-            </Border.Background>
-            <DockPanel>
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <!-- Apply (gold primary — Doc Factory style) -->
-                    <Button x:Name="ApplyButton" Click="Apply_Click"
-                            Padding="14,5" Margin="0,0,6,0" Cursor="Hand"
+                <!-- Buttons (Doc Factory style: compact colored, right-aligned) -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,3,0,0">
+                    <Button x:Name="CustomizeButton"
+                            Content="{DynamicResource PE.Customize}"
+                            Click="Customize_Click" Padding="6,2" Margin="0,0,3,0" Cursor="Hand"
+                            Background="#C9A84C" Foreground="White"
+                            BorderThickness="0" FontSize="10" FontWeight="SemiBold"
+                            IsEnabled="False"
+                            ToolTip="{DynamicResource PE.CustomizeTooltip}"
+                            FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                    <Button x:Name="SaveButton"
+                            Content="{DynamicResource PE.Save}"
+                            Click="Save_Click" Padding="6,2" Margin="0,0,3,0" Cursor="Hand"
                             Background="#B8942F" Foreground="White"
-                            BorderThickness="0" FontSize="11" FontWeight="SemiBold"
-                            ToolTip="{DynamicResource PE.ApplyTooltip}"
-                            IsEnabled="False">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,4,0"/>
-                            <TextBlock Text="{DynamicResource PE.Apply}"/>
-                        </StackPanel>
-                    </Button>
-                    <!-- Register (transparent border — Doc Factory style) -->
-                    <Button x:Name="RegisterButton" Click="Register_Click"
-                            Padding="14,5" Margin="0,0,6,0" Cursor="Hand"
-                            Background="Transparent"
-                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                            FontSize="11" FontWeight="SemiBold"
-                            ToolTip="{DynamicResource PE.RegisterTooltip}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,4,0"
-                                       Foreground="{DynamicResource TextPrimary}"/>
-                            <TextBlock Text="{DynamicResource PE.Register}"
-                                       Foreground="{DynamicResource TextPrimary}"/>
-                        </StackPanel>
-                    </Button>
-                    <!-- Confirm (transparent border — Doc Factory style) -->
-                    <Button x:Name="ConfirmButton" Click="Confirm_Click"
-                            Padding="14,5" Cursor="Hand"
-                            Background="Transparent"
-                            BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1"
-                            FontSize="11" FontWeight="SemiBold"
-                            ToolTip="{DynamicResource PE.ConfirmTooltip}"
-                            IsEnabled="False">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE8A3;" FontFamily="Segoe MDL2 Assets" FontSize="11" Margin="0,0,4,0"
-                                       Foreground="{DynamicResource TextPrimary}"/>
-                            <TextBlock Text="{DynamicResource PE.Confirm}"
-                                       Foreground="{DynamicResource TextPrimary}"/>
-                        </StackPanel>
-                    </Button>
+                            BorderThickness="0" FontSize="10" FontWeight="SemiBold"
+                            FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                    <Button x:Name="ConfirmToChatButton"
+                            Content="{DynamicResource PE.ConfirmToChat}"
+                            Click="ConfirmToChat_Click" Padding="6,2" Cursor="Hand"
+                            Background="#9A7B25" Foreground="White"
+                            BorderThickness="0" FontSize="10" FontWeight="SemiBold"
+                            IsEnabled="False"
+                            ToolTip="{DynamicResource PE.ConfirmToChatTooltip}"
+                            FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"/>
-            </DockPanel>
+            </Grid>
         </Border>
+
+        <!-- Splitter -->
+        <GridSplitter Grid.Row="0" Grid.RowSpan="3" Grid.Column="5"
+                      Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                      Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
+
+        <!-- Col 6: OUTPUT — 成果物パネル -->
+        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="6"
+                BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>  <!-- Header -->
+                    <RowDefinition Height="Auto"/>  <!-- Filter -->
+                    <RowDefinition Height="*"/>     <!-- List -->
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Grid.Row="0" Padding="8,5"
+                        BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
+                    <Border.Background>
+                        <SolidColorBrush Color="#B8942F" Opacity="0.08"/>
+                    </Border.Background>
+                    <DockPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                       Foreground="{DynamicResource AccentGold}"
+                                       VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock x:Name="ArtifactHeaderText"
+                                       Text="{DynamicResource PE.ArtifactTitle}" FontWeight="SemiBold" FontSize="12"
+                                       Foreground="{DynamicResource AccentGold}"
+                                       FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                            <TextBlock x:Name="ArtifactCountBadge" Text="" FontSize="10"
+                                       Foreground="{DynamicResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="6,0,0,0"
+                                       FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="OpenArtifactFolderButton"
+                                    Click="OpenArtifactFolder_Click" Padding="3,1" MinWidth="0" MinHeight="0"
+                                    Cursor="Hand"
+                                    Background="Transparent" BorderThickness="0"
+                                    Foreground="{DynamicResource AccentGold}"
+                                    ToolTip="{DynamicResource PE.OpenFolder}">
+                                <TextBlock Text="&#xE838;" FontFamily="Segoe MDL2 Assets" FontSize="11"/>
+                            </Button>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- Filter -->
+                <Border Grid.Row="1" Padding="4,3"
+                        BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1">
+                    <DockPanel>
+                        <ComboBox x:Name="ArtifactFilterCombo" DockPanel.Dock="Left"
+                                  FontSize="11" Padding="3,1" MinWidth="70"
+                                  SelectionChanged="ArtifactFilter_Changed"
+                                  Foreground="{DynamicResource TextPrimary}"
+                                  BorderBrush="{DynamicResource BorderDefault}"
+                                  FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                        <TextBox x:Name="ArtifactSearchBox" Margin="4,0,0,0"
+                                 FontSize="11" Padding="3,1"
+                                 TextChanged="ArtifactSearch_Changed"
+                                 Foreground="{DynamicResource TextPrimary}"
+                                 BorderBrush="{DynamicResource BorderDefault}"
+                                 FontFamily="Yu Gothic UI, Meiryo, Segoe UI"/>
+                    </DockPanel>
+                </Border>
+
+                <!-- Output content area -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled" Padding="4">
+                    <StackPanel x:Name="OutputPanel">
+                        <!-- Empty state -->
+                        <TextBlock x:Name="OutputEmptyText"
+                                   Text="{DynamicResource PE.OutputEmpty}"
+                                   FontSize="11" Foreground="{DynamicResource TextSecondary}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontFamily="Yu Gothic UI, Meiryo, Segoe UI"
+                                   TextWrapping="Wrap" Margin="20"/>
+                        <!-- Output items will be added dynamically -->
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- Splitter -->
+        <GridSplitter Grid.Row="0" Grid.RowSpan="3" Grid.Column="7"
+                      Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                      Background="Transparent" Cursor="SizeWE" ResizeBehavior="PreviousAndNext"/>
+
+        <!-- Col 8: ④ AI Chat — コンシェルジュ -->
+        <local:ChatPanelView x:Name="PlanningChatPanel" Grid.Row="1" Grid.RowSpan="2" Grid.Column="8"/>
     </Grid>
 </UserControl>

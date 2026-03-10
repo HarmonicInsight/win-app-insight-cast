@@ -290,7 +290,7 @@ public class Config
     /// </summary>
     public int ClaudeModelIndex
     {
-        get => Get<int>("claude_model_index", 1);
+        get => Get<int>("claude_model_index", 2);
         set => Set("claude_model_index", value);
     }
 

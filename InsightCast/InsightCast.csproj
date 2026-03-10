@@ -21,8 +21,8 @@
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="DocumentFormat.OpenXml" Version="3.1.1" />
-    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.*" />
+    <PackageReference Include="ClosedXML" Version="0.*" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
     <PackageReference Include="Syncfusion.Tools.WPF" Version="32.*" />
     <PackageReference Include="Syncfusion.DocIO.WPF" Version="32.*" />

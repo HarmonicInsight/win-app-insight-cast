@@ -815,7 +815,7 @@ namespace InsightCast.ViewModels
             // Auto-save every 5 minutes
             _autoSaveTimer = new Timer(_ => AutoSave(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
 
-            UpdateStatusText();
+            _ = UpdateStatusTextAsync();
             LoadLicense();
             RefreshSceneList();
 
@@ -856,7 +856,7 @@ namespace InsightCast.ViewModels
 
             await LoadSpeakers();
             LoadSceneSpeakers();
-            UpdateStatusText();
+            await UpdateStatusTextAsync();
             _logger.Log(LocalizationService.GetString("VM.Initialized"));
 
             // Background update check (non-blocking)
@@ -888,7 +888,7 @@ namespace InsightCast.ViewModels
             await LoadSpeakers();
 
             LoadSceneSpeakers();
-            UpdateStatusText();
+            await UpdateStatusTextAsync();
             _logger.Log(LocalizationService.GetString("VM.TTS.Switched", _ttsManager.ActiveEngine.DisplayName));
         }
 
@@ -923,7 +923,7 @@ namespace InsightCast.ViewModels
 
         #region Status
 
-        private async void UpdateStatusText()
+        private async Task UpdateStatusTextAsync()
         {
             string ttsStatus;
             try
@@ -2188,20 +2188,20 @@ namespace InsightCast.ViewModels
                     if (!string.IsNullOrEmpty(exportResult.MetadataFilePath))
                         extras.Add(LocalizationService.GetString("VM.Export.Metadata", exportResult.MetadataFilePath));
                     foreach (var extra in extras) _logger.Log(extra);
-                    OnExportFinished(true, outputPath);
+                    await OnExportFinishedAsync(true, outputPath);
                 }
                 else
                 {
-                    OnExportFinished(false, exportResult.ErrorMessage ?? LocalizationService.GetString("VM.Export.UnknownError"));
+                    await OnExportFinishedAsync(false, exportResult.ErrorMessage ?? LocalizationService.GetString("VM.Export.UnknownError"));
                 }
             }
             catch (OperationCanceledException)
             {
-                OnExportFinished(false, LocalizationService.GetString("VM.Export.Cancelled"));
+                await OnExportFinishedAsync(false, LocalizationService.GetString("VM.Export.Cancelled"));
             }
             catch (Exception ex)
             {
-                OnExportFinished(false, LocalizationService.GetString("VM.Export.ErrorDetail", ex.Message));
+                await OnExportFinishedAsync(false, LocalizationService.GetString("VM.Export.ErrorDetail", ex.Message));
             }
             finally
             {
@@ -2212,7 +2212,7 @@ namespace InsightCast.ViewModels
             }
         }
 
-        private async void OnExportFinished(bool success, string message)
+        private async Task OnExportFinishedAsync(bool success, string message)
         {
             if (success)
             {

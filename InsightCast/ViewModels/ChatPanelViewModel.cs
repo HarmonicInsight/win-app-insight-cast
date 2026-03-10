@@ -18,6 +18,8 @@ using PromptPresetSvc = InsightCast.Services.PromptPresetService;
 using AiMemoryHotCache = InsightCommon.AI.AiMemoryHotCache;
 using AiMemoryService = InsightCommon.AI.AiMemoryService;
 using MemoryExtractor = InsightCommon.AI.MemoryExtractor;
+using ArtifactManager = InsightCommon.AI.Artifact.ArtifactManager;
+using ArtifactParser = InsightCommon.AI.Artifact.ArtifactParser;
 
 namespace InsightCast.ViewModels;
 
@@ -33,6 +35,22 @@ public class ChatPanelViewModel : ViewModelBase
     private readonly Config _config;
 
     private const int MaxToolLoops = 10;
+
+    // ── Context Providers (set by PlanningTab) ──
+    /// <summary>参考資料コンテキストを取得するデリゲート（ReferencePanelViewModel.BuildReferenceContext）</summary>
+    public Func<string?>? GetReferenceContext { get; set; }
+
+    /// <summary>プロジェクトサマリーを取得するデリゲート（シーン情報等）</summary>
+    public Func<string?>? GetProjectSummary { get; set; }
+
+    // ── Output Format Control ──
+    private string _pendingOutputFormat = "auto";
+    /// <summary>出力フォーマット指示: auto / word / excel / pptx / html</summary>
+    public string PendingOutputFormat
+    {
+        get => _pendingOutputFormat;
+        set => SetProperty(ref _pendingOutputFormat, value);
+    }
 
     // ── Prompt Input ──
     private string _aiInput = string.Empty;
@@ -148,6 +166,9 @@ public class ChatPanelViewModel : ViewModelBase
     // ── AI Memory ──
     private AiMemoryService? _memoryService;
     private AiMemoryHotCache? _memoryHotCache;
+
+    // ── Artifact ──
+    private readonly ArtifactManager _artifactManager;
 
     // ── Chat Messages ──
     public ObservableCollection<ChatMsg> ChatMessages { get; } = new();
@@ -411,6 +432,22 @@ public class ChatPanelViewModel : ViewModelBase
 
     public ICommand ClearChatCommand { get; }
 
+    // ── Artifact Commands ──
+    public ICommand OpenArtifactCommand => _openArtifactCommand ??=
+        new RelayCommand(id => { if (id is string s && !string.IsNullOrEmpty(s)) _artifactManager.OpenInBrowser(s); });
+    private ICommand? _openArtifactCommand;
+
+    public ICommand ShowArtifactListCommand => _showArtifactListCommand ??=
+        new RelayCommand(_ =>
+        {
+            var owner = Application.Current?.MainWindow;
+            var locale = _getLang() == "EN" ? "en" : "ja";
+            InsightCommon.AI.Artifact.ArtifactListDialog.Show(_artifactManager, owner, locale);
+        });
+    private ICommand? _showArtifactListCommand;
+
+    public int ArtifactCount => _artifactManager?.GetCount() ?? 0;
+
     public ChatPanelViewModel(
         IClaudeService claude,
         VideoToolExecutor toolExecutor,
@@ -429,6 +466,11 @@ public class ChatPanelViewModel : ViewModelBase
         PanelTitle = AiConciergeConfig.GetPanelTitle("INMV", locale);
         WelcomeMessage = AiConciergeConfig.GetWelcomeMessage("INMV", locale);
         _conciergeSystemPromptExtension = AiConciergeConfig.GetSystemPromptExtension("INMV", locale);
+
+        // Artifact 初期化
+        _artifactManager = new ArtifactManager("INMV", "Insight Training Studio");
+        _artifactManager.Cleanup();
+        _artifactManager.SeedSamplesIfEmpty(locale);
 
         ExecutePromptCommand = new AsyncRelayCommand(
             () => ExecutePromptAsync(),
@@ -667,11 +709,45 @@ public class ChatPanelViewModel : ViewModelBase
             await SendWithToolLoopAsync(prompt, cts.Token);
             LastGeneratedThumbnailPath = _toolExecutor.LastGeneratedThumbnailPath;
 
-            // チャットにアシスタント応答を追加
+            // チャットにアシスタント応答を追加（Artifact 自動検出・保存 + ツールステップ付き）
             if (!string.IsNullOrEmpty(LastAiResult))
             {
-                ChatMessages.Add(new ChatMsg { Role = ChatRole.Assistant, Content = LastAiResult });
+                var artifactResult = _artifactManager.ProcessResponse(
+                    LastAiResult,
+                    modelId: _claude.CurrentModel,
+                    prompt: prompt);
+
+                var msg = new ChatMsg
+                {
+                    Role = ChatRole.Assistant,
+                    Content = artifactResult.HasArtifacts ? artifactResult.DisplayText : LastAiResult,
+                };
+
+                // ツール実行ステップを添付
+                if (_lastToolSteps != null)
+                {
+                    foreach (var step in _lastToolSteps)
+                        msg.ToolSteps.Add(step);
+                    _lastToolSteps = null;
+                }
+
+                foreach (var entry in artifactResult.Entries)
+                {
+                    msg.Artifacts.Add(new InsightCommon.AI.ArtifactLink
+                    {
+                        Id = entry.Id,
+                        Title = entry.Title,
+                        Icon = ArtifactParser.GetTypeIcon(entry.Type),
+                        Type = entry.Type,
+                    });
+                }
+
+                if (artifactResult.HasArtifacts)
+                    LastAiResult = artifactResult.DisplayText;
+
+                ChatMessages.Add(msg);
                 OnPropertyChanged(nameof(IsChatEmpty));
+                OnPropertyChanged(nameof(ArtifactCount));
             }
         }
         catch (OperationCanceledException)
@@ -747,6 +823,9 @@ public class ChatPanelViewModel : ViewModelBase
         var lang = _getLang();
         var systemContext = BuildMemoryAwareSystemPrompt(BuildSystemContext(lang));
 
+        // 出力フォーマットをリセット（1回のリクエストで消費）
+        _pendingOutputFormat = "auto";
+
         var apiMessages = new List<object>
         {
             new Dictionary<string, object>
@@ -757,6 +836,7 @@ public class ChatPanelViewModel : ViewModelBase
         };
 
         var resultBuilder = new StringBuilder();
+        var toolSteps = new List<string>();
 
         for (int loop = 0; loop < MaxToolLoops; loop++)
         {
@@ -819,7 +899,16 @@ public class ChatPanelViewModel : ViewModelBase
                 if (tc.Name == null || tc.Id == null)
                     continue;
 
+                // ツール実行ステップを記録
+                toolSteps.Add($"\U0001F527 {tc.Name}");
+                Application.Current?.Dispatcher.Invoke(() =>
+                    AiProcessingText = $"\U0001F527 {tc.Name}...");
+
                 var execResult = await _toolExecutor.ExecuteAsync(tc.Name, tc.Input ?? default, ct);
+
+                if (execResult.IsError)
+                    toolSteps.Add($"\u274C {tc.Name} failed");
+
                 var toolResult = new Dictionary<string, object>
                 {
                     ["type"] = "tool_result",
@@ -840,41 +929,110 @@ public class ChatPanelViewModel : ViewModelBase
         }
 
         LastAiResult = ExtractAndMergeMemory(resultBuilder.ToString().Trim());
+        _lastToolSteps = toolSteps.Count > 0 ? toolSteps : null;
     }
+
+    /// <summary>直前のツール実行ステップ（チャットメッセージに添付用）</summary>
+    private List<string>? _lastToolSteps;
 
     private string BuildSystemContext(string lang)
     {
-        var concierge = _conciergeSystemPromptExtension ?? "";
+        var sb = new StringBuilder();
 
-        // プリセットのペルソナ拡張を付加
+        // ── 1. コアペルソナ ──
+        if (lang == "EN")
+        {
+            sb.Append("You are the AI co-producer for Insight Training Studio — you help users create professional training videos that captivate audiences and deliver measurable learning outcomes. ");
+            sb.Append("Your mission: turn rough ideas into polished, viewer-ready content in the shortest time possible. ");
+            sb.Append("You have full control over narration, subtitles, scene structure, thumbnails, and AI image generation via the provided tools. ");
+            sb.Append("Always think from the viewer's perspective: Is the message clear? Does the flow keep attention? Will the thumbnail get clicked? ");
+            sb.Append("Use set_multiple_scenes for batch updates to maximize efficiency. ");
+            sb.Append("You can read text data (titles, narration, subtitles, media paths) but cannot see image/video content. ");
+            sb.Append("Respond in English.");
+        }
+        else
+        {
+            sb.Append("あなたは「Insight Training Studio」のAI共同プロデューサーです。");
+            sb.Append("ユーザーがプロ品質の研修動画を最短で完成させるのが、あなたのミッションです。");
+            sb.Append("視聴者目線で常に考えてください — メッセージは伝わるか？構成は飽きさせないか？サムネイルはクリックされるか？");
+            sb.Append("ナレーション作成、多言語字幕、構成レビュー、CTR最適化サムネイル、AI画像生成を駆使して、動画の訴求力を最大化します。");
+            sb.Append("提供されたツールでシーンの読み書き・追加・削除・並べ替え・画像生成が可能です。");
+            sb.Append("参照できるのはテキスト情報（タイトル、ナレーション、字幕、メディアパス）のみで、画像・動画の内容は参照できません。");
+            sb.Append("ナレーション・字幕の一括更新にはset_multiple_scenesを使い、効率を最大化してください。");
+            sb.Append("日本語で回答してください。");
+        }
+
+        // ── 2. コンシェルジュ + プリセット拡張 ──
+        var concierge = _conciergeSystemPromptExtension ?? "";
         if (_loadedPreset?.Source?.HasSystemPromptExtension == true)
         {
             var presetExt = _loadedPreset.Source.GetSystemPromptExtension(lang);
             if (!string.IsNullOrEmpty(presetExt))
                 concierge = (string.IsNullOrEmpty(concierge) ? "" : concierge + "\n\n") + presetExt;
         }
+        if (!string.IsNullOrEmpty(concierge))
+            sb.Append("\n\n").Append(concierge);
 
+        // ── 3. 出力フォーマット指示 ──
+        var formatInstruction = GetOutputFormatInstruction(_pendingOutputFormat, lang);
+        if (!string.IsNullOrEmpty(formatInstruction))
+            sb.Append("\n\n").Append(formatInstruction);
+
+        // ── 4. プロジェクトコンテキスト ──
+        try
+        {
+            var projectSummary = GetProjectSummary?.Invoke();
+            if (!string.IsNullOrWhiteSpace(projectSummary))
+            {
+                sb.Append("\n\n");
+                sb.Append(lang == "EN"
+                    ? "## Current Project Context\n"
+                    : "## 現在のプロジェクト情報\n");
+                sb.Append(projectSummary);
+            }
+        }
+        catch { /* ignore summary errors */ }
+
+        // ── 5. 参考資料コンテキスト ──
+        try
+        {
+            var refContext = GetReferenceContext?.Invoke();
+            if (!string.IsNullOrWhiteSpace(refContext))
+            {
+                sb.Append("\n\n");
+                sb.Append(lang == "EN"
+                    ? "## Reference Materials\nThe user has provided the following reference materials. Use them to improve the quality of your output.\n\n"
+                    : "## 参考資料\nユーザーが以下の参考資料を提供しています。出力の品質向上に活用してください。\n\n");
+                sb.Append(refContext);
+            }
+        }
+        catch { /* ignore reference errors */ }
+
+        return sb.ToString();
+    }
+
+    /// <summary>出力フォーマットに応じた指示テキストを返す</summary>
+    private static string GetOutputFormatInstruction(string format, string lang)
+    {
         if (lang == "EN")
         {
-            return "You are the AI co-producer for Insight Training Studio — you help users create professional training videos that captivate audiences and deliver measurable learning outcomes. " +
-                   "Your mission: turn rough ideas into polished, viewer-ready content in the shortest time possible. " +
-                   "You have full control over narration, subtitles, scene structure, thumbnails, and AI image generation via the provided tools. " +
-                   "Always think from the viewer's perspective: Is the message clear? Does the flow keep attention? Will the thumbnail get clicked? " +
-                   "Use set_multiple_scenes for batch updates to maximize efficiency. " +
-                   "You can read text data (titles, narration, subtitles, media paths) but cannot see image/video content. " +
-                   "Respond in English." +
-                   (string.IsNullOrEmpty(concierge) ? "" : "\n\n" + concierge);
+            return format switch
+            {
+                "word" => "[Output Format] Use the generate_report tool to create a Word document.",
+                "excel" => "[Output Format] Use the generate_spreadsheet tool to create an Excel spreadsheet.",
+                "pptx" => "[Output Format] Use the generate_presentation tool to create a PowerPoint presentation.",
+                "html" => "[Output Format] Respond with a rich HTML Artifact for visual output.",
+                _ => "" // auto: no explicit instruction
+            };
         }
-
-        return "あなたは「Insight Training Studio」のAI共同プロデューサーです。" +
-               "ユーザーがプロ品質の研修動画を最短で完成させるのが、あなたのミッションです。" +
-               "視聴者目線で常に考えてください — メッセージは伝わるか？構成は飽きさせないか？サムネイルはクリックされるか？" +
-               "ナレーション作成、多言語字幕、構成レビュー、CTR最適化サムネイル、AI画像生成を駆使して、動画の訴求力を最大化します。" +
-               "提供されたツールでシーンの読み書き・追加・削除・並べ替え・画像生成が可能です。" +
-               "参照できるのはテキスト情報（タイトル、ナレーション、字幕、メディアパス）のみで、画像・動画の内容は参照できません。" +
-               "ナレーション・字幕の一括更新にはset_multiple_scenesを使い、効率を最大化してください。" +
-               "日本語で回答してください。" +
-               (string.IsNullOrEmpty(concierge) ? "" : "\n\n" + concierge);
+        return format switch
+        {
+            "word" => "[出力形式] generate_report ツールを使用して Word ドキュメントを生成してください。",
+            "excel" => "[出力形式] generate_spreadsheet ツールを使用して Excel スプレッドシートを生成してください。",
+            "pptx" => "[出力形式] generate_presentation ツールを使用して PowerPoint プレゼンテーションを生成してください。",
+            "html" => "[出力形式] HTML Artifact で視覚的に回答してください。",
+            _ => "" // auto: 指示なし
+        };
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -929,7 +1087,12 @@ public class ChatPanelViewModel : ViewModelBase
     private string BuildMemoryAwareSystemPrompt(string basePrompt)
     {
         var locale = _getLang() == "EN" ? "en" : "ja";
-        return MemoryExtractor.BuildSystemPrompt(basePrompt, _memoryHotCache, locale);
+        var prompt = MemoryExtractor.BuildSystemPrompt(basePrompt, _memoryHotCache, locale);
+
+        // Artifact 出力指示を付加
+        prompt += "\n\n" + ArtifactParser.GetSystemPromptExtension(locale);
+
+        return prompt;
     }
 
     // ── Save Prompt ──

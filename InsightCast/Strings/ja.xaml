@@ -985,6 +985,8 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="PE.Save">保存</sys:String>
     <sys:String x:Key="PE.Execute">実行</sys:String>
     <sys:String x:Key="PE.ExecuteTooltip">AIコンシェルジュにプロンプトを送信して実行</sys:String>
+    <sys:String x:Key="PE.ConfirmToChat">確認</sys:String>
+    <sys:String x:Key="PE.ConfirmToChatTooltip">プロンプトをAIコンシェルジュのテキスト欄にコピー</sys:String>
     <sys:String x:Key="PE.Customize">カスタム追加</sys:String>
     <sys:String x:Key="PE.CustomizeTooltip">このプリセットをカスタムプロンプトとして複製</sys:String>
     <sys:String x:Key="PE.CustomSuffix">カスタム</sys:String>
@@ -995,8 +997,31 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="PE.InputHeader">① 参考資料 : Input</sys:String>
     <sys:String x:Key="PE.ProcessHeader">② 処理 : Process</sys:String>
     <sys:String x:Key="PE.OutputHeader">③ 成果物 : Output</sys:String>
+    <sys:String x:Key="PE.ChatHeader">④ AIコンシェルジュ</sys:String>
+    <sys:String x:Key="PE.ArtifactTitle">成果物</sys:String>
+    <sys:String x:Key="PE.OpenFolder">フォルダーを開く</sys:String>
     <sys:String x:Key="PE.OutputAll">すべて</sys:String>
+    <sys:String x:Key="PE.WelcomeMessage">こんにちは！AIコンシェルジュです。
+
+ここでは、動画で使うパワーポイント資料を一緒に作ります。
+
+① 左の「参考資料」に素材ファイルを追加
+② 「プロンプト一覧」からテンプレートを選択
+③ 「確認」ボタンでこちらに送信
+
+すぐにスライド構成を提案しますので、お気軽にご相談ください！</sys:String>
+    <sys:String x:Key="PE.CustomEmpty">カスタムプロンプトはまだありません</sys:String>
+    <sys:String x:Key="UI.ZoomIn">拡大 (Ctrl+Plus)</sys:String>
+    <sys:String x:Key="UI.ZoomOut">縮小 (Ctrl+Minus)</sys:String>
+    <sys:String x:Key="UI.ZoomReset">100%にリセット (Ctrl+0)</sys:String>
     <sys:String x:Key="PE.OutputEmpty">AIで生成した成果物がここに表示されます</sys:String>
+    <sys:String x:Key="PE.FactorySubtitle">素材を入れて、指示を選んで、PPTXを生成</sys:String>
+    <sys:String x:Key="PE.Step1">1. 素材</sys:String>
+    <sys:String x:Key="PE.Step1Desc">参考資料・ひな型をドラッグ＆ドロップ、またはファイルを追加</sys:String>
+    <sys:String x:Key="PE.Step2">2. 指示</sys:String>
+    <sys:String x:Key="PE.Step2Desc">プロンプトを選択して指示を確認、AIコンシェルジュに送信</sys:String>
+    <sys:String x:Key="PE.Step3">3. 成果物</sys:String>
+    <sys:String x:Key="PE.Step3Desc">AIが生成した結果を確認して適用</sys:String>
     <sys:String x:Key="PE.Apply">反映</sys:String>
     <sys:String x:Key="PE.ApplyTooltip">AIの出力をシーンに反映します</sys:String>
     <sys:String x:Key="PE.Register">カスタム登録</sys:String>

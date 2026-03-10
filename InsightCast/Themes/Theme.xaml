@@ -114,6 +114,16 @@
         <Setter Property="FontSize"   Value="11pt" />
     </Style>
 
+    <Style TargetType="ContextMenu">
+        <Setter Property="Background"  Value="{StaticResource BgPrimary}" />
+        <Setter Property="Foreground"  Value="{StaticResource TextPrimary}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderDefault}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontFamily"  Value="{StaticResource AppFontFamily}" />
+        <Setter Property="FontSize"    Value="11pt" />
+        <Setter Property="Padding"     Value="2" />
+    </Style>
+
     <Style TargetType="MenuItem">
         <Setter Property="FontFamily"  Value="{StaticResource AppFontFamily}" />
         <Setter Property="FontSize"    Value="11pt" />

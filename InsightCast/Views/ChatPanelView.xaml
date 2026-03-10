@@ -34,7 +34,7 @@
                     <DockPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock Text="{Binding PanelTitle}"
-                                       FontSize="13" FontWeight="SemiBold"
+                                       FontSize="12" FontWeight="SemiBold"
                                        Foreground="{DynamicResource BrandPrimary}"
                                        VerticalAlignment="Center"/>
                             <Button Style="{StaticResource SmallButton}"
@@ -51,20 +51,20 @@
                             <Button Style="{StaticResource SmallButton}"
                                     Click="PopOutButton_Click"
                                     ToolTip="{DynamicResource Ai.Popout}"
-                                    FontSize="12" Padding="4,2" Margin="0,0,2,0">
-                                <TextBlock Text="&#xE8A7;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                    FontSize="11" Padding="4,2" Margin="0,0,2,0">
+                                <TextBlock Text="&#xE8A7;" FontFamily="Segoe MDL2 Assets" FontSize="11"/>
                             </Button>
                             <Button Style="{StaticResource SmallButton}"
                                     Command="{Binding OpenAiSettingsCommand}"
                                     ToolTip="{DynamicResource Ai.AiSettings}"
-                                    FontSize="14" Padding="4,2" Margin="0,0,2,0">
-                                <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                    FontSize="11" Padding="4,2" Margin="0,0,2,0">
+                                <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="11"/>
                             </Button>
                             <Button Style="{StaticResource SmallButton}"
                                     Click="CloseButton_Click"
                                     ToolTip="{DynamicResource Common.Close}"
-                                    FontSize="14" Padding="4,2">
-                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                    FontSize="11" Padding="4,2">
+                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11"/>
                             </Button>
                         </StackPanel>
                     </DockPanel>
@@ -188,7 +188,7 @@
 
                                         <!-- メッセージ本文 -->
                                         <TextBox Text="{Binding Content, Mode=OneWay}"
-                                                 TextWrapping="Wrap" FontSize="12.5"
+                                                 TextWrapping="Wrap" FontSize="11"
                                                  FontFamily="Yu Gothic UI, Meiryo, Segoe UI"
                                                  Foreground="{DynamicResource TextPrimary}"
                                                  Background="Transparent" BorderThickness="0"
@@ -202,7 +202,8 @@
                                                 <DataTemplate>
                                                     <Border Background="#F5F0E8"
                                                             BorderBrush="#E7E2DA" BorderThickness="1"
-                                                            CornerRadius="6" Padding="8,5" Margin="0,2" Cursor="Hand">
+                                                            CornerRadius="6" Padding="8,5" Margin="0,2" Cursor="Hand"
+                                                            MouseLeftButtonDown="ArtifactLink_Click">
                                                         <DockPanel>
                                                             <TextBlock DockPanel.Dock="Right"
                                                                        Text="&#xE8A7;"
@@ -211,10 +212,10 @@
                                                                        VerticalAlignment="Center" Margin="8,0,0,0"/>
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock Text="{Binding Icon}"
-                                                                           FontSize="14" VerticalAlignment="Center"
+                                                                           FontSize="11" VerticalAlignment="Center"
                                                                            Margin="0,0,6,0"/>
                                                                 <TextBlock Text="{Binding Title}"
-                                                                           FontSize="11.5" FontWeight="SemiBold"
+                                                                           FontSize="11" FontWeight="SemiBold"
                                                                            Foreground="#1C1917"
                                                                            VerticalAlignment="Center"
                                                                            TextTrimming="CharacterEllipsis"/>
@@ -370,7 +371,7 @@
                                  AcceptsReturn="True" TextWrapping="Wrap"
                                  MinHeight="90" MaxHeight="200"
                                  VerticalScrollBarVisibility="Auto"
-                                 FontSize="12" Padding="8,6"
+                                 FontSize="11" Padding="8,6"
                                  KeyDown="InputBox_KeyDown"
                                  AutomationProperties.Name="AI prompt input"/>
                         <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Margin="4,0,0,0">
@@ -379,7 +380,7 @@
                                     Command="{Binding ExecutePromptCommand}"
                                     IsEnabled="{Binding IsAiProcessing, Converter={StaticResource InverseBool}}"
                                     ToolTip="{DynamicResource Chat.Execute.Tooltip}">
-                                <TextBlock Text="&#xE724;" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
+                                <TextBlock Text="&#xE724;" FontFamily="Segoe MDL2 Assets" FontSize="11"/>
                             </Button>
                             <Button Style="{StaticResource SmallButton}"
                                     Command="{Binding ClearChatCommand}"
