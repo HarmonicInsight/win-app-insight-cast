@@ -30,6 +30,10 @@ public partial class AboutDialog : Window
     {
         try
         {
+            var scheme = e.Uri.Scheme.ToLowerInvariant();
+            if (scheme != "http" && scheme != "https" && scheme != "mailto")
+                return;
+
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
                 FileName = e.Uri.AbsoluteUri,

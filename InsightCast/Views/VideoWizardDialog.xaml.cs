@@ -38,7 +38,6 @@ namespace InsightCast.Views
     {
         private readonly Config _config;
         private readonly Project _project;
-        private CancellationTokenSource? _cts;
 
         private int _currentStep = 1;
         private readonly ObservableCollection<MediaItem> _mediaItems = new();
@@ -515,7 +514,6 @@ namespace InsightCast.Views
 
         private void OnCancel(object sender, RoutedEventArgs e)
         {
-            _cts?.Cancel();
             DialogResult = false;
             Close();
         }
