@@ -87,8 +87,7 @@ namespace InsightCast.Views
                 // UI Scale
                 InsightCommon.UI.InsightScaleManager.Instance.ApplyToWindow(this);
                 ScaleLabel.Text = InsightCommon.UI.InsightScaleManager.Instance.ScalePercent;
-                InsightCommon.UI.InsightScaleManager.Instance.ScaleChanged += (_, _) =>
-                    ScaleLabel.Text = InsightCommon.UI.InsightScaleManager.Instance.ScalePercent;
+                InsightCommon.UI.InsightScaleManager.Instance.ScaleChanged += OnScaleChanged;
 
                 // Set dialog service immediately (needed for UI interactions)
                 _vm.SetDialogService(new DialogService(this));
@@ -119,14 +118,21 @@ namespace InsightCast.Views
                     InitializeSubtitleSizeCombo();
 
                     // Create shared ClaudeService (used by Planning Tab and Chat Panel)
-                    _claudeService = new ClaudeService(_config);
+                    try
+                    {
+                        _claudeService = new ClaudeService(_config);
 
-                    // Initialize Planning Tab
-                    PlanningTabControl.Initialize(_config, _vm.Project, _claudeService.AiService.Config);
-                    PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
+                        // Initialize Planning Tab
+                        PlanningTabControl.Initialize(_config, _vm.Project, _claudeService.AiService.Config);
+                        PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
 
-                    // Initialize Chat Panel for Planning Tab
-                    InitializePlanningChatPanel();
+                        // Initialize Chat Panel for Planning Tab
+                        InitializePlanningChatPanel();
+                    }
+                    catch (Exception ex)
+                    {
+                        _vm.Logger.Log($"AI service initialization failed: {ex.Message}");
+                    }
 
                 });
             };
@@ -172,8 +178,7 @@ namespace InsightCast.Views
                         _vm.Project.Scenes.Insert(to, scene);
                         _vm.RefreshSceneList();
                     }
-                },
-                () => _claudeService?.AiService.Config?.GetApiKey(AiProviderType.OpenAi) ?? ""
+                }
             );
 
             var chatVm = new ViewModels.ChatPanelViewModel(
@@ -221,8 +226,13 @@ namespace InsightCast.Views
         /// <summary>BackStage ヘッダー（「ファイル」ボタン）のフォントを小さく＋白文字に</summary>
         private void StyleBackStageHeader()
         {
-            // TODO: Syncfusion BackStage ヘッダーの要素名が不明。ビジュアルツリー調査が必要。
-            // 次回セッションで対応: ToggleButton を探してFontSize=11, Foreground=White に設定する。
+            var toggle = FindVisualChild<System.Windows.Controls.Primitives.ToggleButton>(
+                MainRibbon, tb => tb.Name == "PART_BackStageButton");
+            if (toggle != null)
+            {
+                toggle.FontSize = 11;
+                toggle.Foreground = System.Windows.Media.Brushes.White;
+            }
         }
 
         private static T? FindVisualChild<T>(DependencyObject parent, Func<T, bool>? predicate = null) where T : DependencyObject
@@ -277,6 +287,9 @@ namespace InsightCast.Views
         #region ViewModel Event Handlers (UI-specific)
 
         private void OnExitRequested() => Close();
+
+        private void OnScaleChanged(object? sender, double e) =>
+            ScaleLabel.Text = InsightCommon.UI.InsightScaleManager.Instance.ScalePercent;
 
         private void OnScreenCaptureRequested()
         {
@@ -425,8 +438,9 @@ namespace InsightCast.Views
                     bitmap.Freeze();
                     PreviewImage.Source = bitmap;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Trace.TraceWarning($"Thumbnail load failed: {ex.Message}");
                     PreviewImage.Source = null;
                 }
             });
@@ -450,7 +464,10 @@ namespace InsightCast.Views
                 if (sceneGen.ExtractThumbnail(videoPath, thumbPath, 0.5))
                     return thumbPath;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceWarning($"Video thumbnail extraction failed: {ex.Message}");
+            }
             return null;
         }
 
@@ -1224,6 +1241,7 @@ namespace InsightCast.Views
             _vm.ScenesChanged -= OnMainViewModelScenesChanged;
             _vm.Logger.LogReceived -= OnLogReceived;
             PlanningTabControl.ScenesChanged -= OnPlanningTabScenesChanged;
+            InsightCommon.UI.InsightScaleManager.Instance.ScaleChanged -= OnScaleChanged;
         }
 
         #endregion

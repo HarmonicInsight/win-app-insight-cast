@@ -130,7 +130,7 @@ namespace InsightCast.Services
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[WARN] Template load failed: {file}: {ex.Message}");
+                    System.Diagnostics.Trace.TraceWarning($"[WARN] Template load failed: {file}: {ex.Message}");
                 }
             }
 

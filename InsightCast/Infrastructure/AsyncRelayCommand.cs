@@ -44,7 +44,7 @@ namespace InsightCast.Infrastructure
                 // Prevent async void exceptions from crashing the application.
                 // Individual commands should handle their own errors, but this
                 // catch-all ensures no unhandled exception escapes async void.
-                Debug.WriteLine($"AsyncRelayCommand unhandled error: {ex}");
+                Trace.TraceError($"AsyncRelayCommand unhandled error: {ex}");
             }
             finally
             {

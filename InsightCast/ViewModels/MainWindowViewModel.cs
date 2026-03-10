@@ -720,7 +720,6 @@ namespace InsightCast.ViewModels
         public ICommand ExitCommand { get; }
         public ICommand ImportJsonCommand { get; }
         public ICommand BatchExportCommand { get; }
-        public ICommand OpenAISettingsCommand { get; }
         public ICommand AIGenerateProjectCommand { get; }
         public ICommand ScreenCaptureCommand { get; }
         public ICommand AddCtaEndcardCommand { get; }
@@ -755,19 +754,19 @@ namespace InsightCast.ViewModels
             SaveProjectAsCommand = new RelayCommand(SaveProjectAs);
             ImportPptxCommand = new AsyncRelayCommand(ImportPptxAsync);
             AddSceneCommand = new RelayCommand(AddScene);
-            RemoveSceneCommand = new RelayCommand(RemoveScene);
-            MoveSceneUpCommand = new RelayCommand(MoveSceneUp);
-            MoveSceneDownCommand = new RelayCommand(MoveSceneDown);
-            SelectMediaCommand = new RelayCommand(SelectMedia);
-            ClearMediaCommand = new RelayCommand(ClearMedia);
+            RemoveSceneCommand = new RelayCommand(RemoveScene, () => _selectedSceneIndex >= 0 && _project.Scenes.Count > 1);
+            MoveSceneUpCommand = new RelayCommand(MoveSceneUp, () => _selectedSceneIndex > 0);
+            MoveSceneDownCommand = new RelayCommand(MoveSceneDown, () => _selectedSceneIndex >= 0 && _selectedSceneIndex < _project.Scenes.Count - 1);
+            SelectMediaCommand = new RelayCommand(SelectMedia, () => _selectedSceneIndex >= 0);
+            ClearMediaCommand = new RelayCommand(ClearMedia, () => _selectedSceneIndex >= 0);
             OpenStyleDialogCommand = new RelayCommand(OpenStyleDialog);
-            PreviewAudioCommand = new AsyncRelayCommand(PreviewCurrentScene);
-            PreviewSceneCommand = new AsyncRelayCommand(PreviewCurrentSceneVideo);
+            PreviewAudioCommand = new AsyncRelayCommand(PreviewCurrentScene, () => _selectedSceneIndex >= 0);
+            PreviewSceneCommand = new AsyncRelayCommand(PreviewCurrentSceneVideo, () => _selectedSceneIndex >= 0);
             StopPreviewCommand = new RelayCommand(() => StopAudioRequested?.Invoke());
-            ExportVideoCommand = new AsyncRelayCommand(ExportVideo);
-            AddOverlayCommand = new RelayCommand(AddOverlay);
-            RemoveOverlayCommand = new RelayCommand(RemoveOverlay);
-            AddCoverTemplateCommand = new RelayCommand(AddCoverTemplate);
+            ExportVideoCommand = new AsyncRelayCommand(ExportVideo, () => _project.Scenes.Count > 0 && !_isExporting);
+            AddOverlayCommand = new RelayCommand(AddOverlay, () => _selectedSceneIndex >= 0);
+            RemoveOverlayCommand = new RelayCommand(RemoveOverlay, () => _selectedSceneIndex >= 0);
+            AddCoverTemplateCommand = new RelayCommand(AddCoverTemplate, () => _selectedSceneIndex >= 0);
             MoveOverlayUpCommand = new RelayCommand(MoveOverlayUp);
             MoveOverlayDownCommand = new RelayCommand(MoveOverlayDown);
             SetOverlayPositionCommand = new RelayCommand(p => SetOverlayPosition(p as string));
@@ -782,12 +781,12 @@ namespace InsightCast.ViewModels
             });
             SelectWatermarkCommand = new RelayCommand(SelectWatermark);
             ClearWatermarkCommand = new RelayCommand(ClearWatermark);
-            SaveTemplateCommand = new RelayCommand(SaveTemplate);
+            SaveTemplateCommand = new RelayCommand(SaveTemplate, () => _project.Scenes.Count > 0);
             LoadTemplateCommand = new RelayCommand(LoadTemplate);
             OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
             BgmSettingsCommand = new RelayCommand(OpenBgmSettings);
-            CopyNarrationToSubtitleCommand = new RelayCommand(CopyNarrationToSubtitle);
-            ApplyTransitionToAllCommand = new RelayCommand(ApplyTransitionToAll);
+            CopyNarrationToSubtitleCommand = new RelayCommand(CopyNarrationToSubtitle, () => _selectedSceneIndex >= 0);
+            ApplyTransitionToAllCommand = new RelayCommand(ApplyTransitionToAll, () => _project.Scenes.Count > 0);
             ShowTutorialCommand = new RelayCommand(ShowHelp);
             ShowFaqCommand = new RelayCommand(ShowHelp);
             ShowHelpCommand = new RelayCommand(ShowHelp);
@@ -802,15 +801,14 @@ namespace InsightCast.ViewModels
             ExitCommand = new RelayCommand(() => ExitRequested?.Invoke());
             ImportJsonCommand = new RelayCommand(ImportJson);
             BatchExportCommand = new RelayCommand(OpenBatchExport);
-            OpenAISettingsCommand = new RelayCommand(OpenAISettings);
-            AIGenerateProjectCommand = new RelayCommand(OpenAIGenerateProject);
-            ScreenCaptureCommand = new RelayCommand(StartScreenCapture);
+            AIGenerateProjectCommand = new RelayCommand(AIGenerateProject);
+            ScreenCaptureCommand = new RelayCommand(StartScreenCapture, () => _selectedSceneIndex >= 0);
             AddCtaEndcardCommand = new RelayCommand(AddCtaEndcard);
-            ClearAllScriptsCommand = new RelayCommand(ClearAllScripts);
-            ClearAllSubtitlesCommand = new RelayCommand(ClearAllSubtitles);
+            ClearAllScriptsCommand = new RelayCommand(ClearAllScripts, () => _project.Scenes.Count > 0);
+            ClearAllSubtitlesCommand = new RelayCommand(ClearAllSubtitles, () => _project.Scenes.Count > 0);
             ApplyMotionPresetCommand = new RelayCommand(ApplyMotionPreset);
             LaunchSnippingToolCommand = new RelayCommand(LaunchSnippingTool);
-            ScreenRecordCommand = new RelayCommand(StartScreenRecord);
+            ScreenRecordCommand = new RelayCommand(StartScreenRecord, () => _selectedSceneIndex >= 0);
 
             // Auto-save every 5 minutes
             _autoSaveTimer = new Timer(_ => AutoSave(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
@@ -1889,7 +1887,7 @@ namespace InsightCast.ViewModels
                 foreach (var old in Directory.GetFiles(previewDir, "preview_*.mp4"))
                     File.Delete(old);
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Preview cleanup: {ex.Message}"); }
+            catch (Exception ex) { _logger.LogError("Preview cleanup failed", ex); }
 
             var previewPath = Path.Combine(previewDir, $"preview_{Guid.NewGuid():N}.mp4");
 
@@ -2925,9 +2923,18 @@ namespace InsightCast.ViewModels
                 }
             }
 
-            // Dispose auto-save timer
+            // Dispose auto-save timer and remove auto-save file on clean exit
             _autoSaveTimer?.Dispose();
             _autoSaveTimer = null;
+            try
+            {
+                var autoSavePath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "InsightCast", "AutoSave", "autosave.json");
+                if (File.Exists(autoSavePath))
+                    File.Delete(autoSavePath);
+            }
+            catch { /* best-effort cleanup */ }
 
             // Clean up preview files and PPTX temp directories
             try
@@ -2941,7 +2948,7 @@ namespace InsightCast.ViewModels
                 if (Directory.Exists(pptxDir))
                     Directory.Delete(pptxDir, true);
             }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Cache cleanup: {ex.Message}"); }
+            catch (Exception ex) { _logger.LogError("Cache cleanup failed", ex); }
 
             return true;
         }
@@ -2988,31 +2995,9 @@ namespace InsightCast.ViewModels
             dialog.ShowDialog();
         }
 
-        private void OpenAISettings()
+        private void AIGenerateProject()
         {
-            var openAIService = new Services.OpenAI.OpenAIService();
-
-            var dialog = new Views.OpenAISettingsDialog(_config, openAIService);
-            dialog.Owner = System.Windows.Application.Current.MainWindow;
-
-            if (dialog.ShowDialog() == true)
-            {
-                StatusText = LocalizationService.GetString("Status.OpenAISettingsUpdated");
-            }
-        }
-
-        private void OpenAIGenerateProject()
-        {
-            var openAIService = new Services.OpenAI.OpenAIService();
-
-            // Configure API key if available
-            var apiKey = Services.OpenAI.ApiKeyManager.GetApiKey(_config);
-            if (!string.IsNullOrEmpty(apiKey))
-            {
-                _ = openAIService.ConfigureAsync(apiKey);
-            }
-
-            var dialog = new Views.AIProjectGenerateDialog(_config, openAIService);
+            var dialog = new Views.AIProjectGenerateDialog(_config);
             dialog.Owner = System.Windows.Application.Current.MainWindow;
 
             if (dialog.ShowDialog() == true && dialog.GeneratedProject != null)
@@ -3118,18 +3103,10 @@ namespace InsightCast.ViewModels
                 return null;
             }
 
-            var openAIService = new Services.OpenAI.OpenAIService();
-            var apiKey = Services.OpenAI.ApiKeyManager.GetApiKey(_config);
-            if (!string.IsNullOrEmpty(apiKey))
-            {
-                _ = openAIService.ConfigureAsync(apiKey);
-            }
-
             return new Services.Batch.BatchExportService(
                 _ffmpegWrapper,
                 _ttsManager.ActiveEngine,
-                _audioCache,
-                openAIService);
+                _audioCache);
         }
 
         #endregion

@@ -375,7 +375,7 @@ namespace InsightCast.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Font size regeneration failed: {ex.Message}");
+                System.Diagnostics.Trace.TraceWarning($"Font size regeneration failed: {ex.Message}");
             }
             finally
             {

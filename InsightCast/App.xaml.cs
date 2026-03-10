@@ -22,6 +22,10 @@ using Syncfusion.SfSkinManager;
 /// </summary>
 public partial class App : Application
 {
+    /// <summary>Syncfusion Essential Studio Community License key (32.x)</summary>
+    private const string SyncfusionLicenseKey =
+        "Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1ccXVXQ2ZYVUF2XkBWYEs=";
+
     private VoiceVoxClient? _voiceVoxClient;
     private TtsEngineManager? _ttsEngineManager;
 
@@ -36,9 +40,8 @@ public partial class App : Application
             return;
         }
 
-        // Syncfusion ライセンス設定（Essential Studio 32.x - Community License）
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(
-            "Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1ccXVXQ2ZYVUF2XkBWYEs=");
+        // Syncfusion ライセンス設定
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(SyncfusionLicenseKey);
 
         // Syncfusion テーマはRibbonのみに適用（カスタムタイトルバーの上書き防止）
         SfSkinManager.ApplyStylesOnApplication = false;
@@ -189,6 +192,13 @@ public partial class App : Application
 
                 if (quickWindow.LoadedProject != null)
                     mainWindow.LoadProject(quickWindow.LoadedProject);
+                else
+                {
+                    // No project from QuickMode — check for auto-save recovery
+                    var recovered = TryRecoverAutoSave();
+                    if (recovered != null)
+                        mainWindow.LoadProject(recovered);
+                }
             }
             else
             {
@@ -219,6 +229,59 @@ public partial class App : Application
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
             }
+        }
+    }
+
+    /// <summary>
+    /// Checks for auto-save data from a previous session and offers to restore it.
+    /// Returns the restored project, or null if none found or declined.
+    /// </summary>
+    private static Project? TryRecoverAutoSave()
+    {
+        try
+        {
+            var autoSavePath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "InsightCast", "AutoSave", "autosave.json");
+
+            if (!System.IO.File.Exists(autoSavePath))
+                return null;
+
+            var fileInfo = new System.IO.FileInfo(autoSavePath);
+
+            // Ignore auto-save data older than 7 days
+            if (fileInfo.LastWriteTime < DateTime.Now.AddDays(-7))
+            {
+                try { System.IO.File.Delete(autoSavePath); } catch { }
+                return null;
+            }
+
+            var timestamp = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm");
+            var result = MessageBox.Show(
+                LocalizationService.GetString("App.AutoSave.Recover", timestamp),
+                LocalizationService.GetString("App.AutoSave.Recover.Title"),
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                var json = System.IO.File.ReadAllText(autoSavePath);
+                var project = System.Text.Json.JsonSerializer.Deserialize<Project>(json);
+                // Delete after successful restore to avoid re-prompting
+                try { System.IO.File.Delete(autoSavePath); } catch { }
+                return project;
+            }
+            else
+            {
+                // User declined — delete auto-save to avoid re-prompting
+                try { System.IO.File.Delete(autoSavePath); } catch { }
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Trace.TraceWarning($"AutoSave recovery failed: {ex.Message}");
+            return null;
         }
     }
 

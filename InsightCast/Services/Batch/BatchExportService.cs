@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using InsightCast.Models;
-using InsightCast.Services.OpenAI;
 using InsightCast.TTS;
 using InsightCast.Video;
 using InsightCast.VoiceVox;
@@ -29,7 +26,6 @@ namespace InsightCast.Services.Batch
         };
 
         private readonly ExportService _exportService;
-        private readonly IOpenAIService? _openAIService;
 
         /// <inheritdoc />
         public event EventHandler<BatchProgress>? ProgressChanged;
@@ -43,25 +39,22 @@ namespace InsightCast.Services.Batch
         public BatchExportService(
             FFmpegWrapper ffmpeg,
             ITtsEngine ttsEngine,
-            AudioCache audioCache,
-            IOpenAIService? openAIService = null)
+            AudioCache audioCache)
         {
             _exportService = new ExportService(ffmpeg, ttsEngine, audioCache);
-            _openAIService = openAIService;
         }
 
         // 既存コード互換
         public BatchExportService(
             FFmpegWrapper ffmpeg,
             VoiceVoxClient voiceVoxClient,
-            AudioCache audioCache,
-            IOpenAIService? openAIService = null)
-            : this(ffmpeg, new VoiceVoxTtsAdapter(voiceVoxClient), audioCache, openAIService)
+            AudioCache audioCache)
+            : this(ffmpeg, new VoiceVoxTtsAdapter(voiceVoxClient), audioCache)
         {
         }
 
         /// <inheritdoc />
-        public async Task<BatchResult> ExecuteBatchAsync(
+        public Task<BatchResult> ExecuteBatchAsync(
             BatchConfig config,
             int defaultSpeakerId,
             Func<Scene, TextStyle> getStyleForScene,
@@ -74,16 +67,6 @@ namespace InsightCast.Services.Batch
                 StartTime = DateTime.Now,
                 TotalProjects = config.Projects.Count
             };
-
-            // OpenAI APIキー設定
-            if (_openAIService != null && !string.IsNullOrEmpty(config.GlobalSettings.OpenAIApiKey))
-            {
-                var apiKey = ApiKeyManager.ResolveApiKeyReference(config.GlobalSettings.OpenAIApiKey);
-                if (!string.IsNullOrEmpty(apiKey))
-                {
-                    await _openAIService.ConfigureAsync(apiKey, ct);
-                }
-            }
 
             // 出力ディレクトリ作成
             if (!string.IsNullOrEmpty(config.GlobalSettings.OutputDirectory))
@@ -114,17 +97,6 @@ namespace InsightCast.Services.Batch
 
                     // オーバーライド適用
                     ApplyOverrides(project, projectItem.Overrides);
-
-                    // AI生成が必要なシーンを処理
-                    if (_openAIService?.IsConfigured == true && project.Scenes.Any(s => s.RequiresAIGeneration))
-                    {
-                        batchProgress.Phase = BatchPhase.AIGeneration;
-                        batchProgress.CurrentMessage = LocalizationService.GetString("Batch.AIGeneration");
-                        progress.Report(batchProgress);
-                        ProgressChanged?.Invoke(this, batchProgress);
-
-                        await ProcessAIGenerationAsync(project, ct);
-                    }
 
                     // 出力パス決定
                     var outputPath = DetermineOutputPath(config, projectItem);
@@ -197,11 +169,11 @@ namespace InsightCast.Services.Batch
             }
 
             result.EndTime = DateTime.Now;
-            return result;
+            return Task.FromResult(result);
         }
 
         /// <inheritdoc />
-        public async Task<ExportResult> ImportAndExportAsync(
+        public Task<ExportResult> ImportAndExportAsync(
             string projectJsonPath,
             string outputPath,
             int defaultSpeakerId,
@@ -212,15 +184,8 @@ namespace InsightCast.Services.Batch
             progress.Report(LocalizationService.GetString("Batch.LoadingProject"));
             var project = ImportProjectFromJson(projectJsonPath);
 
-            // AI生成処理
-            if (_openAIService?.IsConfigured == true && project.Scenes.Any(s => s.RequiresAIGeneration))
-            {
-                progress.Report(LocalizationService.GetString("Batch.AIGeneration"));
-                await ProcessAIGenerationAsync(project, ct);
-            }
-
             progress.Report(LocalizationService.GetString("Batch.Exporting"));
-            return _exportService.ExportFull(
+            return Task.FromResult(_exportService.ExportFull(
                 project,
                 outputPath,
                 project.Output.Resolution,
@@ -228,7 +193,7 @@ namespace InsightCast.Services.Batch
                 defaultSpeakerId,
                 getStyleForScene,
                 progress,
-                ct);
+                ct));
         }
 
         /// <inheritdoc />
@@ -291,66 +256,6 @@ namespace InsightCast.Services.Batch
             }
 
             return config;
-        }
-
-        private async Task ProcessAIGenerationAsync(Project project, CancellationToken ct)
-        {
-            if (_openAIService == null || !_openAIService.IsConfigured)
-                return;
-
-            foreach (var scene in project.Scenes)
-            {
-                ct.ThrowIfCancellationRequested();
-
-                var aiSettings = scene.AIGeneration;
-                if (aiSettings == null)
-                    continue;
-
-                // ナレーション生成
-                if (aiSettings.CanGenerateNarration)
-                {
-                    var request = new TextGenerationRequest
-                    {
-                        Topic = aiSettings.NarrationTopic!,
-                        Style = aiSettings.NarrationStyle,
-                        TargetDurationSeconds = aiSettings.TargetDurationSeconds,
-                        AdditionalInstructions = aiSettings.AdditionalInstructions
-                    };
-
-                    var result = await _openAIService.GenerateNarrationAsync(request, ct);
-                    if (result.Success)
-                    {
-                        scene.NarrationText = result.Text;
-                        if (string.IsNullOrEmpty(scene.SubtitleText))
-                            scene.SubtitleText = result.Text;
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"AI narration generation failed: {result.ErrorMessage}");
-                    }
-                }
-
-                // 画像生成
-                if (aiSettings.CanGenerateImage)
-                {
-                    var request = new ImageGenerationRequest
-                    {
-                        Description = aiSettings.ImageDescription!,
-                        Style = aiSettings.ImageStyle
-                    };
-
-                    var result = await _openAIService.GenerateImageAsync(request, ct);
-                    if (result.Success)
-                    {
-                        scene.MediaPath = result.ImagePath;
-                        scene.MediaType = MediaType.Image;
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"AI image generation failed: {result.ErrorMessage}");
-                    }
-                }
-            }
         }
 
         private static void ResolveFilePaths(Project project, string baseDir)

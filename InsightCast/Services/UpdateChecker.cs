@@ -57,7 +57,7 @@ public static class UpdateChecker
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"UpdateChecker failed: {ex.Message}");
+            Trace.TraceWarning($"UpdateChecker failed: {ex.Message}");
             return null;
         }
     }

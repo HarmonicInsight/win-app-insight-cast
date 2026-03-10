@@ -45,12 +45,6 @@ namespace InsightCast.Services.Batch
         public string OutputDirectory { get; set; } = string.Empty;
 
         /// <summary>
-        /// OpenAI APIキー（環境変数参照可: ${OPENAI_API_KEY}）。
-        /// </summary>
-        [JsonPropertyName("openaiApiKey")]
-        public string? OpenAIApiKey { get; set; }
-
-        /// <summary>
         /// エラー発生時に処理を続行するかどうか。
         /// </summary>
         [JsonPropertyName("continueOnError")]

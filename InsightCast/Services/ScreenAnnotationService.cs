@@ -82,7 +82,7 @@ namespace InsightCast.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error getting UI elements: {ex.Message}");
+                System.Diagnostics.Trace.TraceWarning($"Error getting UI elements: {ex.Message}");
             }
 
             return elements;
@@ -182,7 +182,7 @@ namespace InsightCast.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error capturing window: {ex.Message}");
+                System.Diagnostics.Trace.TraceWarning($"Error capturing window: {ex.Message}");
                 return null;
             }
         }

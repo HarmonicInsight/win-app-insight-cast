@@ -35,7 +35,9 @@ public class SceneGenerator
     /// <returns>Path to a found font file, or null if none found.</returns>
     public static string? FindDefaultFont()
     {
-        string fontsDir = @"C:\Windows\Fonts";
+        string fontsDir = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+        if (string.IsNullOrEmpty(fontsDir))
+            fontsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Fonts");
         string[] candidates =
         {
             "msgothic.ttc",
@@ -849,7 +851,7 @@ public class SceneGenerator
         // Safety: video height must be positive
         if (videoHeight < 100)
         {
-            System.Diagnostics.Debug.WriteLine($"[Letterbox] videoHeight too small ({videoHeight}), skipping letterbox");
+            System.Diagnostics.Trace.TraceWarning($"[Letterbox] videoHeight too small ({videoHeight}), skipping letterbox");
             return false;
         }
 

@@ -292,7 +292,7 @@ public partial class PromptEditorDialog : Window
         var promptText = PromptBox.Text?.Trim() ?? "";
         var name = NameBox.Text?.Trim() ?? "";
         var category = (CategoryComboBox.Text ?? "").Trim();
-        var suffix = _lang == "ja" ? "カスタム" : "Custom";
+        var suffix = _lang == "ja" ? "マイプロンプト" : "Custom";
 
         var selectedModelId = ModelComboBox.SelectedValue as string ?? ClaudeModels.DefaultModel;
         var entry = new UserPrompt

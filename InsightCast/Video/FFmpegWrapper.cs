@@ -149,13 +149,16 @@ public class FFmpegWrapper
             }
         }
 
-        // --- 3. Common Windows installation paths ---
+        // --- 3. Common installation paths (drive-independent) ---
+        var systemDrive = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.Windows)) ?? @"C:\";
+        var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+        var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
         string[] commonPaths =
         {
-            @"C:\ffmpeg\bin\ffmpeg.exe",
-            @"C:\Program Files\ffmpeg\bin\ffmpeg.exe",
-            @"C:\Program Files (x86)\ffmpeg\bin\ffmpeg.exe",
-            @"C:\tools\ffmpeg\bin\ffmpeg.exe",
+            Path.Combine(systemDrive, "ffmpeg", "bin", "ffmpeg.exe"),
+            Path.Combine(programFiles, "ffmpeg", "bin", "ffmpeg.exe"),
+            Path.Combine(programFilesX86, "ffmpeg", "bin", "ffmpeg.exe"),
+            Path.Combine(systemDrive, "tools", "ffmpeg", "bin", "ffmpeg.exe"),
             Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "ffmpeg", "bin", "ffmpeg.exe"),
@@ -304,17 +307,17 @@ public class FFmpegWrapper
             {
                 if (!string.IsNullOrEmpty(stdout))
                 {
-                    Debug.WriteLine(stdout);
+                    Trace.TraceInformation(stdout);
                 }
                 if (!string.IsNullOrEmpty(stderr))
                 {
-                    Debug.WriteLine($"FFmpeg stderr: {stderr}");
+                    Trace.TraceInformation($"FFmpeg stderr: {stderr}");
                 }
             }
 
             if (process.ExitCode != 0)
             {
-                Debug.WriteLine($"FFmpeg failed (exit {process.ExitCode}): {stderr}");
+                Trace.TraceWarning($"FFmpeg failed (exit {process.ExitCode}): {stderr}");
             }
 
             return process.ExitCode == 0;

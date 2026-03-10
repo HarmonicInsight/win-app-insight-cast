@@ -117,7 +117,7 @@ public class WindowsTtsClient : ITtsEngine
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"WindowsTtsClient.GenerateAudioAsync failed: {ex.Message}");
+            System.Diagnostics.Trace.TraceWarning($"WindowsTtsClient.GenerateAudioAsync failed: {ex.Message}");
             return Task.FromResult(GenerateSilentWav(1.0));
         }
     }

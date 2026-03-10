@@ -17,7 +17,6 @@ using InsightCast.Core;
 using InsightCast.Infrastructure;
 using InsightCast.Models;
 using InsightCast.Services;
-using InsightCast.Services.OpenAI;
 using Microsoft.Win32;
 
 namespace InsightCast.ViewModels
@@ -132,7 +131,6 @@ namespace InsightCast.ViewModels
     {
         private readonly Config _config;
         private readonly Project _project;
-        private IOpenAIService? _openAIService;
 
         public Project Project => _project;
 
@@ -781,15 +779,13 @@ namespace InsightCast.ViewModels
             return purposeText;
         }
 
-        private async Task GenerateProjectAsync()
+        private Task GenerateProjectAsync()
         {
             var duration = GetTargetDuration();
             var purposeText = GetPurposeText();
             var mediaCount = MediaItems.Count;
             var sceneCount = GetSceneCount();
             var secondsPerScene = sceneCount > 0 ? duration / sceneCount : 10;
-
-            await EnsureOpenAIConfigured();
 
             // Clear existing scenes and create new ones
             while (_project.Scenes.Count > 1)
@@ -804,51 +800,7 @@ namespace InsightCast.ViewModels
             _cts = new CancellationTokenSource();
             try
             {
-                if (_openAIService != null && _openAIService.IsConfigured)
-                {
-                    // Generate with AI
-                    var mediaInfo = mediaCount > 0
-                        ? string.Join(", ", MediaItems.Select((m, i) => $"素材{i + 1}: {m.FileName}"))
-                        : "素材なし（プロンプトから生成予定）";
-
-                    var prompt = $@"以下の条件で動画のナレーションスクリプトを{sceneCount}シーン分作成してください。
-
-目的: {purposeText}
-素材: {mediaInfo}
-各シーンの長さ: 約{secondsPerScene}秒（{secondsPerScene * 4}文字程度）
-
-出力形式（各シーンごとに）:
-シーン1:
-タイトル: [シーンのタイトル]
-スクリプト: [ナレーション文]
-画像プロンプト: [DALL-E用の英語プロンプト]
-
-シーン2:
-...
-
-必ず{sceneCount}シーン分出力してください。";
-
-                    var request = new TextGenerationRequest
-                    {
-                        Topic = prompt,
-                        Style = "educational",
-                        MaxTokens = 2000
-                    };
-
-                    var result = await _openAIService.GenerateNarrationAsync(request, _cts.Token);
-                    if (result.Success && !string.IsNullOrEmpty(result.Text))
-                    {
-                        ParseAndApplyGeneratedContent(result.Text, sceneCount, secondsPerScene);
-                    }
-                    else
-                    {
-                        ApplyTemplateContent(purposeText, sceneCount, secondsPerScene);
-                    }
-                }
-                else
-                {
-                    ApplyTemplateContent(purposeText, sceneCount, secondsPerScene);
-                }
+                ApplyTemplateContent(purposeText, sceneCount, secondsPerScene);
 
                 // Assign media to scenes
                 for (int i = 0; i < Math.Min(MediaItems.Count, _project.Scenes.Count); i++)
@@ -874,6 +826,8 @@ namespace InsightCast.ViewModels
                 _cts?.Dispose();
                 _cts = null;
             }
+
+            return Task.CompletedTask;
         }
 
         private void ParseAndApplyGeneratedContent(string aiResponse, int expectedCount, int secondsPerScene)
@@ -961,169 +915,40 @@ namespace InsightCast.ViewModels
             }
         }
 
-        private async Task EnsureOpenAIConfigured()
+        private Task SendChatAsync()
         {
-            if (_openAIService == null)
-            {
-                _openAIService = new OpenAIService();
-            }
+            if (string.IsNullOrWhiteSpace(ChatInput)) return Task.CompletedTask;
 
-            if (!_openAIService.IsConfigured)
-            {
-                var apiKey = ApiKeyManager.GetApiKey(_config);
-                if (!string.IsNullOrEmpty(apiKey))
-                {
-                    await _openAIService.ConfigureAsync(apiKey);
-                }
-            }
-        }
-
-        private async Task SendChatAsync()
-        {
-            if (string.IsNullOrWhiteSpace(ChatInput)) return;
-
-            await EnsureOpenAIConfigured();
-            if (_openAIService == null || !_openAIService.IsConfigured)
-            {
-                ChatMessages.Add(new ChatMessage
-                {
-                    Text = LocalizationService.GetString("AIGenerate.Error.NoApiKey"),
-                    IsUser = false
-                });
-                return;
-            }
-
-            var userMessage = ChatInput;
-            ChatMessages.Add(new ChatMessage { Text = userMessage, IsUser = true });
+            ChatMessages.Add(new ChatMessage { Text = ChatInput, IsUser = true });
             ChatInput = string.Empty;
 
-            _cts = new CancellationTokenSource();
-            try
+            ChatMessages.Add(new ChatMessage
             {
-                var request = new TextGenerationRequest
-                {
-                    Topic = userMessage,
-                    Style = "conversational",
-                    MaxTokens = 1000
-                };
+                Text = "AI chat is not available in this version.",
+                IsUser = false
+            });
 
-                var result = await _openAIService.GenerateNarrationAsync(request, _cts.Token);
-                ChatMessages.Add(new ChatMessage
-                {
-                    Text = result.Success ? result.Text ?? "No response" : result.ErrorMessage ?? "Error",
-                    IsUser = false
-                });
-            }
-            catch (OperationCanceledException)
-            {
-                // Cancelled
-            }
-            finally
-            {
-                _cts?.Dispose();
-                _cts = null;
-            }
+            return Task.CompletedTask;
         }
 
-        private async Task GenerateOutlineAsync()
+        private Task GenerateOutlineAsync()
         {
-            if (string.IsNullOrWhiteSpace(ChatInput)) return;
+            if (string.IsNullOrWhiteSpace(ChatInput)) return Task.CompletedTask;
 
-            await EnsureOpenAIConfigured();
-            if (_openAIService == null || !_openAIService.IsConfigured)
+            ChatMessages.Add(new ChatMessage { Text = $"構成を生成: {ChatInput}", IsUser = true });
+            ChatMessages.Add(new ChatMessage
             {
-                MessageBox.Show(LocalizationService.GetString("AIGenerate.Error.NoApiKey"));
-                return;
-            }
+                Text = "AI outline generation is not available in this version.",
+                IsUser = false
+            });
 
-            var topic = ChatInput;
-            ChatMessages.Add(new ChatMessage { Text = $"構成を生成: {topic}", IsUser = true });
-
-            _cts = new CancellationTokenSource();
-            try
-            {
-                // Generate outline with 5 scenes
-                var request = new TextGenerationRequest
-                {
-                    Topic = $@"以下のトピックについて、5つのシーンで構成される動画の構成案を作成してください。
-各シーンには「タイトル」と「概要（1-2文）」を含めてください。
-
-トピック: {topic}
-
-出力形式:
-シーン1: [タイトル]
-概要: [内容]
-
-シーン2: [タイトル]
-概要: [内容]
-...",
-                    Style = "educational",
-                    MaxTokens = 1500
-                };
-
-                var result = await _openAIService.GenerateNarrationAsync(request, _cts.Token);
-                if (result.Success)
-                {
-                    ChatMessages.Add(new ChatMessage { Text = result.Text ?? "", IsUser = false });
-                    // AI narration result is displayed in chat; scene creation from parsed result is planned for a future release
-                }
-                else
-                {
-                    ChatMessages.Add(new ChatMessage { Text = result.ErrorMessage ?? "Error", IsUser = false });
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                // Cancelled
-            }
-            finally
-            {
-                _cts?.Dispose();
-                _cts = null;
-            }
+            return Task.CompletedTask;
         }
 
-        private async Task GenerateAllScriptsAsync()
+        private Task GenerateAllScriptsAsync()
         {
-            await EnsureOpenAIConfigured();
-            if (_openAIService == null || !_openAIService.IsConfigured)
-            {
-                MessageBox.Show(LocalizationService.GetString("AIGenerate.Error.NoApiKey"));
-                return;
-            }
-
-            _cts = new CancellationTokenSource();
-            try
-            {
-                foreach (var scene in PlanningScenes)
-                {
-                    if (string.IsNullOrWhiteSpace(scene.Script) && !string.IsNullOrWhiteSpace(scene.Title))
-                    {
-                        var request = new TextGenerationRequest
-                        {
-                            Topic = scene.Title,
-                            Style = "educational",
-                            TargetDurationSeconds = 30,
-                            MaxTokens = 500
-                        };
-
-                        var result = await _openAIService.GenerateNarrationAsync(request, _cts.Token);
-                        if (result.Success)
-                        {
-                            scene.Script = result.Text ?? string.Empty;
-                        }
-                    }
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                // Cancelled
-            }
-            finally
-            {
-                _cts?.Dispose();
-                _cts = null;
-            }
+            MessageBox.Show("AI script generation is not available in this version.");
+            return Task.CompletedTask;
         }
 
         private void AddScene()

@@ -338,13 +338,36 @@ public partial class PlanningTab : UserControl
 
     private void ArtifactFilter_Changed(object sender, SelectionChangedEventArgs e)
     {
-        // TODO: Filter output items by type
-        RefreshArtifactCount();
+        ApplyArtifactFilters();
     }
 
     private void ArtifactSearch_Changed(object sender, TextChangedEventArgs e)
     {
-        // TODO: Search/filter output items
+        ApplyArtifactFilters();
+    }
+
+    private void ApplyArtifactFilters()
+    {
+        if (OutputPanel == null) return;
+
+        var filterTag = (ArtifactFilterCombo?.SelectedItem as ComboBoxItem)?.Tag as string ?? "";
+        var searchText = ArtifactSearchBox?.Text?.Trim() ?? "";
+
+        foreach (UIElement child in OutputPanel.Children)
+        {
+            if (child is not FrameworkElement fe) continue;
+            if (fe == OutputEmptyText) continue;
+
+            bool matchesFilter = string.IsNullOrEmpty(filterTag) ||
+                (fe.Tag is string tag && tag.Equals(filterTag, StringComparison.OrdinalIgnoreCase));
+
+            bool matchesSearch = string.IsNullOrEmpty(searchText) ||
+                (fe is ContentControl cc && cc.Content?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true) ||
+                (fe.ToolTip?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) == true);
+
+            fe.Visibility = matchesFilter && matchesSearch ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         RefreshArtifactCount();
     }
 

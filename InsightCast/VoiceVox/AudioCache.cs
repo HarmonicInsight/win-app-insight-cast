@@ -121,7 +121,7 @@ public class AudioCache
                 files.RemoveAt(0);
             }
         }
-        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Cache trim failed: {ex.Message}"); }
+        catch (Exception ex) { System.Diagnostics.Trace.TraceWarning($"Cache trim failed: {ex.Message}"); }
     }
 
     /// <summary>

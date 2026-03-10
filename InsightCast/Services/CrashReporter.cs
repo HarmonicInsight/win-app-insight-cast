@@ -75,7 +75,7 @@ public static class CrashReporter
         }
         catch (Exception writeEx)
         {
-            Debug.WriteLine($"CrashReporter.WriteCrashReport failed: {writeEx.Message}");
+            Trace.TraceError($"CrashReporter.WriteCrashReport failed: {writeEx.Message}");
         }
     }
 

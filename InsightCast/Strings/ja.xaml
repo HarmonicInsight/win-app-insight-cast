@@ -50,6 +50,10 @@
     <sys:String x:Key="App.FFmpeg.NotFound">ffmpegが検出されていません。\n動画の書き出しにはffmpegが必要です。</sys:String>
     <sys:String x:Key="App.FFmpeg.NotFound.Preview">ffmpegが検出されていません。\nシーンプレビューにはffmpegが必要です。</sys:String>
     <sys:String x:Key="App.FFmpeg.NotFound.Generate">ffmpegが見つかりません。動画生成にはffmpegが必要です。</sys:String>
+    <sys:String x:Key="App.AutoSave.Recover">前回のセッションで自動保存されたプロジェクトが見つかりました。（{0}）
+
+復元しますか？</sys:String>
+    <sys:String x:Key="App.AutoSave.Recover.Title">Insight Training Studio - プロジェクト復元</sys:String>
 
     <!-- Title Bar / Header -->
     <sys:String x:Key="Header.LicenseManager">ライセンス管理</sys:String>
@@ -74,7 +78,7 @@
     <sys:String x:Key="Menu.Edit.MoveDown">下へ(_W)</sys:String>
     <sys:String x:Key="Menu.AI">AI編集(_A)</sys:String>
     <sys:String x:Key="Menu.AI.GenerateProject">プロジェクト生成(_G)</sys:String>
-    <sys:String x:Key="Menu.AI.Settings">OpenAI設定(_S)</sys:String>
+    <!-- Menu.AI.Settings removed (OpenAI integration removed) -->
     <sys:String x:Key="Menu.Help">ヘルプ(_H)</sys:String>
     <sys:String x:Key="Menu.Help.Tutorial">チュートリアル(_T)</sys:String>
     <sys:String x:Key="Menu.Help.FAQ">FAQ(_Q)</sys:String>
@@ -839,18 +843,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Batch.ProjectComplete">プロジェクト完了: {0}</sys:String>
     <sys:String x:Key="Batch.ProjectFailed">プロジェクト失敗: {0} - {1}</sys:String>
 
-    <!-- OpenAI Settings -->
-    <sys:String x:Key="OpenAI.Settings.Title">OpenAI API設定</sys:String>
-    <sys:String x:Key="OpenAI.ApiKey">APIキー:</sys:String>
-    <sys:String x:Key="OpenAI.ApiKey.Placeholder">sk-...</sys:String>
-    <sys:String x:Key="OpenAI.ApiKey.Set">設定済み</sys:String>
-    <sys:String x:Key="OpenAI.ApiKey.NotSet">未設定</sys:String>
-    <sys:String x:Key="OpenAI.TestConnection">接続テスト</sys:String>
-    <sys:String x:Key="OpenAI.Testing">テスト中...</sys:String>
-    <sys:String x:Key="OpenAI.Connected">接続成功</sys:String>
-    <sys:String x:Key="OpenAI.ConnectionFailed">接続失敗</sys:String>
-    <sys:String x:Key="OpenAI.NarrationModel">ナレーションモデル:</sys:String>
-    <sys:String x:Key="OpenAI.ImageModel">画像生成モデル:</sys:String>
+    <!-- OpenAI Settings removed -->
 
     <!-- JSON Import -->
     <sys:String x:Key="JsonImport.Title">JSONインポート</sys:String>
@@ -899,8 +892,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="AIGenerate.Progress.Scene">シーン {0}/{1} を生成中...</sys:String>
     <sys:String x:Key="AIGenerate.Progress.Image">画像 {0}/{1} を生成中...</sys:String>
     <sys:String x:Key="AIGenerate.Error.NoTopic">トピックを入力してください。</sys:String>
-    <sys:String x:Key="AIGenerate.Error.NoApiKey">OpenAI APIキーが設定されていません。AI編集 → OpenAI設定から設定してください。</sys:String>
-    <sys:String x:Key="Status.OpenAISettingsUpdated">OpenAI設定を更新しました</sys:String>
+    <sys:String x:Key="AIGenerate.Error.NoApiKey">Claude APIキーが設定されていません。AIアシスタントから設定してください。</sys:String>
     <sys:String x:Key="Status.AIProjectGenerated">AIプロジェクトを生成しました</sys:String>
 
     <!-- Menu additions -->
@@ -932,8 +924,8 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Planning.GeneratePrompt">プロンプト生成</sys:String>
     <sys:String x:Key="Planning.CopyPrompt">コピー</sys:String>
     <sys:String x:Key="Planning.ImageGeneration">画像生成</sys:String>
-    <sys:String x:Key="Planning.GenerateImage">DALL-Eで生成</sys:String>
-    <sys:String x:Key="Planning.ExternalTool.Hint">※ プロンプトをコピーしてDALL-E、Midjourney、Nanobanana等で生成することもできます</sys:String>
+    <sys:String x:Key="Planning.GenerateImage">AIで生成</sys:String>
+    <sys:String x:Key="Planning.ExternalTool.Hint">※ プロンプトをコピーして外部画像生成ツールで生成することもできます</sys:String>
     <sys:String x:Key="Planning.Preview">プレビュー</sys:String>
     <sys:String x:Key="Planning.HasImage">画像: あり</sys:String>
     <sys:String x:Key="Planning.NoImage">画像: なし</sys:String>
@@ -976,7 +968,7 @@ F1              チュートリアルを表示</sys:String>
     <!-- Prompt Editor Panel -->
     <sys:String x:Key="PE.PromptList">プロンプト一覧</sys:String>
     <sys:String x:Key="PE.Presets">プリセット</sys:String>
-    <sys:String x:Key="PE.Custom">カスタム</sys:String>
+    <sys:String x:Key="PE.Custom">マイプロンプト</sys:String>
     <sys:String x:Key="PE.Name">名前</sys:String>
     <sys:String x:Key="PE.Group">グループ</sys:String>
     <sys:String x:Key="PE.Category">カテゴリ</sys:String>
@@ -987,9 +979,9 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="PE.ExecuteTooltip">AIコンシェルジュにプロンプトを送信して実行</sys:String>
     <sys:String x:Key="PE.ConfirmToChat">確認</sys:String>
     <sys:String x:Key="PE.ConfirmToChatTooltip">プロンプトをAIコンシェルジュのテキスト欄にコピー</sys:String>
-    <sys:String x:Key="PE.Customize">カスタム追加</sys:String>
-    <sys:String x:Key="PE.CustomizeTooltip">このプリセットをカスタムプロンプトとして複製</sys:String>
-    <sys:String x:Key="PE.CustomSuffix">カスタム</sys:String>
+    <sys:String x:Key="PE.Customize">マイプロンプト登録</sys:String>
+    <sys:String x:Key="PE.CustomizeTooltip">このプリセットをマイプロンプトとして複製</sys:String>
+    <sys:String x:Key="PE.CustomSuffix">マイプロンプト</sys:String>
     <sys:String x:Key="PE.Add">新規追加</sys:String>
     <sys:String x:Key="PE.AddGroup">グループに追加</sys:String>
     <sys:String x:Key="PE.Delete">削除</sys:String>
@@ -1010,7 +1002,7 @@ F1              チュートリアルを表示</sys:String>
 ③ 「確認」ボタンでこちらに送信
 
 すぐにスライド構成を提案しますので、お気軽にご相談ください！</sys:String>
-    <sys:String x:Key="PE.CustomEmpty">カスタムプロンプトはまだありません</sys:String>
+    <sys:String x:Key="PE.CustomEmpty">マイプロンプトはまだありません</sys:String>
     <sys:String x:Key="UI.ZoomIn">拡大 (Ctrl+Plus)</sys:String>
     <sys:String x:Key="UI.ZoomOut">縮小 (Ctrl+Minus)</sys:String>
     <sys:String x:Key="UI.ZoomReset">100%にリセット (Ctrl+0)</sys:String>
@@ -1024,8 +1016,8 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="PE.Step3Desc">AIが生成した結果を確認して適用</sys:String>
     <sys:String x:Key="PE.Apply">反映</sys:String>
     <sys:String x:Key="PE.ApplyTooltip">AIの出力をシーンに反映します</sys:String>
-    <sys:String x:Key="PE.Register">カスタム登録</sys:String>
-    <sys:String x:Key="PE.RegisterTooltip">現在のプロンプトをカスタムプロンプトとして登録</sys:String>
+    <sys:String x:Key="PE.Register">マイプロンプト登録</sys:String>
+    <sys:String x:Key="PE.RegisterTooltip">現在のプロンプトをマイプロンプトとして登録</sys:String>
     <sys:String x:Key="PE.Confirm">確認</sys:String>
     <sys:String x:Key="PE.ConfirmTooltip">生成結果を確認します</sys:String>
 
@@ -1288,12 +1280,10 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Ai.CopyMenu">コピー</sys:String>
     <sys:String x:Key="Ai.SaveThumbnail">サムネイルを保存</sys:String>
     <sys:String x:Key="Ai.Cancelled">キャンセルしました。</sys:String>
-    <sys:String x:Key="Ai.OpenAIApiKey">OpenAI APIキーを入力 (DALL-E画像生成用)</sys:String>
-    <sys:String x:Key="Ai.OpenAIApiKeyStatus">OpenAI 設定済み</sys:String>
-    <sys:String x:Key="Ai.SetOpenAIBtn">設定</sys:String>
+    <!-- OpenAI API key entries removed -->
     <sys:String x:Key="Ai.ImageMode">画像生成</sys:String>
     <sys:String x:Key="Ai.TextMode">テキスト</sys:String>
-    <sys:String x:Key="Ai.ImageMode.Desc">DALL-E で画像を生成します</sys:String>
+    <!-- Ai.ImageMode.Desc removed -->
     <sys:String x:Key="Ai.ImageGenerated">画像を生成しました</sys:String>
     <sys:String x:Key="Ai.DalleError">画像生成に失敗しました</sys:String>
 
@@ -1462,11 +1452,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="BatchExport.ContinueOnError.Tooltip">1つのプロジェクトが失敗しても残りを続行</sys:String>
     <sys:String x:Key="BatchExport.Start.Tooltip">全プロジェクトの動画エクスポートを開始</sys:String>
 
-    <!-- OpenAI Settings Dialog -->
-    <sys:String x:Key="OpenAI.ApiKey.Tooltip">platform.openai.com で取得したAPIキーを入力</sys:String>
-    <sys:String x:Key="OpenAI.TestConnection.Tooltip">APIキーの有効性と接続を確認</sys:String>
-    <sys:String x:Key="OpenAI.NarrationModel.Tooltip">ナレーション生成に使用するAIモデル</sys:String>
-    <sys:String x:Key="OpenAI.ImageModel.Tooltip">画像生成に使用するAIモデル</sys:String>
+    <!-- OpenAI Settings Dialog entries removed -->
 
     <!-- AI Project Generate Dialog -->
     <sys:String x:Key="AIGenerate.Topic.Tooltip">動画のテーマや内容を自由に記述</sys:String>
@@ -1532,7 +1518,7 @@ F1              チュートリアルを表示</sys:String>
 
     <!-- Chat Panel -->
     <sys:String x:Key="Chat.ApiKey.Claude.Tooltip">Claude APIキーを入力（anthropic.com で取得）</sys:String>
-    <sys:String x:Key="Chat.ApiKey.OpenAI.Tooltip">OpenAI APIキーを入力（platform.openai.com で取得）</sys:String>
+    <!-- Chat.ApiKey.OpenAI.Tooltip removed -->
     <sys:String x:Key="Chat.Mode.Text.Tooltip">テキスト生成モードに切り替え</sys:String>
     <sys:String x:Key="Chat.Mode.Image.Tooltip">画像生成モードに切り替え</sys:String>
     <sys:String x:Key="Chat.MyPrompts.Tooltip">保存した自分のプロンプトを表示</sys:String>
@@ -1716,10 +1702,10 @@ F1              チュートリアルを表示</sys:String>
     <!-- AI画像生成 -->
     <sys:String x:Key="AiGenerate.Title">AI画像生成</sys:String>
     <sys:String x:Key="AiGenerate.ImagesButton">AI画像生成</sys:String>
-    <sys:String x:Key="AiGenerate.ImagesButton.Tooltip">AIで各シーンの画像を自動生成（DALL-E）</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesButton.Tooltip">AIで各シーンの画像を自動生成</sys:String>
     <sys:String x:Key="AiGenerate.NoScenesNeedImages">画像生成が必要なシーンがありません。先に「生成」で章立てを作成してください。</sys:String>
-    <sys:String x:Key="AiGenerate.NotConfigured">OpenAI APIキーが設定されていません。設定でAPIキーを設定してください。</sys:String>
-    <sys:String x:Key="AiGenerate.ConfirmImages">{0}シーンのAI画像を生成しますか？OpenAI DALL-E APIを呼び出します。</sys:String>
+    <sys:String x:Key="AiGenerate.NotConfigured">Claude APIキーが設定されていません。AIアシスタントからAPIキーを設定してください。</sys:String>
+    <sys:String x:Key="AiGenerate.ConfirmImages">{0}シーンのAI画像を生成しますか？</sys:String>
     <sys:String x:Key="AiGenerate.ImagesComplete">{0}枚の画像を生成しました。</sys:String>
     <sys:String x:Key="AiGenerate.ImagesPartial">{0}枚生成、{1}枚失敗しました。</sys:String>
     <sys:String x:Key="AiGenerate.Progress">画像生成中 {0}/{1}...</sys:String>

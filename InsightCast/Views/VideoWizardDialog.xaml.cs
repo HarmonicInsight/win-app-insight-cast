@@ -12,7 +12,6 @@ using System.Windows.Media.Imaging;
 using InsightCast.Core;
 using InsightCast.Models;
 using InsightCast.Services;
-using InsightCast.Services.OpenAI;
 
 namespace InsightCast.Views
 {
@@ -39,7 +38,6 @@ namespace InsightCast.Views
     {
         private readonly Config _config;
         private readonly Project _project;
-        private IOpenAIService? _openAIService;
         private CancellationTokenSource? _cts;
 
         private int _currentStep = 1;
@@ -305,7 +303,7 @@ namespace InsightCast.Views
             return Math.Max(mediaCount, Math.Min(scenesFromDuration, mediaCount + 2));
         }
 
-        private async Task GeneratePreviewAsync()
+        private Task GeneratePreviewAsync()
         {
             GeneratingIndicator.Visibility = Visibility.Visible;
             PreviewScroll.Visibility = Visibility.Collapsed;
@@ -315,43 +313,13 @@ namespace InsightCast.Views
 
             try
             {
-                await EnsureOpenAIConfigured();
-
-                var duration = GetSelectedDuration();
-                var purpose = GetSelectedPurpose();
                 var purposeText = GetPurposeDisplayText();
                 var sceneCount = CalculateSceneCount();
+                var duration = GetSelectedDuration();
                 var secondsPerScene = duration / sceneCount;
 
-                _cts = new CancellationTokenSource();
-
-                if (_openAIService != null && _openAIService.IsConfigured)
-                {
-                    // Use AI to generate scripts
-                    var prompt = BuildGenerationPrompt(purposeText, sceneCount, secondsPerScene);
-                    var request = new TextGenerationRequest
-                    {
-                        Topic = prompt,
-                        Style = "educational",
-                        MaxTokens = 2000
-                    };
-
-                    var result = await _openAIService.GenerateNarrationAsync(request, _cts.Token);
-                    if (result.Success && !string.IsNullOrEmpty(result.Text))
-                    {
-                        ParseGeneratedScenes(result.Text, sceneCount, secondsPerScene);
-                    }
-                    else
-                    {
-                        // Fallback to template-based generation
-                        GenerateTemplateScenes(purposeText, sceneCount, secondsPerScene);
-                    }
-                }
-                else
-                {
-                    // No AI available, use template-based generation
-                    GenerateTemplateScenes(purposeText, sceneCount, secondsPerScene);
-                }
+                // Use template-based generation (OpenAI removed)
+                GenerateTemplateScenes(purposeText, sceneCount, secondsPerScene);
 
                 ScenePreviewList.ItemsSource = _generatedScenes;
             }
@@ -366,9 +334,9 @@ namespace InsightCast.Views
                 GeneratingIndicator.Visibility = Visibility.Collapsed;
                 PreviewScroll.Visibility = Visibility.Visible;
                 NextButton.IsEnabled = true;
-                _cts?.Dispose();
-                _cts = null;
             }
+
+            return Task.CompletedTask;
         }
 
         private string BuildGenerationPrompt(string purpose, int sceneCount, int secondsPerScene)
@@ -504,23 +472,6 @@ namespace InsightCast.Views
                 ("メリット", "この機能のメリットをご紹介します。", "benefits showcase, positive imagery"),
                 ("まとめ", "以上が〇〇の紹介でした。ご視聴ありがとうございました。", "conclusion scene, call to action")
             };
-        }
-
-        private async Task EnsureOpenAIConfigured()
-        {
-            if (_openAIService == null)
-            {
-                _openAIService = new OpenAIService();
-            }
-
-            if (!_openAIService.IsConfigured)
-            {
-                var apiKey = ApiKeyManager.GetApiKey(_config);
-                if (!string.IsNullOrEmpty(apiKey))
-                {
-                    await _openAIService.ConfigureAsync(apiKey);
-                }
-            }
         }
 
         private void ApplyToProject()

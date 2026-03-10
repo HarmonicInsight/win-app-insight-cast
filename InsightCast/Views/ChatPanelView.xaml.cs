@@ -158,20 +158,6 @@ public partial class ChatPanelView : UserControl
         }
     }
 
-    // ── Mode Toggle Handlers ──
-
-    private void TextModeButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (DataContext is ChatPanelViewModel vm)
-            vm.IsImageMode = false;
-    }
-
-    private void ImageModeButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (DataContext is ChatPanelViewModel vm)
-            vm.IsImageMode = true;
-    }
-
     // ── Preset Chip Click ──
 
     private void PresetChip_Click(object sender, MouseButtonEventArgs e)

@@ -1750,7 +1750,7 @@ namespace InsightCast.Views
         {
             // 短時間表示のトースト通知（将来的に実装）
             // 現時点ではログ出力のみ
-            System.Diagnostics.Debug.WriteLine($"[Success] {message}");
+            System.Diagnostics.Trace.TraceInformation($"[Success] {message}");
         }
 
         #endregion

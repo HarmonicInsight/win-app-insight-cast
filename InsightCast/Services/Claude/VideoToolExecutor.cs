@@ -14,7 +14,7 @@ using InsightCommon.AI.FileGeneration;
 namespace InsightCast.Services.Claude;
 
 /// <summary>
-/// Claude Tool Use のツール実行ロジック — シーンデータの読み書き + シーン構造変更 + 画像生成
+/// Claude Tool Use のツール実行ロジック — シーンデータの読み書き + シーン構造変更
 /// </summary>
 public class VideoToolExecutor : IToolExecutor
 {
@@ -25,7 +25,6 @@ public class VideoToolExecutor : IToolExecutor
     private readonly Action<int?> _addScene;
     private readonly Action<int> _removeScene;
     private readonly Action<int, int> _moveScene;
-    private readonly Func<string>? _getOpenAIApiKey;
 
     /// <summary>
     /// 最後に生成されたサムネイルのパス（UI表示用）
@@ -42,7 +41,6 @@ public class VideoToolExecutor : IToolExecutor
     /// <param name="addScene">シーン追加デリゲート (insert_at? null=末尾)</param>
     /// <param name="removeScene">シーン削除デリゲート (index)</param>
     /// <param name="moveScene">シーン移動デリゲート (from, to)</param>
-    /// <param name="getOpenAIApiKey">OpenAI APIキー取得デリゲート</param>
     public VideoToolExecutor(
         Func<List<Scene>> getScenes,
         Action<int, Action<Scene>> updateScene,
@@ -50,8 +48,7 @@ public class VideoToolExecutor : IToolExecutor
         ThumbnailService thumbnailService,
         Action<int?> addScene,
         Action<int> removeScene,
-        Action<int, int> moveScene,
-        Func<string>? getOpenAIApiKey = null)
+        Action<int, int> moveScene)
     {
         _getScenes = getScenes;
         _updateScene = updateScene;
@@ -60,7 +57,6 @@ public class VideoToolExecutor : IToolExecutor
         _addScene = addScene;
         _removeScene = removeScene;
         _moveScene = moveScene;
-        _getOpenAIApiKey = getOpenAIApiKey;
     }
 
     /// <summary>
@@ -394,54 +390,10 @@ public class VideoToolExecutor : IToolExecutor
         });
     }
 
-    private async Task<string> ExecuteGenerateSceneImageAsync(JsonElement input, CancellationToken ct)
+    private Task<string> ExecuteGenerateSceneImageAsync(JsonElement input, CancellationToken ct)
     {
-        var index = input.GetProperty("scene_index").GetInt32();
-        var prompt = input.GetProperty("prompt").GetString() ?? "";
-
-        var size = "1024x1024";
-        if (input.TryGetProperty("size", out var sizeProp))
-            size = sizeProp.GetString() ?? "1024x1024";
-
-        // Pre-validate scene index on UI thread before expensive API call
-        var rangeError = _dispatcher.Invoke(() =>
-        {
-            var scenes = _getScenes();
-            if (index < 0 || index >= scenes.Count)
-                return $"Scene index {index} out of range (0-{scenes.Count - 1})";
-            return (string?)null;
-        });
-        if (rangeError != null)
-            return JsonSerializer.Serialize(new { error = rangeError });
-
-        var apiKey = _getOpenAIApiKey?.Invoke();
-        if (string.IsNullOrEmpty(apiKey))
-            return JsonSerializer.Serialize(new { error = "OpenAI API key is not set. Please configure it in the AI Assistant panel." });
-
-        using var dalle = new DalleService(apiKey);
-        var imagePath = await dalle.GenerateImageAsync(prompt, "dall-e-3", size, ct);
-
-        // Set generated image as scene media (re-validate on UI thread)
-        return _dispatcher.Invoke(() =>
-        {
-            var scenes = _getScenes();
-            if (index < 0 || index >= scenes.Count)
-                return JsonSerializer.Serialize(new { error = $"Scene index {index} no longer valid after image generation" });
-
-            _updateScene(index, s =>
-            {
-                s.MediaPath = imagePath;
-                s.MediaType = MediaType.Image;
-            });
-            return JsonSerializer.Serialize(new
-            {
-                success = true,
-                scene_index = index,
-                media_path = imagePath,
-                prompt,
-                size,
-            });
-        });
+        var result = JsonSerializer.Serialize(new { error = "generate_scene_image is not supported. Image generation has been removed." });
+        return Task.FromResult(result);
     }
 
     private string ExecuteGenerateAbThumbnails(JsonElement input)

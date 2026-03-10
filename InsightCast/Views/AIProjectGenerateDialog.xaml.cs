@@ -6,24 +6,25 @@ using System.Windows.Controls;
 using InsightCast.Core;
 using InsightCast.Models;
 using InsightCast.Services;
-using InsightCast.Services.OpenAI;
 
 namespace InsightCast.Views
 {
     public partial class AIProjectGenerateDialog : Window
     {
         private readonly Config _config;
-        private readonly IOpenAIService _openAIService;
         private CancellationTokenSource? _cts;
 
         public Project? GeneratedProject { get; private set; }
 
-        public AIProjectGenerateDialog(Config config, IOpenAIService openAIService)
+        public AIProjectGenerateDialog(Config config)
         {
             InitializeComponent();
             _config = config;
-            _openAIService = openAIService;
             RestoreLastSettings();
+
+            // Image generation not available (OpenAI removed)
+            GenerateImagesCheckBox.IsChecked = false;
+            GenerateImagesCheckBox.IsEnabled = false;
         }
 
         private async void GenerateButton_Click(object sender, RoutedEventArgs e)
@@ -33,17 +34,6 @@ namespace InsightCast.Views
             {
                 ShowError(LocalizationService.GetString("AIGenerate.Error.NoTopic"));
                 return;
-            }
-
-            if (!_openAIService.IsConfigured)
-            {
-                var apiKey = ApiKeyManager.GetApiKey(_config);
-                if (string.IsNullOrEmpty(apiKey))
-                {
-                    ShowError(LocalizationService.GetString("AIGenerate.Error.NoApiKey"));
-                    return;
-                }
-                await _openAIService.ConfigureAsync(apiKey);
             }
 
             var style = GetSelectedStyle();
@@ -81,68 +71,29 @@ namespace InsightCast.Views
             }
         }
 
-        private async Task<Project?> GenerateProjectAsync(string topic, string style, int sceneCount, bool generateImages, CancellationToken ct)
+        private Task<Project?> GenerateProjectAsync(string topic, string style, int sceneCount, bool generateImages, CancellationToken ct)
         {
             UpdateProgress(LocalizationService.GetString("AIGenerate.Progress.Generating"));
 
             var project = new Project();
             project.Scenes.Clear();
 
-            // Generate narration for each scene
-            var durationPerScene = 30; // seconds
+            // Generate placeholder scenes (AI generation removed)
             for (int i = 0; i < sceneCount; i++)
             {
                 ct.ThrowIfCancellationRequested();
                 UpdateProgress(string.Format(LocalizationService.GetString("AIGenerate.Progress.Scene"), i + 1, sceneCount));
 
-                var request = new TextGenerationRequest
-                {
-                    Topic = $"{topic} - Part {i + 1} of {sceneCount}",
-                    Style = style,
-                    TargetDurationSeconds = durationPerScene,
-                    AdditionalInstructions = i == 0
-                        ? "This is the introduction. Start with an engaging hook."
-                        : i == sceneCount - 1
-                            ? "This is the conclusion. Summarize key points and end memorably."
-                            : $"This is part {i + 1}. Continue the narrative naturally."
-                };
-
-                var result = await _openAIService.GenerateNarrationAsync(request, ct);
-                if (!result.Success)
-                {
-                    ShowError(result.ErrorMessage ?? "Failed to generate narration");
-                    return null;
-                }
-
                 var scene = new Scene
                 {
-                    NarrationText = result.Text ?? string.Empty,
-                    SubtitleText = result.Text ?? string.Empty
+                    NarrationText = $"{topic} - Part {i + 1} of {sceneCount}",
+                    SubtitleText = $"{topic} - Part {i + 1} of {sceneCount}"
                 };
-
-                // Generate image if requested
-                if (generateImages)
-                {
-                    ct.ThrowIfCancellationRequested();
-                    UpdateProgress(string.Format(LocalizationService.GetString("AIGenerate.Progress.Image"), i + 1, sceneCount));
-
-                    var imageRequest = new ImageGenerationRequest
-                    {
-                        Description = $"Visual representation for: {topic} - Scene {i + 1}",
-                        Style = "photorealistic"
-                    };
-
-                    var imageResult = await _openAIService.GenerateImageAsync(imageRequest, ct);
-                    if (imageResult.Success && !string.IsNullOrEmpty(imageResult.ImagePath))
-                    {
-                        scene.MediaPath = imageResult.ImagePath;
-                    }
-                }
 
                 project.Scenes.Add(scene);
             }
 
-            return project;
+            return Task.FromResult<Project?>(project);
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -204,12 +155,45 @@ namespace InsightCast.Views
 
         private void RestoreLastSettings()
         {
-            // TODO: implement settings persistence
+            var style = _config.Get<string>("AIGenerate.LastStyle");
+            if (!string.IsNullOrEmpty(style))
+            {
+                for (int i = 0; i < StyleCombo.Items.Count; i++)
+                {
+                    if (StyleCombo.Items[i] is ComboBoxItem item && item.Tag is string tag && tag == style)
+                    {
+                        StyleCombo.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            var sceneCount = _config.Get<int?>("AIGenerate.LastSceneCount");
+            if (sceneCount > 0)
+            {
+                for (int i = 0; i < SceneCountCombo.Items.Count; i++)
+                {
+                    if (SceneCountCombo.Items[i] is ComboBoxItem item &&
+                        int.TryParse(item.Content?.ToString(), out int count) && count == sceneCount)
+                    {
+                        SceneCountCombo.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            var genImages = _config.Get<bool?>("AIGenerate.LastGenerateImages");
+            if (genImages.HasValue)
+                GenerateImagesCheckBox.IsChecked = genImages.Value;
         }
 
         private void SaveCurrentSettings()
         {
-            // TODO: implement settings persistence
+            _config.BeginUpdate();
+            _config.Set("AIGenerate.LastStyle", GetSelectedStyle());
+            _config.Set("AIGenerate.LastSceneCount", GetSelectedSceneCount());
+            _config.Set("AIGenerate.LastGenerateImages", GenerateImagesCheckBox.IsChecked == true);
+            _config.EndUpdate();
         }
     }
 }

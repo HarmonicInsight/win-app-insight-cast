@@ -123,8 +123,7 @@ namespace InsightCast.Services
 
                     if (!_audioCache.Exists(cacheKey, sid))
                     {
-                        var audioData = Task.Run(() =>
-                            _ttsEngine.GenerateAudioAsync(scene.NarrationText!, sid.ToString(), speed))
+                        var audioData = _ttsEngine.GenerateAudioAsync(scene.NarrationText!, sid.ToString(), speed)
                             .GetAwaiter().GetResult();
                         audioPath = _audioCache.Save(cacheKey, sid, audioData);
                     }
@@ -266,13 +265,8 @@ namespace InsightCast.Services
                 result.MetadataFilePath = metadataPath;
             }
 
-            // Clean up temp build directory
-            try
-            {
-                if (Directory.Exists(tempDir))
-                    Directory.Delete(tempDir, true);
-            }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Temp cleanup failed: {ex}"); }
+            // Clean up temp build directory (retry up to 3 times for locked files)
+            CleanupTempDirectory(tempDir);
 
             progress.Report(LocalizationService.GetString("Export.Done"));
             return result;
@@ -316,8 +310,7 @@ namespace InsightCast.Services
                 if (!_audioCache.Exists(cacheKey, sid))
                 {
                     progress.Report(LocalizationService.GetString("Export.Preview.Audio"));
-                    var audioData = Task.Run(() =>
-                        _ttsEngine.GenerateAudioAsync(scene.NarrationText!, sid.ToString(), speed))
+                    var audioData = _ttsEngine.GenerateAudioAsync(scene.NarrationText!, sid.ToString(), speed)
                         .GetAwaiter().GetResult();
                     audioPath = _audioCache.Save(cacheKey, sid, audioData);
                 }
@@ -584,6 +577,35 @@ namespace InsightCast.Services
         {
             var ext = Path.GetExtension(path).ToLowerInvariant();
             return ext is ".mp4" or ".avi" or ".mov" or ".wmv" or ".mkv";
+        }
+
+        /// <summary>
+        /// Attempts to delete a temp directory with retries for locked files.
+        /// </summary>
+        private static void CleanupTempDirectory(string tempDir)
+        {
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                try
+                {
+                    if (Directory.Exists(tempDir))
+                        Directory.Delete(tempDir, true);
+                    return;
+                }
+                catch (IOException) when (attempt < 2)
+                {
+                    Thread.Sleep(500 * (attempt + 1));
+                }
+                catch (UnauthorizedAccessException) when (attempt < 2)
+                {
+                    Thread.Sleep(500 * (attempt + 1));
+                }
+                catch
+                {
+                    // Final attempt failed — leave for OS temp cleanup
+                    return;
+                }
+            }
         }
     }
 }

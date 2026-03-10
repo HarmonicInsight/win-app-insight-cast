@@ -46,7 +46,7 @@ public class Config
         catch (Exception ex)
         {
             _data = new Dictionary<string, JsonElement>();
-            Debug.WriteLine($"Config.Load failed (file may be corrupted): {ex.Message}");
+            Trace.TraceWarning($"Config.Load failed (file may be corrupted): {ex.Message}");
             LoadFailed = true;
         }
     }
@@ -65,7 +65,7 @@ public class Config
         {
             // Prevent I/O errors (disk full, permissions) from crashing the app
             // when Save is called implicitly from property setters.
-            Debug.WriteLine($"Config.Save failed: {ex.Message}");
+            Trace.TraceWarning($"Config.Save failed: {ex.Message}");
         }
     }
 
@@ -237,9 +237,6 @@ public class Config
     }
 
     /// <summary>
-    /// OpenAI APIキー（暗号化して保存）。
-    /// </summary>
-    /// <summary>
     /// TTS エンジン種別。デフォルト: EdgeNeural（企業向け推奨）。
     /// </summary>
     public TTS.TtsEngineType TtsEngineType
@@ -250,30 +247,6 @@ public class Config
             return Enum.TryParse<TTS.TtsEngineType>(val, out var t) ? t : TTS.TtsEngineType.EdgeNeural;
         }
         set => Set("tts_engine", value.ToString());
-    }
-
-    public string? OpenAIApiKey
-    {
-        get => Get<string?>("openai_api_key", null);
-        set => Set("openai_api_key", value);
-    }
-
-    /// <summary>
-    /// OpenAI ナレーション生成モデル。
-    /// </summary>
-    public string OpenAINarrationModel
-    {
-        get => Get<string>("openai_narration_model", "gpt-4o") ?? "gpt-4o";
-        set => Set("openai_narration_model", value);
-    }
-
-    /// <summary>
-    /// OpenAI 画像生成モデル。
-    /// </summary>
-    public string OpenAIImageModel
-    {
-        get => Get<string>("openai_image_model", "dall-e-3") ?? "dall-e-3";
-        set => Set("openai_image_model", value);
     }
 
     /// <summary>

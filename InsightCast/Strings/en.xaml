@@ -50,6 +50,10 @@
     <sys:String x:Key="App.FFmpeg.NotFound">FFmpeg was not found.\nFFmpeg is required for video export.</sys:String>
     <sys:String x:Key="App.FFmpeg.NotFound.Preview">FFmpeg was not found.\nFFmpeg is required for scene preview.</sys:String>
     <sys:String x:Key="App.FFmpeg.NotFound.Generate">FFmpeg not found. FFmpeg is required for video generation.</sys:String>
+    <sys:String x:Key="App.AutoSave.Recover">An auto-saved project from a previous session was found. ({0})
+
+Would you like to restore it?</sys:String>
+    <sys:String x:Key="App.AutoSave.Recover.Title">Insight Training Studio - Restore Project</sys:String>
 
     <!-- Title Bar / Header -->
     <sys:String x:Key="Header.LicenseManager">License</sys:String>
@@ -74,7 +78,7 @@
     <sys:String x:Key="Menu.Edit.MoveDown">Move Down(_W)</sys:String>
     <sys:String x:Key="Menu.AI">AI Edit(_A)</sys:String>
     <sys:String x:Key="Menu.AI.GenerateProject">Generate Project(_G)</sys:String>
-    <sys:String x:Key="Menu.AI.Settings">OpenAI Settings(_S)</sys:String>
+    <!-- Menu.AI.Settings removed (OpenAI integration removed) -->
     <sys:String x:Key="Menu.Help">Help(_H)</sys:String>
     <sys:String x:Key="Menu.Help.Tutorial">Tutorial(_T)</sys:String>
     <sys:String x:Key="Menu.Help.FAQ">FAQ(_Q)</sys:String>
@@ -838,18 +842,7 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Batch.ProjectComplete">Project complete: {0}</sys:String>
     <sys:String x:Key="Batch.ProjectFailed">Project failed: {0} - {1}</sys:String>
 
-    <!-- OpenAI Settings -->
-    <sys:String x:Key="OpenAI.Settings.Title">OpenAI API Settings</sys:String>
-    <sys:String x:Key="OpenAI.ApiKey">API Key:</sys:String>
-    <sys:String x:Key="OpenAI.ApiKey.Placeholder">sk-...</sys:String>
-    <sys:String x:Key="OpenAI.ApiKey.Set">Configured</sys:String>
-    <sys:String x:Key="OpenAI.ApiKey.NotSet">Not configured</sys:String>
-    <sys:String x:Key="OpenAI.TestConnection">Test Connection</sys:String>
-    <sys:String x:Key="OpenAI.Testing">Testing...</sys:String>
-    <sys:String x:Key="OpenAI.Connected">Connected</sys:String>
-    <sys:String x:Key="OpenAI.ConnectionFailed">Connection Failed</sys:String>
-    <sys:String x:Key="OpenAI.NarrationModel">Narration Model:</sys:String>
-    <sys:String x:Key="OpenAI.ImageModel">Image Model:</sys:String>
+    <!-- OpenAI Settings removed -->
 
     <!-- JSON Import -->
     <sys:String x:Key="JsonImport.Title">JSON Import</sys:String>
@@ -898,8 +891,7 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="AIGenerate.Progress.Scene">Generating scene {0}/{1}...</sys:String>
     <sys:String x:Key="AIGenerate.Progress.Image">Generating image {0}/{1}...</sys:String>
     <sys:String x:Key="AIGenerate.Error.NoTopic">Please enter a topic.</sys:String>
-    <sys:String x:Key="AIGenerate.Error.NoApiKey">OpenAI API key is not configured. Please set it in AI Edit → OpenAI Settings.</sys:String>
-    <sys:String x:Key="Status.OpenAISettingsUpdated">OpenAI settings updated</sys:String>
+    <sys:String x:Key="AIGenerate.Error.NoApiKey">Claude API key is not configured. Please set it in the AI Assistant.</sys:String>
     <sys:String x:Key="Status.AIProjectGenerated">AI project generated</sys:String>
 
     <!-- Menu additions -->
@@ -931,8 +923,8 @@ F1              Show tutorial</sys:String>
     <sys:String x:Key="Planning.GeneratePrompt">Generate Prompt</sys:String>
     <sys:String x:Key="Planning.CopyPrompt">Copy</sys:String>
     <sys:String x:Key="Planning.ImageGeneration">Image Generation</sys:String>
-    <sys:String x:Key="Planning.GenerateImage">Generate with DALL-E</sys:String>
-    <sys:String x:Key="Planning.ExternalTool.Hint">* You can also copy the prompt and use DALL-E, Midjourney, Nanobanana, etc.</sys:String>
+    <sys:String x:Key="Planning.GenerateImage">Generate with AI</sys:String>
+    <sys:String x:Key="Planning.ExternalTool.Hint">* You can also copy the prompt and use an external image generation tool.</sys:String>
     <sys:String x:Key="Planning.Preview">Preview</sys:String>
     <sys:String x:Key="Planning.HasImage">Image: Yes</sys:String>
     <sys:String x:Key="Planning.NoImage">Image: No</sys:String>
@@ -1304,12 +1296,10 @@ To get started, try one of these:
     <sys:String x:Key="Ai.CopyMenu">Copy</sys:String>
     <sys:String x:Key="Ai.SaveThumbnail">Save Thumbnail</sys:String>
     <sys:String x:Key="Ai.Cancelled">Cancelled.</sys:String>
-    <sys:String x:Key="Ai.OpenAIApiKey">Enter OpenAI API key (for DALL-E image generation)</sys:String>
-    <sys:String x:Key="Ai.OpenAIApiKeyStatus">OpenAI Key Set</sys:String>
-    <sys:String x:Key="Ai.SetOpenAIBtn">Set</sys:String>
+    <!-- OpenAI API key entries removed -->
     <sys:String x:Key="Ai.ImageMode">Image</sys:String>
     <sys:String x:Key="Ai.TextMode">Text</sys:String>
-    <sys:String x:Key="Ai.ImageMode.Desc">Generate images with DALL-E</sys:String>
+    <!-- Ai.ImageMode.Desc removed -->
     <sys:String x:Key="Ai.ImageGenerated">Image generated</sys:String>
     <sys:String x:Key="Ai.DalleError">Image generation failed</sys:String>
 
@@ -1478,11 +1468,7 @@ To get started, try one of these:
     <sys:String x:Key="BatchExport.ContinueOnError.Tooltip">Continue processing remaining projects if one fails</sys:String>
     <sys:String x:Key="BatchExport.Start.Tooltip">Start exporting all projects in the queue</sys:String>
 
-    <!-- OpenAI Settings Dialog -->
-    <sys:String x:Key="OpenAI.ApiKey.Tooltip">Enter your API key from platform.openai.com</sys:String>
-    <sys:String x:Key="OpenAI.TestConnection.Tooltip">Verify API key validity and connection</sys:String>
-    <sys:String x:Key="OpenAI.NarrationModel.Tooltip">AI model used for narration generation</sys:String>
-    <sys:String x:Key="OpenAI.ImageModel.Tooltip">AI model used for image generation</sys:String>
+    <!-- OpenAI Settings Dialog entries removed -->
 
     <!-- AI Project Generate Dialog -->
     <sys:String x:Key="AIGenerate.Topic.Tooltip">Describe the topic or content for your video</sys:String>
@@ -1531,7 +1517,7 @@ To get started, try one of these:
 
     <!-- Chat Panel -->
     <sys:String x:Key="Chat.ApiKey.Claude.Tooltip">Enter your Claude API key (from anthropic.com)</sys:String>
-    <sys:String x:Key="Chat.ApiKey.OpenAI.Tooltip">Enter your OpenAI API key (from platform.openai.com)</sys:String>
+    <!-- Chat.ApiKey.OpenAI.Tooltip removed -->
     <sys:String x:Key="Chat.Mode.Text.Tooltip">Switch to text generation mode</sys:String>
     <sys:String x:Key="Chat.Mode.Image.Tooltip">Switch to image generation mode</sys:String>
     <sys:String x:Key="Chat.MyPrompts.Tooltip">Show your saved prompts</sys:String>
@@ -1715,10 +1701,10 @@ To get started, try one of these:
     <!-- AI Image Generation -->
     <sys:String x:Key="AiGenerate.Title">AI Image Generation</sys:String>
     <sys:String x:Key="AiGenerate.ImagesButton">AI Image Generation</sys:String>
-    <sys:String x:Key="AiGenerate.ImagesButton.Tooltip">Generate images for scenes using AI (DALL-E)</sys:String>
+    <sys:String x:Key="AiGenerate.ImagesButton.Tooltip">Generate images for scenes using AI</sys:String>
     <sys:String x:Key="AiGenerate.NoScenesNeedImages">No scenes require image generation. Use "Generate" first to create chapter structure.</sys:String>
-    <sys:String x:Key="AiGenerate.NotConfigured">OpenAI API key is not configured. Please set up the API key in settings.</sys:String>
-    <sys:String x:Key="AiGenerate.ConfirmImages">Generate AI images for {0} scene(s)? This will call the OpenAI DALL-E API.</sys:String>
+    <sys:String x:Key="AiGenerate.NotConfigured">Claude API key is not configured. Please set up the API key in the AI Assistant.</sys:String>
+    <sys:String x:Key="AiGenerate.ConfirmImages">Generate AI images for {0} scene(s)?</sys:String>
     <sys:String x:Key="AiGenerate.ImagesComplete">Successfully generated {0} image(s).</sys:String>
     <sys:String x:Key="AiGenerate.ImagesPartial">Generated {0} image(s), {1} failed.</sys:String>
     <sys:String x:Key="AiGenerate.Progress">Generating image {0}/{1}...</sys:String>

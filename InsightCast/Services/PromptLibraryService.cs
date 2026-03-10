@@ -40,7 +40,7 @@ public static class PromptLibraryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[WARN] Prompt save failed: {prompt.Id}: {ex.Message}");
+            System.Diagnostics.Trace.TraceWarning($"[WARN] Prompt save failed: {prompt.Id}: {ex.Message}");
         }
     }
 
@@ -61,7 +61,7 @@ public static class PromptLibraryService
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[WARN] Prompt load failed: {file}: {ex.Message}");
+                System.Diagnostics.Trace.TraceWarning($"[WARN] Prompt load failed: {file}: {ex.Message}");
             }
         }
 
@@ -81,7 +81,7 @@ public static class PromptLibraryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[WARN] Prompt delete failed: {id}: {ex.Message}");
+            System.Diagnostics.Trace.TraceWarning($"[WARN] Prompt delete failed: {id}: {ex.Message}");
         }
         return false;
     }
@@ -104,7 +104,7 @@ public static class PromptLibraryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[WARN] Prompt use count update failed: {id}: {ex.Message}");
+            System.Diagnostics.Trace.TraceWarning($"[WARN] Prompt use count update failed: {id}: {ex.Message}");
         }
     }
 

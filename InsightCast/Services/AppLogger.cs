@@ -18,7 +18,7 @@ namespace InsightCast.Services
             if (ex != null)
             {
                 Log($"{message}: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"[ERROR] {message}: {ex}");
+                System.Diagnostics.Trace.TraceError($"{message}: {ex}");
             }
             else
             {

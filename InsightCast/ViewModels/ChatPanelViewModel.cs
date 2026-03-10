@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -181,50 +183,6 @@ public class ChatPanelViewModel : ViewModelBase
         set => SetProperty(ref _isApiKeyPanelOpen, value);
     }
 
-    // ── OpenAI API Key ──
-    private string _openAIApiKeyInput = string.Empty;
-    public string OpenAIApiKeyInput
-    {
-        get => _openAIApiKeyInput;
-        set
-        {
-            SetProperty(ref _openAIApiKeyInput, value);
-            OnPropertyChanged(nameof(CanSetOpenAIApiKey));
-        }
-    }
-
-    public bool IsOpenAIApiKeySet => !string.IsNullOrEmpty(_config.OpenAIApiKey);
-    public bool CanSetOpenAIApiKey => !string.IsNullOrWhiteSpace(OpenAIApiKeyInput);
-
-    // ── Image Mode ──
-    private bool _isImageMode;
-    public bool IsImageMode
-    {
-        get => _isImageMode;
-        set
-        {
-            if (SetProperty(ref _isImageMode, value))
-            {
-                OnPropertyChanged(nameof(ActiveModelDisplay));
-                BuildPresetPromptGroups();
-            }
-        }
-    }
-
-    /// <summary>テキストモード時は選択中の Claude モデル名、画像モード時は "DALL-E 3 (OpenAI)" を返す</summary>
-    public string ActiveModelDisplay => _isImageMode
-        ? "DALL-E 3 (OpenAI)"
-        : CurrentModelDisplay;
-
-    private string _selectedDalleSize = "1024x1024";
-    public string SelectedDalleSize
-    {
-        get => _selectedDalleSize;
-        set => SetProperty(ref _selectedDalleSize, value);
-    }
-
-    public string[] DalleSizeLabels { get; } = { "1024x1024", "1792x1024", "1024x1792" };
-
     // ── Model Selection ──
     private int _selectedModelIndex;
     public int SelectedModelIndex
@@ -236,7 +194,6 @@ public class ChatPanelViewModel : ViewModelBase
             {
                 _claude.SetModelByIndex(value);
                 OnPropertyChanged(nameof(CurrentModelDisplay));
-                OnPropertyChanged(nameof(ActiveModelDisplay));
             }
         }
     }
@@ -410,9 +367,6 @@ public class ChatPanelViewModel : ViewModelBase
     // ── Thumbnail Commands ──
     public ICommand SaveThumbnailCommand { get; }
 
-    // ── OpenAI / DALL-E Commands ──
-    public ICommand SetOpenAIApiKeyCommand { get; }
-
     // ── Prompt Library Commands ──
     public ICommand EditPromptCommand { get; }
     public ICommand ConfirmEditCommand { get; }
@@ -474,7 +428,7 @@ public class ChatPanelViewModel : ViewModelBase
 
         ExecutePromptCommand = new AsyncRelayCommand(
             () => ExecutePromptAsync(),
-            () => !IsAiProcessing && !string.IsNullOrWhiteSpace(AiInput) && (IsApiKeySet || IsImageMode));
+            () => !IsAiProcessing && !string.IsNullOrWhiteSpace(AiInput) && IsApiKeySet);
 
         CancelCommand = new RelayCommand(
             _ => CancelProcessing(),
@@ -495,7 +449,6 @@ public class ChatPanelViewModel : ViewModelBase
             {
                 var lang = _getLang();
                 AiInput = preset.Source.GetPrompt(lang);
-                IsImageMode = preset.Source.IsImageMode;
                 _loadedPreset = preset;
                 _loadedUserPrompt = null;
             }
@@ -529,11 +482,6 @@ public class ChatPanelViewModel : ViewModelBase
 
         SaveThumbnailCommand = new RelayCommand(_ => SaveThumbnail());
 
-        // OpenAI / DALL-E Commands
-        SetOpenAIApiKeyCommand = new RelayCommand(
-            _ => SetOpenAIApiKey(),
-            _ => CanSetOpenAIApiKey);
-
         // Prompt Library Commands
         EditPromptCommand = new RelayCommand(o => BeginEditPrompt(o as UserPromptVm));
 
@@ -561,11 +509,15 @@ public class ChatPanelViewModel : ViewModelBase
             LastAiResult = string.Empty;
             LastGeneratedThumbnailPath = null;
             OnPropertyChanged(nameof(IsChatEmpty));
+            SaveChatHistory();
         });
 
         // Build prompt groups
         BuildPresetPromptGroups();
         RefreshUserPromptGroups();
+
+        // Restore previous chat history
+        LoadChatHistory();
 
         // Auto-open API key panel when no key is set
         if (!IsApiKeySet)
@@ -599,8 +551,7 @@ public class ChatPanelViewModel : ViewModelBase
     {
         PresetPromptGroups.Clear();
         var lang = _getLang();
-        // Filter presets by current mode (text vs image)
-        var filtered = InsightCastPresetPrompts.All.Where(p => p.IsImageMode == _isImageMode).ToArray();
+        var filtered = InsightCastPresetPrompts.All.Where(p => !p.IsImageMode).ToArray();
         var categories = filtered.Select(p => p.GetCategory(lang)).Distinct().ToArray();
 
         foreach (var category in categories)
@@ -618,7 +569,7 @@ public class ChatPanelViewModel : ViewModelBase
                     Icon = p.Icon,
                     Tooltip = tooltip,
                     RecommendedModelIndex = p.RecommendedModelIndex,
-                    ModelDisplay = p.IsImageMode ? "DALL-E 3 (OpenAI)" : FormatModelDisplay(p.RecommendedPersonaId, lang),
+                    ModelDisplay = FormatModelDisplay(p.RecommendedPersonaId, lang),
                     Source = p
                 });
             }
@@ -666,14 +617,6 @@ public class ChatPanelViewModel : ViewModelBase
     private async Task ExecutePromptAsync()
     {
         if (string.IsNullOrWhiteSpace(AiInput)) return;
-
-        // Route to DALL-E if image mode is active
-        if (IsImageMode)
-        {
-            await ExecuteDallePromptAsync(AiInput.Trim());
-            return;
-        }
-
         if (!IsApiKeySet) return;
 
         var prompt = AiInput.Trim();
@@ -695,6 +638,7 @@ public class ChatPanelViewModel : ViewModelBase
         // チャットにユーザーメッセージを追加
         ChatMessages.Add(new ChatMsg { Role = ChatRole.User, Content = prompt });
         OnPropertyChanged(nameof(IsChatEmpty));
+        SaveChatHistory();
 
         IsAiProcessing = true;
         AiProcessingModelName = CurrentModelDisplay;
@@ -748,17 +692,20 @@ public class ChatPanelViewModel : ViewModelBase
                 ChatMessages.Add(msg);
                 OnPropertyChanged(nameof(IsChatEmpty));
                 OnPropertyChanged(nameof(ArtifactCount));
+                SaveChatHistory();
             }
         }
         catch (OperationCanceledException)
         {
             LastAiResult = Application.Current.TryFindResource("Ai.Cancelled") as string ?? "Cancelled.";
             ChatMessages.Add(new ChatMsg { Role = ChatRole.System, Content = LastAiResult });
+            SaveChatHistory();
         }
         catch (Exception ex)
         {
             LastAiResult = $"Error: {ex.Message}";
             ChatMessages.Add(new ChatMsg { Role = ChatRole.System, Content = LastAiResult });
+            SaveChatHistory();
         }
         finally
         {
@@ -770,47 +717,6 @@ public class ChatPanelViewModel : ViewModelBase
             _loadedPreset = null;
             _loadedUserPrompt = null;
 
-            IsAiProcessing = false;
-            cts.Dispose();
-            if (_cts == cts) _cts = null;
-        }
-    }
-
-    private async Task ExecuteDallePromptAsync(string prompt)
-    {
-        if (!IsOpenAIApiKeySet)
-        {
-            LastAiResult = Application.Current.TryFindResource("Ai.DalleError") as string ?? "Image generation failed";
-            return;
-        }
-
-        IsAiProcessing = true;
-        AiProcessingModelName = _config.OpenAIImageModel;
-        AiProcessingText = Application.Current.TryFindResource("Ai.Processing") as string ?? "Processing...";
-        LastAiResult = string.Empty;
-        LastGeneratedThumbnailPath = null;
-        var cts = new CancellationTokenSource();
-        _cts = cts;
-
-        try
-        {
-            using var dalle = new DalleService(_config.OpenAIApiKey!);
-            var imagePath = await dalle.GenerateImageAsync(
-                prompt, _config.OpenAIImageModel, SelectedDalleSize, cts.Token);
-            LastGeneratedThumbnailPath = imagePath;
-            LastAiResult = Application.Current.TryFindResource("Ai.ImageGenerated") as string ?? "Image generated";
-        }
-        catch (OperationCanceledException)
-        {
-            LastAiResult = Application.Current.TryFindResource("Ai.Cancelled") as string ?? "Cancelled.";
-        }
-        catch (Exception ex)
-        {
-            var errorLabel = Application.Current.TryFindResource("Ai.DalleError") as string ?? "Image generation failed";
-            LastAiResult = $"{errorLabel}: {ex.Message}";
-        }
-        finally
-        {
             IsAiProcessing = false;
             cts.Dispose();
             if (_cts == cts) _cts = null;
@@ -1050,7 +956,7 @@ public class ChatPanelViewModel : ViewModelBase
 
         var (current, max) = _memoryService.GetCapacity();
         if (current > 0)
-            System.Diagnostics.Debug.WriteLine($"AI Memory loaded: {current}/{max} entries");
+            System.Diagnostics.Trace.TraceInformation($"AI Memory loaded: {current}/{max} entries");
     }
 
     /// <summary>
@@ -1074,7 +980,7 @@ public class ChatPanelViewModel : ViewModelBase
             _memoryHotCache = _memoryService.HotCache;
 
             if (mergeResult.Added > 0 || mergeResult.Updated > 0)
-                System.Diagnostics.Debug.WriteLine(
+                System.Diagnostics.Trace.TraceInformation(
                     $"AI Memory: +{mergeResult.Added} new, ~{mergeResult.Updated} updated, x{mergeResult.Skipped} skipped");
         }
 
@@ -1240,13 +1146,8 @@ public class ChatPanelViewModel : ViewModelBase
         if (!string.IsNullOrEmpty(dialog.ExecutePromptText))
         {
             AiInput = dialog.ExecutePromptText;
-            IsImageMode = dialog.ExecuteIsImageMode;
 
-            if (dialog.ExecuteIsImageMode)
-            {
-                SelectedDalleSize = dialog.ExecuteImageSize;
-            }
-            else if (!string.IsNullOrEmpty(dialog.ExecuteModelId))
+            if (!string.IsNullOrEmpty(dialog.ExecuteModelId))
             {
                 var modelIndex = InsightCommon.AI.ClaudeModels.GetModelIndex(dialog.ExecuteModelId);
                 if (modelIndex >= 0)
@@ -1377,11 +1278,71 @@ public class ChatPanelViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsApiKeySet));
     }
 
-    private void SetOpenAIApiKey()
+    // ── Chat History Persistence ──
+
+    private static readonly string ChatHistoryPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "InsightCast", "ai_chat_history.json");
+
+    private void SaveChatHistory()
     {
-        if (string.IsNullOrWhiteSpace(OpenAIApiKeyInput)) return;
-        _config.OpenAIApiKey = OpenAIApiKeyInput.Trim();
-        OpenAIApiKeyInput = string.Empty;
-        OnPropertyChanged(nameof(IsOpenAIApiKeySet));
+        try
+        {
+            var entries = ChatMessages
+                .Where(m => !m.IsWelcome)
+                .Select(m => new
+                {
+                    role = m.Role.ToString(),
+                    content = m.Content,
+                    timestamp = m.Timestamp,
+                })
+                .ToList();
+
+            var dir = Path.GetDirectoryName(ChatHistoryPath)!;
+            Directory.CreateDirectory(dir);
+            var json = JsonSerializer.Serialize(entries, new JsonSerializerOptions { WriteIndented = true });
+            Config.AtomicWriteText(ChatHistoryPath, json);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Trace.TraceWarning($"SaveChatHistory failed: {ex.Message}");
+        }
     }
+
+    private void LoadChatHistory()
+    {
+        try
+        {
+            if (!File.Exists(ChatHistoryPath)) return;
+
+            var json = File.ReadAllText(ChatHistoryPath);
+            using var doc = JsonDocument.Parse(json);
+            foreach (var elem in doc.RootElement.EnumerateArray())
+            {
+                var roleStr = elem.GetProperty("role").GetString() ?? "User";
+                if (!Enum.TryParse<ChatRole>(roleStr, out var role))
+                    role = ChatRole.User;
+
+                var content = elem.GetProperty("content").GetString() ?? "";
+                var timestamp = elem.TryGetProperty("timestamp", out var ts)
+                    ? ts.GetDateTime()
+                    : DateTime.Now;
+
+                ChatMessages.Add(new ChatMsg
+                {
+                    Role = role,
+                    Content = content,
+                    Timestamp = timestamp,
+                });
+            }
+
+            if (ChatMessages.Count > 0)
+                OnPropertyChanged(nameof(IsChatEmpty));
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Trace.TraceWarning($"LoadChatHistory failed: {ex.Message}");
+        }
+    }
+
 }

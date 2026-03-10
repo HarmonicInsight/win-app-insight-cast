@@ -177,13 +177,13 @@
 
             <!-- Backstage (File Menu) -->
             <syncfusion:Ribbon.BackStage>
-                <syncfusion:Backstage x:Name="BackStageControl">
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.New}" Click="BackStageNew_Click"/>
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.Open}" Click="BackStageOpen_Click"/>
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.Save}" Click="BackStageSave_Click"/>
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.SaveAs}" Click="BackStageSaveAs_Click"/>
+                <syncfusion:Backstage x:Name="BackStageControl" Foreground="White">
+                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.New}" Foreground="White" Click="BackStageNew_Click"/>
+                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.Open}" Foreground="White" Click="BackStageOpen_Click"/>
+                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.Save}" Foreground="White" Click="BackStageSave_Click"/>
+                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.SaveAs}" Foreground="White" Click="BackStageSaveAs_Click"/>
                     <syncfusion:BackStageSeparator/>
-                    <syncfusion:BackstageTabItem Header="{DynamicResource Backstage.Recent}" IsSelected="True">
+                    <syncfusion:BackstageTabItem Header="{DynamicResource Backstage.Recent}" Foreground="White" IsSelected="True">
                         <Grid Margin="16,12">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -228,9 +228,9 @@
                         </Grid>
                     </syncfusion:BackstageTabItem>
                     <syncfusion:BackStageSeparator/>
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.ImportPptx}" Click="BackStageImportPptx_Click"/>
+                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.ImportPptx}" Foreground="White" Click="BackStageImportPptx_Click"/>
                     <syncfusion:BackStageSeparator/>
-                    <syncfusion:BackstageTabItem Header="{DynamicResource Backstage.Language}">
+                    <syncfusion:BackstageTabItem Header="{DynamicResource Backstage.Language}" Foreground="White">
                         <Grid Margin="16,12">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -249,7 +249,7 @@
                         </Grid>
                     </syncfusion:BackstageTabItem>
                     <syncfusion:BackStageSeparator/>
-                    <syncfusion:BackstageTabItem Header="{DynamicResource Backstage.Narrator}">
+                    <syncfusion:BackstageTabItem Header="{DynamicResource Backstage.Narrator}" Foreground="White">
                         <Grid Margin="16,12">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -295,11 +295,11 @@
                         </Grid>
                     </syncfusion:BackstageTabItem>
                     <syncfusion:BackStageSeparator/>
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Quick.WindowTitle}" Click="BackStageQuickMode_Click"/>
+                    <syncfusion:BackStageCommandButton Header="{DynamicResource Quick.WindowTitle}" Foreground="White" Click="BackStageQuickMode_Click"/>
                     <syncfusion:BackStageSeparator/>
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.License}" Click="BackStageLicense_Click"/>
+                    <syncfusion:BackStageCommandButton Header="{DynamicResource Backstage.License}" Foreground="White" Click="BackStageLicense_Click"/>
                     <syncfusion:BackStageSeparator/>
-                    <syncfusion:BackStageCommandButton Header="{DynamicResource Common.Close}" Click="BackStageExit_Click"/>
+                    <syncfusion:BackStageCommandButton Header="{DynamicResource Common.Close}" Foreground="White" Click="BackStageExit_Click"/>
                 </syncfusion:Backstage>
             </syncfusion:Ribbon.BackStage>
 
