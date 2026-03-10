@@ -74,6 +74,14 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
+[InstallDelete]
+; Clean up stale build artifacts from previous versions
+Type: filesandordirs; Name: "{app}\obj"
+
+[UninstallDelete]
+; Remove user data on uninstall (config, cache, auto-save, chat history)
+Type: filesandordirs; Name: "{localappdata}\InsightCast"
+
 [Run]
 ; Launch the app after installation
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent shellexec
