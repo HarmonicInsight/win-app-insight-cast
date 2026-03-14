@@ -92,8 +92,7 @@ namespace InsightCast.Views
                 // Set dialog service immediately (needed for UI interactions)
                 _vm.SetDialogService(new DialogService(this));
 
-                // Default to Video Generation tab
-                MainTabControl.SelectedIndex = 1;
+                // Video-only mode (no tab switching needed)
 
                 // Initialize TTS engine selection
                 InitializeTtsRadioButtons();
@@ -117,22 +116,10 @@ namespace InsightCast.Views
                     // Initialize subtitle size combos
                     InitializeSubtitleSizeCombo();
 
-                    // Create shared ClaudeService (used by Planning Tab and Chat Panel)
-                    try
-                    {
-                        _claudeService = new ClaudeService(_config);
-
-                        // Initialize Planning Tab
-                        PlanningTabControl.Initialize(_config, _vm.Project, _claudeService.AiService.Config);
-                        PlanningTabControl.ScenesChanged += OnPlanningTabScenesChanged;
-
-                        // Initialize Chat Panel for Planning Tab
-                        InitializePlanningChatPanel();
-                    }
-                    catch (Exception ex)
-                    {
-                        _vm.Logger.Log($"AI service initialization failed: {ex.Message}");
-                    }
+                    // AI services disabled — video-only mode
+                    // To re-enable: uncomment ClaudeService + InitializePlanningChatPanel()
+                    // _claudeService = new ClaudeService(_config);
+                    // InitializePlanningChatPanel();
 
                 });
             };
@@ -187,36 +174,26 @@ namespace InsightCast.Views
                 () => _config.Language == "EN" ? "EN" : "JA",
                 _config);
 
-            PlanningTabControl.InitializeChatPanel(chatVm);
-        }
-
-        private void OnPlanningTabScenesChanged()
-        {
-            Dispatcher.Invoke(() => _vm.RefreshSceneList());
         }
 
         private void OnMainViewModelScenesChanged()
         {
-            Dispatcher.Invoke(() => PlanningTabControl.RefreshScenes());
+            Dispatcher.Invoke(() => _vm.RefreshSceneList());
         }
 
         private void OnTemplateApplied()
         {
-            Dispatcher.Invoke(() => PlanningTabControl.ReloadThumbnailSettings());
+            // No-op: template applied callback
         }
 
         private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Only handle top-level tab changes
-            if (e.Source != MainTabControl) return;
+            // Video-only mode: always treat as video tab
+            var isVideoTab = true;
+            var isPptxTab = false;
 
-            var isPptxTab = MainTabControl.SelectedIndex == 0;
-            var isVideoTab = MainTabControl.SelectedIndex == 1;
-
-            // Refresh scene lists
-            if (isPptxTab)
-                PlanningTabControl.RefreshScenes();
-            else if (isVideoTab)
+            // Refresh scene list
+            if (isVideoTab)
                 _vm.RefreshSceneList();
 
             // Switch ribbon groups visibility
@@ -1195,7 +1172,7 @@ namespace InsightCast.Views
             _vm.ScreenRecordRequested -= OnScreenRecordRequested;
             _vm.ScenesChanged -= OnMainViewModelScenesChanged;
             _vm.Logger.LogReceived -= OnLogReceived;
-            PlanningTabControl.ScenesChanged -= OnPlanningTabScenesChanged;
+            // PlanningTab removed (video-only mode)
             InsightCommon.UI.InsightScaleManager.Instance.ScaleChanged -= OnScaleChanged;
         }
 
@@ -1327,20 +1304,7 @@ namespace InsightCast.Views
 
         #region PPTX Ribbon Handlers
 
-        private void RibbonRefAddFile_Click(object sender, RoutedEventArgs e)
-        {
-            PlanningTabControl.RibbonAddFile();
-        }
 
-        private void RibbonRefAddFolder_Click(object sender, RoutedEventArgs e)
-        {
-            PlanningTabControl.RibbonAddFolder();
-        }
-
-        private void RibbonRefClearAll_Click(object sender, RoutedEventArgs e)
-        {
-            PlanningTabControl.RibbonClearAllReferences();
-        }
 
 
 

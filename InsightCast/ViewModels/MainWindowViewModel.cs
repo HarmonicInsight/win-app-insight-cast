@@ -876,8 +876,8 @@ namespace InsightCast.ViewModels
                 SelectedSceneIndex = idx;
             }
 
-            // Background update check (non-blocking)
-            _ = CheckForUpdateAsync();
+            // Update check disabled — offline delivery mode
+            // _ = CheckForUpdateAsync();
         }
 
         /// <summary>
