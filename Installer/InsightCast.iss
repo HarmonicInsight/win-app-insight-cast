@@ -5,7 +5,7 @@
 ; Or use:      .\build.ps1
 
 #define MyAppName "Insight Training Studio"
-#define MyAppVersion "1.0.2"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "HARMONIC insight"
 #define MyAppExeName "InsightCast.exe"
 #define MyAppURL "https://github.com/HarmonicInsight/win-app-insight-cast"
