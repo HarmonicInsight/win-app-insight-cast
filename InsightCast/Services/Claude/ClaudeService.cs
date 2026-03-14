@@ -59,7 +59,7 @@ public class ClaudeService : IClaudeService
 
     public async Task<ClaudeToolResponse> SendMessageWithToolsAsync(List<object> messages, List<ToolDefinition> tools, string? systemContext = null, CancellationToken ct = default)
     {
-        var response = await _aiService.SendWithToolsAsync(messages, tools, systemContext, ct);
+        var response = await _aiService.SendWithToolsAsync(messages, tools, systemContext, null, ct);
         return response.ToClaudeToolResponse();
     }
 }
