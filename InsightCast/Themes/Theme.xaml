@@ -255,6 +255,31 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Tertiary Button (text-link style, no border, for destructive/minor actions) -->
+    <Style x:Key="TertiaryButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="Background"  Value="Transparent" />
+        <Setter Property="Foreground"  Value="{StaticResource TextSecondary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding"     Value="8,4" />
+        <Setter Property="FontWeight"  Value="Normal" />
+        <Setter Property="FontSize"    Value="10pt" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+                <Setter Property="Background" Value="{StaticResource BgHover}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Large Primary Button (Gold accent, prominent CTA) -->
+    <Style x:Key="LargePrimaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="FontSize"    Value="14pt" />
+        <Setter Property="FontWeight"  Value="Bold" />
+        <Setter Property="Padding"     Value="24,12" />
+        <Setter Property="MinWidth"    Value="180" />
+        <Setter Property="MinHeight"   Value="48" />
+    </Style>
+
     <!-- Default (implicit) Button style — secondary appearance -->
     <Style TargetType="Button" BasedOn="{StaticResource SecondaryButton}" />
 

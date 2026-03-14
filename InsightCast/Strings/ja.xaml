@@ -669,6 +669,17 @@
     <sys:String x:Key="DragDrop.Overlay">ここにファイルをドロップ</sys:String>
     <sys:String x:Key="DragDrop.Overlay.Sub">PPTX・画像・動画に対応</sys:String>
 
+    <!-- Empty State -->
+    <sys:String x:Key="EmptyState.Title">PowerPointから動画を作成</sys:String>
+    <sys:String x:Key="EmptyState.Subtitle">PPTXファイルをドロップするだけで、ナレーション付き動画が完成します</sys:String>
+    <sys:String x:Key="EmptyState.DropHint">PPTXファイルをこの画面にドラッグ＆ドロップできます</sys:String>
+
+    <!-- Ribbon groups -->
+    <sys:String x:Key="Ribbon.Group.Media">メディア</sys:String>
+    <sys:String x:Key="Ribbon.Group.Edit">編集</sys:String>
+    <sys:String x:Key="Ribbon.Group.Clear">クリア ▾</sys:String>
+    <sys:String x:Key="Export.Settings.Tooltip">プロジェクト設定を表示</sys:String>
+
     <!-- VM Tutorial / FAQ / About / Shortcuts -->
     <sys:String x:Key="VM.Tutorial">Insight Training Studio チュートリアル
 ─────────────────────

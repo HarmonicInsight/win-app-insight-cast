@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:InsightCast.Views"
         Title="{DynamicResource Overlay.Dialog.Title}"
-        Width="560" Height="700"
+        Width="560" Height="760"
         MinWidth="500" MinHeight="560"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResizeWithGrip">
@@ -103,7 +103,7 @@
                 </Border>
 
                 <!-- Overlay list -->
-                <ListBox Grid.Row="1" x:Name="OverlayList" MinHeight="52"
+                <ListBox Grid.Row="1" x:Name="OverlayList" MinHeight="80"
                          SelectionChanged="OverlayList_SelectionChanged"
                          HorizontalContentAlignment="Stretch"
                          Background="Transparent" BorderThickness="0" Padding="4,2">
@@ -142,7 +142,7 @@
                     <!-- ② 配置 -->
                     <TextBlock Text="{DynamicResource Overlay.Position}" FontSize="11" Margin="0,10,0,4"
                                Foreground="{DynamicResource TextSecondary}"/>
-                    <Grid>
+                    <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="16"/>
@@ -260,7 +260,7 @@
                     </Grid>
 
                     <!-- 色 + 揃え -->
-                    <Grid Margin="0,0,0,6">
+                    <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -268,12 +268,12 @@
 
                         <StackPanel x:Name="ColorSwatchPanel" Orientation="Horizontal" VerticalAlignment="Center"/>
 
-                        <ComboBox x:Name="AlignmentCombo" Grid.Column="1" Width="70" FontSize="11" Height="26" Margin="8,0,0,0"
+                        <ComboBox x:Name="AlignmentCombo" Grid.Column="1" Width="90" FontSize="11" Height="30" Margin="8,0,0,0"
                                   SelectionChanged="Alignment_Changed"/>
                     </Grid>
 
                     <!-- 縁取り + 透明度 -->
-                    <Grid>
+                    <Grid Margin="0,0,0,4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>

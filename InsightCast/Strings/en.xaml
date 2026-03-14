@@ -669,6 +669,17 @@ Would you like to restore it?</sys:String>
     <sys:String x:Key="DragDrop.Overlay">Drop files here</sys:String>
     <sys:String x:Key="DragDrop.Overlay.Sub">Supports PPTX, images, and videos</sys:String>
 
+    <!-- Empty State -->
+    <sys:String x:Key="EmptyState.Title">Create Video from PowerPoint</sys:String>
+    <sys:String x:Key="EmptyState.Subtitle">Just drop a PPTX file to generate a narrated video automatically</sys:String>
+    <sys:String x:Key="EmptyState.DropHint">Drag &amp; drop PPTX files onto this screen</sys:String>
+
+    <!-- Ribbon groups -->
+    <sys:String x:Key="Ribbon.Group.Media">Media</sys:String>
+    <sys:String x:Key="Ribbon.Group.Edit">Edit</sys:String>
+    <sys:String x:Key="Ribbon.Group.Clear">Clear ▾</sys:String>
+    <sys:String x:Key="Export.Settings.Tooltip">Show project settings</sys:String>
+
     <!-- VM Tutorial / FAQ / About / Shortcuts -->
     <sys:String x:Key="VM.Tutorial">Insight Training Studio Tutorial
 ─────────────────────

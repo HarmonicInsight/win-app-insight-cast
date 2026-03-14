@@ -7,9 +7,9 @@
     <RootNamespace>InsightCast</RootNamespace>
     <AssemblyName>InsightCast</AssemblyName>
     <ApplicationIcon>Resources\app.ico</ApplicationIcon>
-    <Version>1.1.0</Version>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
     <Description>Insight Training Studio - 教育動画作成ツール</Description>
     <Company>HARMONIC insight</Company>
     <Product>Insight Training Studio</Product>
@@ -27,6 +27,7 @@
     <PackageReference Include="Syncfusion.Tools.WPF" Version="32.*" />
     <PackageReference Include="Syncfusion.DocIO.WPF" Version="32.*" />
     <PackageReference Include="Syncfusion.Themes.Office2019White.WPF" Version="32.*" />
+    <PackageReference Include="Syncfusion.Themes.Office2019Colorful.WPF" Version="32.*" />
     <PackageReference Include="System.Speech" Version="8.*" />
   </ItemGroup>
 

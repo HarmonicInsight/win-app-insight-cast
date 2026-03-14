@@ -35,8 +35,8 @@ public partial class HelpWindow : Window
         _sectionIds = new[]
         {
             "overview", "quickstart", "ui-layout", "quick-mode", "scene-editor", "narration",
-            "subtitle-text", "bgm-effects", "motion-effects", "screen-tools",
-            "planning", "pptx-create", "export", "batch-export",
+            "narration-dict", "subtitle-text", "bgm-effects", "motion-effects", "screen-tools",
+            "export", "batch-export",
             "shortcuts", "faq", "ai-assistant", "license", "system-req", "support"
         };
 
@@ -44,15 +44,15 @@ public partial class HelpWindow : Window
             ? new[]
             {
                 "Overview", "Quick Start", "UI Layout", "Quick Mode", "Scene Editor", "Narration",
-                "Subtitles & Text", "BGM & Effects", "Motion Effects", "Screen Capture",
-                "Planning Tab", "PPTX Creation", "Export", "Batch Export",
+                "Narration Dictionary", "Subtitles & Text", "BGM & Effects", "Motion Effects", "Screen Capture",
+                "Export", "Batch Export",
                 "Keyboard Shortcuts", "FAQ", "AI Assistant", "License", "System Requirements", "Support"
             }
             : new[]
             {
                 "はじめに", "クイックスタート", "画面構成", "クイックモード", "シーン編集", "ナレーション",
-                "字幕・テキスト", "BGM・エフェクト", "モーションエフェクト", "画面キャプチャ",
-                "企画・制作", "PPTX作成", "書き出し", "バッチエクスポート",
+                "読み上げ辞書", "字幕・テキスト", "BGM・エフェクト", "モーションエフェクト", "画面キャプチャ",
+                "書き出し", "バッチエクスポート",
                 "キーボードショートカット", "FAQ", "AIアシスタント", "ライセンス", "システム要件", "お問い合わせ"
             };
 
@@ -467,7 +467,7 @@ public partial class HelpWindow : Window
             </div>
 
             <p>Insight Training Studio は、教育・研修向けのナレーション付き動画を手軽に作成できる Windows デスクトップアプリケーションです。
-            PowerPoint や画像・動画素材を取り込み、ナレーション原稿を入力するだけで、VOICEVOX 音声エンジンによる自然な読み上げ付きの動画を自動生成します。</p>
+            PowerPoint や画像・動画素材を取り込み、ナレーション原稿を入力するだけで、自然な読み上げ付きの動画を自動生成します。</p>
 
             <div class="feature-grid">
                 <div class="feature-card">
@@ -483,16 +483,16 @@ public partial class HelpWindow : Window
                     <p>10種類以上のプリセットスタイル、レターボックス表示、SRT/VTT 字幕ファイル出力に対応。</p>
                 </div>
                 <div class="feature-card">
-                    <h4>PowerPoint 取り込み & 作成</h4>
-                    <p>PPTX 取り込みに加え、DOCX・XLSX・PDF からの変換、AI による PPTX 自動作成にも対応。</p>
+                    <h4>縦動画・横動画対応</h4>
+                    <p>YouTube Shorts・Instagram Reels・TikTok 向けの縦動画にも対応。縦動画ではぼかし背景が自動適用されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h4>読み上げ辞書・間（ポーズ）</h4>
+                    <p>英単語・固有名詞のカタカナ変換辞書と、読点・改行による間（ポーズ）指定でナレーション品質を向上。</p>
                 </div>
                 <div class="feature-card">
                     <h4>画面キャプチャ・録画</h4>
                     <p>デスクトップ画面をキャプチャ（静止画）・録画（動画）してシーン素材として直接取り込み。</p>
-                </div>
-                <div class="feature-card">
-                    <h4>AI アシスタント</h4>
-                    <p>Claude AI がシーン構成・ナレーション・字幕・サムネイルを自動生成。25種類のプリセット搭載。</p>
                 </div>
             </div>
 
@@ -506,15 +506,15 @@ public partial class HelpWindow : Window
 
             <h2>動画を作成する（3ステップ）</h2>
             <div class="step"><div class="step-num">1</div><div class="step-text">
-                <strong>素材を取り込む</strong> — 「企画・制作」タブのドロップゾーンに、画像・動画・PowerPoint ファイルをドラッグ＆ドロップします。
-                複数ファイルを一度にドロップすると、ファイルごとにシーンが自動作成されます。
+                <strong>素材を取り込む</strong> — リボンの「PPTX取込」や「＋追加」ボタンで、画像・動画・PowerPoint ファイルを取り込みます。
+                PPTX 取込ではスライドごとにシーンが自動作成されます。
             </div></div>
             <div class="step"><div class="step-num">2</div><div class="step-text">
                 <strong>ナレーションを設定</strong> — 各シーンのテキスト欄に、読み上げさせたい原稿を入力します。
-                話者（ボイス）・話速・向き（横/縦）を設定します。
+                話者（ボイス）・話速・解像度（横/縦）を設定します。
             </div></div>
             <div class="step"><div class="step-num">3</div><div class="step-text">
-                <strong>動画を書き出す</strong> — 「動画を生成」ボタンをクリック。保存先を選択すると、ナレーション付き動画が自動で生成されます。
+                <strong>動画を書き出す</strong> — 「動画を書き出し」ボタンをクリック。保存先を選択すると、ナレーション付き動画が自動で生成されます。
             </div></div>
 
             <div class="tip">
@@ -525,9 +525,8 @@ public partial class HelpWindow : Window
             <h2>完成後の操作</h2>
             <ul>
                 <li><strong>動画を再生</strong> — 完成した動画をデフォルトプレイヤーで確認</li>
-                <li><strong>出力フォルダを開く</strong> — サムネイル (.jpg)・チャプター (.chapters.txt)・メタデータ (.metadata.txt) も同時に出力されます</li>
-                <li><strong>設定を変えて再生成</strong> — 話者や向きを変えてワンクリックで再生成</li>
-                <li><strong>詳細エディタで編集</strong> — 「動画生成」タブに切り替えて、シーン単位の細かい編集が可能</li>
+                <li><strong>出力フォルダを開く</strong> — サムネイル (.jpg)・チャプター (.chapters.txt)・メタデータ (.metadata.txt)・字幕 (.srt/.vtt) も同時に出力されます</li>
+                <li><strong>設定を変えて再生成</strong> — 話者や解像度を変えてワンクリックで再生成</li>
             </ul>
 
             <hr class="section-divider">
@@ -536,7 +535,7 @@ public partial class HelpWindow : Window
         // UI Layout
         sb.Append("""
             <h1 id="ui-layout">画面構成</h1>
-            <p>メイン画面は <strong>2つのタブ</strong> で構成されています。目的に合わせてタブを切り替えてお使いください。</p>
+            <p>メイン画面は動画生成に特化したシンプルな構成です。</p>
 
             <h2>タイトルバー</h2>
             <p>画面最上部に、以下のボタンが並んでいます。</p>
@@ -552,10 +551,10 @@ public partial class HelpWindow : Window
             <p>画面上部のリボンには、教育動画作成のワークフローに沿った4つのグループがあります。</p>
             <table>
                 <tr><th>グループ</th><th>機能</th></tr>
-                <tr><td><strong>素材・構成</strong></td><td>シーンの追加・削除・並び替え、画面キャプチャ</td></tr>
-                <tr><td><strong>制作</strong></td><td>プレビュー、BGM、CTA（行動喚起）、AI実行</td></tr>
+                <tr><td><strong>素材・構成</strong></td><td>シーンの追加・削除・並び替え、画面キャプチャ・画面録画</td></tr>
+                <tr><td><strong>制作</strong></td><td>PPTX取込、読み上げ辞書、スクリプト・字幕一括クリア</td></tr>
                 <tr><td><strong>書き出し</strong></td><td>動画書き出し、出力フォルダを開く</td></tr>
-                <tr><td><strong>テンプレート</strong></td><td>プロジェクトテンプレート（新規作成時に選択）</td></tr>
+                <tr><td><strong>テンプレート</strong></td><td>プロジェクトテンプレートの保存・読込</td></tr>
             </table>
 
             <h2>バックステージ（ファイルメニュー）</h2>
@@ -568,16 +567,8 @@ public partial class HelpWindow : Window
                 <li><strong>終了</strong> — アプリケーションを終了</li>
             </ul>
 
-            <h2>「企画・制作」タブ</h2>
-            <p>動画の企画段階で使用します。3つのエリアに分かれています。</p>
-            <ul>
-                <li><strong>クイックセットアップ（左）</strong> — 素材の取り込み、動画の長さ・シーン数の設定</li>
-                <li><strong>構成・スクリプト（中央）</strong> — シーン構成の編集、JSON インポート</li>
-                <li><strong>サムネイルジェネレーター（右）</strong> — サムネイル画像の作成</li>
-            </ul>
-
-            <h2>「動画生成」タブ</h2>
-            <p>動画の編集・書き出しを行います。</p>
+            <h2>メインエリア</h2>
+            <p>動画の編集・書き出しを行う3カラム構成です。</p>
             <ul>
                 <li><strong>シーン一覧（左）</strong> — シーンの追加・削除・並び替え、解像度設定</li>
                 <li><strong>シーン編集（中央）</strong> — 素材、ナレーション、字幕、テキストオーバーレイ、トランジション</li>
@@ -702,11 +693,70 @@ public partial class HelpWindow : Window
             <h2>試聴</h2>
             <p>「▶試聴」ボタンで、書き出し前にナレーション音声を確認できます。</p>
 
+            <h2>間（ポーズ）の指定</h2>
+            <p>ナレーションテキスト内に特殊な記法を使って、読み上げ中の間（ポーズ）を挿入できます。</p>
+            <table>
+                <tr><th>記法</th><th>効果</th><th>例</th></tr>
+                <tr><td><code>、、</code>（読点2つ）</td><td>1.0秒の間</td><td>それでは、、次の項目を見てみましょう</td></tr>
+                <tr><td><code>、、、</code>（読点3つ）</td><td>1.5秒の間</td><td>ここで重要なポイントです、、、</td></tr>
+                <tr><td>改行</td><td>0.3秒の間</td><td>段落を分けて自然な区切りに</td></tr>
+            </table>
+            <div class="tip">
+                <span class="tip-label">ヒント:</span> 単独の「、」は通常の句読点として音声エンジンが自動処理します。
+                意図的に長い間を入れたい場合に「、、」以上を使ってください。読点を連続させるほど間が長くなります（最大5秒）。
+            </div>
+
             <div class="note">
                 <span class="note-label">VOICEVOX エンジンについて:</span>
                 VOICEVOX エンジンを使用する場合は、事前にエンジンを起動しておく必要があります。
                 初回起動時のセットアップウィザードで接続先を設定します。
                 接続が切れた場合は、VOICEVOX を再起動してからアプリを再起動してください。
+            </div>
+
+            <hr class="section-divider">
+            """);
+
+        // Narration Dictionary
+        sb.Append("""
+            <h1 id="narration-dict">読み上げ辞書</h1>
+            <p>ナレーションテキスト中の英単語・固有名詞を、TTS エンジンが正しく読み上げられるようカタカナ・ひらがなに自動変換する機能です。
+            リボンの「制作」グループにある「読み上げ辞書」ボタンから設定できます。</p>
+
+            <h2>仕組み</h2>
+            <ul>
+                <li>辞書の変換は <strong>TTS（音声合成）に渡すテキストにのみ</strong> 適用されます</li>
+                <li><strong>字幕テキストには影響しません</strong> — 画面上の字幕は元のテキストのまま表示されます</li>
+                <li>書き出し・プレビュー・試聴時に自動的に辞書が適用されます</li>
+            </ul>
+
+            <h2>プリセット辞書</h2>
+            <p>よく使われる英単語・IT用語が約50語、プリセットとして登録されています。</p>
+            <table>
+                <tr><th>対象語</th><th>読み上げ</th></tr>
+                <tr><td>Excel</td><td>エクセル</td></tr>
+                <tr><td>PowerPoint</td><td>パワーポイント</td></tr>
+                <tr><td>AI</td><td>エーアイ</td></tr>
+                <tr><td>PDF</td><td>ピーディーエフ</td></tr>
+                <tr><td>URL</td><td>ユーアールエル</td></tr>
+                <tr><td>Wi-Fi</td><td>ワイファイ</td></tr>
+            </table>
+            <p>※ 上記は一部です。全リストは読み上げ辞書ダイアログで確認できます。</p>
+
+            <h2>ユーザー辞書</h2>
+            <p>プリセットにない単語は、ユーザー辞書として自由に追加できます。</p>
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                リボンの「読み上げ辞書」ボタンをクリック
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                「追加」ボタンで新しいエントリを作成
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                「対象語」に変換元の文字列、「読み」に変換先のカタカナ・ひらがなを入力
+            </div></div>
+
+            <div class="tip">
+                <span class="tip-label">活用例:</span> 社内用語、製品名、人名、略語など、TTS が正しく読めない固有名詞を登録しておくと、
+                プロジェクト全体のナレーション品質が向上します。
             </div>
 
             <hr class="section-divider">
@@ -865,106 +915,43 @@ public partial class HelpWindow : Window
             <hr class="section-divider">
             """);
 
-        // Planning Tab
-        sb.Append("""
-            <h1 id="planning">企画・制作タブ</h1>
-            <p>動画の構成を事前に計画し、効率的に制作を進めるための機能です。
-            IPO（Input → Process → Output）デザインに基づく4パネル構成で、直感的に制作を進められます。</p>
-
-            <h2>4パネル構成（IPO デザイン）</h2>
-            <table>
-                <tr><th>パネル</th><th>役割</th><th>内容</th></tr>
-                <tr><td><strong>① Input（参考資料）</strong></td><td>素材の取り込み</td><td>PPTX・DOCX・XLSX・PDF・画像・動画のドラッグ＆ドロップ、ファイル選択</td></tr>
-                <tr><td><strong>② Process（プロンプト）</strong></td><td>AI 指示の編集</td><td>プロンプト一覧、エディタ、フィルタ・検索</td></tr>
-                <tr><td><strong>③ Output（成果物）</strong></td><td>結果の確認</td><td>生成されたシーン構成、レポート、アーティファクト</td></tr>
-                <tr><td><strong>④ AI Chat（コンシェルジュ）</strong></td><td>AI との対話</td><td>Claude AI チャット、ツール実行結果</td></tr>
-            </table>
-
-            <h2>ドキュメント変換</h2>
-            <p>PPTX 以外のドキュメントも、自動変換して取り込むことができます。</p>
-            <table>
-                <tr><th>形式</th><th>変換方法</th></tr>
-                <tr><td>DOCX（Word）</td><td>セクション単位で1スライドずつ変換</td></tr>
-                <tr><td>XLSX（Excel）</td><td>シート単位で1スライドずつ変換</td></tr>
-                <tr><td>PDF</td><td>ページ単位で1スライドずつ変換</td></tr>
-            </table>
-            <div class="note">
-                <span class="note-label">変換について:</span>
-                PowerPoint がインストールされている環境では COM オートメーションによる高品質な変換を行います。
-                インストールされていない場合は、Open XML 解析によるフォールバック変換を使用します。
-            </div>
-
-            <h2>AI によるプロジェクト生成</h2>
-            <p>AI アシスタント（画面右上の「AI」ボタン）を使って、テーマや目的を入力するだけでシーン構成・ナレーション原稿を自動生成できます。</p>
-
-            <div class="step"><div class="step-num">1</div><div class="step-text">
-                <strong>AI アシスタントを開く</strong> — 画面右上の「AI」ボタンをクリック
-            </div></div>
-            <div class="step"><div class="step-num">2</div><div class="step-text">
-                <strong>プリセットを選択</strong> — 「スライドから教育動画自動作成」などのプリセットを選択
-            </div></div>
-            <div class="step"><div class="step-num">3</div><div class="step-text">
-                <strong>実行</strong> — AI がシーン構成・ナレーションを自動生成
-            </div></div>
-
-            <div class="note">
-                <span class="note-label">AI機能について:</span>
-                AI 機能を使用するには、Anthropic (Claude) の API キーが必要です。
-                AI パネル右上の 🔑 ボタンから設定してください。
-            </div>
-
-            <h2>サムネイルジェネレーター</h2>
-            <p>右パネルでサムネイル画像（1280×720px）を作成できます。
-            カラーパターンの選択、メインテキスト・サブテキストの設定、背景画像の設定が可能です。</p>
-
-            <hr class="section-divider">
-            """);
-
-        // PPTX Creation
-        sb.Append("""
-            <h1 id="pptx-create">PPTX 作成タブ</h1>
-            <p>企画・制作タブでは、AI を活用して PowerPoint プレゼンテーション（PPTX）を自動作成することもできます。
-            テーマや目的を入力するだけで、スライド構成・テキスト・レイアウトを含む PPTX ファイルを生成します。</p>
-
-            <h2>PPTX 自動作成の手順</h2>
-            <div class="step"><div class="step-num">1</div><div class="step-text">
-                <strong>参考資料を投入</strong> — 参考にしたいドキュメントやテキストを Input パネルに取り込み
-            </div></div>
-            <div class="step"><div class="step-num">2</div><div class="step-text">
-                <strong>プロンプトを選択・編集</strong> — Process パネルで AI への指示を設定
-            </div></div>
-            <div class="step"><div class="step-num">3</div><div class="step-text">
-                <strong>AI 実行</strong> — AI がスライド構成を生成し、Output パネルに結果を表示
-            </div></div>
-            <div class="step"><div class="step-num">4</div><div class="step-text">
-                <strong>PPTX 出力</strong> — 生成されたスライド構成から PPTX ファイルを書き出し
-            </div></div>
-
-            <div class="tip">
-                <span class="tip-label">ヒント:</span> 生成された PPTX はそのまま動画の素材として取り込むこともできます。
-                「PPTX 作成 → PPTX 取り込み → 動画生成」の一連のワークフローで、資料作成から動画化まで完結します。
-            </div>
-
-            <hr class="section-divider">
-            """);
+        // (Planning Tab and PPTX Creation sections removed — features no longer in UI)
 
         // Export
         sb.Append("""
             <h1 id="export">書き出し</h1>
 
             <h2>動画の書き出し</h2>
-            <p>「動画生成」タブの右パネルで設定を行い、「動画を書き出し」ボタンで動画を生成します。</p>
+            <p>右パネルで設定を行い、「動画を書き出し」ボタンで動画を生成します。
+            書き出し中は操作ミスを防ぐため、リボンやメインエリアが自動的にロックされます。</p>
 
             <h3>書き出し設定</h3>
             <table>
                 <tr><th>設定</th><th>説明</th></tr>
                 <tr><td>音声エンジン</td><td>Edge Neural / VOICEVOX / Windows TTS から選択</td></tr>
                 <tr><td>話者</td><td>プロジェクト全体のデフォルト話者</td></tr>
-                <tr><td>解像度</td><td>1920×1080（横動画）/ 1080×1920（縦動画）</td></tr>
+                <tr><td>解像度</td><td>1920×1080（横）/ 1080×1920（縦）/ 1080×1080（正方形）</td></tr>
                 <tr><td>FPS（フレームレート）</td><td>動画のフレームレートを設定（デフォルト: 30fps）</td></tr>
                 <tr><td>字幕レターボックス</td><td>字幕用の黒帯エリアを確保する</td></tr>
                 <tr><td>BGM設定</td><td>バックグラウンドミュージックの設定</td></tr>
             </table>
+
+            <h3>解像度プリセット</h3>
+            <table>
+                <tr><th>プリセット</th><th>解像度</th><th>用途</th></tr>
+                <tr><td>横動画（標準）</td><td>1920×1080</td><td>YouTube、一般的な研修動画</td></tr>
+                <tr><td>縦動画</td><td>1080×1920</td><td>汎用の縦動画</td></tr>
+                <tr><td>正方形</td><td>1080×1080</td><td>Instagram フィード、SNS</td></tr>
+                <tr><td>YouTube Shorts</td><td>1080×1920</td><td>YouTube Shorts 向け</td></tr>
+                <tr><td>Instagram Reels</td><td>1080×1920</td><td>Instagram Reels 向け</td></tr>
+                <tr><td>TikTok</td><td>1080×1920</td><td>TikTok 向け</td></tr>
+            </table>
+
+            <div class="tip">
+                <span class="tip-label">縦動画のぼかし背景:</span> 縦動画（1080×1920）を選択した場合、横長の素材画像は自動的に
+                ぼかし背景 + 中央配置で表示されます。黒帯ではなく、素材をぼかした背景が入るため、
+                YouTube Shorts や TikTok でも見栄えの良い仕上がりになります。
+            </div>
 
             <h3>出力ファイル</h3>
             <p>書き出し時に以下のファイルが自動生成されます。</p>
@@ -1074,7 +1061,6 @@ public partial class HelpWindow : Window
                 <tr><td><kbd>Ctrl</kbd>+<kbd>+</kbd></td><td>画面を拡大（ズームイン）</td></tr>
                 <tr><td><kbd>Ctrl</kbd>+<kbd>-</kbd></td><td>画面を縮小（ズームアウト）</td></tr>
                 <tr><td><kbd>Ctrl</kbd>+<kbd>0</kbd></td><td>ズームをリセット（100%に戻す）</td></tr>
-                <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>AI プロンプトを実行</td></tr>
                 <tr><td><kbd>F1</kbd></td><td>ヘルプを表示</td></tr>
             </table>
 
@@ -1104,8 +1090,8 @@ public partial class HelpWindow : Window
             本製品側の設定でも接続先ポートを合わせてください。デフォルトは <code>50021</code> です。</p>
 
             <h3>Q: インターネットに接続できない環境で使えますか？</h3>
-            <p>A: 音声エンジンを「Windows TTS」に切り替えれば、オフライン環境でも動画生成が可能です。
-            ただし AI アシスタント機能と Edge Neural 音声はインターネット接続が必要です。</p>
+            <p>A: 音声エンジンを「VOICEVOX」または「Windows TTS」に切り替えれば、完全オフラインで動画生成が可能です。
+            Edge Neural 音声のみインターネット接続が必要です。</p>
 
             <h3>Q: 自動保存データはどこにありますか？</h3>
             <p>A: <code>%LOCALAPPDATA%\InsightCast\AutoSave\</code> に5分間隔で自動保存されます。
@@ -1133,7 +1119,7 @@ public partial class HelpWindow : Window
 
             <h3>Q: シーンの表示時間を変更したい。</h3>
             <p>A: シーンの表示時間はナレーション音声の長さに基づいて自動計算されます。
-            ナレーションテキストを編集して長さを調整するか、企画タブのシーン秒数設定をご利用ください。</p>
+            「自動」モードの場合はナレーションテキストを編集して調整するか、「固定」モードに切り替えて秒数を直接指定してください。</p>
 
             <h3>Q: 対応している画像形式は？</h3>
             <p>A: JPEG (.jpg/.jpeg)、PNG (.png)、BMP (.bmp)、GIF (.gif) に対応しています。
@@ -1253,20 +1239,28 @@ public partial class HelpWindow : Window
             <table>
                 <tr><th>項目</th><th>要件</th></tr>
                 <tr><td>OS</td><td>Windows 10 / 11（64bit）</td></tr>
-                <tr><td>ランタイム</td><td>.NET 8.0 デスクトップランタイム</td></tr>
-                <tr><td>必須ソフトウェア</td><td>VOICEVOX エンジン（ナレーション生成に必要）</td></tr>
-                <tr><td>必須ツール</td><td>FFmpeg（動画生成に必要）</td></tr>
+                <tr><td>ランタイム</td><td>.NET 8.0 デスクトップランタイム（自己完結型に同梱）</td></tr>
+                <tr><td>必須ツール</td><td>FFmpeg（動画生成に必要・インストーラーに同梱）</td></tr>
+                <tr><td>オプション</td><td>VOICEVOX エンジン（VOICEVOX 音声を使用する場合のみ）</td></tr>
                 <tr><td>メモリ</td><td>4GB 以上推奨</td></tr>
                 <tr><td>ストレージ</td><td>500MB 以上の空き容量（動画出力を含まず）</td></tr>
             </table>
 
+            <h2>音声エンジンの要件</h2>
+            <table>
+                <tr><th>エンジン</th><th>追加インストール</th><th>ネットワーク</th></tr>
+                <tr><td>Windows TTS</td><td>不要（OS 標準搭載）</td><td>不要</td></tr>
+                <tr><td>VOICEVOX</td><td>VOICEVOX エンジンが必要</td><td>不要</td></tr>
+                <tr><td>Edge Neural</td><td>不要</td><td>インターネット接続が必要</td></tr>
+            </table>
+
             <h2>VOICEVOX のインストール</h2>
             <p><a href="https://voicevox.hiroshiba.jp/">VOICEVOX 公式サイト</a>からダウンロード・インストールしてください。
-            アプリ起動前に VOICEVOX エンジンを起動しておく必要があります。</p>
+            VOICEVOX 音声を使用する場合のみ必要です。Windows TTS や Edge Neural のみ使用する場合はインストール不要です。</p>
 
-            <h2>FFmpeg のインストール</h2>
-            <p>動画の生成・プレビューに FFmpeg が必要です。
-            ffmpeg.exe を PATH 環境変数に追加するか、アプリフォルダ内の <code>tools\ffmpeg\bin\</code> に配置してください。</p>
+            <h2>FFmpeg について</h2>
+            <p>動画の生成・プレビューに FFmpeg が必要です。インストーラー版では自動的に同梱されます。
+            手動で配置する場合は ffmpeg.exe を PATH 環境変数に追加するか、アプリフォルダ内の <code>tools\ffmpeg\bin\</code> に配置してください。</p>
 
             <hr class="section-divider">
             """);
@@ -1274,8 +1268,12 @@ public partial class HelpWindow : Window
         // AI Assistant
         sb.Append("""
             <h1 id="ai-assistant">AIアシスタント</h1>
-            <p>Claude AI を活用して、ナレーション作成・字幕編集・動画構成の提案・サムネイル生成などを行えます。
-            画面右上のアシスタントボタンでパネルを開きます。</p>
+            <div class="note">
+                <span class="note-label">オプション機能:</span>
+                AI アシスタントは将来のアップデートで提供予定のオプション機能です。
+                現在のバージョンでは AI 機能は無効化されていますが、動画生成の全機能はオフラインでご利用いただけます。
+            </div>
+            <p>Claude AI を活用して、ナレーション作成・字幕編集・動画構成の提案・サムネイル生成などを行える機能です。</p>
 
             <h2>基本的な使い方</h2>
             <div class="step"><div class="step-num">1</div><div class="step-text">
@@ -1454,7 +1452,7 @@ public partial class HelpWindow : Window
 
             <p>Insight Training Studio is a Windows desktop application for creating narrated educational and training videos.
             Import PowerPoint presentations, images, or video files, enter your narration scripts,
-            and the VOICEVOX text-to-speech engine automatically generates natural-sounding narration.</p>
+            and a text-to-speech engine automatically generates natural-sounding narration.</p>
 
             <div class="feature-grid">
                 <div class="feature-card">
@@ -1470,16 +1468,16 @@ public partial class HelpWindow : Window
                     <p>10+ preset styles, letterbox mode, and SRT/VTT subtitle file output for video platforms.</p>
                 </div>
                 <div class="feature-card">
-                    <h4>PowerPoint Import & Creation</h4>
-                    <p>Import PPTX directly, convert DOCX/XLSX/PDF, or auto-create PPTX with AI assistance.</p>
+                    <h4>Portrait & Landscape Video</h4>
+                    <p>Support for YouTube Shorts, Instagram Reels, and TikTok portrait formats with automatic blurred background.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Narration Dictionary & Pauses</h4>
+                    <p>Pronunciation dictionary for foreign words and comma-based pause notation for natural narration flow.</p>
                 </div>
                 <div class="feature-card">
                     <h4>Screen Capture & Recording</h4>
                     <p>Capture screenshots or record screen video directly as scene media for software tutorials.</p>
-                </div>
-                <div class="feature-card">
-                    <h4>AI Assistant</h4>
-                    <p>Claude AI auto-generates scene structure, narration, subtitles, and thumbnails. 25 preset prompts included.</p>
                 </div>
             </div>
 
@@ -1493,15 +1491,15 @@ public partial class HelpWindow : Window
 
             <h2>Create a Video (3 Steps)</h2>
             <div class="step"><div class="step-num">1</div><div class="step-text">
-                <strong>Import media</strong> — Drag & drop images, videos, or PowerPoint files onto the drop zone in the Planning tab.
-                Dropping multiple files creates one scene per file automatically.
+                <strong>Import media</strong> — Use "Import PPTX" or "+ Add" in the ribbon to import images, videos, or PowerPoint files.
+                PPTX import automatically creates one scene per slide.
             </div></div>
             <div class="step"><div class="step-num">2</div><div class="step-text">
                 <strong>Set narration</strong> — Enter the text to be spoken in each scene's text field.
-                Configure speaker (voice), speed, and orientation (landscape/portrait).
+                Configure speaker (voice), speed, and resolution (landscape/portrait).
             </div></div>
             <div class="step"><div class="step-num">3</div><div class="step-text">
-                <strong>Export video</strong> — Click "Generate Video", choose a save location, and the narrated video is generated automatically.
+                <strong>Export video</strong> — Click "Export Video", choose a save location, and the narrated video is generated automatically.
             </div></div>
 
             <div class="tip">
@@ -1512,9 +1510,8 @@ public partial class HelpWindow : Window
             <h2>After Completion</h2>
             <ul>
                 <li><strong>Play Video</strong> — Preview the completed video in your default player</li>
-                <li><strong>Open Output Folder</strong> — View thumbnail (.jpg), chapters (.chapters.txt), and metadata (.metadata.txt)</li>
-                <li><strong>Regenerate</strong> — Change speaker or orientation and regenerate with one click</li>
-                <li><strong>Edit in Detail</strong> — Switch to the Video Generation tab for scene-level editing</li>
+                <li><strong>Open Output Folder</strong> — View thumbnail (.jpg), chapters (.chapters.txt), metadata (.metadata.txt), and subtitles (.srt/.vtt)</li>
+                <li><strong>Regenerate</strong> — Change speaker or resolution and regenerate with one click</li>
             </ul>
 
             <hr class="section-divider">
@@ -1523,7 +1520,7 @@ public partial class HelpWindow : Window
         // UI Layout
         sb.Append("""
             <h1 id="ui-layout">UI Layout</h1>
-            <p>The main window has <strong>two tabs</strong>. Switch between them based on your workflow.</p>
+            <p>The main window is a streamlined, single-view interface focused on video generation.</p>
 
             <h2>Title Bar</h2>
             <ul>
@@ -1538,10 +1535,10 @@ public partial class HelpWindow : Window
             <p>The ribbon at the top of the window has four groups organized by training video workflow.</p>
             <table>
                 <tr><th>Group</th><th>Features</th></tr>
-                <tr><td><strong>Structure</strong></td><td>Add/remove/reorder scenes, screen capture</td></tr>
-                <tr><td><strong>Production</strong></td><td>Preview, BGM, CTA (Call-to-Action), AI Execute</td></tr>
-                <tr><td><strong>Export</strong></td><td>Generate video, open output folder</td></tr>
-                <tr><td><strong>Templates</strong></td><td>Project templates (available on new project)</td></tr>
+                <tr><td><strong>Structure</strong></td><td>Add/remove/reorder scenes, screen capture & recording</td></tr>
+                <tr><td><strong>Production</strong></td><td>PPTX import, narration dictionary, clear scripts/subtitles</td></tr>
+                <tr><td><strong>Export</strong></td><td>Export video, open output folder</td></tr>
+                <tr><td><strong>Templates</strong></td><td>Save and load project templates</td></tr>
             </table>
 
             <h2>Backstage (File Menu)</h2>
@@ -1554,14 +1551,8 @@ public partial class HelpWindow : Window
                 <li><strong>Exit</strong> — Close the application</li>
             </ul>
 
-            <h2>Planning Tab</h2>
-            <ul>
-                <li><strong>Quick Setup (Left)</strong> — Import media, set duration and scene count</li>
-                <li><strong>Structure & Script (Center)</strong> — Edit scene structure, JSON import</li>
-                <li><strong>Thumbnail Generator (Right)</strong> — Create thumbnail images</li>
-            </ul>
-
-            <h2>Video Generation Tab</h2>
+            <h2>Main Area</h2>
+            <p>A 3-column layout for video editing and export.</p>
             <ul>
                 <li><strong>Scene List (Left)</strong> — Add, remove, reorder scenes; set resolution</li>
                 <li><strong>Scene Editor (Center)</strong> — Media, narration, subtitles, overlays, transitions</li>
@@ -1673,10 +1664,69 @@ public partial class HelpWindow : Window
                 <tr><td>Fast</td><td>1.5x</td><td>Information-dense content</td></tr>
             </table>
 
+            <h2>Pause Notation</h2>
+            <p>Insert pauses in narration using special notation in the text:</p>
+            <table>
+                <tr><th>Notation</th><th>Effect</th><th>Example</th></tr>
+                <tr><td><code>、、</code> (two commas)</td><td>1.0 second pause</td><td>Let's move on、、to the next topic</td></tr>
+                <tr><td><code>、、、</code> (three commas)</td><td>1.5 second pause</td><td>This is important、、、</td></tr>
+                <tr><td>Line break</td><td>0.3 second pause</td><td>Use paragraphs for natural pacing</td></tr>
+            </table>
+            <div class="tip">
+                <span class="tip-label">Tip:</span> A single 、 is treated as normal punctuation by the TTS engine.
+                Use two or more consecutive commas for intentional pauses. More commas = longer pause (max 5 seconds).
+            </div>
+
             <div class="note">
                 <span class="note-label">About VOICEVOX:</span>
                 When using the VOICEVOX engine, it must be running before generating narration.
                 Configure the connection in the setup wizard on first launch.
+            </div>
+
+            <hr class="section-divider">
+            """);
+
+        // Narration Dictionary
+        sb.Append("""
+            <h1 id="narration-dict">Narration Dictionary</h1>
+            <p>Automatically convert foreign words, abbreviations, and proper nouns into phonetic readings (katakana/hiragana)
+            so the TTS engine pronounces them correctly. Access via the "Narration Dictionary" button in the Production ribbon group.</p>
+
+            <h2>How It Works</h2>
+            <ul>
+                <li>Conversions are applied <strong>only to TTS input text</strong></li>
+                <li><strong>Subtitles are not affected</strong> — on-screen subtitles display the original text</li>
+                <li>Dictionary is automatically applied during export, preview, and audio preview</li>
+            </ul>
+
+            <h2>Preset Dictionary</h2>
+            <p>About 50 common English words and IT terms are pre-registered:</p>
+            <table>
+                <tr><th>Word</th><th>Reading</th></tr>
+                <tr><td>Excel</td><td>エクセル</td></tr>
+                <tr><td>PowerPoint</td><td>パワーポイント</td></tr>
+                <tr><td>AI</td><td>エーアイ</td></tr>
+                <tr><td>PDF</td><td>ピーディーエフ</td></tr>
+                <tr><td>URL</td><td>ユーアールエル</td></tr>
+                <tr><td>Wi-Fi</td><td>ワイファイ</td></tr>
+            </table>
+            <p>See the full list in the Narration Dictionary dialog.</p>
+
+            <h2>User Dictionary</h2>
+            <p>Add custom entries for words not in the preset dictionary:</p>
+            <div class="step"><div class="step-num">1</div><div class="step-text">
+                Click "Narration Dictionary" in the Production ribbon group
+            </div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text">
+                Click "Add" to create a new entry
+            </div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">
+                Enter the source word and its phonetic reading (katakana/hiragana)
+            </div></div>
+
+            <div class="tip">
+                <span class="tip-label">Use Case:</span> Register company-specific terms, product names, personal names, and abbreviations
+                that TTS engines cannot pronounce correctly. This improves narration quality across your entire project.
             </div>
 
             <hr class="section-divider">
@@ -1790,105 +1840,44 @@ public partial class HelpWindow : Window
             <hr class="section-divider">
             """);
 
-        // Planning Tab
-        sb.Append("""
-            <h1 id="planning">Planning Tab</h1>
-            <p>Plan your video structure before editing for efficient production.
-            The tab uses an IPO (Input → Process → Output) design with 4 panels for intuitive workflow.</p>
-
-            <h2>4-Panel Layout (IPO Design)</h2>
-            <table>
-                <tr><th>Panel</th><th>Role</th><th>Content</th></tr>
-                <tr><td><strong>① Input (Reference)</strong></td><td>Import materials</td><td>Drag & drop PPTX, DOCX, XLSX, PDF, images, videos</td></tr>
-                <tr><td><strong>② Process (Prompts)</strong></td><td>Edit AI instructions</td><td>Prompt list, editor, filter & search</td></tr>
-                <tr><td><strong>③ Output (Artifacts)</strong></td><td>View results</td><td>Generated scene structure, reports, artifacts</td></tr>
-                <tr><td><strong>④ AI Chat (Concierge)</strong></td><td>AI conversation</td><td>Claude AI chat, tool execution results</td></tr>
-            </table>
-
-            <h2>Document Conversion</h2>
-            <p>Documents other than PPTX can be automatically converted and imported.</p>
-            <table>
-                <tr><th>Format</th><th>Conversion Method</th></tr>
-                <tr><td>DOCX (Word)</td><td>One slide per section</td></tr>
-                <tr><td>XLSX (Excel)</td><td>One slide per sheet</td></tr>
-                <tr><td>PDF</td><td>One slide per page</td></tr>
-            </table>
-            <div class="note">
-                <span class="note-label">Note:</span>
-                When PowerPoint is installed, high-quality COM automation conversion is used.
-                Otherwise, Open XML parsing fallback is used.
-            </div>
-
-            <h2>AI Project Generation</h2>
-            <p>Use the AI Assistant (click the "AI" button at top-right) to automatically create scene structures and narration scripts from a theme or topic.</p>
-
-            <div class="step"><div class="step-num">1</div><div class="step-text">
-                <strong>Open AI Assistant</strong> — Click the "AI" button at top-right
-            </div></div>
-            <div class="step"><div class="step-num">2</div><div class="step-text">
-                <strong>Select a preset</strong> — Choose "Auto-create training video from slides" or similar preset
-            </div></div>
-            <div class="step"><div class="step-num">3</div><div class="step-text">
-                <strong>Execute</strong> — AI automatically generates scene structure and narration
-            </div></div>
-
-            <div class="note">
-                <span class="note-label">Note:</span>
-                AI features require an Anthropic (Claude) API key.
-                Click the 🔑 button at the top-right of the AI panel to configure it.
-            </div>
-
-            <h2>Thumbnail Generator</h2>
-            <p>Create thumbnail images (1280x720px) with color patterns, text, and background images.</p>
-
-            <hr class="section-divider">
-            """);
-
-        // PPTX Creation
-        sb.Append("""
-            <h1 id="pptx-create">PPTX Creation</h1>
-            <p>The Planning tab also supports AI-powered automatic creation of PowerPoint presentations (PPTX).
-            Enter a theme or topic and AI generates slides with structure, text, and layout.</p>
-
-            <h2>Steps</h2>
-            <div class="step"><div class="step-num">1</div><div class="step-text">
-                <strong>Add reference materials</strong> — Import documents or text into the Input panel
-            </div></div>
-            <div class="step"><div class="step-num">2</div><div class="step-text">
-                <strong>Select/edit prompt</strong> — Configure AI instructions in the Process panel
-            </div></div>
-            <div class="step"><div class="step-num">3</div><div class="step-text">
-                <strong>Execute AI</strong> — AI generates slide structure, shown in the Output panel
-            </div></div>
-            <div class="step"><div class="step-num">4</div><div class="step-text">
-                <strong>Export PPTX</strong> — Save the generated structure as a PPTX file
-            </div></div>
-
-            <div class="tip">
-                <span class="tip-label">Tip:</span> Generated PPTX files can be directly imported as video source material.
-                The workflow "Create PPTX → Import PPTX → Generate Video" completes the entire pipeline.
-            </div>
-
-            <hr class="section-divider">
-            """);
+        // (Planning Tab and PPTX Creation sections removed — features no longer in UI)
 
         // Export
         sb.Append("""
             <h1 id="export">Export</h1>
 
             <h2>Video Export</h2>
-            <p>Configure settings in the right panel and click "Export Video".</p>
+            <p>Configure settings in the right panel and click "Export Video".
+            During export, the ribbon and main area are automatically locked to prevent accidental operations.</p>
 
             <h3>Export Settings</h3>
             <table>
                 <tr><th>Setting</th><th>Description</th></tr>
                 <tr><td>TTS Engine</td><td>Edge Neural / VOICEVOX / Windows TTS</td></tr>
                 <tr><td>Speaker</td><td>Project-wide default speaker</td></tr>
-                <tr><td>Resolution</td><td>1920×1080 (landscape) / 1080×1920 (portrait)</td></tr>
+                <tr><td>Resolution</td><td>1920×1080 (landscape) / 1080×1920 (portrait) / 1080×1080 (square)</td></tr>
                 <tr><td>FPS (Frame Rate)</td><td>Video frame rate (default: 30fps)</td></tr>
                 <tr><td>Subtitle Letterbox</td><td>Reserve a black bar area for subtitles</td></tr>
                 <tr><td>BGM Settings</td><td>Background music configuration</td></tr>
             </table>
+
+            <h3>Resolution Presets</h3>
+            <table>
+                <tr><th>Preset</th><th>Resolution</th><th>Use Case</th></tr>
+                <tr><td>Landscape (Standard)</td><td>1920×1080</td><td>YouTube, general training videos</td></tr>
+                <tr><td>Portrait</td><td>1080×1920</td><td>General portrait video</td></tr>
+                <tr><td>Square</td><td>1080×1080</td><td>Instagram feed, SNS</td></tr>
+                <tr><td>YouTube Shorts</td><td>1080×1920</td><td>YouTube Shorts</td></tr>
+                <tr><td>Instagram Reels</td><td>1080×1920</td><td>Instagram Reels</td></tr>
+                <tr><td>TikTok</td><td>1080×1920</td><td>TikTok</td></tr>
+            </table>
+
+            <div class="tip">
+                <span class="tip-label">Portrait Blur Background:</span> When using a portrait resolution (1080×1920),
+                landscape media is automatically displayed with a blurred background and centered foreground.
+                Instead of black bars, the media itself provides a blurred backdrop for a professional look
+                on YouTube Shorts, TikTok, and Instagram Reels.
+            </div>
 
             <h3>Output Files</h3>
             <p>Export generates the following files:</p>
@@ -1992,7 +1981,6 @@ public partial class HelpWindow : Window
                 <tr><td><kbd>Ctrl</kbd>+<kbd>+</kbd></td><td>Zoom In (enlarge UI)</td></tr>
                 <tr><td><kbd>Ctrl</kbd>+<kbd>-</kbd></td><td>Zoom Out (shrink UI)</td></tr>
                 <tr><td><kbd>Ctrl</kbd>+<kbd>0</kbd></td><td>Reset Zoom (back to 100%)</td></tr>
-                <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Execute AI Prompt</td></tr>
                 <tr><td><kbd>F1</kbd></td><td>Show Help</td></tr>
             </table>
 
@@ -2016,8 +2004,8 @@ public partial class HelpWindow : Window
             <p>A: If you changed the VOICEVOX engine port in its startup options, make sure to update the connection port in this app's settings accordingly. The default is <code>50021</code>.</p>
 
             <h3>Q: Can I use this offline?</h3>
-            <p>A: Switch the TTS engine to "Windows TTS" for offline video generation.
-            However, AI Assistant features and Edge Neural voices require internet access.</p>
+            <p>A: Yes. Switch the TTS engine to "VOICEVOX" or "Windows TTS" for fully offline video generation.
+            Only Edge Neural voices require internet access.</p>
 
             <h3>Q: Where is auto-save data stored?</h3>
             <p>A: Auto-save data is stored in <code>%LOCALAPPDATA%\InsightCast\AutoSave\</code> every 5 minutes.
@@ -2039,7 +2027,7 @@ public partial class HelpWindow : Window
             <p>A: Yes. Scenes without media use a black background. Combine with text overlays and subtitles to create content.</p>
 
             <h3>Q: How do I change scene duration?</h3>
-            <p>A: Scene duration is automatically calculated based on narration audio length. Adjust by editing narration text or use the scene duration settings in the Planning tab.</p>
+            <p>A: Scene duration is automatically calculated based on narration audio length in "Auto" mode. Edit the narration text to adjust, or switch to "Fixed" mode to specify duration directly.</p>
 
             <h3>Q: What image formats are supported?</h3>
             <p>A: JPEG (.jpg/.jpeg), PNG (.png), BMP (.bmp), and GIF (.gif). JPEG or PNG at 1920×1080 or above is recommended.</p>
@@ -2144,11 +2132,19 @@ public partial class HelpWindow : Window
             <table>
                 <tr><th>Requirement</th><th>Details</th></tr>
                 <tr><td>OS</td><td>Windows 10 / 11 (64-bit)</td></tr>
-                <tr><td>Runtime</td><td>.NET 8.0 Desktop Runtime</td></tr>
-                <tr><td>Required Software</td><td>VOICEVOX Engine (for narration)</td></tr>
-                <tr><td>Required Tool</td><td>FFmpeg (for video generation)</td></tr>
+                <tr><td>Runtime</td><td>.NET 8.0 Desktop Runtime (bundled in self-contained build)</td></tr>
+                <tr><td>Required Tool</td><td>FFmpeg (for video generation — bundled with installer)</td></tr>
+                <tr><td>Optional</td><td>VOICEVOX Engine (only if using VOICEVOX voices)</td></tr>
                 <tr><td>Memory</td><td>4GB+ recommended</td></tr>
                 <tr><td>Storage</td><td>500MB+ free space (excluding video output)</td></tr>
+            </table>
+
+            <h2>TTS Engine Requirements</h2>
+            <table>
+                <tr><th>Engine</th><th>Additional Install</th><th>Network</th></tr>
+                <tr><td>Windows TTS</td><td>None (built into OS)</td><td>Not required</td></tr>
+                <tr><td>VOICEVOX</td><td>VOICEVOX Engine required</td><td>Not required</td></tr>
+                <tr><td>Edge Neural</td><td>None</td><td>Internet required</td></tr>
             </table>
 
             <hr class="section-divider">
@@ -2157,8 +2153,12 @@ public partial class HelpWindow : Window
         // AI Assistant
         sb.Append("""
             <h1 id="ai-assistant">AI Assistant</h1>
-            <p>Use Claude AI to create narration, edit subtitles, analyze video structure, generate thumbnails,
-            and more. Open the panel using the assistant button in the top-right corner.</p>
+            <div class="note">
+                <span class="note-label">Optional Feature:</span>
+                The AI Assistant is an optional feature planned for a future update.
+                In the current version, AI features are disabled, but all video generation features work fully offline.
+            </div>
+            <p>Use Claude AI to create narration, edit subtitles, analyze video structure, generate thumbnails, and more.</p>
 
             <h2>Getting Started</h2>
             <div class="step"><div class="step-num">1</div><div class="step-text">

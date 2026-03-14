@@ -113,6 +113,7 @@ namespace InsightCast.Views
 
         private void OverlayList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_isLoading) return;
             LoadSelectedOverlay();
         }
 
@@ -512,8 +513,10 @@ namespace InsightCast.Views
             var items = OverlayList.ItemsSource as ObservableCollection<OverlayItem>;
             if (items != null && idx < items.Count)
             {
+                _isLoading = true;
                 items[idx] = new OverlayItem(_overlays[idx], idx);
                 OverlayList.SelectedIndex = idx;
+                _isLoading = false;
             }
         }
 

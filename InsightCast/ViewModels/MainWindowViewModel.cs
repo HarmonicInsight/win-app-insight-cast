@@ -420,6 +420,8 @@ namespace InsightCast.ViewModels
 
         public bool IsDetailMode => !_isSimpleMode;
 
+        public bool HasScenes => SceneItems.Count > 0;
+
         // Overlay properties
         public int SelectedOverlayIndex
         {
@@ -970,6 +972,7 @@ namespace InsightCast.ViewModels
         {
             _isLoadingScene = true;
             var selectedIndex = _selectedSceneIndex;
+            var hadScenes = HasScenes;
             SceneItems.Clear();
 
             for (int i = 0; i < _project.Scenes.Count; i++)
@@ -989,6 +992,8 @@ namespace InsightCast.ViewModels
             _selectedSceneIndex = -1;
             _isLoadingScene = false;
             SelectedSceneIndex = newIndex;
+            if (HasScenes != hadScenes)
+                OnPropertyChanged(nameof(HasScenes));
         }
 
         private void OnSceneSelected()
@@ -2528,8 +2533,8 @@ namespace InsightCast.ViewModels
 
             var path = _dialogService.ShowOpenFileDialog(
                 LocalizationService.GetString("VM.Project.OpenTitle"),
-                LocalizationService.GetString("VM.Project.JsonFilter"),
-                ".json");
+                LocalizationService.GetString("VM.Project.Filter"),
+                ".icproj");
 
             if (path == null) return;
 
@@ -2656,9 +2661,9 @@ namespace InsightCast.ViewModels
 
             var path = _dialogService.ShowSaveFileDialog(
                 LocalizationService.GetString("VM.Project.SaveAsTitle"),
-                LocalizationService.GetString("VM.Project.JsonFilter"),
-                ".json",
-                "InsightCast.json");
+                LocalizationService.GetString("VM.Project.Filter"),
+                ".icproj",
+                "InsightCast.icproj");
 
             if (path == null) return;
 

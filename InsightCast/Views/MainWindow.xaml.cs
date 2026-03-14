@@ -20,6 +20,7 @@ using InsightCast.TTS;
 using InsightCast.VoiceVox;
 using InsightCommon.AI;
 using Syncfusion.SfSkinManager;
+using Syncfusion.Themes.Office2019Colorful.WPF;
 
 namespace InsightCast.Views
 {
@@ -78,10 +79,26 @@ namespace InsightCast.Views
             CommandBindings.Add(new CommandBinding(ZoomOutCommand, (_, _) => InsightCommon.UI.InsightScaleManager.Instance.ZoomOut()));
             CommandBindings.Add(new CommandBinding(ZoomResetCommand, (_, _) => InsightCommon.UI.InsightScaleManager.Instance.Reset()));
 
+            // Ivory & Gold テーマパレットでSyncfusionを設定（InsightSlideと統一）
+            var gold = new SolidColorBrush(Color.FromRgb(0xB8, 0x94, 0x2F));
+            var goldLight = new SolidColorBrush(Color.FromRgb(0xD4, 0xB8, 0x4A));
+            var goldDark = new SolidColorBrush(Color.FromRgb(0x8A, 0x6F, 0x23));
+            var ivory = new SolidColorBrush(Color.FromRgb(0xFA, 0xF8, 0xF5));
+            var textPrimary = new SolidColorBrush(Color.FromRgb(0x1C, 0x19, 0x17));
+            gold.Freeze(); goldLight.Freeze(); goldDark.Freeze(); ivory.Freeze(); textPrimary.Freeze();
+            var themeSettings = new Office2019ColorfulThemeSettings
+            {
+                PrimaryBackground = gold,
+                PrimaryForeground = new SolidColorBrush(Colors.White),
+                PrimaryColorForeground = textPrimary,
+                FontFamily = new FontFamily("Yu Gothic UI, Meiryo, Segoe UI"),
+            };
+            SfSkinManager.RegisterThemeSettings("Office2019Colorful", themeSettings);
+
             Loaded += (_, _) =>
             {
                 // ── Phase 1: Essential UI setup (immediate) ────────────────
-                SfSkinManager.SetTheme(MainRibbon, new Theme("Office2019White"));
+                SfSkinManager.SetTheme(MainRibbon, new Theme("Office2019Colorful"));
                 MainRibbon.HideBackStage();
 
                 // UI Scale
@@ -97,7 +114,7 @@ namespace InsightCast.Views
                 // Initialize TTS engine selection
                 InitializeTtsRadioButtons();
 
-                // Show window after theme rendering is complete
+                // Show window after theme rendering is complete, then style backstage (once only)
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
                 {
                     Opacity = 1;
@@ -200,23 +217,88 @@ namespace InsightCast.Views
             UpdateRibbonForTab(isPptxTab, isVideoTab);
         }
 
-        /// <summary>BackStage ヘッダー（「ファイル」ボタン）のフォントを小さく＋白文字に</summary>
+        /// <summary>BackStageの「ファイル」ボタンを白文字・適切サイズに強制適用（1回だけ呼ぶこと）</summary>
         private void StyleBackStageHeader()
         {
-            var toggle = FindVisualChild<System.Windows.Controls.Primitives.ToggleButton>(
-                MainRibbon, tb => tb.Name == "PART_BackStageButton");
-            if (toggle != null)
+            // Syncfusionはテーマを非同期で適用するため、DispatcherTimerで描画完了後に強制上書き
+            // 「ファイル」Backstageボタン = TextBlock (parent=ContentPresenter)
+            // リボングループの「ファイル」 = TextBlock (parent=DockPanel) → 触らない
+            var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(150) };
+            int retryCount = 0;
+            bool styled = false;
+            timer.Tick += (_, _) =>
             {
-                toggle.FontSize = 11;
-                toggle.Foreground = System.Windows.Media.Brushes.White;
+                retryCount++;
+                if (!styled)
+                {
+                    foreach (var tb in FindAllVisualChildren<System.Windows.Controls.TextBlock>(MainRibbon))
+                    {
+                        if ((tb.Text == "ファイル" || tb.Text == "File")
+                            && VisualTreeHelper.GetParent(tb) is System.Windows.Controls.ContentPresenter)
+                        {
+                            tb.Foreground = Brushes.White;
+                            tb.FontSize = 13;
+                            tb.FontWeight = FontWeights.SemiBold;
+                            styled = true;
+                        }
+                    }
+                }
+                // スタイル適用後にリボンを表示（黒→白フラッシュ防止）
+                if (retryCount == 2) MainRibbon.Opacity = 1;
+                if (retryCount >= 4) timer.Stop();
+            };
+            timer.Start();
+
+            // Backstage表示時にメニュー項目を白文字化（1回だけ登録）
+            BackStageControl.IsVisibleChanged += (_, e) =>
+            {
+                if (e.NewValue is true)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Render,
+                        ApplyBackstageStyles);
+            };
+        }
+
+        /// <summary>指定要素以下の全TextBlockにスタイルを強制設定</summary>
+        private static void ForceStyleInTree(DependencyObject root, double fontSize, Brush foreground)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                if (child is System.Windows.Controls.TextBlock tb)
+                {
+                    tb.Foreground = foreground;
+                    tb.FontSize = fontSize;
+                }
+                ForceStyleInTree(child, fontSize, foreground);
+            }
+        }
+
+        /// <summary>Backstage内の全メニュー項目に白文字・統一フォントサイズを強制適用</summary>
+        private void ApplyBackstageStyles()
+        {
+            const double menuFontSize = 13;
+            foreach (var item in BackStageControl.Items)
+            {
+                if (item is Syncfusion.Windows.Tools.Controls.BackStageCommandButton cmd)
+                {
+                    cmd.Foreground = Brushes.White;
+                    cmd.FontSize = menuFontSize;
+                    ForceStyleInTree(cmd, menuFontSize, Brushes.White);
+                }
+                else if (item is Syncfusion.Windows.Tools.Controls.BackstageTabItem tab)
+                {
+                    tab.Foreground = Brushes.White;
+                    tab.FontSize = menuFontSize;
+                    ForceStyleInTree(tab, menuFontSize, Brushes.White);
+                }
             }
         }
 
         private static T? FindVisualChild<T>(DependencyObject parent, Func<T, bool>? predicate = null) where T : DependencyObject
         {
-            for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent); i++)
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
             {
-                var child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
+                var child = VisualTreeHelper.GetChild(parent, i);
                 if (child is T t && (predicate == null || predicate(t)))
                     return t;
                 var found = FindVisualChild<T>(child, predicate);
@@ -225,11 +307,25 @@ namespace InsightCast.Views
             return null;
         }
 
+        private static List<T> FindAllVisualChildren<T>(DependencyObject parent) where T : DependencyObject
+        {
+            var results = new List<T>();
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T t) results.Add(t);
+                results.AddRange(FindAllVisualChildren<T>(child));
+            }
+            return results;
+        }
+
         private void UpdateRibbonForTab(bool isPptxTab, bool isVideoTab)
         {
             // Video tab groups
             if (RibbonVideoScene != null)
                 RibbonVideoScene.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
+            if (RibbonVideoMedia != null)
+                RibbonVideoMedia.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
             if (RibbonVideoProduction != null)
                 RibbonVideoProduction.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
             if (RibbonVideoExport != null)
@@ -241,7 +337,7 @@ namespace InsightCast.Views
             // Visible に変更した直後にテーマを再適用する
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Render, () =>
             {
-                SfSkinManager.SetTheme(MainRibbon, new Theme("Office2019White"));
+                SfSkinManager.SetTheme(MainRibbon, new Theme("Office2019Colorful"));
             });
         }
 
@@ -1036,9 +1132,12 @@ namespace InsightCast.Views
         }
 
 
-        private void DetailToggleButton_Click(object sender, RoutedEventArgs e)
+        // #4: Settings flyout toggle
+        private void ProjectSettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            _vm.IsSimpleMode = !_vm.IsSimpleMode;
+            SettingsFlyout.Visibility = SettingsFlyout.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
         }
 
         private void Window_StateChanged(object? sender, EventArgs e)
