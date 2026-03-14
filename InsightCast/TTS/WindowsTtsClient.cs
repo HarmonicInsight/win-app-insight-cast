@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Speech.Synthesis;
+using System.Text;
 using System.Threading.Tasks;
 
 /// <summary>
@@ -112,7 +113,19 @@ public class WindowsTtsClient : ITtsEngine
 
             using var ms = new MemoryStream();
             synth.SetOutputToWaveStream(ms);
-            synth.Speak(text);
+
+            // ポーズ記法対応: SSML の <break> タグを使用
+            if (NarrationPauseHelper.HasPauseMarkers(text))
+            {
+                var segments = NarrationPauseHelper.Parse(text);
+                var ssml = BuildSsmlForSapi(segments, speakerId, rate);
+                synth.SpeakSsml(ssml);
+            }
+            else
+            {
+                synth.Speak(text);
+            }
+
             return Task.FromResult(ms.ToArray());
         }
         catch (Exception ex)
@@ -120,6 +133,31 @@ public class WindowsTtsClient : ITtsEngine
             System.Diagnostics.Trace.TraceWarning($"WindowsTtsClient.GenerateAudioAsync failed: {ex.Message}");
             return Task.FromResult(GenerateSilentWav(1.0));
         }
+    }
+
+    /// <summary>
+    /// SAPI 用の SSML を構築する（break タグ対応）。
+    /// </summary>
+    private static string BuildSsmlForSapi(List<NarrationPauseHelper.Segment> segments, string voiceName, int rate)
+    {
+        var sb = new StringBuilder();
+        sb.Append("<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='ja-JP'>");
+
+        foreach (var seg in segments)
+        {
+            if (seg.IsPause)
+            {
+                var ms = (int)(seg.PauseSeconds * 1000);
+                sb.Append($"<break time=\"{ms}ms\"/>");
+            }
+            else
+            {
+                sb.Append(System.Security.SecurityElement.Escape(seg.Text));
+            }
+        }
+
+        sb.Append("</speak>");
+        return sb.ToString();
     }
 
     private static byte[] GenerateSilentWav(double seconds)

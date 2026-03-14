@@ -104,7 +104,7 @@
     <!-- Scene Editor -->
     <sys:String x:Key="Scene.Editor">シーン編集</sys:String>
     <sys:String x:Key="Scene.Media">素材:</sys:String>
-    <sys:String x:Key="Scene.Narration.Placeholder">ここに話をさせる内容を入力してください。</sys:String>
+    <sys:String x:Key="Scene.Narration.Placeholder">ここにナレーションを入力。「、、」で間（1秒）、改行でも少し間が入ります。</sys:String>
     <sys:String x:Key="Scene.Speaker">ナレーター:</sys:String>
     <sys:String x:Key="Scene.KeepAudio">動画音声を残す</sys:String>
     <sys:String x:Key="Scene.PreviewAudio">▶試聴</sys:String>
@@ -1162,7 +1162,10 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="VM.TransitionAppliedAll">トランジションを全シーンに適用しました</sys:String>
 
     <!-- C6: Tooltips -->
-    <sys:String x:Key="Scene.Narration.Tooltip">VOICEVOXが読み上げるナレーションテキストを入力します。教育動画では1シーンあたり100〜150文字が目安です</sys:String>
+    <sys:String x:Key="Scene.Narration.Tooltip">ナレーションテキストを入力します。
+「、」で0.5秒の間が入ります（、、で1秒、、、、で1.5秒）。
+改行すると0.3秒の間が入ります。
+教育動画では1シーンあたり100〜150文字が目安です</sys:String>
     <sys:String x:Key="Scene.Media.Select.Tooltip">シーンの背景に使用する画像・動画ファイルを選択します（PNG, JPG, MP4等）</sys:String>
     <sys:String x:Key="Scene.Media.Clear.Tooltip">設定中の素材ファイルを解除します（黒背景になります）</sys:String>
     <sys:String x:Key="Scene.Speaker.Tooltip">このシーンで使用するナレーターを選択します。「デフォルト」はプロジェクト設定のナレーターを使用します</sys:String>
@@ -1629,10 +1632,7 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="AiFlow.Step1.Hint">追加の指示があればここに入力（例: 初心者向けに、3分以内で…）</sys:String>
     <sys:String x:Key="AiFlow.GenerateBtn">構成を生成</sys:String>
     <sys:String x:Key="AiFlow.ExpandScenes">シーンに展開</sys:String>
-    <sys:String x:Key="AiFlow.ExportPptx.Hero">PPTXを出力する</sys:String>
-    <sys:String x:Key="AiFlow.CreatePptx">PPTXを作成</sys:String>
-    <sys:String x:Key="AiFlow.ExportPptx">PPTXを作成</sys:String>
-    <sys:String x:Key="AiFlow.PptxSaved">PPTXファイルを保存しました</sys:String>
+
     <sys:String x:Key="AiFlow.Step2.Title">生成された構成</sys:String>
     <sys:String x:Key="AiFlow.ApplyBtn">シーンに反映</sys:String>
     <sys:String x:Key="AiFlow.Step3.Title">仕上げツール</sys:String>

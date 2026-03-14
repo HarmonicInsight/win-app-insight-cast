@@ -293,6 +293,37 @@ public class Config
         set => Set("quick_resolution_index", value);
     }
 
+    // ── 読み上げ辞書 ──
+
+    public List<TTS.DictionaryEntry> NarrationDictionaryEntries
+    {
+        get => Get<List<TTS.DictionaryEntry>>("narration_dict_entries", new()) ?? new();
+        set => Set("narration_dict_entries", value);
+    }
+
+    public List<string> NarrationDictionaryDisabledPresets
+    {
+        get => Get<List<string>>("narration_dict_disabled_presets", new()) ?? new();
+        set => Set("narration_dict_disabled_presets", value);
+    }
+
+    public TTS.NarrationDictionary LoadNarrationDictionary()
+    {
+        return new TTS.NarrationDictionary
+        {
+            CustomEntries = NarrationDictionaryEntries,
+            DisabledPresets = NarrationDictionaryDisabledPresets,
+        };
+    }
+
+    public void SaveNarrationDictionary(TTS.NarrationDictionary dict)
+    {
+        BeginUpdate();
+        NarrationDictionaryEntries = dict.CustomEntries;
+        NarrationDictionaryDisabledPresets = dict.DisabledPresets;
+        EndUpdate();
+    }
+
     public void AddRecentFile(string path)
     {
         var files = RecentFiles;

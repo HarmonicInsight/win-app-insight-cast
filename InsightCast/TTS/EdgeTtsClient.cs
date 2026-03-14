@@ -157,12 +157,72 @@ public class EdgeTtsClient : ITtsEngine, IDisposable
         if (string.IsNullOrWhiteSpace(text))
             return GenerateSilentWav(0.5);
 
+        // ポーズ記法（「、」や改行）がある場合: 分割して無音を挿入
+        if (NarrationPauseHelper.HasPauseMarkers(text))
+        {
+            var segments = NarrationPauseHelper.Parse(text);
+            return await GenerateWithPausesAsync(segments, speakerId, speedScale);
+        }
+
         // 長文は句読点で分割して連結
         var chunks = SplitText(text, 300);
         if (chunks.Count == 1)
             return await SynthesizeSingleAsync(chunks[0], speakerId, speedScale);
 
-        // 各チャンクを合成後、WAV データ部分のみ連結
+        return await ConcatChunksAsync(chunks, speakerId, speedScale);
+    }
+
+    /// <summary>
+    /// ポーズ記法対応: テキスト部分を個別に合成し、ポーズ部分に無音を挿入して連結する。
+    /// </summary>
+    private async Task<byte[]> GenerateWithPausesAsync(
+        List<NarrationPauseHelper.Segment> segments, string speakerId, double speedScale)
+    {
+        using var ms = new MemoryStream();
+        bool headerWritten = false;
+
+        foreach (var seg in segments)
+        {
+            byte[] audio;
+
+            if (seg.IsPause)
+            {
+                audio = GenerateSilentWav(seg.PauseSeconds);
+            }
+            else
+            {
+                // テキスト部分は長文分割も考慮
+                var chunks = SplitText(seg.Text, 300);
+                if (chunks.Count == 1)
+                    audio = await SynthesizeSingleAsync(chunks[0], speakerId, speedScale);
+                else
+                    audio = await ConcatChunksAsync(chunks, speakerId, speedScale);
+            }
+
+            if (audio.Length < 44) continue;
+
+            if (!headerWritten)
+            {
+                ms.Write(audio, 0, audio.Length);
+                headerWritten = true;
+            }
+            else
+            {
+                ms.Write(audio, 44, audio.Length - 44);
+            }
+        }
+
+        var result = ms.ToArray();
+        if (result.Length > 44)
+            UpdateWavHeader(result);
+        return result.Length >= 44 ? result : GenerateSilentWav(0.5);
+    }
+
+    /// <summary>
+    /// 複数チャンクを個別に合成して WAV を連結する。
+    /// </summary>
+    private async Task<byte[]> ConcatChunksAsync(List<string> chunks, string speakerId, double speedScale)
+    {
         using var ms = new MemoryStream();
         bool headerWritten = false;
 
@@ -178,7 +238,6 @@ public class EdgeTtsClient : ITtsEngine, IDisposable
             }
             else
             {
-                // WAV ヘッダー(44バイト)をスキップして data 部分のみ追加
                 ms.Write(audio, 44, audio.Length - 44);
             }
         }

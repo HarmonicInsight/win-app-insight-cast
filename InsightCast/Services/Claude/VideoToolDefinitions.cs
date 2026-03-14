@@ -28,7 +28,6 @@ public static class VideoToolDefinitions
         AddCtaEndcard,
         GenerateReport,
         ReviseReport,
-        FileGenerationToolDefinitions.GeneratePresentation,
         FileGenerationToolDefinitions.GenerateSpreadsheet,
     };
 

@@ -39,9 +39,11 @@ namespace InsightCast.Services.Batch
         public BatchExportService(
             FFmpegWrapper ffmpeg,
             ITtsEngine ttsEngine,
-            AudioCache audioCache)
+            AudioCache audioCache,
+            NarrationDictionary? narrationDictionary = null)
         {
             _exportService = new ExportService(ffmpeg, ttsEngine, audioCache);
+            _exportService.NarrationDictionary = narrationDictionary;
         }
 
         // 既存コード互換

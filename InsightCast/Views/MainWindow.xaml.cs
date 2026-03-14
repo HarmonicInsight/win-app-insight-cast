@@ -250,14 +250,6 @@ namespace InsightCast.Views
 
         private void UpdateRibbonForTab(bool isPptxTab, bool isVideoTab)
         {
-            // PPTX tab groups
-            if (RibbonPptxReference != null)
-                RibbonPptxReference.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
-
-
-            if (RibbonPptxHelp != null)
-                RibbonPptxHelp.Visibility = isPptxTab ? Visibility.Visible : Visibility.Collapsed;
-
             // Video tab groups
             if (RibbonVideoScene != null)
                 RibbonVideoScene.Visibility = isVideoTab ? Visibility.Visible : Visibility.Collapsed;
@@ -1066,43 +1058,6 @@ namespace InsightCast.Views
             }
         }
 
-        // ── PPTX tab ribbon relay handlers ──
-
-        // ── Video tab PPTX export ──
-        private async void RibbonVideoExportPptx_Click(object sender, RoutedEventArgs e)
-        {
-            if (_vm?.Project.Scenes == null || _vm.Project.Scenes.Count == 0) return;
-
-            string projectTitle = _vm.Project.ProjectPath != null
-                ? Path.GetFileNameWithoutExtension(_vm.Project.ProjectPath)
-                : "presentation";
-
-            var dlg = new Microsoft.Win32.SaveFileDialog
-            {
-                Filter = "PowerPoint|*.pptx",
-                FileName = projectTitle + ".pptx",
-                Title = LocalizationService.GetString("AiFlow.ExportPptx")
-            };
-            if (dlg.ShowDialog() != true) return;
-
-            try
-            {
-                var scenes = _vm.Project.Scenes.ToList();
-                await System.Threading.Tasks.Task.Run(() =>
-                    PptxGeneratorService.GenerateFromScenes(scenes, projectTitle, dlg.FileName));
-                MessageBox.Show(
-                    LocalizationService.GetString("AiFlow.PptxSaved"),
-                    LocalizationService.GetString("AiFlow.ExportPptx"),
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    LocalizationService.GetString("Common.ErrorWithMessage", ex.Message),
-                    LocalizationService.GetString("Common.Error"),
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         private void DetailToggleButton_Click(object sender, RoutedEventArgs e)
         {

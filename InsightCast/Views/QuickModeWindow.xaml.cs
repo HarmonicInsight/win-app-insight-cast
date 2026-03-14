@@ -204,7 +204,8 @@ namespace InsightCast.Views
                 _pptxPath = path;
 
                 var outputDir = Path.Combine(
-                    Path.GetTempPath(), "insightcast_cache", "pptx_slides",
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "InsightCast", "cache", "pptx_slides",
                     $"quick_{Guid.NewGuid():N}");
 
                 var importer = new PptxImporter((_, _, _) => { });
@@ -310,6 +311,7 @@ namespace InsightCast.Views
             {
                 var audioCache = new AudioCache();
                 var exportService = new ExportService(_ffmpegWrapper, _ttsManager.ActiveEngine, audioCache);
+                exportService.NarrationDictionary = _config.LoadNarrationDictionary();
                 var baseStyle = TextStyle.PRESET_STYLES.First(s => s.Id == "default");
                 var defaultStyle = new TextStyle
                 {

@@ -2,6 +2,7 @@ namespace InsightCast.TTS;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -86,6 +87,88 @@ public class VoiceVoxTtsAdapter : ITtsEngine
         if (!int.TryParse(speakerId, out var sid))
             sid = 13; // デフォルト: 青山龍星
 
-        return await _client.GenerateAudioAsync(text, sid, speedScale);
+        if (!NarrationPauseHelper.HasPauseMarkers(text))
+            return await _client.GenerateAudioAsync(text, sid, speedScale);
+
+        // ポーズ記法がある場合: テキストを分割し、無音を挿入して連結
+        var segments = NarrationPauseHelper.Parse(text);
+        return await GenerateWithPausesAsync(segments, sid, speedScale);
+    }
+
+    private async Task<byte[]> GenerateWithPausesAsync(
+        List<NarrationPauseHelper.Segment> segments, int speakerId, double speedScale)
+    {
+        using var ms = new MemoryStream();
+        bool headerWritten = false;
+
+        foreach (var seg in segments)
+        {
+            byte[] audio;
+
+            if (seg.IsPause)
+            {
+                audio = GenerateSilentWav(seg.PauseSeconds);
+            }
+            else
+            {
+                audio = await _client.GenerateAudioAsync(seg.Text, speakerId, speedScale);
+            }
+
+            if (audio.Length < 44) continue;
+
+            if (!headerWritten)
+            {
+                ms.Write(audio, 0, audio.Length);
+                headerWritten = true;
+            }
+            else
+            {
+                // WAV ヘッダー(44バイト)をスキップして data 部分のみ追加
+                ms.Write(audio, 44, audio.Length - 44);
+            }
+        }
+
+        var result = ms.ToArray();
+        if (result.Length > 44)
+            UpdateWavHeader(result);
+        return result;
+    }
+
+    private static byte[] GenerateSilentWav(double seconds)
+    {
+        int sampleRate = 24000;
+        int bitsPerSample = 16;
+        int channels = 1;
+        int numSamples = (int)(sampleRate * seconds);
+        int dataSize = numSamples * channels * (bitsPerSample / 8);
+
+        using var ms = new MemoryStream();
+        using var bw = new BinaryWriter(ms);
+
+        bw.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"));
+        bw.Write(36 + dataSize);
+        bw.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"));
+        bw.Write(System.Text.Encoding.ASCII.GetBytes("fmt "));
+        bw.Write(16);
+        bw.Write((short)1);
+        bw.Write((short)channels);
+        bw.Write(sampleRate);
+        bw.Write(sampleRate * channels * (bitsPerSample / 8));
+        bw.Write((short)(channels * (bitsPerSample / 8)));
+        bw.Write((short)bitsPerSample);
+        bw.Write(System.Text.Encoding.ASCII.GetBytes("data"));
+        bw.Write(dataSize);
+        bw.Write(new byte[dataSize]);
+
+        return ms.ToArray();
+    }
+
+    private static void UpdateWavHeader(byte[] wav)
+    {
+        if (wav.Length < 44) return;
+        var fileSize = wav.Length - 8;
+        var dataSize = wav.Length - 44;
+        BitConverter.GetBytes(fileSize).CopyTo(wav, 4);
+        BitConverter.GetBytes(dataSize).CopyTo(wav, 40);
     }
 }

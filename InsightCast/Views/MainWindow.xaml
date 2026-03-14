@@ -168,6 +168,7 @@
                            Margin="0"
                            ShowCustomizeRibbon="False"
                            EnableMoreCommands="False"
+                           IsEnabled="{Binding IsExporting, Converter={StaticResource InverseBool}}"
                            EnableSimplifiedLayoutMode="False"
                            RibbonState="Normal"
                            FontFamily="Yu Gothic UI, Meiryo UI, Segoe UI"
@@ -338,46 +339,6 @@
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- ═══ PPTX作成タブ専用 ═══ -->
-
-                <!-- PPTX: 参考資料 -->
-                <syncfusion:RibbonBar x:Name="RibbonPptxReference" Header="{DynamicResource Ribbon.Group.Reference}" IsLauncherButtonVisible="False"
-                                      Visibility="Collapsed">
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Ref.AddFile}"
-                            ToolTip="{DynamicResource Ribbon.Ref.AddFile}"
-                            Click="RibbonRefAddFile_Click" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Ref.AddFolder}"
-                            ToolTip="{DynamicResource Ribbon.Ref.AddFolder}"
-                            Click="RibbonRefAddFolder_Click" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Ref.ClearAll}"
-                            ToolTip="{DynamicResource Ribbon.Ref.ClearAll}"
-                            Click="RibbonRefClearAll_Click" SizeForm="Small">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                </syncfusion:RibbonBar>
-
-                <!-- PPTX: ヘルプ -->
-                <syncfusion:RibbonBar x:Name="RibbonPptxHelp" Header="{DynamicResource Ribbon.Group.Help}" IsLauncherButtonVisible="False"
-                                      Visibility="Collapsed">
-                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Help.Help}"
-                            ToolTip="{DynamicResource Ribbon.Help.Help}"
-                            Click="RibbonHelp_Click" SizeForm="Large">
-                        <syncfusion:RibbonButton.IconTemplate>
-                            <DataTemplate><TextBlock Text="&#xE897;" FontFamily="Segoe MDL2 Assets" FontSize="20"/></DataTemplate>
-                        </syncfusion:RibbonButton.IconTemplate>
-                    </syncfusion:RibbonButton>
-                </syncfusion:RibbonBar>
-
                 <!-- ═══ 動画生成タブ専用 ═══ -->
 
                 <!-- 動画: シーン操作 -->
@@ -458,6 +419,13 @@
                             <DataTemplate><TextBlock Text="&#xED62;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#CC0000"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="読み上げ辞書"
+                            ToolTip="ナレーション読み上げ時の変換辞書を編集します"
+                            Command="{Binding NarrationDictionaryCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xE82D;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource AccentGold}"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
                 <!-- 動画: 書き出し -->
@@ -503,7 +471,8 @@
         <!-- ================================================================ -->
         <!-- C) Main Content - TabControl                                      -->
         <!-- ================================================================ -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2"
+              IsEnabled="{Binding IsExporting, Converter={StaticResource InverseBool}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -814,6 +783,22 @@
                         </DockPanel>
                     </Border>
 
+                    <!-- Source file info -->
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding SourcePathDisplay}"
+                               FontSize="11" Foreground="{DynamicResource TextTertiary}"
+                               Padding="12,4" ToolTip="{Binding SourcePathFull}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SourcePathDisplay}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
                     <!-- Editor content -->
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                                   Padding="0">
@@ -997,6 +982,25 @@
                                            FontSize="12"
                                            Visibility="{Binding SubtitlePlaceholderVisible, Converter={StaticResource BoolToVis}}"/>
                             </Grid>
+                            <!-- 字幕行数インジケーター（レターボックス時のみ） -->
+                            <StackPanel Visibility="{Binding SubtitleLetterbox, Converter={StaticResource BoolToVis}}"
+                                        HorizontalAlignment="Right" Margin="4,2,0,0">
+                                <TextBlock Text="{Binding SubtitleLineInfo}" FontSize="11">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SubtitleLineOverflow}" Value="True">
+                                                    <Setter Property="Foreground" Value="#FFE53935"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding SubtitleMaxLineHint}" FontSize="10"
+                                           Foreground="{DynamicResource TextPlaceholder}"/>
+                            </StackPanel>
                         </StackPanel>
 
                         <!-- Detail mode only sections -->

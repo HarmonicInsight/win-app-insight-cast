@@ -32,7 +32,7 @@ namespace InsightCast.ViewModels
         #region Services
 
         private readonly TTS.TtsEngineManager _ttsManager;
-        private readonly int _defaultSpeakerId;
+        private int _defaultSpeakerId;
         private readonly FFmpegWrapper? _ffmpegWrapper;
         public FFmpegWrapper? FfmpegWrapper => _ffmpegWrapper;
         private readonly Config _config;
@@ -92,7 +92,7 @@ namespace InsightCast.ViewModels
         private readonly Dictionary<string, TextStyle> _sceneSubtitleStyles = new();
         private Dictionary<int, string> _speakerStyles = new();
         private int _defaultSubtitleFontSize = 28;
-        private bool _subtitleLetterbox;
+        private bool _subtitleLetterbox = true;
         private bool _generateSubtitleFile = true;
         private bool _generateMetadata = true;
 
@@ -137,6 +137,15 @@ namespace InsightCast.ViewModels
             get => _statusText;
             set => SetProperty(ref _statusText, value);
         }
+
+        /// <summary>インポート元ファイルパスの表示用テキスト。</summary>
+        public string? SourcePathDisplay => string.IsNullOrEmpty(_project?.SourcePath)
+            ? null
+            : $"ソース: {Path.GetFileName(_project.SourcePath)}";
+
+        /// <summary>インポート元ファイルのフルパス（ToolTip用）。</summary>
+        public string? SourcePathFull => _project?.SourcePath;
+
 
         public int SelectedSceneIndex
         {
@@ -704,6 +713,7 @@ namespace InsightCast.ViewModels
         public ICommand LoadTemplateCommand { get; }
         public ICommand OpenOutputFolderCommand { get; }
         public ICommand BgmSettingsCommand { get; }
+        public ICommand NarrationDictionaryCommand { get; }
         public ICommand CopyNarrationToSubtitleCommand { get; }
         public ICommand ApplyTransitionToAllCommand { get; }
         public ICommand ShowTutorialCommand { get; }
@@ -785,6 +795,7 @@ namespace InsightCast.ViewModels
             LoadTemplateCommand = new RelayCommand(LoadTemplate);
             OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
             BgmSettingsCommand = new RelayCommand(OpenBgmSettings);
+            NarrationDictionaryCommand = new RelayCommand(OpenNarrationDictionary);
             CopyNarrationToSubtitleCommand = new RelayCommand(CopyNarrationToSubtitle, () => _selectedSceneIndex >= 0);
             ApplyTransitionToAllCommand = new RelayCommand(ApplyTransitionToAll, () => _project.Scenes.Count > 0);
             ShowTutorialCommand = new RelayCommand(ShowHelp);
@@ -856,6 +867,14 @@ namespace InsightCast.ViewModels
             LoadSceneSpeakers();
             await UpdateStatusTextAsync();
             _logger.Log(LocalizationService.GetString("VM.Initialized"));
+
+            // 初期化完了後にシーン選択を再トリガー（UI が準備完了してから表示）
+            if (SceneItems.Count > 0 && _selectedSceneIndex >= 0)
+            {
+                var idx = _selectedSceneIndex;
+                _selectedSceneIndex = -1;
+                SelectedSceneIndex = idx;
+            }
 
             // Background update check (non-blocking)
             _ = CheckForUpdateAsync();
@@ -958,14 +977,18 @@ namespace InsightCast.ViewModels
                 SceneItems.Add(new SceneListItem(_project.Scenes[i], i));
             }
 
+            int newIndex;
             if (selectedIndex >= 0 && selectedIndex < SceneItems.Count)
-                SelectedSceneIndex = selectedIndex;
+                newIndex = selectedIndex;
             else if (SceneItems.Count > 0)
-                SelectedSceneIndex = SceneItems.Count - 1;  // 一番下を選択
+                newIndex = SceneItems.Count - 1;
             else
-                SelectedSceneIndex = -1;
+                newIndex = -1;
 
+            // 一旦 -1 にリセットしてから設定し、OnSceneSelected が確実に発火するようにする
+            _selectedSceneIndex = -1;
             _isLoadingScene = false;
+            SelectedSceneIndex = newIndex;
         }
 
         private void OnSceneSelected()
@@ -1114,6 +1137,7 @@ namespace InsightCast.ViewModels
         private void OnSubtitleChanged()
         {
             OnPropertyChanged(nameof(SubtitlePlaceholderVisible));
+            UpdateSubtitleLineInfo();
 
             if (_isLoadingScene || _currentScene == null) return;
             _isDirty = true;
@@ -1444,8 +1468,110 @@ namespace InsightCast.ViewModels
                 if (SetProperty(ref _subtitleLetterbox, value))
                 {
                     _project.SubtitleLetterbox = value;
+                    UpdateSubtitleLineInfo();
                 }
             }
+        }
+
+        /// <summary>字幕の行数情報。SceneGenerator と同じロジックで計算。</summary>
+        public string SubtitleLineInfo
+        {
+            get
+            {
+                if (!_subtitleLetterbox || string.IsNullOrEmpty(_subtitleText))
+                    return string.Empty;
+
+                var (lineCount, fontSize, renderFontSize) = CalcSubtitleMetrics();
+
+                if (renderFontSize < fontSize)
+                    return $"{lineCount}行 (フォント{fontSize}→{renderFontSize}に縮小)";
+
+                return $"{lineCount}行";
+            }
+        }
+
+        /// <summary>字幕行数がオーバーしているか（フォント最小12でも収まらない）。</summary>
+        public bool SubtitleLineOverflow
+        {
+            get
+            {
+                if (!_subtitleLetterbox || string.IsNullOrEmpty(_subtitleText))
+                    return false;
+
+                var (_, _, renderFontSize) = CalcSubtitleMetrics();
+                return renderFontSize <= 12;
+            }
+        }
+
+        /// <summary>
+        /// SceneGenerator.AddSubtitleLetterbox と同じロジックで
+        /// 表示行数・指定フォントサイズ・実際のレンダリングフォントサイズを計算する。
+        /// </summary>
+        private (int lineCount, int fontSize, int renderFontSize) CalcSubtitleMetrics()
+        {
+            var res = GetSelectedResolution();
+            var parts = res.Split('x');
+            int width = 1920, height = 1080;
+            if (parts.Length == 2)
+            {
+                int.TryParse(parts[0], out width);
+                int.TryParse(parts[1], out height);
+            }
+
+            int fontSize = EffectiveSubtitleFontSize;
+
+            // SplitSubtitleText で折り返し後の行数を計算
+            string displayText = Video.SceneGenerator.SplitSubtitleText(
+                _subtitleText, videoWidth: width, fontSize: fontSize);
+            string normalized = displayText.Replace("\r\n", "\n").Replace("\r", "\n");
+            int lineCount = normalized.Split('\n')
+                .Count(l => !string.IsNullOrWhiteSpace(l));
+
+            // SceneGenerator と同じ: 黒帯の高さ制限でフォント縮小シミュレーション
+            int maxBarHeight = (int)(height * 0.40);
+            int barPadding = 10;
+            int renderFontSize = fontSize;
+            int lineHeight = (int)(renderFontSize * 1.4);
+            int neededBarHeight = lineCount * lineHeight + barPadding * 2;
+
+            while (neededBarHeight > maxBarHeight && renderFontSize > 12)
+            {
+                renderFontSize -= 2;
+                lineHeight = (int)(renderFontSize * 1.4);
+                neededBarHeight = lineCount * lineHeight + barPadding * 2;
+            }
+
+            return (lineCount, fontSize, renderFontSize);
+        }
+
+        /// <summary>現在のフォントサイズでの最大行数の目安。</summary>
+        public string SubtitleMaxLineHint
+        {
+            get
+            {
+                if (!_subtitleLetterbox) return string.Empty;
+
+                var res = GetSelectedResolution();
+                var parts = res.Split('x');
+                int height = 1080;
+                if (parts.Length == 2) int.TryParse(parts[1], out height);
+
+                int fontSize = EffectiveSubtitleFontSize;
+                // FFmpeg drawtext の実際の描画では行間が広いため、実測に基づく倍率を使用
+                int effectiveLineHeight = (int)(fontSize * 2.2);
+                int maxBarHeight = (int)(height * 0.40);
+                int barPadding = 10;
+                int maxLines = Math.Max(1, (maxBarHeight - barPadding * 2) / effectiveLineHeight);
+
+                return $"{fontSize}ptの場合は{maxLines}行以内";
+            }
+        }
+
+        private void UpdateSubtitleLineInfo()
+        {
+            OnPropertyChanged(nameof(SubtitleLineInfo));
+            OnPropertyChanged(nameof(SubtitleLineOverflow));
+            OnPropertyChanged(nameof(SubtitleMaxLineHint));
         }
 
         public bool GenerateSubtitleFile
@@ -1475,6 +1601,7 @@ namespace InsightCast.ViewModels
                         OnPropertyChanged(nameof(EffectiveSubtitleFontSize));
                         UpdateStylePreview();
                     }
+                    UpdateSubtitleLineInfo();
                 }
             }
         }
@@ -1908,6 +2035,7 @@ namespace InsightCast.ViewModels
             try
             {
                 var exportService = new ExportService(_ffmpegWrapper, _ttsManager.ActiveEngine, _audioCache);
+                exportService.NarrationDictionary = _config.LoadNarrationDictionary();
                 var success = await Task.Run(() =>
                     exportService.GeneratePreview(sceneSnapshot, previewPath, resolution, 30,
                         exportSpeakerId, style, progress, CancellationToken.None,
@@ -2172,6 +2300,7 @@ namespace InsightCast.ViewModels
             {
                 var ffmpeg = _ffmpegWrapper!; // null already checked above
                 var exportService = new ExportService(ffmpeg, _ttsManager.ActiveEngine, _audioCache);
+                exportService.NarrationDictionary = _config.LoadNarrationDictionary();
                 var exportResult = await Task.Run(() =>
                     exportService.ExportFull(projectSnapshot, outputPath, resolution, fps,
                         exportSpeakerId, GetStyleSnapshot, progress, ct), ct);
@@ -2299,6 +2428,34 @@ namespace InsightCast.ViewModels
             OnPropertyChanged(nameof(GenerateSubtitleFile));
             _generateMetadata = _project.GenerateMetadata;
             OnPropertyChanged(nameof(GenerateMetadata));
+
+            // デフォルトナレーターを復元
+            if (_project.DefaultSpeakerId.HasValue)
+            {
+                _defaultSpeakerId = _project.DefaultSpeakerId.Value;
+                for (int i = 0; i < ExportSpeakers.Count; i++)
+                {
+                    if (ExportSpeakers[i].StyleId == _defaultSpeakerId)
+                    {
+                        SelectedExportSpeakerIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // 解像度を復元
+            var savedResolution = _project.Output.Resolution;
+            for (int i = 0; i < ResolutionValues.Length; i++)
+            {
+                if (ResolutionValues[i] == savedResolution)
+                {
+                    SelectedResolutionIndex = i;
+                    break;
+                }
+            }
+
+            // FPS を復元
+            FpsText = _project.Output.Fps.ToString();
         }
 
         private void NewProject()
@@ -2385,8 +2542,8 @@ namespace InsightCast.ViewModels
                 RefreshSceneList();
                 UpdateBgmStatus();
                 SyncProjectToUI();
-
-
+                OnPropertyChanged(nameof(SourcePathDisplay));
+                OnPropertyChanged(nameof(SourcePathFull));
 
                 _logger.Log(LocalizationService.GetString("VM.Project.Opened", path));
             }
@@ -2394,6 +2551,23 @@ namespace InsightCast.ViewModels
             {
                 _dialogService.ShowError(LocalizationService.GetString("VM.Project.LoadFailed", ex.Message), LocalizationService.GetString("VM.Project.LoadError"));
             }
+        }
+
+        /// <summary>
+        /// 保存前に UI の状態をプロジェクトモデルに同期する。
+        /// </summary>
+        private void SyncUIToProject()
+        {
+            // デフォルトナレーター
+            if (_selectedExportSpeakerIndex >= 0 && _selectedExportSpeakerIndex < ExportSpeakers.Count)
+                _project.DefaultSpeakerId = ExportSpeakers[_selectedExportSpeakerIndex].StyleId;
+
+            // 解像度
+            _project.Output.Resolution = GetSelectedResolution();
+
+            // FPS
+            if (int.TryParse(_fpsText, out var fps))
+                _project.Output.Fps = fps;
         }
 
         private void SaveProject()
@@ -2406,7 +2580,7 @@ namespace InsightCast.ViewModels
 
             try
             {
-
+                SyncUIToProject();
                 _project.Save();
                 _isDirty = false;
                 _config.AddRecentFile(_project.ProjectPath!);
@@ -2440,6 +2614,8 @@ namespace InsightCast.ViewModels
                 RefreshSceneList();
                 UpdateBgmStatus();
                 SyncProjectToUI();
+                OnPropertyChanged(nameof(SourcePathDisplay));
+                OnPropertyChanged(nameof(SourcePathFull));
                 _logger.Log(LocalizationService.GetString("VM.Project.Opened", path));
             }
             catch (Exception ex)
@@ -2488,7 +2664,7 @@ namespace InsightCast.ViewModels
 
             try
             {
-
+                SyncUIToProject();
                 _project.Save(path);
                 _isDirty = false;
                 _config.AddRecentFile(path);
@@ -2549,9 +2725,8 @@ namespace InsightCast.ViewModels
                 _logger.Log(LocalizationService.GetString("VM.Pptx.Started", path));
 
                 var outputDir = Path.Combine(
-                    Path.GetTempPath(),
-                    "insightcast_cache",
-                    "pptx_slides",
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "InsightCast", "cache", "pptx_slides",
                     $"import_{Guid.NewGuid():N}");
 
                 var importer = new Utils.PptxImporter(
@@ -2573,7 +2748,7 @@ namespace InsightCast.ViewModels
                     var scene = new Scene
                     {
                         NarrationText = slide.Notes,
-                        SubtitleText = slide.Notes,
+                        SubtitleText = includeSubtitle ? slide.Notes : string.Empty,
                     };
                     if (!string.IsNullOrEmpty(slide.ImagePath) && File.Exists(slide.ImagePath))
                     {
@@ -2586,6 +2761,15 @@ namespace InsightCast.ViewModels
                 RefreshSceneList();
                 if (_project.Scenes.Count > 0)
                     SelectedSceneIndex = 0;
+
+                // PPTX インポートで新しいプロジェクトになるため、保存パスをリセット
+                // （上書き保存で既存プロジェクトを破壊しないようにする）
+                _project.ProjectPath = null;
+                _project.SourcePath = path;
+                _isDirty = true;
+                WindowTitle = $"InsightCast - {Path.GetFileNameWithoutExtension(path)} *";
+                OnPropertyChanged(nameof(SourcePathDisplay));
+                OnPropertyChanged(nameof(SourcePathFull));
 
                 int imageCount = slides.Count(s => !string.IsNullOrEmpty(s.ImagePath) && File.Exists(s.ImagePath));
                 _logger.Log(LocalizationService.GetString("VM.Pptx.Imported", slides.Count, imageCount, path));
@@ -2641,9 +2825,8 @@ namespace InsightCast.ViewModels
                 _logger.Log(LocalizationService.GetString("VM.Pptx.Started", path));
 
                 var outputDir = Path.Combine(
-                    Path.GetTempPath(),
-                    "insightcast_cache",
-                    "pptx_slides",
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "InsightCast", "cache", "pptx_slides",
                     $"import_{Guid.NewGuid():N}");
 
                 var importer = new Utils.PptxImporter(
@@ -2665,7 +2848,7 @@ namespace InsightCast.ViewModels
                     var scene = new Scene
                     {
                         NarrationText = slide.Notes,
-                        SubtitleText = slide.Notes,
+                        SubtitleText = includeSubtitle ? slide.Notes : string.Empty,
                     };
                     if (!string.IsNullOrEmpty(slide.ImagePath) && File.Exists(slide.ImagePath))
                     {
@@ -2678,6 +2861,15 @@ namespace InsightCast.ViewModels
                 RefreshSceneList();
                 if (_project.Scenes.Count > 0)
                     SelectedSceneIndex = 0;
+
+                // PPTX インポートで新しいプロジェクトになるため、保存パスをリセット
+                // （上書き保存で既存プロジェクトを破壊しないようにする）
+                _project.ProjectPath = null;
+                _project.SourcePath = path;
+                _isDirty = true;
+                WindowTitle = $"InsightCast - {Path.GetFileNameWithoutExtension(path)} *";
+                OnPropertyChanged(nameof(SourcePathDisplay));
+                OnPropertyChanged(nameof(SourcePathFull));
 
                 int imageCount = slides.Count(s => !string.IsNullOrEmpty(s.ImagePath) && File.Exists(s.ImagePath));
                 _logger.Log(LocalizationService.GetString("VM.Pptx.Imported", slides.Count, imageCount, path));
@@ -2729,6 +2921,15 @@ namespace InsightCast.ViewModels
         #endregion
 
         #region BGM
+
+        private void OpenNarrationDictionary()
+        {
+            var dialog = new Views.NarrationDictionaryDialog(_config)
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            dialog.ShowDialog();
+        }
 
         private void OpenBgmSettings()
         {

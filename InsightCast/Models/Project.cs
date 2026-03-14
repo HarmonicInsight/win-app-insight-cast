@@ -99,6 +99,14 @@ namespace InsightCast.Models
         [JsonPropertyName("subtitleLetterbox")]
         public bool SubtitleLetterbox { get; set; } = true;
 
+        /// <summary>プロジェクトのデフォルトナレーター（話者 StyleId）。null の場合はアプリ設定を使用。</summary>
+        [JsonPropertyName("defaultSpeakerId")]
+        public int? DefaultSpeakerId { get; set; }
+
+        /// <summary>インポート元のファイルパス（PPTX, DOCX 等）。</summary>
+        [JsonPropertyName("sourcePath")]
+        public string? SourcePath { get; set; }
+
         [JsonPropertyName("aiMemory")]
         public InsightCommon.AI.AiMemoryHotCache? AiMemory { get; set; }
 
@@ -187,8 +195,84 @@ namespace InsightCast.Models
 
             ProjectPath = savePath;
 
+            // 一時ディレクトリにある素材ファイルをプロジェクトフォルダにコピー
+            ConsolidateMedia(savePath);
+
             var json = JsonSerializer.Serialize(this, SerializerOptions);
             Core.Config.AtomicWriteText(savePath, json);
+        }
+
+        /// <summary>
+        /// 一時フォルダ（Temp, LocalAppData\cache）にある素材ファイルを
+        /// プロジェクトファイルと同じディレクトリの media サブフォルダにコピーし、
+        /// パスを更新する。
+        /// </summary>
+        private void ConsolidateMedia(string projectPath)
+        {
+            var projectDir = Path.GetDirectoryName(projectPath);
+            if (string.IsNullOrEmpty(projectDir)) return;
+
+            var projectName = Path.GetFileNameWithoutExtension(projectPath);
+            var mediaDir = Path.Combine(projectDir, $"{projectName}_media");
+
+            var tempBase = Path.GetTempPath().TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+            foreach (var scene in Scenes)
+            {
+                if (string.IsNullOrEmpty(scene.MediaPath) || !File.Exists(scene.MediaPath))
+                    continue;
+
+                var mediaPath = Path.GetFullPath(scene.MediaPath);
+
+                // 素材が一時ディレクトリにある場合のみコピー
+                bool isTemp = mediaPath.StartsWith(tempBase, StringComparison.OrdinalIgnoreCase)
+                           || mediaPath.StartsWith(Path.Combine(localAppData, "InsightCast", "cache"), StringComparison.OrdinalIgnoreCase);
+
+                if (!isTemp) continue;
+
+                // 既にプロジェクトフォルダにある場合はスキップ
+                if (mediaPath.StartsWith(projectDir, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                try
+                {
+                    if (!Directory.Exists(mediaDir))
+                        Directory.CreateDirectory(mediaDir);
+
+                    var fileName = Path.GetFileName(mediaPath);
+                    var destPath = Path.Combine(mediaDir, fileName);
+
+                    // ファイル名の衝突回避
+                    if (File.Exists(destPath) && !FilesAreEqual(mediaPath, destPath))
+                    {
+                        var baseName = Path.GetFileNameWithoutExtension(fileName);
+                        var ext = Path.GetExtension(fileName);
+                        int counter = 1;
+                        do
+                        {
+                            destPath = Path.Combine(mediaDir, $"{baseName}_{counter}{ext}");
+                            counter++;
+                        } while (File.Exists(destPath));
+                    }
+
+                    if (!File.Exists(destPath))
+                        File.Copy(mediaPath, destPath);
+
+                    scene.MediaPath = destPath;
+                }
+                catch
+                {
+                    // コピー失敗時は元のパスを維持（ベストエフォート）
+                }
+            }
+        }
+
+        private static bool FilesAreEqual(string path1, string path2)
+        {
+            var info1 = new FileInfo(path1);
+            var info2 = new FileInfo(path2);
+            return info1.Length == info2.Length;
         }
 
         public static Project Load(string path)

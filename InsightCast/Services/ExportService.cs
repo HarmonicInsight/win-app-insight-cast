@@ -29,6 +29,24 @@ namespace InsightCast.Services
         private readonly FFmpegWrapper _ffmpeg;
         private readonly ITtsEngine _ttsEngine;
         private readonly AudioCache _audioCache;
+        private NarrationDictionary? _narrationDictionary;
+
+        /// <summary>読み上げ辞書を設定する。</summary>
+        public NarrationDictionary? NarrationDictionary
+        {
+            get => _narrationDictionary;
+            set => _narrationDictionary = value;
+        }
+
+        /// <summary>読み上げ辞書適用済みテキストを返す。</summary>
+        private string ApplyDictionary(string text)
+            => _narrationDictionary?.Apply(text) ?? text;
+
+        /// <summary>速度考慮済みキャッシュキーを生成する。</summary>
+        private static string BuildCacheKey(string ttsText, double speed)
+            => Math.Abs(speed - 1.0) > 0.01
+                ? $"{ttsText}__spd{speed:F2}"
+                : ttsText;
 
         // 新しいコンストラクタ（ITtsEngine 対応）
         public ExportService(FFmpegWrapper ffmpeg, ITtsEngine ttsEngine, AudioCache audioCache)
@@ -88,6 +106,23 @@ namespace InsightCast.Services
                 return result;
             }
 
+            // 素材ファイルの存在チェック
+            var missingMedia = project.Scenes
+                .Select((s, i) => new { Scene = s, Index = i + 1 })
+                .Where(x => x.Scene.HasMedia && !File.Exists(x.Scene.MediaPath!))
+                .ToList();
+
+            if (missingMedia.Count > 0)
+            {
+                var details = string.Join(", ", missingMedia.Select(x => $"Scene {x.Index}"));
+                var msg = $"素材ファイルが見つかりません ({details})。PPTXを再インポートしてください。";
+                progress.Report(msg);
+                foreach (var m in missingMedia)
+                    progress.Report($"  Missing: {m.Scene.MediaPath}");
+                result.ErrorMessage = msg;
+                return result;
+            }
+
             var sceneGen = new SceneGenerator(_ffmpeg);
             var composer = new VideoComposer(_ffmpeg);
             var tempDir = Path.Combine(Path.GetTempPath(), $"insightcast_build_{Guid.NewGuid():N}");
@@ -115,17 +150,21 @@ namespace InsightCast.Services
                 {
                     var sid = scene.SpeakerId ?? defaultSpeakerId;
                     double speed = scene.SpeechSpeed;
-
-                    // Use speed-aware cache key
-                    string cacheKey = Math.Abs(speed - 1.0) > 0.01
-                        ? $"{scene.NarrationText!}__spd{speed:F2}"
-                        : scene.NarrationText!;
+                    var ttsText = ApplyDictionary(scene.NarrationText!);
+                    string cacheKey = BuildCacheKey(ttsText, speed);
 
                     if (!_audioCache.Exists(cacheKey, sid))
                     {
-                        var audioData = _ttsEngine.GenerateAudioAsync(scene.NarrationText!, sid.ToString(), speed)
-                            .GetAwaiter().GetResult();
-                        audioPath = _audioCache.Save(cacheKey, sid, audioData);
+                        try
+                        {
+                            var audioData = _ttsEngine.GenerateAudioAsync(ttsText, sid.ToString(), speed)
+                                .GetAwaiter().GetResult();
+                            audioPath = _audioCache.Save(cacheKey, sid, audioData);
+                        }
+                        catch (Exception ex)
+                        {
+                            progress.Report($"[TTS] Scene {i + 1} audio generation failed: {ex.Message}");
+                        }
                     }
                     else
                     {
@@ -136,13 +175,13 @@ namespace InsightCast.Services
 
                 progress.Report($"[{currentStep}/{totalSteps}] {LocalizationService.GetString("Export.SceneVideo", i + 1, project.Scenes.Count)}");
 
+                var durationTtsText = (scene.HasNarration && !scene.KeepOriginalAudio)
+                    ? ApplyDictionary(scene.NarrationText!) : scene.NarrationText!;
                 double duration = scene.DurationMode == DurationMode.Fixed
                     ? scene.FixedSeconds
                     : (audioPath != null
                         ? (_audioCache.GetDuration(
-                               Math.Abs(scene.SpeechSpeed - 1.0) > 0.01
-                                   ? $"{scene.NarrationText!}__spd{scene.SpeechSpeed:F2}"
-                                   : scene.NarrationText!,
+                               BuildCacheKey(durationTtsText, scene.SpeechSpeed),
                                scene.SpeakerId ?? defaultSpeakerId) ?? 1.0) + 2.0
                         : 3.0);
 
@@ -163,7 +202,15 @@ namespace InsightCast.Services
 
                 if (!success)
                 {
+                    var ffmpegErr = _ffmpeg.LastError;
+                    // シーン詳細をログ出力（デバッグ用）
+                    progress.Report($"[Debug] Scene {i + 1}: Media={scene.MediaPath ?? "none"}, MediaType={scene.MediaType}, HasMedia={scene.HasMedia}, Duration={duration:F2}s, Resolution={resolution}, Audio={audioPath ?? "none"}");
                     var msg = LocalizationService.GetString("Export.SceneFailed", i + 1);
+                    if (!string.IsNullOrEmpty(ffmpegErr))
+                    {
+                        progress.Report($"[FFmpeg] {ffmpegErr}");
+                        msg += $"\n[FFmpeg] {ffmpegErr}";
+                    }
                     progress.Report(msg);
                     result.ErrorMessage = msg;
                     return result;
@@ -202,7 +249,13 @@ namespace InsightCast.Services
 
             if (!concatOk)
             {
+                var ffmpegErr = _ffmpeg.LastError;
                 var msg = LocalizationService.GetString("Export.CombineFailed");
+                if (!string.IsNullOrEmpty(ffmpegErr))
+                {
+                    progress.Report($"[FFmpeg] {ffmpegErr}");
+                    msg += $"\n[FFmpeg] {ffmpegErr}";
+                }
                 progress.Report(msg);
                 result.ErrorMessage = msg;
                 return result;
@@ -303,16 +356,22 @@ namespace InsightCast.Services
             {
                 var sid = scene.SpeakerId ?? defaultSpeakerId;
                 double speed = scene.SpeechSpeed;
-                string cacheKey = Math.Abs(speed - 1.0) > 0.01
-                    ? $"{scene.NarrationText!}__spd{speed:F2}"
-                    : scene.NarrationText!;
+                var ttsText = ApplyDictionary(scene.NarrationText!);
+                string cacheKey = BuildCacheKey(ttsText, speed);
 
                 if (!_audioCache.Exists(cacheKey, sid))
                 {
                     progress.Report(LocalizationService.GetString("Export.Preview.Audio"));
-                    var audioData = _ttsEngine.GenerateAudioAsync(scene.NarrationText!, sid.ToString(), speed)
-                        .GetAwaiter().GetResult();
-                    audioPath = _audioCache.Save(cacheKey, sid, audioData);
+                    try
+                    {
+                        var audioData = _ttsEngine.GenerateAudioAsync(ttsText, sid.ToString(), speed)
+                            .GetAwaiter().GetResult();
+                        audioPath = _audioCache.Save(cacheKey, sid, audioData);
+                    }
+                    catch (Exception ex)
+                    {
+                        progress.Report($"[TTS] Preview audio generation failed: {ex.Message}");
+                    }
                 }
                 else
                 {
@@ -320,13 +379,13 @@ namespace InsightCast.Services
                 }
             }
 
+            var previewTtsText = (scene.HasNarration && !scene.KeepOriginalAudio)
+                ? ApplyDictionary(scene.NarrationText!) : scene.NarrationText!;
             double duration = scene.DurationMode == DurationMode.Fixed
                 ? scene.FixedSeconds
                 : (audioPath != null
                     ? (_audioCache.GetDuration(
-                           Math.Abs(scene.SpeechSpeed - 1.0) > 0.01
-                               ? $"{scene.NarrationText!}__spd{scene.SpeechSpeed:F2}"
-                               : scene.NarrationText!,
+                           BuildCacheKey(previewTtsText, scene.SpeechSpeed),
                            scene.SpeakerId ?? defaultSpeakerId) ?? 1.0) + 2.0
                     : 3.0);
 

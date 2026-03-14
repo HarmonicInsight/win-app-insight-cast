@@ -175,15 +175,16 @@ public class PptxImporter
             var pptType = Type.GetTypeFromProgID("PowerPoint.Application");
             if (pptType == null)
             {
-                Console.Error.WriteLine(
-                    "PowerPoint is not installed. Cannot export slides as PNG.");
+                ReportProgress(0, 1,
+                    "PowerPoint がインストールされていないため、スライド画像を出力できません。ノートのみ取り込みます。");
                 return null;
             }
 
             pptApp = Activator.CreateInstance(pptType);
             if (pptApp == null)
             {
-                Console.Error.WriteLine("Failed to create PowerPoint application instance.");
+                ReportProgress(0, 1,
+                    "PowerPoint の起動に失敗しました。PowerPoint が起動中の場合は閉じてから再試行してください。");
                 return null;
             }
 
@@ -232,6 +233,8 @@ public class PptxImporter
         }
         catch (Exception ex)
         {
+            ReportProgress(0, 1,
+                $"PowerPoint との連携に失敗しました: {ex.Message}");
             Console.Error.WriteLine($"PowerPoint COM interop failed: {ex.Message}");
             return null;
         }

@@ -878,12 +878,12 @@ Use a tone that builds empathy and drives action, translating leadership decisio
             PromptJa = "マーケティング戦略家として、この動画の集客・コンバージョン効果をチェックしてください。CTR、視聴維持率、CTA の効果を重点的に確認してください。",
             PromptEn = "As a marketing strategist, review this video's audience acquisition and conversion potential. Focus on CTR, retention, and CTA effectiveness.",
         },
+    };
+}
 
-        // ========================================
-        // カテゴリ14: PPTX生成 — 研修用
-        //   スライド構成設計 → Opus
-        //   テキスト生成 → Sonnet
-        // ========================================
+// Removed PPTX generation preset prompts (categories 14-15) — product pivot to video-only
+
+#if false // ── Archived PPTX generation presets ──
         new InsightCastPresetPrompt
         {
             Id = "pptx_training_onboarding",
@@ -1200,5 +1200,4 @@ Steps:
 
 If reference material is extensive, prioritize by importance and aim for 10-15 scenes.",
         },
-    };
-}
+#endif

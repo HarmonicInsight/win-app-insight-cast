@@ -30,6 +30,9 @@ public class FFmpegWrapper
     /// <summary>Full path to the ffmpeg executable.</summary>
     public string FfmpegPath { get; private set; }
 
+    /// <summary>最後の FFmpeg 実行エラーメッセージ（デバッグ用）</summary>
+    public string? LastError { get; private set; }
+
     /// <summary>Full path to the ffprobe executable (derived from FfmpegPath directory).</summary>
     public string FfprobePath =>
         Path.Combine(Path.GetDirectoryName(FfmpegPath) ?? ".", "ffprobe.exe");
@@ -277,6 +280,7 @@ public class FFmpegWrapper
 
     public bool RunCommand(List<string> args, bool showOutput = false)
     {
+        LastError = null;
         try
         {
             string arguments = string.Join(" ", args.Select(QuoteArg));
@@ -293,6 +297,7 @@ public class FFmpegWrapper
             using var process = Process.Start(psi);
             if (process == null)
             {
+                LastError = "FFmpeg process could not be started";
                 return false;
             }
 
@@ -317,13 +322,21 @@ public class FFmpegWrapper
 
             if (process.ExitCode != 0)
             {
+                // Extract last meaningful error line from stderr
+                var errLines = stderr.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                var lastLines = string.Join(" | ", errLines.TakeLast(3).Select(l => l.Trim()));
+                LastError = $"exit {process.ExitCode}: {lastLines}";
                 Trace.TraceWarning($"FFmpeg failed (exit {process.ExitCode}): {stderr}");
+                Console.Error.WriteLine($"[FFmpeg] FAILED (exit {process.ExitCode}), cmd: {arguments}");
+                foreach (var line in errLines.TakeLast(5))
+                    Console.Error.WriteLine($"[FFmpeg] {line.TrimEnd()}");
             }
 
             return process.ExitCode == 0;
         }
         catch (Exception ex)
         {
+            LastError = ex.Message;
             if (showOutput)
             {
                 Console.Error.WriteLine($"FFmpeg command failed: {ex.Message}");

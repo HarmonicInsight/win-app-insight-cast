@@ -104,7 +104,7 @@ Would you like to restore it?</sys:String>
     <!-- Scene Editor -->
     <sys:String x:Key="Scene.Editor">Scene Editor</sys:String>
     <sys:String x:Key="Scene.Media">Media:</sys:String>
-    <sys:String x:Key="Scene.Narration.Placeholder">Enter narration text here.</sys:String>
+    <sys:String x:Key="Scene.Narration.Placeholder">Enter narration here. Use "、、" for pauses (1s), line breaks add a short pause.</sys:String>
     <sys:String x:Key="Scene.Speaker">Narrator:</sys:String>
     <sys:String x:Key="Scene.KeepAudio">Keep original audio</sys:String>
     <sys:String x:Key="Scene.PreviewAudio">Play Audio</sys:String>
@@ -1161,7 +1161,10 @@ I'll suggest slide structures right away — feel free to ask anything!</sys:Str
     <sys:String x:Key="VM.TransitionAppliedAll">Transition applied to all scenes</sys:String>
 
     <!-- C6: Tooltips -->
-    <sys:String x:Key="Scene.Narration.Tooltip">Enter the narration text for VOICEVOX to read aloud. For educational videos, 100-150 characters per scene is recommended</sys:String>
+    <sys:String x:Key="Scene.Narration.Tooltip">Enter narration text to be read aloud.
+Use "、" for a 0.5s pause (、、= 1s, 、、、= 1.5s).
+Line breaks add a 0.3s pause.
+For educational videos, 100-150 characters per scene is recommended</sys:String>
     <sys:String x:Key="Scene.Media.Select.Tooltip">Select an image or video file for the scene background (PNG, JPG, MP4, etc.)</sys:String>
     <sys:String x:Key="Scene.Media.Clear.Tooltip">Remove the current media file (scene will show black background)</sys:String>
     <sys:String x:Key="Scene.Speaker.Tooltip">Select the narrator for this scene. "Default" uses the project-level narrator setting</sys:String>
@@ -1628,10 +1631,7 @@ To get started, try one of these:
     <sys:String x:Key="AiFlow.Step1.Hint">Additional instructions (e.g., for beginners, under 3 minutes...)</sys:String>
     <sys:String x:Key="AiFlow.GenerateBtn">Generate Structure</sys:String>
     <sys:String x:Key="AiFlow.ExpandScenes">Expand to Scenes</sys:String>
-    <sys:String x:Key="AiFlow.ExportPptx.Hero">Export PPTX</sys:String>
-    <sys:String x:Key="AiFlow.CreatePptx">Create PPTX</sys:String>
-    <sys:String x:Key="AiFlow.ExportPptx">Create PPTX</sys:String>
-    <sys:String x:Key="AiFlow.PptxSaved">PPTX file saved</sys:String>
+
     <sys:String x:Key="AiFlow.Step2.Title">Generated Structure</sys:String>
     <sys:String x:Key="AiFlow.ApplyBtn">Apply to Scenes</sys:String>
     <sys:String x:Key="AiFlow.Step3.Title">Finishing Tools</sys:String>

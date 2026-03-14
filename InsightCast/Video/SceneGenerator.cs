@@ -248,7 +248,7 @@ public class SceneGenerator
 
             if (!baseSuccess)
             {
-                Console.Error.WriteLine("[SceneGen] Base video FAILED");
+                Console.Error.WriteLine($"[SceneGen] Base video FAILED for scene {sceneIndex}. Media={scene.MediaPath}, Resolution={width}x{height}");
                 CleanupTempFile(tempBase);
                 return false;
             }
@@ -394,7 +394,7 @@ public class SceneGenerator
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Scene generation failed: {ex.Message}");
+            Console.Error.WriteLine($"[SceneGen] Exception: {ex.Message}\n{ex.StackTrace}");
             return false;
         }
     }
@@ -402,6 +402,28 @@ public class SceneGenerator
     // -----------------------------------------------------------------------
     // Private helper methods
     // -----------------------------------------------------------------------
+
+    /// <summary>
+    /// Returns true when the output dimensions are portrait (vertical).
+    /// </summary>
+    private static bool IsPortrait(int width, int height) => height > width;
+
+    /// <summary>
+    /// Builds a filter_complex string that overlays the source image/video
+    /// on top of a blurred, zoomed-in copy of itself — the standard approach
+    /// used by YouTube Shorts, TikTok, and Instagram Reels to avoid large
+    /// black bars when displaying landscape content in a portrait frame.
+    /// </summary>
+    private static string BuildBlurBackgroundFilter(int width, int height)
+    {
+        return
+            $"[0:v]split=2[bg][fg];" +
+            $"[bg]scale={width}:{height}:force_original_aspect_ratio=increase," +
+            $"crop={width}:{height},boxblur=20:5,setsar=1[bgout];" +
+            $"[fg]scale={width}:{height}:force_original_aspect_ratio=decrease," +
+            $"setsar=1[fgout];" +
+            $"[bgout][fgout]overlay=(W-w)/2:(H-h)/2";
+    }
 
     /// <summary>
     /// Generates a video from a static image with the given duration,
@@ -417,21 +439,43 @@ public class SceneGenerator
 
         if (motion == MotionType.None)
         {
-            // Static: simple scale+pad
-            var args = new List<string>
+            List<string> args;
+            if (IsPortrait(width, height))
             {
-                "-y",
-                "-loop", "1",
-                "-i", $"\"{imagePath}\"",
-                "-vf", $"\"scale={width}:{height}:force_original_aspect_ratio=decrease," +
-                       $"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:black\"",
-                "-c:v", "libx264",
-                "-t", durationStr,
-                "-pix_fmt", "yuv420p",
-                "-r", fps.ToString(),
-                "-an",
-                $"\"{outputPath}\""
-            };
+                // Portrait output: blurred background instead of black bars
+                string filter = BuildBlurBackgroundFilter(width, height);
+                args = new List<string>
+                {
+                    "-y",
+                    "-loop", "1",
+                    "-i", $"\"{imagePath}\"",
+                    "-filter_complex", $"\"{filter}\"",
+                    "-c:v", "libx264",
+                    "-t", durationStr,
+                    "-pix_fmt", "yuv420p",
+                    "-r", fps.ToString(),
+                    "-an",
+                    $"\"{outputPath}\""
+                };
+            }
+            else
+            {
+                // Landscape/square: simple scale+pad
+                args = new List<string>
+                {
+                    "-y",
+                    "-loop", "1",
+                    "-i", $"\"{imagePath}\"",
+                    "-vf", $"\"scale={width}:{height}:force_original_aspect_ratio=decrease," +
+                           $"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:black\"",
+                    "-c:v", "libx264",
+                    "-t", durationStr,
+                    "-pix_fmt", "yuv420p",
+                    "-r", fps.ToString(),
+                    "-an",
+                    $"\"{outputPath}\""
+                };
+            }
             return _ffmpeg.RunCommand(args);
         }
 
@@ -585,16 +629,33 @@ public class SceneGenerator
             });
         }
 
-        args.AddRange(new[]
+        if (IsPortrait(width, height))
         {
-            "-vf", $"\"scale={width}:{height}:force_original_aspect_ratio=decrease," +
-                   $"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:black\"",
-            "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
-            "-r", fps.ToString(),
-            "-an",
-            $"\"{outputPath}\""
-        });
+            // Portrait output: blurred background instead of black bars
+            string filter = BuildBlurBackgroundFilter(width, height);
+            args.AddRange(new[]
+            {
+                "-filter_complex", $"\"{filter}\"",
+                "-c:v", "libx264",
+                "-pix_fmt", "yuv420p",
+                "-r", fps.ToString(),
+                "-an",
+                $"\"{outputPath}\""
+            });
+        }
+        else
+        {
+            args.AddRange(new[]
+            {
+                "-vf", $"\"scale={width}:{height}:force_original_aspect_ratio=decrease," +
+                       $"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:black\"",
+                "-c:v", "libx264",
+                "-pix_fmt", "yuv420p",
+                "-r", fps.ToString(),
+                "-an",
+                $"\"{outputPath}\""
+            });
+        }
 
         return _ffmpeg.RunCommand(args);
     }
@@ -641,7 +702,6 @@ public class SceneGenerator
         foreach (var overlay in activeOverlays)
         {
             string escapedText = EscapeDrawTextLine(overlay.Text);
-
             string textColorHex = ArrayToFfmpegColor(overlay.TextColor);
             string strokeColorHex = ArrayToFfmpegColor(overlay.StrokeColor);
             string shadowColorHex = ArrayToFfmpegColor(overlay.ShadowColor);
@@ -661,7 +721,7 @@ public class SceneGenerator
             {
                 filterParts.Add(
                     $"drawtext={fontSpec}" +
-                    $"text={escapedText}:" +
+                    $"text='{escapedText}':" +
                     $"fontsize={overlay.FontSize}:" +
                     $"fontcolor={shadowColorHex}:" +
                     $"x={xExpr}+{overlay.ShadowOffset[0]}:" +
@@ -671,7 +731,7 @@ public class SceneGenerator
             // Main text layer
             string mainDraw =
                 $"drawtext={fontSpec}" +
-                $"text={escapedText}:" +
+                $"text='{escapedText}':" +
                 $"fontsize={overlay.FontSize}:" +
                 $"fontcolor={textColorHex}:" +
                 $"borderw={overlay.StrokeWidth}:" +
@@ -856,14 +916,32 @@ public class SceneGenerator
         }
 
         // Build filter:
-        // 1. Scale video to fit within width x videoHeight, keeping aspect ratio
-        // 2. Pad to exactly width x videoHeight (centers video, fills gaps with black)
-        // 3. Pad to full output height (adds black bar at bottom)
-        string scaleFilter =
-            $"scale={width}:{videoHeight}:force_original_aspect_ratio=decrease," +
-            $"setsar=1," +
-            $"pad={width}:{videoHeight}:(ow-iw)/2:(oh-ih)/2:black," +
-            $"pad={width}:{height}:0:0:black";
+        // Portrait: blurred background for video area + black bar for subtitles
+        // Landscape: scale+pad with black bars
+        string scaleFilter;
+        bool useFilterComplex = false;
+
+        if (IsPortrait(width, height))
+        {
+            // Portrait: blurred background for the video area, black bar at bottom for subtitles
+            useFilterComplex = true;
+            scaleFilter =
+                $"[0:v]split=2[bg][fg];" +
+                $"[bg]scale={width}:{videoHeight}:force_original_aspect_ratio=increase," +
+                $"crop={width}:{videoHeight},boxblur=20:5,setsar=1[bgout];" +
+                $"[fg]scale={width}:{videoHeight}:force_original_aspect_ratio=decrease," +
+                $"setsar=1[fgout];" +
+                $"[bgout][fgout]overlay=(W-w)/2:(H-h)/2," +
+                $"pad={width}:{height}:0:0:black";
+        }
+        else
+        {
+            scaleFilter =
+                $"scale={width}:{videoHeight}:force_original_aspect_ratio=decrease," +
+                $"setsar=1," +
+                $"pad={width}:{videoHeight}:(ow-iw)/2:(oh-ih)/2:black," +
+                $"pad={width}:{height}:0:0:black";
+        }
 
         var filterParts = new List<string> { scaleFilter };
 
@@ -892,11 +970,14 @@ public class SceneGenerator
 
         string filterChain = string.Join(",", filterParts);
 
+        // Portrait uses -filter_complex (split/overlay graph); landscape uses -vf
+        string filterFlag = useFilterComplex ? "-filter_complex" : "-vf";
+
         var args = new List<string>
         {
             "-y",
             "-i", $"\"{inputPath}\"",
-            "-vf", $"\"{filterChain}\"",
+            filterFlag, $"\"{filterChain}\"",
             "-c:v", "libx264",
             "-pix_fmt", "yuv420p",
             "-c:a", "copy",
@@ -1115,7 +1196,10 @@ public class SceneGenerator
         escaped = escaped.Replace("\\", "\\\\");
         escaped = escaped.Replace("'", "'\\''");
         escaped = escaped.Replace(":", "\\:");
-        escaped = escaped.Replace("%", "%%");
+        // FFmpeg drawtext は % をフォーマット指定子として解釈する。
+        // %% でエスケープしても後続文字との組み合わせで誤解釈される場合があるため、
+        // 全角％に置換する（字幕の見た目上ほぼ同一）。
+        escaped = escaped.Replace("%", "％");
         return escaped;
     }
 
