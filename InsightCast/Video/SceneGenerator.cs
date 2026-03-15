@@ -253,32 +253,9 @@ public class SceneGenerator
                 return false;
             }
 
-            // Step 2: Add text overlays if present
             string currentFile = tempBase;
-            string? tempOverlay = null;
 
-            if (scene.HasTextOverlays)
-            {
-                tempOverlay = Path.Combine(
-                    Path.GetTempPath(),
-                    $"scene_overlay_{Guid.NewGuid():N}.mp4");
-
-                bool overlaySuccess = AddTextOverlays(
-                    currentFile, tempOverlay, scene.TextOverlays, width, height);
-
-                if (overlaySuccess)
-                {
-                    CleanupTempFile(currentFile);
-                    currentFile = tempOverlay;
-                }
-                else
-                {
-                    CleanupTempFile(tempOverlay);
-                    tempOverlay = null;
-                }
-            }
-
-            // Step 3: Add subtitle (or letterbox black bar even if no subtitle)
+            // Step 2: Add subtitle (or letterbox black bar even if no subtitle)
             string? tempSubtitle = null;
 
             if (scene.HasSubtitle || subtitleLetterbox)
@@ -677,81 +654,6 @@ public class SceneGenerator
             "-c:v", "libx264",
             "-pix_fmt", "yuv420p",
             "-t", durationStr,
-            $"\"{outputPath}\""
-        };
-
-        return _ffmpeg.RunCommand(args);
-    }
-
-    /// <summary>
-    /// Overlays multiple text layers onto a video using chained drawtext filters.
-    /// Each TextOverlay specifies position (as percentage), font, color, and style.
-    /// </summary>
-    private bool AddTextOverlays(
-        string inputPath, string outputPath, List<TextOverlay> overlays,
-        int width, int height)
-    {
-        var activeOverlays = overlays.Where(o => o.HasText).ToList();
-        if (activeOverlays.Count == 0)
-            return false;
-
-        string fontSpec = BuildFontSpec(new TextStyle()); // default font path
-
-        var filterParts = new List<string>();
-
-        foreach (var overlay in activeOverlays)
-        {
-            string escapedText = EscapeDrawTextLine(overlay.Text);
-            string textColorHex = ArrayToFfmpegColor(overlay.TextColor);
-            string strokeColorHex = ArrayToFfmpegColor(overlay.StrokeColor);
-            string shadowColorHex = ArrayToFfmpegColor(overlay.ShadowColor);
-
-            // Calculate pixel position from percentage
-            string xExpr = overlay.Alignment switch
-            {
-                Models.TextAlignment.Left => $"w*{(overlay.XPercent / 100.0).ToString("F4", CultureInfo.InvariantCulture)}",
-                Models.TextAlignment.Right => $"w*{(overlay.XPercent / 100.0).ToString("F4", CultureInfo.InvariantCulture)}-text_w",
-                _ => $"w*{(overlay.XPercent / 100.0).ToString("F4", CultureInfo.InvariantCulture)}-text_w/2"
-            };
-            string yExpr = $"h*{(overlay.YPercent / 100.0).ToString("F4", CultureInfo.InvariantCulture)}-text_h/2";
-
-            // Shadow layer
-            if (overlay.ShadowEnabled && overlay.ShadowOffset.Length >= 2 &&
-                (overlay.ShadowOffset[0] != 0 || overlay.ShadowOffset[1] != 0))
-            {
-                filterParts.Add(
-                    $"drawtext={fontSpec}" +
-                    $"text='{escapedText}':" +
-                    $"fontsize={overlay.FontSize}:" +
-                    $"fontcolor={shadowColorHex}:" +
-                    $"x={xExpr}+{overlay.ShadowOffset[0]}:" +
-                    $"y={yExpr}+{overlay.ShadowOffset[1]}");
-            }
-
-            // Main text layer
-            string mainDraw =
-                $"drawtext={fontSpec}" +
-                $"text='{escapedText}':" +
-                $"fontsize={overlay.FontSize}:" +
-                $"fontcolor={textColorHex}:" +
-                $"borderw={overlay.StrokeWidth}:" +
-                $"bordercolor={strokeColorHex}:" +
-                $"x={xExpr}:" +
-                $"y={yExpr}";
-
-            filterParts.Add(mainDraw);
-        }
-
-        string filterChain = string.Join(",", filterParts);
-
-        var args = new List<string>
-        {
-            "-y",
-            "-i", $"\"{inputPath}\"",
-            "-vf", $"\"{filterChain}\"",
-            "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
-            "-c:a", "copy",
             $"\"{outputPath}\""
         };
 

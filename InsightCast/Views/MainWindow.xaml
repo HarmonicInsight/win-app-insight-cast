@@ -54,10 +54,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="120" MinHeight="40" MaxHeight="400"/>
-                <RowDefinition Height="Auto"/>
-                <!-- Row 0=Header, 1=Ribbon, 2=Content, 3=Progress, 4=Splitter, 5=Log, 6=Status -->
+                <!-- Row 0=Header, 1=Ribbon, 2=Content+Log, 3=Status -->
             </Grid.RowDefinitions>
 
             <!-- ================================================================ -->
@@ -366,13 +363,20 @@
                     </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- 動画: メディア (#9 separated from scene management) -->
+                <!-- 動画: メディア (PPTX import/export + recording) -->
                 <syncfusion:RibbonBar x:Name="RibbonVideoMedia" Header="{DynamicResource Ribbon.Group.Media}" IsLauncherButtonVisible="False">
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.File.ImportPptx}"
                             ToolTip="{DynamicResource Ribbon.File.ImportPptx}"
                             Command="{Binding ImportPptxCommand}" SizeForm="Large">
                         <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource AccentGold}"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Group.PptxExport}"
+                            ToolTip="{DynamicResource Ribbon.PptxExport.Tooltip}"
+                            Command="{Binding ExportPptxCommand}" SizeForm="Large">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xEA90;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource AccentGold}"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Scene.Record}"
@@ -400,28 +404,23 @@
                             <DataTemplate><TextBlock Text="&#xE82D;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource AccentGold}"/></DataTemplate>
                         </syncfusion:RibbonButton.IconTemplate>
                     </syncfusion:RibbonButton>
-                    <syncfusion:SplitButton Label="{DynamicResource Ribbon.Group.Clear}" SizeForm="Small">
-                        <syncfusion:SplitButton.IconTemplate>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Script.Clear}"
+                            ToolTip="{DynamicResource Ribbon.Script.Clear.Tooltip}"
+                            Command="{Binding ClearAllScriptsCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
                             <DataTemplate><TextBlock Text="&#xE894;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#CC0000"/></DataTemplate>
-                        </syncfusion:SplitButton.IconTemplate>
-                        <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Script.Clear}"
-                                ToolTip="{DynamicResource Ribbon.Script.Clear.Tooltip}"
-                                Command="{Binding ClearAllScriptsCommand}" SizeForm="Small">
-                            <syncfusion:RibbonButton.IconTemplate>
-                                <DataTemplate><TextBlock Text="&#xE894;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#CC0000"/></DataTemplate>
-                            </syncfusion:RibbonButton.IconTemplate>
-                        </syncfusion:RibbonButton>
-                        <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Subtitle.Clear}"
-                                ToolTip="{DynamicResource Ribbon.Subtitle.Clear.Tooltip}"
-                                Command="{Binding ClearAllSubtitlesCommand}" SizeForm="Small">
-                            <syncfusion:RibbonButton.IconTemplate>
-                                <DataTemplate><TextBlock Text="&#xED62;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#CC0000"/></DataTemplate>
-                            </syncfusion:RibbonButton.IconTemplate>
-                        </syncfusion:RibbonButton>
-                    </syncfusion:SplitButton>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
+                    <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Subtitle.Clear}"
+                            ToolTip="{DynamicResource Ribbon.Subtitle.Clear.Tooltip}"
+                            Command="{Binding ClearAllSubtitlesCommand}" SizeForm="Small">
+                        <syncfusion:RibbonButton.IconTemplate>
+                            <DataTemplate><TextBlock Text="&#xED62;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#CC0000"/></DataTemplate>
+                        </syncfusion:RibbonButton.IconTemplate>
+                    </syncfusion:RibbonButton>
                 </syncfusion:RibbonBar>
 
-                <!-- 動画: 書き出し (#2 export button promoted to Large) -->
+                <!-- 動画: 書き出し -->
                 <syncfusion:RibbonBar x:Name="RibbonVideoExport" Header="{DynamicResource Ribbon.Group.Export}" IsLauncherButtonVisible="False">
                     <syncfusion:RibbonButton Label="{DynamicResource Ribbon.Export.Video}"
                             ToolTip="{DynamicResource Ribbon.Export.Video.Tooltip}"
@@ -464,11 +463,13 @@
         <!-- ================================================================ -->
         <Grid Grid.Row="2"
               IsEnabled="{Binding IsExporting, Converter={StaticResource InverseBool}}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" MinHeight="200"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="80" MinHeight="40" MaxHeight="300"/>
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Column="0" Margin="4,4,4,2">
+        <Grid Grid.Row="0" Margin="4,4,4,2">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -873,10 +874,6 @@
                         <!-- Media info (#3 button hierarchy applied) -->
                         <DockPanel Margin="0,0,0,8">
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                <Button Content="{DynamicResource Overlay.Dialog.Button}" Padding="10,4" Margin="3,0"
-                                        Style="{DynamicResource SecondaryButton}" FontSize="11"
-                                        ToolTip="{DynamicResource Overlay.Dialog.Button.Tooltip}"
-                                        Click="TextOverlayButton_Click"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{DynamicResource Scene.Media}" VerticalAlignment="Center"
@@ -908,28 +905,6 @@
                                 <Grid>
                                     <Image x:Name="PreviewImage" Stretch="Uniform"
                                            VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    <!-- Text overlay preview layer -->
-                                    <ItemsControl ItemsSource="{Binding OverlayPreviewItems}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate><Canvas/></ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemContainerStyle>
-                                            <Style TargetType="ContentPresenter">
-                                                <Setter Property="Canvas.Left" Value="{Binding CanvasLeft}"/>
-                                                <Setter Property="Canvas.Top" Value="{Binding CanvasTop}"/>
-                                            </Style>
-                                        </ItemsControl.ItemContainerStyle>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Text}" FontSize="{Binding PreviewFontSize}"
-                                                           FontWeight="{Binding FontWeightValue}" Opacity="{Binding Opacity}"
-                                                           MaxWidth="120" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentValue}">
-                                                    <TextBlock.Foreground><SolidColorBrush Color="{Binding TextColorValue}"/></TextBlock.Foreground>
-                                                    <TextBlock.Effect><DropShadowEffect ShadowDepth="1" BlurRadius="2" Color="Black" Opacity="0.8"/></TextBlock.Effect>
-                                                </TextBlock>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
                                     <!-- Subtitle overlay -->
                                     <Border VerticalAlignment="Bottom" Background="#80000000" Padding="4,2"
                                             CornerRadius="0,0,6,6">
@@ -1116,12 +1091,8 @@
                 </Grid>
         </Grid>
 
-        </Grid>
-
-        <!-- ================================================================ -->
-        <!-- D) ProgressBar                                                    -->
-        <!-- ================================================================ -->
-        <DockPanel Grid.Row="3" Margin="4,0,4,2"
+        <!-- D) ProgressBar (overlay on content bottom) -->
+        <DockPanel Grid.Row="0" Margin="4,0,4,2" VerticalAlignment="Bottom"
                    Visibility="{Binding ExportProgressVisible, Converter={StaticResource BoolToVis}}">
             <Button DockPanel.Dock="Right" Content="{DynamicResource Export.Cancel}"
                     Padding="12,2" Margin="4,0,0,0"
@@ -1130,37 +1101,38 @@
                          Value="{Binding ExportProgressValue, Mode=OneWay}"/>
         </DockPanel>
 
-        <!-- ================================================================ -->
-        <!-- E) Log Area (resizable via GridSplitter above)                    -->
-        <!-- ================================================================ -->
-        <GridSplitter Grid.Row="4" Height="5" HorizontalAlignment="Stretch"
-                      Background="Transparent" Margin="4,0">
+        <!-- E) Log Splitter -->
+        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"
+                      ResizeDirection="Rows" Background="Transparent" Margin="4,0">
             <GridSplitter.Template>
                 <ControlTemplate TargetType="GridSplitter">
-                    <Border Background="Transparent" Height="5">
+                    <Border Background="Transparent" Height="5" Cursor="SizeNS">
                         <Border Width="40" Height="3" Background="{DynamicResource BorderLight}"
                                 CornerRadius="1.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>
             </GridSplitter.Template>
         </GridSplitter>
-        <DockPanel Grid.Row="5" Margin="4,0,4,4">
-            <TextBlock Text="{DynamicResource Export.Log}" DockPanel.Dock="Top" FontSize="11"
+
+        <!-- F) Log Area -->
+        <DockPanel Grid.Row="2" Margin="4,0,4,4">
+            <TextBlock Text="{DynamicResource Export.Log}" DockPanel.Dock="Top" FontSize="10"
                        Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,2"/>
             <TextBox x:Name="LogTextBox" IsReadOnly="True"
-                     VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                     TextWrapping="NoWrap" FontSize="11" FontFamily="Consolas, MS Gothic"
-                     Background="{DynamicResource BgSecondary}"/>
+                     VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                     TextWrapping="Wrap" FontSize="10" FontFamily="Consolas, MS Gothic"
+                     Background="{DynamicResource BgSecondary}"
+                     BorderThickness="1" BorderBrush="{DynamicResource BorderLight}"
+                     Padding="4"/>
         </DockPanel>
 
-            <MediaElement x:Name="AudioPlayer" Grid.Row="5"
-                          LoadedBehavior="Manual" UnloadedBehavior="Stop"
-                          Visibility="Collapsed" MediaEnded="AudioPlayer_MediaEnded"/>
+        <MediaElement x:Name="AudioPlayer" Grid.Row="2"
+                      LoadedBehavior="Manual" UnloadedBehavior="Stop"
+                      Visibility="Collapsed" MediaEnded="AudioPlayer_MediaEnded"/>
+        </Grid>
 
-        <!-- ================================================================ -->
-        <!-- F) Status Bar                                                     -->
-        <!-- ================================================================ -->
-        <Border Grid.Row="6" Background="{DynamicResource BgSecondary}"
+        <!-- F) Status Bar -->
+        <Border Grid.Row="3" Background="{DynamicResource BgSecondary}"
                 BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,1,0,0"
                 Padding="8,4" CornerRadius="0,0,8,8">
             <DockPanel>

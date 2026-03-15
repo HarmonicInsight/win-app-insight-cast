@@ -33,7 +33,6 @@ namespace InsightCast.Views
 
         private readonly MainWindowViewModel _vm;
         private readonly Config _config;
-        private ClaudeService? _claudeService;
         private readonly TtsEngineManager _ttsManager;
         private readonly int _speakerId;
         private readonly FFmpegWrapper? _ffmpegWrapper;
@@ -133,64 +132,8 @@ namespace InsightCast.Views
                     // Initialize subtitle size combos
                     InitializeSubtitleSizeCombo();
 
-                    // AI services disabled — video-only mode
-                    // To re-enable: uncomment ClaudeService + InitializePlanningChatPanel()
-                    // _claudeService = new ClaudeService(_config);
-                    // InitializePlanningChatPanel();
-
                 });
             };
-        }
-
-        private void InitializePlanningChatPanel()
-        {
-            if (_claudeService == null) return;
-
-            var toolExecutor = new Services.Claude.VideoToolExecutor(
-                () => _vm.Project.Scenes,
-                (index, action) =>
-                {
-                    if (index >= 0 && index < _vm.Project.Scenes.Count)
-                    {
-                        action(_vm.Project.Scenes[index]);
-                        _vm.RefreshSceneList();
-                    }
-                },
-                Dispatcher,
-                new Services.ThumbnailService(),
-                count =>
-                {
-                    for (int i = 0; i < (count ?? 1); i++)
-                        _vm.Project.Scenes.Add(new Models.Scene());
-                    _vm.RefreshSceneList();
-                },
-                index =>
-                {
-                    if (index >= 0 && index < _vm.Project.Scenes.Count)
-                    {
-                        _vm.Project.Scenes.RemoveAt(index);
-                        _vm.RefreshSceneList();
-                    }
-                },
-                (from, to) =>
-                {
-                    if (from >= 0 && from < _vm.Project.Scenes.Count &&
-                        to >= 0 && to < _vm.Project.Scenes.Count)
-                    {
-                        var scene = _vm.Project.Scenes[from];
-                        _vm.Project.Scenes.RemoveAt(from);
-                        _vm.Project.Scenes.Insert(to, scene);
-                        _vm.RefreshSceneList();
-                    }
-                }
-            );
-
-            var chatVm = new ViewModels.ChatPanelViewModel(
-                _claudeService,
-                toolExecutor,
-                () => _config.Language == "EN" ? "EN" : "JA",
-                _config);
-
         }
 
         private void OnMainViewModelScenesChanged()
@@ -803,60 +746,6 @@ namespace InsightCast.Views
                 var imgHeight = image.ActualHeight;
                 var scale = imgHeight / 1920.0;
 
-                // Render text overlays
-                foreach (var item in _vm.OverlayItems)
-                {
-                    var overlay = item.Overlay;
-
-                    var tb = new TextBlock
-                    {
-                        Text = overlay.Text,
-                        FontSize = overlay.FontSize * scale,
-                        FontWeight = overlay.FontBold ? FontWeights.Bold : FontWeights.Normal,
-                        Foreground = new System.Windows.Media.SolidColorBrush(
-                            System.Windows.Media.Color.FromRgb(
-                                (byte)overlay.TextColor[0],
-                                (byte)overlay.TextColor[1],
-                                (byte)overlay.TextColor[2])),
-                        TextAlignment = overlay.Alignment switch
-                        {
-                            Models.TextAlignment.Left => System.Windows.TextAlignment.Left,
-                            Models.TextAlignment.Right => System.Windows.TextAlignment.Right,
-                            _ => System.Windows.TextAlignment.Center
-                        }
-                    };
-
-                    // Add stroke/shadow effect
-                    tb.Effect = new System.Windows.Media.Effects.DropShadowEffect
-                    {
-                        Color = System.Windows.Media.Color.FromRgb(
-                            (byte)overlay.StrokeColor[0],
-                            (byte)overlay.StrokeColor[1],
-                            (byte)overlay.StrokeColor[2]),
-                        BlurRadius = overlay.StrokeWidth * 2,
-                        ShadowDepth = overlay.ShadowEnabled ? 2 : 0,
-                        Opacity = 0.9
-                    };
-
-                    // Measure text size
-                    tb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                    var textWidth = tb.DesiredSize.Width;
-
-                    var x = (overlay.XPercent / 100.0) * imgWidth;
-                    var y = (overlay.YPercent / 100.0) * imgHeight;
-
-                    // Adjust position based on alignment
-                    if (overlay.Alignment == Models.TextAlignment.Center)
-                        x -= textWidth / 2;
-                    else if (overlay.Alignment == Models.TextAlignment.Right)
-                        x -= textWidth;
-
-                    Canvas.SetLeft(tb, x);
-                    Canvas.SetTop(tb, y);
-
-                    overlayCanvas.Children.Add(tb);
-                }
-
                 // Render subtitle (narration text) at bottom
                 var narrationText = scene.NarrationText;
                 if (!string.IsNullOrWhiteSpace(narrationText))
@@ -1117,19 +1006,6 @@ namespace InsightCast.Views
             UpdateLanguageRadioButtons();
         }
 
-        private void TextOverlayButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_vm.CurrentScene == null) return;
-
-            var mediaPath = _vm.CurrentScene.MediaPath;
-            var dlg = new TextOverlayDialog(_vm.CurrentScene.TextOverlays, mediaPath, _vm.DefaultSubtitleFontSize) { Owner = this };
-            if (dlg.ShowDialog() == true)
-            {
-                _vm.CurrentScene.TextOverlays.Clear();
-                _vm.CurrentScene.TextOverlays.AddRange(dlg.ResultOverlays);
-                _vm.RefreshOverlayList();
-            }
-        }
 
 
         // #4: Settings flyout toggle

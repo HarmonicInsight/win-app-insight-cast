@@ -1337,7 +1337,11 @@ F1              チュートリアルを表示</sys:String>
     <sys:String x:Key="Ribbon.File.BatchExport">JSONエクスポート</sys:String>
     <sys:String x:Key="Ribbon.File.Exit">終了</sys:String>
     <sys:String x:Key="Ribbon.Group.File">ファイル</sys:String>
-    <sys:String x:Key="Ribbon.Group.PptxExport">PPTX出力</sys:String>
+    <sys:String x:Key="Ribbon.Group.PptxExport">PPTXエクスポート</sys:String>
+    <sys:String x:Key="Ribbon.PptxExport.Tooltip">シーンの画像とナレーションをPPTXファイルにエクスポートします</sys:String>
+    <sys:String x:Key="VM.PptxExport.Title">PPTXエクスポート</sys:String>
+    <sys:String x:Key="VM.PptxExport.Success">{0}シーンをPPTXにエクスポートしました。</sys:String>
+    <sys:String x:Key="VM.PptxExport.Error">PPTXエクスポートに失敗しました。</sys:String>
     <sys:String x:Key="Ribbon.Group.PptxData">データ連携</sys:String>
     <sys:String x:Key="Ribbon.Group.PptxTools">AI画像</sys:String>
     <sys:String x:Key="Ribbon.Group.Reference">参考資料</sys:String>

@@ -1354,6 +1354,10 @@ To get started, try one of these:
     <sys:String x:Key="Ribbon.File.Exit">Exit</sys:String>
     <sys:String x:Key="Ribbon.Group.File">File</sys:String>
     <sys:String x:Key="Ribbon.Group.PptxExport">PPTX Export</sys:String>
+    <sys:String x:Key="Ribbon.PptxExport.Tooltip">Export scene images and narration to a PPTX file</sys:String>
+    <sys:String x:Key="VM.PptxExport.Title">PPTX Export</sys:String>
+    <sys:String x:Key="VM.PptxExport.Success">{0} scenes exported to PPTX.</sys:String>
+    <sys:String x:Key="VM.PptxExport.Error">Failed to export PPTX.</sys:String>
     <sys:String x:Key="Ribbon.Group.PptxData">Data</sys:String>
     <sys:String x:Key="Ribbon.Group.PptxTools">AI Images</sys:String>
     <sys:String x:Key="Ribbon.Group.Reference">Reference</sys:String>

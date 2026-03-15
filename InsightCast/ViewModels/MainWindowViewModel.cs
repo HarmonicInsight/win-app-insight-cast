@@ -100,18 +100,6 @@ namespace InsightCast.ViewModels
         private string _watermarkFilePath = string.Empty;
         private int _selectedWatermarkPosIndex = 3; // bottom-right
 
-        // Overlay
-        private int _selectedOverlayIndex = -1;
-        private string _overlayText = string.Empty;
-        private string _overlayXPercent = "50.0";
-        private string _overlayYPercent = "50.0";
-        private string _overlayFontSize = "64";
-        private double _overlayFontSizeSlider = 64;
-        private double _overlayOpacitySlider = 100;
-        private int _selectedAlignmentIndex;
-        private int _selectedOverlayColorIndex;
-        private bool _isLoadingOverlay;
-
         #endregion
 
         #region Collections
@@ -119,8 +107,6 @@ namespace InsightCast.ViewModels
         public ObservableCollection<SceneListItem> SceneItems { get; } = new();
         public ObservableCollection<SpeakerItem> ExportSpeakers { get; } = new();
         public ObservableCollection<SpeakerItem> SceneSpeakers { get; } = new();
-        public ObservableCollection<OverlayListItem> OverlayItems { get; } = new();
-        public ObservableCollection<OverlayPreviewItem> OverlayPreviewItems { get; } = new();
 
         #endregion
 
@@ -422,175 +408,6 @@ namespace InsightCast.ViewModels
 
         public bool HasScenes => SceneItems.Count > 0;
 
-        // Overlay properties
-        public int SelectedOverlayIndex
-        {
-            get => _selectedOverlayIndex;
-            set
-            {
-                if (SetProperty(ref _selectedOverlayIndex, value))
-                    OnOverlaySelected();
-            }
-        }
-
-        public string OverlayText
-        {
-            get => _overlayText;
-            set
-            {
-                if (SetProperty(ref _overlayText, value))
-                    OnOverlayTextChanged();
-            }
-        }
-
-        public string OverlayXPercent
-        {
-            get => _overlayXPercent;
-            set
-            {
-                if (SetProperty(ref _overlayXPercent, value))
-                {
-                    OnOverlayPositionChanged();
-                    if (!_isUpdatingSlider && double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var v))
-                    {
-                        _overlayXSlider = v;
-                        OnPropertyChanged(nameof(OverlayXSlider));
-                    }
-                }
-            }
-        }
-
-        public string OverlayYPercent
-        {
-            get => _overlayYPercent;
-            set
-            {
-                if (SetProperty(ref _overlayYPercent, value))
-                {
-                    OnOverlayPositionChanged();
-                    if (!_isUpdatingSlider && double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var v))
-                    {
-                        _overlayYSlider = v;
-                        OnPropertyChanged(nameof(OverlayYSlider));
-                    }
-                }
-            }
-        }
-
-        private bool _isUpdatingSlider;
-        private double _overlayXSlider;
-        public double OverlayXSlider
-        {
-            get => _overlayXSlider;
-            set
-            {
-                if (SetProperty(ref _overlayXSlider, value))
-                {
-                    _isUpdatingSlider = true;
-                    OverlayXPercent = value.ToString("F1", CultureInfo.InvariantCulture);
-                    _isUpdatingSlider = false;
-                }
-            }
-        }
-
-        private double _overlayYSlider;
-        public double OverlayYSlider
-        {
-            get => _overlayYSlider;
-            set
-            {
-                if (SetProperty(ref _overlayYSlider, value))
-                {
-                    _isUpdatingSlider = true;
-                    OverlayYPercent = value.ToString("F1", CultureInfo.InvariantCulture);
-                    _isUpdatingSlider = false;
-                }
-            }
-        }
-
-        public string OverlayFontSize
-        {
-            get => _overlayFontSize;
-            set
-            {
-                if (SetProperty(ref _overlayFontSize, value))
-                    OnOverlayFontSizeChanged();
-            }
-        }
-
-        public double OverlayFontSizeSlider
-        {
-            get => _overlayFontSizeSlider;
-            set
-            {
-                if (SetProperty(ref _overlayFontSizeSlider, value))
-                {
-                    OverlayFontSize = ((int)value).ToString();
-                }
-            }
-        }
-
-        public double OverlayOpacitySlider
-        {
-            get => _overlayOpacitySlider;
-            set
-            {
-                if (SetProperty(ref _overlayOpacitySlider, value))
-                {
-                    OnPropertyChanged(nameof(OverlayOpacityDisplay));
-                    OnOverlayOpacityChanged();
-                }
-            }
-        }
-
-        public string OverlayOpacityDisplay => $"{(int)_overlayOpacitySlider}%";
-
-        public int SelectedAlignmentIndex
-        {
-            get => _selectedAlignmentIndex;
-            set
-            {
-                if (SetProperty(ref _selectedAlignmentIndex, value))
-                    OnOverlayAlignmentChanged();
-            }
-        }
-
-        public int SelectedOverlayColorIndex
-        {
-            get => _selectedOverlayColorIndex;
-            set
-            {
-                if (SetProperty(ref _selectedOverlayColorIndex, value))
-                    OnOverlayColorChanged();
-            }
-        }
-
-        public bool OverlayListVisible => OverlayItems.Count > 0;
-        public bool OverlayEditorVisible => _selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count;
-        public string OverlayCountDisplay => _currentScene == null ? ""
-            : _currentScene.TextOverlays.Count == 0 ? LocalizationService.GetString("Common.None")
-            : $"{_currentScene.TextOverlays.Count}";
-
-
-        public List<string> AlignmentOptions { get; } = new() { LocalizationService.GetString("Align.Center"), LocalizationService.GetString("Align.Left"), LocalizationService.GetString("Align.Right") };
-
-        public List<string> OverlayColorOptions { get; } = new()
-        {
-            LocalizationService.GetString("Color.White"), LocalizationService.GetString("Color.Black"), LocalizationService.GetString("Color.Red"), LocalizationService.GetString("Color.Blue"), LocalizationService.GetString("Color.Yellow"), LocalizationService.GetString("Color.Gold"), LocalizationService.GetString("Color.Pink"), LocalizationService.GetString("Color.LightBlue")
-        };
-
-        private static readonly int[][] OverlayColorValues =
-        {
-            new[] { 255, 255, 255 }, // 白
-            new[] { 0, 0, 0 },       // 黒
-            new[] { 255, 0, 0 },     // 赤
-            new[] { 0, 0, 255 },     // 青
-            new[] { 255, 255, 0 },   // 黄
-            new[] { 212, 175, 55 },  // 金
-            new[] { 255, 105, 180 }, // ピンク
-            new[] { 0, 191, 255 },   // 水色
-        };
-
         // Watermark properties
         public string WatermarkFilePath
         {
@@ -702,13 +519,6 @@ namespace InsightCast.ViewModels
         public ICommand PreviewSceneCommand { get; }
         public ICommand StopPreviewCommand { get; }
         public ICommand ExportVideoCommand { get; }
-        public ICommand AddOverlayCommand { get; }
-        public ICommand RemoveOverlayCommand { get; }
-        public ICommand AddCoverTemplateCommand { get; }
-        public ICommand MoveOverlayUpCommand { get; }
-        public ICommand MoveOverlayDownCommand { get; }
-        public ICommand SetOverlayPositionCommand { get; }
-        public ICommand SetOverlayFontSizeCommand { get; }
         public ICommand SelectWatermarkCommand { get; }
         public ICommand ClearWatermarkCommand { get; }
         public ICommand SaveTemplateCommand { get; }
@@ -740,6 +550,7 @@ namespace InsightCast.ViewModels
         public ICommand ApplyMotionPresetCommand { get; }
         public ICommand LaunchSnippingToolCommand { get; }
         public ICommand ScreenRecordCommand { get; }
+        public ICommand ExportPptxCommand { get; }
 
         #endregion
 
@@ -776,21 +587,7 @@ namespace InsightCast.ViewModels
             PreviewSceneCommand = new AsyncRelayCommand(PreviewCurrentSceneVideo, () => _selectedSceneIndex >= 0);
             StopPreviewCommand = new RelayCommand(() => StopAudioRequested?.Invoke());
             ExportVideoCommand = new AsyncRelayCommand(ExportVideo, () => _project.Scenes.Count > 0 && !_isExporting);
-            AddOverlayCommand = new RelayCommand(AddOverlay, () => _selectedSceneIndex >= 0);
-            RemoveOverlayCommand = new RelayCommand(RemoveOverlay, () => _selectedSceneIndex >= 0);
-            AddCoverTemplateCommand = new RelayCommand(AddCoverTemplate, () => _selectedSceneIndex >= 0);
-            MoveOverlayUpCommand = new RelayCommand(MoveOverlayUp);
-            MoveOverlayDownCommand = new RelayCommand(MoveOverlayDown);
-            SetOverlayPositionCommand = new RelayCommand(p => SetOverlayPosition(p as string));
-            SetOverlayFontSizeCommand = new RelayCommand(p =>
-            {
-                if (p is string s && int.TryParse(s, out var size))
-                {
-                    OverlayFontSize = size.ToString();
-                    _overlayFontSizeSlider = size;
-                    OnPropertyChanged(nameof(OverlayFontSizeSlider));
-                }
-            });
+            ExportPptxCommand = new RelayCommand(ExportPptx, () => _project.Scenes.Count > 0);
             SelectWatermarkCommand = new RelayCommand(SelectWatermark);
             ClearWatermarkCommand = new RelayCommand(ClearWatermark);
             SaveTemplateCommand = new RelayCommand(SaveTemplate, () => _project.Scenes.Count > 0);
@@ -1047,12 +844,6 @@ namespace InsightCast.ViewModels
             TransitionDuration = _currentScene.TransitionDuration.ToString("F1", CultureInfo.InvariantCulture);
             SelectMotion(_currentScene.MotionType);
 
-            RefreshOverlayList();
-            if (_currentScene.TextOverlays.Count > 0)
-                SelectedOverlayIndex = 0;
-            else
-                SelectedOverlayIndex = -1;
-
             // Speech speed
             SelectedSpeechSpeedIndex = Array.IndexOf(SpeechSpeedValues, _currentScene.SpeechSpeed);
             if (_selectedSpeechSpeedIndex < 0) SelectedSpeechSpeedIndex = 1;
@@ -1077,7 +868,6 @@ namespace InsightCast.ViewModels
             ctaScene.Title = LocalizationService.GetString("CTA.ThankYou");
             ctaScene.DurationMode = DurationMode.Fixed;
             ctaScene.FixedSeconds = 5.0;
-            ctaScene.TextOverlays = TextOverlay.CreateEducationEndcardSet();
             RefreshSceneList();
             SelectedSceneIndex = _project.Scenes.Count - 1;
             _logger.Log("CTA endcard added");
@@ -1646,279 +1436,6 @@ namespace InsightCast.ViewModels
 
         #endregion
 
-        #region Text Overlays
-
-        public void RefreshOverlayList()
-        {
-            OverlayItems.Clear();
-            if (_currentScene == null) return;
-
-            for (int i = 0; i < _currentScene.TextOverlays.Count; i++)
-            {
-                OverlayItems.Add(new OverlayListItem(_currentScene.TextOverlays[i], i));
-            }
-
-            OnPropertyChanged(nameof(OverlayListVisible));
-            OnPropertyChanged(nameof(OverlayEditorVisible));
-            OnPropertyChanged(nameof(OverlayCountDisplay));
-            RefreshOverlayPreview();
-        }
-
-        private void RefreshOverlayPreview()
-        {
-            OverlayPreviewItems.Clear();
-            if (_currentScene == null) return;
-
-            foreach (var overlay in _currentScene.TextOverlays)
-            {
-                if (overlay.HasText)
-                    OverlayPreviewItems.Add(new OverlayPreviewItem(overlay));
-            }
-        }
-
-        private void AddOverlay()
-        {
-            if (_currentScene == null) return;
-
-            var overlay = new TextOverlay { Text = LocalizationService.GetString("Overlay.DefaultText"), FontSize = _defaultSubtitleFontSize };
-            _currentScene.TextOverlays.Add(overlay);
-            RefreshOverlayList();
-            SelectedOverlayIndex = _currentScene.TextOverlays.Count - 1;
-            _logger.Log(LocalizationService.GetString("VM.Overlay.Added"));
-        }
-
-        private void RemoveOverlay()
-        {
-            if (_currentScene == null || _selectedOverlayIndex < 0 ||
-                _selectedOverlayIndex >= _currentScene.TextOverlays.Count)
-                return;
-
-            _currentScene.TextOverlays.RemoveAt(_selectedOverlayIndex);
-            RefreshOverlayList();
-
-            if (_currentScene.TextOverlays.Count > 0)
-                SelectedOverlayIndex = Math.Min(_selectedOverlayIndex, _currentScene.TextOverlays.Count - 1);
-            else
-                SelectedOverlayIndex = -1;
-
-            _logger.Log(LocalizationService.GetString("VM.Overlay.Removed"));
-        }
-
-        private void AddCoverTemplate()
-        {
-            if (_currentScene == null) return;
-
-            // Confirm if overlays already exist
-            if (_currentScene.TextOverlays.Count > 0)
-            {
-                var result = _dialogService?.ShowConfirmation(
-                    LocalizationService.GetString("VM.CoverTemplate.ConfirmOverwrite"),
-                    LocalizationService.GetString("VM.CoverTemplate.ConfirmTitle"));
-                if (result != true) return;
-            }
-
-            _currentScene.TextOverlays.Clear();
-            _currentScene.TextOverlays.Add(TextOverlay.CreateTitle());
-            _currentScene.TextOverlays.Add(TextOverlay.CreateSubheading());
-
-            RefreshOverlayList();
-            SelectedOverlayIndex = 0;
-            _logger.Log(LocalizationService.GetString("VM.Template.CoverApplied"));
-        }
-
-        private void MoveOverlayUp()
-        {
-            if (_currentScene == null || _selectedOverlayIndex <= 0) return;
-
-            var idx = _selectedOverlayIndex;
-            var overlays = _currentScene.TextOverlays;
-            (overlays[idx - 1], overlays[idx]) = (overlays[idx], overlays[idx - 1]);
-            RefreshOverlayList();
-            SelectedOverlayIndex = idx - 1;
-        }
-
-        private void MoveOverlayDown()
-        {
-            if (_currentScene == null || _selectedOverlayIndex < 0 ||
-                _selectedOverlayIndex >= _currentScene.TextOverlays.Count - 1)
-                return;
-
-            var idx = _selectedOverlayIndex;
-            var overlays = _currentScene.TextOverlays;
-            (overlays[idx], overlays[idx + 1]) = (overlays[idx + 1], overlays[idx]);
-            RefreshOverlayList();
-            SelectedOverlayIndex = idx + 1;
-        }
-
-        private void SetOverlayPosition(string? position)
-        {
-            if (_isLoadingOverlay || position == null) return;
-            var overlay = GetSelectedOverlay();
-            if (overlay == null) return;
-
-            var (x, y) = position switch
-            {
-                "top-left"      => (15.0, 15.0),
-                "top-center"    => (50.0, 15.0),
-                "top-right"     => (85.0, 15.0),
-                "middle-left"   => (15.0, 50.0),
-                "center"        => (50.0, 50.0),
-                "middle-right"  => (85.0, 50.0),
-                "bottom-left"   => (15.0, 85.0),
-                "bottom-center" => (50.0, 85.0),
-                "bottom-right"  => (85.0, 85.0),
-                _ => (50.0, 50.0)
-            };
-
-            _isLoadingOverlay = true;
-            overlay.XPercent = x;
-            overlay.YPercent = y;
-            OverlayXPercent = x.ToString("F1", CultureInfo.InvariantCulture);
-            OverlayYPercent = y.ToString("F1", CultureInfo.InvariantCulture);
-            _isLoadingOverlay = false;
-
-            if (_selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count)
-                OverlayItems[_selectedOverlayIndex].UpdateLabel(_selectedOverlayIndex);
-            RefreshOverlayPreview();
-        }
-
-        private void OnOverlaySelected()
-        {
-            OnPropertyChanged(nameof(OverlayEditorVisible));
-
-            if (_selectedOverlayIndex < 0 || _currentScene == null ||
-                _selectedOverlayIndex >= _currentScene.TextOverlays.Count)
-                return;
-
-            _isLoadingOverlay = true;
-            var overlay = _currentScene.TextOverlays[_selectedOverlayIndex];
-
-            OverlayText = overlay.Text;
-            OverlayXPercent = overlay.XPercent.ToString("F1", CultureInfo.InvariantCulture);
-            OverlayYPercent = overlay.YPercent.ToString("F1", CultureInfo.InvariantCulture);
-            _overlayXSlider = overlay.XPercent;
-            _overlayYSlider = overlay.YPercent;
-            OnPropertyChanged(nameof(OverlayXSlider));
-            OnPropertyChanged(nameof(OverlayYSlider));
-            OverlayFontSize = overlay.FontSize.ToString();
-            _overlayFontSizeSlider = overlay.FontSize;
-            OnPropertyChanged(nameof(OverlayFontSizeSlider));
-            _overlayOpacitySlider = overlay.Opacity * 100.0;
-            OnPropertyChanged(nameof(OverlayOpacitySlider));
-            OnPropertyChanged(nameof(OverlayOpacityDisplay));
-
-            SelectedAlignmentIndex = overlay.Alignment switch
-            {
-                Models.TextAlignment.Left => 1,
-                Models.TextAlignment.Right => 2,
-                _ => 0
-            };
-
-            // Find matching color
-            SelectedOverlayColorIndex = FindColorIndex(overlay.TextColor);
-
-            _isLoadingOverlay = false;
-        }
-
-        private int FindColorIndex(int[] color)
-        {
-            for (int i = 0; i < OverlayColorValues.Length; i++)
-            {
-                if (OverlayColorValues[i][0] == color[0] &&
-                    OverlayColorValues[i][1] == color[1] &&
-                    OverlayColorValues[i][2] == color[2])
-                    return i;
-            }
-            return 0; // default to white
-        }
-
-        private TextOverlay? GetSelectedOverlay()
-        {
-            if (_currentScene == null || _selectedOverlayIndex < 0 ||
-                _selectedOverlayIndex >= _currentScene.TextOverlays.Count)
-                return null;
-            return _currentScene.TextOverlays[_selectedOverlayIndex];
-        }
-
-        private void OnOverlayTextChanged()
-        {
-            if (_isLoadingOverlay) return;
-            var overlay = GetSelectedOverlay();
-            if (overlay == null) return;
-            overlay.Text = _overlayText;
-
-            if (_selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count)
-                OverlayItems[_selectedOverlayIndex].UpdateLabel(_selectedOverlayIndex);
-            RefreshOverlayPreview();
-        }
-
-        private void OnOverlayPositionChanged()
-        {
-            if (_isLoadingOverlay) return;
-            var overlay = GetSelectedOverlay();
-            if (overlay == null) return;
-
-            if (double.TryParse(_overlayXPercent, NumberStyles.Float,
-                    CultureInfo.InvariantCulture, out var x))
-                overlay.XPercent = Math.Clamp(x, 0, 100);
-
-            if (double.TryParse(_overlayYPercent, NumberStyles.Float,
-                    CultureInfo.InvariantCulture, out var y))
-                overlay.YPercent = Math.Clamp(y, 0, 100);
-
-            RefreshOverlayPreview();
-        }
-
-        private void OnOverlayFontSizeChanged()
-        {
-            if (_isLoadingOverlay) return;
-            var overlay = GetSelectedOverlay();
-            if (overlay == null) return;
-
-            if (int.TryParse(_overlayFontSize, out var size))
-                overlay.FontSize = Math.Clamp(size, 8, 200);
-        }
-
-        private void OnOverlayAlignmentChanged()
-        {
-            if (_isLoadingOverlay) return;
-            var overlay = GetSelectedOverlay();
-            if (overlay == null) return;
-
-            overlay.Alignment = _selectedAlignmentIndex switch
-            {
-                1 => Models.TextAlignment.Left,
-                2 => Models.TextAlignment.Right,
-                _ => Models.TextAlignment.Center
-            };
-        }
-
-        private void OnOverlayColorChanged()
-        {
-            if (_isLoadingOverlay) return;
-            var overlay = GetSelectedOverlay();
-            if (overlay == null) return;
-
-            if (_selectedOverlayColorIndex >= 0 && _selectedOverlayColorIndex < OverlayColorValues.Length)
-                overlay.TextColor = (int[])OverlayColorValues[_selectedOverlayColorIndex].Clone();
-
-            if (_selectedOverlayIndex >= 0 && _selectedOverlayIndex < OverlayItems.Count)
-                OverlayItems[_selectedOverlayIndex].UpdateLabel(_selectedOverlayIndex);
-            RefreshOverlayPreview();
-        }
-
-        private void OnOverlayOpacityChanged()
-        {
-            if (_isLoadingOverlay) return;
-            var overlay = GetSelectedOverlay();
-            if (overlay == null) return;
-
-            overlay.Opacity = _overlayOpacitySlider / 100.0;
-            RefreshOverlayPreview();
-        }
-
-        #endregion
-
         #region Audio Preview
 
         /// <summary>
@@ -2191,6 +1708,31 @@ namespace InsightCast.ViewModels
         #endregion
 
         #region Export
+
+        private void ExportPptx()
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "PowerPoint|*.pptx",
+                FileName = "InsightCast.pptx"
+            };
+            if (dialog.ShowDialog() != true) return;
+
+            try
+            {
+                var service = new Services.PptxExportService();
+                service.Export(_project.Scenes, dialog.FileName);
+                _dialogService?.ShowInfo(
+                    LocalizationService.GetString("VM.PptxExport.Success", _project.Scenes.Count),
+                    LocalizationService.GetString("VM.PptxExport.Title"));
+            }
+            catch (Exception ex)
+            {
+                _dialogService?.ShowError(
+                    $"{LocalizationService.GetString("VM.PptxExport.Error")}\n{ex.Message}",
+                    LocalizationService.GetString("VM.PptxExport.Title"));
+            }
+        }
 
         private async Task ExportVideo()
         {
