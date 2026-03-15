@@ -132,10 +132,15 @@ namespace InsightCast.Services
             var texts = new List<string>();
             foreach (var para in textBody.Elements<D.Paragraph>())
             {
-                var paraText = string.Join("",
-                    para.Elements<D.Run>().Select(r => r.Text?.Text ?? ""));
-                if (!string.IsNullOrWhiteSpace(paraText))
-                    texts.Add(paraText);
+                var sb = new System.Text.StringBuilder();
+                foreach (var child in para.ChildElements)
+                {
+                    if (child is D.Run run)
+                        sb.Append(run.Text?.Text ?? "");
+                    else if (child is D.Break)
+                        sb.Append('\n');
+                }
+                texts.Add(sb.ToString());
             }
             return string.Join("\n", texts);
         }

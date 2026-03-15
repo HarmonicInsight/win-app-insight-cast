@@ -388,20 +388,28 @@ public class PptxImporter
 
             foreach (var paragraph in textBody.Elements<DocumentFormat.OpenXml.Drawing.Paragraph>())
             {
-                var paragraphTexts = new List<string>();
+                var sb = new System.Text.StringBuilder();
 
-                foreach (var run in paragraph.Elements<DocumentFormat.OpenXml.Drawing.Run>())
+                foreach (var child in paragraph.ChildElements)
                 {
-                    var textElement = run.GetFirstChild<DocumentFormat.OpenXml.Drawing.Text>();
-                    if (textElement?.Text != null)
+                    if (child is DocumentFormat.OpenXml.Drawing.Run run)
                     {
-                        paragraphTexts.Add(textElement.Text);
+                        var textElement = run.GetFirstChild<DocumentFormat.OpenXml.Drawing.Text>();
+                        if (textElement?.Text != null)
+                        {
+                            sb.Append(textElement.Text);
+                        }
+                    }
+                    else if (child is DocumentFormat.OpenXml.Drawing.Break)
+                    {
+                        sb.Append('\n');
                     }
                 }
 
-                if (paragraphTexts.Count > 0)
+                var paraText = sb.ToString();
+                if (paraText.Length > 0)
                 {
-                    shapeTexts.Add(string.Join("", paragraphTexts));
+                    shapeTexts.Add(paraText);
                 }
             }
 
@@ -465,24 +473,28 @@ public class PptxImporter
                 continue;
             }
 
-            // Extract text from paragraphs
+            // Extract text from paragraphs (preserve soft line breaks <a:br>)
             foreach (var paragraph in textBody.Elements<DocumentFormat.OpenXml.Drawing.Paragraph>())
             {
-                var paragraphTexts = new List<string>();
+                var sb = new System.Text.StringBuilder();
 
-                foreach (var run in paragraph.Elements<DocumentFormat.OpenXml.Drawing.Run>())
+                foreach (var child in paragraph.ChildElements)
                 {
-                    var textElement = run.GetFirstChild<DocumentFormat.OpenXml.Drawing.Text>();
-                    if (textElement?.Text != null)
+                    if (child is DocumentFormat.OpenXml.Drawing.Run run)
                     {
-                        paragraphTexts.Add(textElement.Text);
+                        var textElement = run.GetFirstChild<DocumentFormat.OpenXml.Drawing.Text>();
+                        if (textElement?.Text != null)
+                        {
+                            sb.Append(textElement.Text);
+                        }
+                    }
+                    else if (child is DocumentFormat.OpenXml.Drawing.Break)
+                    {
+                        sb.Append('\n');
                     }
                 }
 
-                if (paragraphTexts.Count > 0)
-                {
-                    textParts.Add(string.Join("", paragraphTexts));
-                }
+                textParts.Add(sb.ToString());
             }
         }
 
