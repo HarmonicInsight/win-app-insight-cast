@@ -9,6 +9,7 @@
     3. Downloads Snipaste portable (screen capture tool)
     4. Verifies build output
     5. Optionally runs Inno Setup to create the installer
+    6. Creates a ZIP archive of the installer for store distribution
 
 .EXAMPLE
     .\build.ps1
@@ -34,7 +35,7 @@ Write-Host "========================================" -ForegroundColor Cyan
 
 # ── Step 1: dotnet publish ────────────────────────────────────────────
 Write-Host ""
-Write-Host "[1/5] Publishing Insight Training Studio..." -ForegroundColor Yellow
+Write-Host "[1/6] Publishing Insight Training Studio..." -ForegroundColor Yellow
 
 if (Test-Path $publishDir) {
     Remove-Item $publishDir -Recurse -Force
@@ -57,7 +58,7 @@ Write-Host "  Published to: $publishDir" -ForegroundColor Green
 
 # ── Step 2: Download FFmpeg ───────────────────────────────────────────
 Write-Host ""
-Write-Host "[2/5] Setting up FFmpeg..." -ForegroundColor Yellow
+Write-Host "[2/6] Setting up FFmpeg..." -ForegroundColor Yellow
 
 $ffmpegBinDir = "$ffmpegDir\bin"
 
@@ -110,7 +111,7 @@ if (-not (Test-Path "$ffmpegBinDir\ffmpeg.exe")) {
 
 # ── Step 3: Download Snipaste ────────────────────────────────────────
 Write-Host ""
-Write-Host "[3/5] Setting up Snipaste..." -ForegroundColor Yellow
+Write-Host "[3/6] Setting up Snipaste..." -ForegroundColor Yellow
 
 $snipasteDir = "$publishDir\snipaste"
 
@@ -150,7 +151,7 @@ if (-not (Test-Path "$snipasteDir\Snipaste.exe")) {
 
 # ── Step 4: Verify output ────────────────────────────────────────────
 Write-Host ""
-Write-Host "[4/5] Verifying build output..." -ForegroundColor Yellow
+Write-Host "[4/6] Verifying build output..." -ForegroundColor Yellow
 
 $requiredFiles = @(
     "$publishDir\InsightCast.exe",
@@ -177,9 +178,9 @@ if (-not $allOk) {
 # ── Step 5: Build Installer (optional) ───────────────────────────────
 Write-Host ""
 if ($SkipInstaller) {
-    Write-Host "[5/5] Skipping installer build (-SkipInstaller)." -ForegroundColor Yellow
+    Write-Host "[5/6] Skipping installer build (-SkipInstaller)." -ForegroundColor Yellow
 } else {
-    Write-Host "[5/5] Building installer..." -ForegroundColor Yellow
+    Write-Host "[5/6] Building installer..." -ForegroundColor Yellow
 
     $issFile = "$installerDir\InsightCast.iss"
     if (-not (Test-Path $issFile)) {
@@ -214,9 +215,38 @@ if ($SkipInstaller) {
     }
 }
 
+# ── Step 6: Create ZIP for store distribution ────────────────────────
+Write-Host ""
+Write-Host "[6/6] Creating ZIP for store distribution..." -ForegroundColor Yellow
+
+$outputDir = "$PSScriptRoot\Output"
+$version = "1.0.3"
+$installerExe = "$outputDir\InsightTrainingStudio_Setup_$version.exe"
+$zipPath = "$outputDir\InsightTrainingStudio_$version.zip"
+
+if (Test-Path $zipPath) {
+    Remove-Item $zipPath -Force
+}
+
+if (Test-Path $installerExe) {
+    # Create ZIP containing the installer exe
+    Compress-Archive -Path $installerExe -DestinationPath $zipPath -CompressionLevel Optimal
+    $zipSize = (Get-Item $zipPath).Length / 1MB
+    Write-Host ("  Created: {0} ({1:N1} MB)" -f (Split-Path $zipPath -Leaf), $zipSize) -ForegroundColor Green
+} else {
+    Write-Host "  Installer not found at: $installerExe" -ForegroundColor Yellow
+    Write-Host "  Creating ZIP from publish folder instead..." -ForegroundColor Yellow
+    Compress-Archive -Path "$publishDir\*" -DestinationPath $zipPath -CompressionLevel Optimal
+    $zipSize = (Get-Item $zipPath).Length / 1MB
+    Write-Host ("  Created: {0} ({1:N1} MB)" -f (Split-Path $zipPath -Leaf), $zipSize) -ForegroundColor Green
+}
+
 # ── Done ──────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  Build complete!" -ForegroundColor Green
 Write-Host "  Output: $publishDir" -ForegroundColor Cyan
+if (Test-Path $zipPath) {
+    Write-Host "  ZIP:    $zipPath" -ForegroundColor Cyan
+}
 Write-Host "========================================" -ForegroundColor Cyan
